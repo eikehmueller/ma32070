@@ -72,7 +72,7 @@ $$
 ## Reduction to linear algebra problem
 Since $V_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_j(x)\}_{j=0}^{n-1}$ such that every function $u_h(x)\in V_h$ can be written as
 $$
-u_h(x) = \sum_{j=0}^{n-1} U^{(h)}_j \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$}\qquad(\star).
+u_h(x) = \sum_{j=0}^{n-1} u^{(h)}_j \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$}\qquad(\star).
 $$
 The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h(x)$. Picking $v_h(x)=\Phi^{(h)}_i(x)$ and inserting the expansion of $u_h(x)$ in $(\star)$ into $(\ddagger_h)$ we obtain
 $$

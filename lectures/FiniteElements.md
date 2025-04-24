@@ -114,7 +114,7 @@ We further assume that $0\le n^{(\text{vertex})}$ nodes are associated with each
 $$
 d = 3( n^{(\text{vertex})}+n^{(\text{facet})})+n^{(\text{interior})}.
 $$
-Let $\ell_k^{(E)}$ be the $k$-th node associated with topological entity $E\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the unknowns $\{\ell_0,\dots,\ell_{d-1}\}$ in the following order:
+Let $\ell_k^{(E_i)}$ be the $k$-th node associated with topological entity $E\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the unknowns $\{\ell_0,\dots,\ell_{d-1}\}$ in the following order:
 
 $\{\ell_0^{(v_0)},\dots,\ell_{n^{(\text{vertex})}-1}^{(v_0)},
 \ell_0^{(v_1)},\dots,\ell_{n^{(\text{vertex})}-1}^{(v_1)},
@@ -125,12 +125,12 @@ $\{\ell_0^{(v_0)},\dots,\ell_{n^{(\text{vertex})}-1}^{(v_0)},
 \ell_0^{(K^0)},\dots,\ell_{n^{(\text{interior})}-1}^{(K^0)}
 \}$
 
-In other words $\ell_{j=j(E,k)} = \ell_k^{(E)}$ with
+In other words $\ell_{j=\mu_{\text{dof}}(E,i,k)} = \ell_k^{(E_i)}$ with
 $$
-j(E,k) = \begin{cases}
-m n^{(\text{vertex})} + k & \text{if $E=v_m$}\\
-3n^{(\text{vertex})} + m n^{(\text{facet})} + k & \text{if $E=F_m$}\\
-3(n^{(\text{vertex})} + n^{(\text{facet})}) + k & \text{if $E=K^0$}
+\mu_{\text{dof}}(E,i,k) = \begin{cases}
+i\cdot n^{(\text{vertex})} + k & \text{if $E=v_i$}\\
+3n^{(\text{vertex})} + i\cdot n^{(\text{facet})} + k & \text{if $E=F_i$}\\
+3(n^{(\text{vertex})} + n^{(\text{facet})}) + i & \text{if $E=K^0$}
 \end{cases}
 $$
 
@@ -161,10 +161,10 @@ V = V(\{\xi^{(j)}\}_{j=0}^{d_p-1}) = \begin{pmatrix}
 1 & \xi^{(d_p-1)}_0 & \xi^{(d_p-1)}_1 & (\xi^{(d_p-1)}_0)^2 & \xi^{(d_p-1)}_0 \xi^{(d_p-1)}_1 & (\xi^{(d_p-1)}_1)^2 & \dots
 \end{pmatrix}
 $$
-Note that for a given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$ we can construct the $n\times d_p$ matrix $V(\boldsymbol{\zeta})$ with $V_{ij}(\boldsymbol{\zeta}) = b_j(\zeta^{(i)})$ in the same way. We further define the rank 3 tensor $V^{\partial}$ with
+Note that for a given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$ we can construct the $n\times d_p$ matrix $V(\boldsymbol{\zeta})$ with $V_{ij}(\boldsymbol{\zeta}) = b_j(\zeta^{(i)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
 
 $$
-V^{\partial}_{ijk}=\frac{\partial b_j}{\partial x_k}(\zeta^{(i)})
+V^{\partial}_{ijk}(\boldsymbol{\zeta}):=\frac{\partial b_j}{\partial x_k}(\zeta^{(i)})
 $$
 ### Tabulation of basis functions
 This allows use to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, we have that
@@ -189,20 +189,48 @@ T^\partial_{ijk}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_j}{\partial x_k}(\z
  \end{aligned}
 $$
 ## Implementation
-We start by defining an abstract base class, which defines an interface that all concrete implementations of a finite element need to satisfy. Each finite element should provide the following functionality:
+### Abstract bases class
+Since all finite elements share some common functionality, we start by defining an abstract base class, which defines an interface that all concrete implementations of a finite element need to satisfy. Each finite element should provide the following functionality:
 
 * Return the number of nodes associated with each topological entity. For this, we define abstract properties `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior` for $n^{(\text{vertex})}$, $n^{(\text{facet})}$ and $n^{(\text{interior})}$ respectively. The base class also contains a property `ndof` which returns $3(n^{(\text{vertex})}+n^{(\text{facet})})+n^{(\text{interior})}$.
 * Tabulate the evaluation of all dofs for a given function $\hat{f}$, i.e. compute the vector $(\ell_0(\hat{f}),\ell_1(\hat{f}),\dots,\ell_{d-1}(\hat{f}))^\top$. This is done with the abstract method `tabulate_dofs(fhat)`
 * Tabulate the basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the $n\times d$ matrix $T$ with $T_{ij}=\phi_j(\zeta^{(i)})$. This is done with the abstract method `tabulate(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a vector of length $d$.
 * Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the rank 3 tensor $T^\partial$ of shape $n\times d\times 2$ with $T^\partial_{ijk}=\frac{\partial\phi_j}{\partial x_k}(\zeta^{(i)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a matrix of shape $d\times 2$.
+* Implement the element dof-map $\mu_{\text{dof}}(E,i,k)$ and its inverse. This is done with the methods `dofmap(entity_type,i,k)` and its inverse `inverse_dofmap(j)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously used values.
+
+### Concrete implementations
+Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class. These concrete classes have to provide concrete implementations of the following methods/properties:
+* `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior`
+* `tabulate_dofs(fhat)` to evaluate the degrees of freedom for a given function
+* `tabulate(zeta)` to tabulate the values of the basis functions at a given set of points
+* `tabulate_gradient(zeta)` to tabulate the gradients of the basis functions for a given set of points
 
 ### Linear element
-The bi-linear element is implemented in `XXX`
+The bi-linear element is implemented in `LinearElement`
 
 ## Exercises
-* Implement Vandermonde matrix
-* Implement quadratic element
-* Implement suitable tests
+Implement the cubic Lagrange element `CubicElement` ($p=3$) by subclassing the abstract base class `FiniteElement`. The Lagrange points are in this order (see also figure above):
+
+$$
+\{\xi^{(j)}\}_{j=0}^{9}=
+\left\{
+\underbrace{
+\begin{pmatrix}0\\[1ex]0\end{pmatrix},
+\begin{pmatrix}0\\[1ex]1\end{pmatrix},
+\begin{pmatrix}1\\[1ex]1\end{pmatrix}}_{\text{vertices}},
+\underbrace{\begin{pmatrix}\frac{2}{3}\\[1ex]\frac{1}{3}\end{pmatrix},
+\begin{pmatrix}\frac{1}{3}\\[1ex]\frac{2}{3}\end{pmatrix},
+\begin{pmatrix}0\\[1ex]\frac{2}{3}\end{pmatrix},
+\begin{pmatrix}0\\[1ex]\frac{1}{3}\end{pmatrix},
+\begin{pmatrix}\frac{1}{3}\\[1ex]0\end{pmatrix},
+\begin{pmatrix}\frac{2}{3}\\[1ex]0\end{pmatrix}}_{\text{facets}},
+\underbrace{\begin{pmatrix}\frac{1}{3}\\[1ex]\frac{1}{3}\end{pmatrix}}_{\text{interior}}\right\}
+$$
+* You class should store the Lagrange points in an attribute `_nodal_points`
+* Your class should contain a method `vandermonde_matrix(zeta,grad=False)` which accepts as an argument a $n\times 2$ matrix of $n$ two-dimensional points. The method should compute the $n\times n_{\text{dof}}$ matrix $V(\boldsymbol{\zeta})$ if `grad=False` and the $n\times n_{\text{dof}}\times 2$ tensor $V^\partial(\boldsymbol{\zeta})$ if `grad=True`.
+* Use the `vandermonde_matrix()` method together with `_nodal_points` to construct the coefficient matrix `C`
+* Use the coefficient matrix `C` and the `vandermonde_matrix()` method to tabulate the basis functions and their gradients by using the expressions above. You might find the [`numpy.einsum`](https://numpy.org/doc/2.2/reference/generated/numpy.einsum.html) method useful to compute $T^\partial(\boldsymbol{\zeta})$
+* Develop a suite of suitable tests
 
 ### General Lagrange element
-The general polynomial element is implemented in `XXX`
+The general polynomial element is implemented in `PolynomialElement`

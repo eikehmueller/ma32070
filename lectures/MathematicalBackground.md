@@ -26,13 +26,13 @@ Using the boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partia
 $$
 \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx  = \int_\Omega f(x) v(x)\;dx + \int_{\partial \Omega} g(x) v(x)\;ds.
 $$
-For simplicity, we will assume that $g=0$ in the following. Let us define the symmetric *bilinear form* $a(\cdot,\cdot): V\times V \rightarrow \mathbb{R}$  with
+Let us define the symmetric *bilinear form* $a(\cdot,\cdot): V\times V \rightarrow \mathbb{R}$  with
 $$
 a(u,v) := \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx
 $$
 and the linear form $b(\cdot):V\rightarrow \mathbb{R}$ with
 $$
-b(v) := \int_\Omega f(x) v(x)\;dx.
+b(v) := \int_\Omega f(x) v(x)\;dx+ \int_{\partial \Omega} g(x) v(x)\;ds.
 $$
 #### Exercise
 Convince yourself that $a(\cdot,\cdot)$ and $b(\cdot)$ are indeed (bi-) linear:

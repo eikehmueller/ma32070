@@ -103,7 +103,7 @@ The Argyris finite element (see Section 3.7.1 in [Logg2012]) is given by
   - $\ell_{9+3i+2j+k}(w) = \frac{\partial^2 w}{\partial x_j \partial x_k}(v_i)$ with $0\le j\le k\le 1$ (Hessian evaluation at each vertex $\Rightarrow$ 9 nodes)
   - $\ell_{18+j}(w) = n_i\cdot \nabla w(m_i)$ (normal derivative evaluation at the midpoints $m_i$ of each facet $F_i$ $\Rightarrow$ 3 nodes)
 
-Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that this allows the construction of function spaces that have a bounded second derivative.
+Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative.
 
 #### Node numbering
 We assume that each node is associated with a topological entity of the reference triangle $K$. These entities are

@@ -38,7 +38,7 @@ The map $(i,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
 $$
 \tilde{k} = \begin{cases}
 k & \text{if the orientation of the facet matches the orientation on the reference cell}\\
-n^{(\text{facet})-1-k} & \text{otherwise}
+n^{(\text{facet})}-1-k & \text{otherwise}
 \end{cases}
 $$
    1. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+i\cdot n^{(\text{cell})}+j$

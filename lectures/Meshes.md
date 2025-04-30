@@ -26,40 +26,42 @@ $$
 I^{v\gets F}_{jk} = \text{index of $k$-th vertex of facet $j$}.
 $$
 
+Note that there is some freedom as to how we number the facets associated each cell; the numbering we adopt here is one in which for each cell $i$ the facets with indices $I^{F\gets K}_{i0}$, $I^{F\gets K}_{i1}$ and $I^{F\gets K}_{i2}$ are arranged in a counter-clockwise fashion (note that there are three possible orderings that satisfy this condition). Similarly, we adapt an ordering of the vertices associated with each facet such that for each facet $j$ we have that $I^{v\gets F}_{j0} < I^{v\gets F}_{j1}$.
+
 For convenience, we can also use $I^{F\gets K}$ and $I^{v\gets F}$ to construct the $n_{\text{cell}}\times 3$ matrix $I^{v\gets K}$ with
 
 $$
 I^{v\gets K}_{ik} = \text{index of $k$-th vertex of cell $i$}
 $$
 
-More explicitly, the $i$-th column of this matrix is given by
+In each cell $i$, we number the vertices in a counter-clockwise fashion such that the $k$-th vertex lies opposite the $k$-the edge of the cell:
 
 $$
 \begin{aligned}
-I^{v\gets K}_{i,0} &= I_{j_0,0}^{v\gets F}\quad\text{with}\;j_0=I_{i,2}^{F\gets K}\\
-I^{v\gets K}_{i,1} &= I_{j_1,0}^{v\gets F}\quad\text{with}\;j_1=I_{i,0}^{F\gets K}\\
-I^{v\gets K}_{i,2} &= I_{j_2,0}^{v\gets F}\quad\text{with}\;j_2=I_{i,1}^{F\gets K}.
+I^{v\gets K}_{ik} \not\in \{I^{v\gets F}_{j0},I^{v\gets F}_{j1}\}\quad\text{for $j =I^{F\gets K}_{ik}$}
 \end{aligned}
 $$
+
+Note that the counter-clockwise numbering of the facets and vertices in each cell is consistent with the numbering of unknown on the reference triangle.
 
 For example, the matrices $I^{F\gets K}$, $I^{v\gets F}$ and $I^{v\gets K}$ for the simple mesh shown above are given by
 
 $$
 \begin{aligned}
 I^{F\gets K} &= \begin{pmatrix}
-0 & 5 & 1 & 0 & 3 \\
-1 & 3 & 7 & 5 & 4 \\
-8 & 2 & 2 & 9 & 6
+0 & 3 & 1 & 0 & 3 \\
+1 & 2 & 2 & 9 & 6 \\
+8 & 5 & 7 & 5 & 4
 \end{pmatrix}^{\top}\\
 I^{v\gets F} &= \begin{pmatrix}
 
-0 & 1 & 2 & 5 & 2 & 1 & 3 & 4 & 4 & 5 \\
-1 & 4 & 1 & 2 & 3 & 5 & 5 & 2 & 0 & 0
+0 & 1 & 1 & 2 & 2 & 1 & 3 & 2 & 0 & 0 \\
+1 & 4 & 2 & 5 & 3 & 5 & 5 & 4 & 4 & 5
 \end{pmatrix}^{\top}\\
-I^{F\gets K} &= \begin{pmatrix}
-4 & 2 & 2 & 5 & 3 \\
-0 & 1 & 1 & 0 & 5 \\
-1 & 5 & 4 & 1 & 2
+I^{v\gets K} &= \begin{pmatrix}
+4 & 1 & 2 & 5 & 3 \\
+0 & 5 & 4 & 1 & 2 \\
+1 & 2 & 1 & 0 & 5
  \\
 
 \end{pmatrix}^{\top}
@@ -67,6 +69,21 @@ I^{F\gets K} &= \begin{pmatrix}
 \end{aligned}
 $$
 
-## Grid cells and reference elements
-## Encoding geometry information
-## Implementation in Python
+In addition, we store a $n_{\text{vertices}}\times 2$ matrix $v$ such that the $k$-th column of $v$ contains the coordinates of the $k$-th vertex in the mesh.
+
+### Implementation
+The abstract class `Mesh` encodes the mesh. It has the following members
+
+* properties `ncells`, `nfacets` and `nvertices` which give the total number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$) and vertices ($=n_{\text{vertices}}$) respectively
+* `cell2facet`: a list such that `cell2facet[i][j]` $= I^{F\gets K}_{ij}$
+* `facet2vertex`: a list such that `facet2vertex[j][k]` $= I^{v\gets F}_{jk}$
+* `cell2vertex`: a list such that `cell2vertex[i][k]` $= I^{v\gets K}_{ik}$. Since $I^{v\gets K}_{ik}$ can be derived from $I^{F\gets K}_{ij}$ and $I^{v\gets F}_{jk}$, `cell2vertex` is implemented as a `@cached_property`.
+* an array `coordinates` of shape $(n_{\text{vertices}},2)$ whose columns contain the two-dimensional coordinates of the mesh vertices
+
+The class also contains a method `refine(nref)` which can be used to construct a refined mesh from given mesh.
+
+Two concrete classes are derived from this class:
+
+* `RectangleMesh(Lx=1.0, Ly=1.0, nref=0)` is a triangulation of the domain $[0,L_x]\times[0,L_y]$ with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}+1}$
+* `TriangleMesh(corners=None, nref=0)` is a triangulation of the domain triangle defined by the array `corners` (if this is `None`, the reference triangle us used) with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}}$
+

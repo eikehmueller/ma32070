@@ -9,10 +9,10 @@ In the following we will also refer to this as the *reference triangle*.
 Consider the space of bi-variate polynomials of degree $p$ on $K$:
 
 $$
-\mathcal{P}_p = \{q:q(x) = \sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}} a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1},\;a_{\alpha_0,\alpha_1}\in\mathbb{R}\}\subset H^1(K)
+\mathcal{P}_p(K) = \{q:q(x) = \sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}} a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1},\;a_{\alpha_0,\alpha_1}\in\mathbb{R}\}\subset H^1(K)
 $$
 
-The space $\mathcal{P}_p$  is spanned by $d_p = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_j(x)\}_{j=0}^{d_p-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick Lagrange polynomials. This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $d_p$ points $\{\xi^{(j)}\}_{j=0}^{d_p-1}$ in $K$ and define $\phi_j(x)\in\mathcal{P}_p$ such that
+The space $\mathcal{P}_p(K)$  is spanned by $d_p = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_j(x)\}_{j=0}^{d_p-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick Lagrange polynomials. This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $d_p$ points $\{\xi^{(j)}\}_{j=0}^{d_p-1}$ in $K$ and define $\phi_j(x)\in\mathcal{P}_p(K)$ such that
 $$
 \phi_j(\xi^{(k)}) = \delta_{jk} = \begin{cases}
     1 & \text{for $j=k$}\\
@@ -87,7 +87,7 @@ In the following we will assume that $K$ is the reference triangle introduced ab
 
 #### Examples
 The polynomial Lagrange element we described above is a special case of this with 
-* $\mathcal{V} = P_p$, the space of bi-variate polynomials of degree $p$
+* $\mathcal{V} = \mathcal{P}_p(K)$, the space of bi-variate polynomials of degree $p$
 * $\ell_j: \ell_j(w) = w(\xi^{(j)})$ the point evaluation at the nodal points $\xi^{(j)}$
 
 An alternative choice for the nodes would have been to define for some point $\widehat{\xi}\in K$:

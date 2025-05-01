@@ -26,7 +26,7 @@
   * Solvers
   * Theory: existing of solution, convergence $\Rightarrow$ *``Numerical Solultion of Elliptic Problems''*
 
-## 2. Finite elements I
+## 2. Finite elements
 * Consider a domain consisting of a single triangular cell
   * Numbering of vertices and edges
 * Ciarlet's definition of the finite element
@@ -38,20 +38,19 @@
   * Tabulating finite elements: values and derivatives
 * Implementation in Python
 
-## 3. Finite elements II
+## 3. Quadrature and solver on a single triangle
 * Quadrature
   * 1d quadrature
   * extension to 2d
 * Algorithms on a single element
   * Interpolating functions
   * Matrix assembly
+* Python implementation
 
-## 4. Interlude: testing and software engineering
-* Unit tests with pytest
-* debugging Python code
-* Structuring Python code
-* github: branching and merging
-* Using VSCode: linting, formatting, copilot?
+## 4. Interlude: rounding errors
+* Numerical investigation of single-element solver
+* Solution of a simple $2\times 2$ system
+* Backward error analysis 
 
 ## 5. (Unstructured) meshes
 * Topological entities and (co-) dimensions

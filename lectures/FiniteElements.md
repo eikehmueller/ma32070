@@ -9,10 +9,10 @@ In the following we will also refer to this as the *reference triangle*.
 Consider the space of bi-variate polynomials of degree $p$ on $K$:
 
 $$
-\mathcal{P}_p = \{q:q(x) = \sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}} a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1},\;a_{\alpha_0,\alpha_1}\in\mathbb{R}\}\subset H^1(K)
+\mathcal{P}_p(K) = \{q:q(x) = \sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}} a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1},\;a_{\alpha_0,\alpha_1}\in\mathbb{R}\}\subset H^1(K)
 $$
 
-The space $\mathcal{P}_p$  is spanned by $d_p = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_j(x)\}_{j=0}^{d_p-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick Lagrange polynomials. This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $d_p$ points $\{\xi^{(j)}\}_{j=0}^{d_p-1}$ in $K$ and define $\phi_j(x)\in\mathcal{P}_p$ such that
+The space $\mathcal{P}_p(K)$  is spanned by $d_p = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_j(x)\}_{j=0}^{d_p-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick Lagrange polynomials. This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $d_p$ points $\{\xi^{(j)}\}_{j=0}^{d_p-1}$ in $K$ and define $\phi_j(x)\in\mathcal{P}_p(K)$ such that
 $$
 \phi_j(\xi^{(k)}) = \delta_{jk} = \begin{cases}
     1 & \text{for $j=k$}\\
@@ -87,7 +87,7 @@ In the following we will assume that $K$ is the reference triangle introduced ab
 
 #### Examples
 The polynomial Lagrange element we described above is a special case of this with 
-* $\mathcal{V} = P_p$, the space of bi-variate polynomials of degree $p$
+* $\mathcal{V} = \mathcal{P}_p(K)$, the space of bi-variate polynomials of degree $p$
 * $\ell_j: \ell_j(w) = w(\xi^{(j)})$ the point evaluation at the nodal points $\xi^{(j)}$
 
 An alternative choice for the nodes would have been to define for some point $\widehat{\xi}\in K$:
@@ -103,7 +103,7 @@ The Argyris finite element (see Section 3.7.1 in [Logg2012]) is given by
   - $\ell_{9+3i+2j+k}(w) = \frac{\partial^2 w}{\partial x_j \partial x_k}(v_i)$ with $0\le j\le k\le 1$ (Hessian evaluation at each vertex $\Rightarrow$ 9 nodes)
   - $\ell_{18+j}(w) = n_i\cdot \nabla w(m_i)$ (normal derivative evaluation at the midpoints $m_i$ of each facet $F_i$ $\Rightarrow$ 3 nodes)
 
-Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that this allows the construction of function spaces that have a bounded second derivative.
+Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative.
 
 #### Node numbering
 We assume that each node is associated with a topological entity of the reference triangle $K$. These entities are

@@ -131,18 +131,21 @@ where $\mathcal{Q}_{n_q}^{(K)}=\{w_q\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable q
 To test this, we use the method of manufactured solutions. For this, we pick a right-hand side $f(x)$ and boundary condition $g(x)$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
 
 $$
-u_{\text{exact}}(x) = \sin(\pi x_0) \sin(\pi x_1)
+u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]
 $$
 
 A straightforward calculation shows that
+
 $$
 \begin{aligned}
-f(x) &= (2 \pi^2\kappa + \omega)\sin(\pi x_0) \sin(\pi x_1)
+f(x) &= \left(\left(2\frac{\kappa}{\sigma^2}+\omega\right)-\frac{\kappa}{\sigma^4}(x-x_0)^2\right) u_{\text{exact}}(x)
 \\
-g(x) &= \kappa\cdot\begin{cases}
-\frac{\pi}{\sqrt{2}}(\cos(\pi x_0)\sin(\pi x_1)+ \sin(\pi x_0) \cos(\pi x_1)) & \text{for $x\in F_0$, i.e. $0\le x_0\le 1$, $x_0+x_1=1$}\\
--\pi \sin(\pi x_0) & \text{for $x\in F_1$, i.e. $0\le x_0\le 1$, $x_1=0$}\\
--\pi \sin(\pi x_1) & \text{for $x\in F_2$, i.e. $x_0=0$, $0\le x_1\le 1$}
+g(x) &= -\frac{\kappa}{\sigma^2}n\cdot(x-x_0)u_{\text{exact}}(x)
+\\
+n &= \begin{cases}
+\frac{1}{\sqrt{2}}\begin{pmatrix}1 \\ 1\end{pmatrix} & \text{for $x\in F_0$, i.e. $0\le x_0\le 1$, $x_0+x_1=1$}\\[3ex]
+\begin{pmatrix}0 \\ -1\end{pmatrix} & \text{for $x\in F_1$, i.e. $0\le x_0\le 1$, $x_1=0$}\\[3ex]
+\begin{pmatrix}-1 \\ 0\end{pmatrix} & \text{for $x\in F_2$, i.e. $x_0=0$, $0\le x_1\le 1$}
 \end{cases}
 \end{aligned}
 $$

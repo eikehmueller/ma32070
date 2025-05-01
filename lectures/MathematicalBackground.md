@@ -18,11 +18,11 @@ and then set $L_2(\Omega) = \left\{u(x) : ||u||_{L_2(\Omega)}<\infty\right\}$ (t
 $$
 \int_\Omega \left(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\right)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v(x)\in V$}.
 $$
-Discussing in which sense these weak solutions are equivalent to solutions of $(\dagger)$ (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course. After integrating the first term under the integral on the left-hand side by parts, the weak form becomes
+Note that in contrast to $(\dagger)$ we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of $(\dagger)$ (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course. After integrating the first term under the integral on the left-hand side by parts, the weak form becomes
 $$
 \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx - \int_{\partial \Omega } \kappa\;v(x) n\cdot \nabla(u)\;ds = \int_\Omega f(x) v(x)\;dx.
 $$
-Using the boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial\Omega$, we can rewrite this as
+Crucially, only first derivatives of the solution $u(x)$ and test function $v(x)$ are required now. Using the boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial\Omega$, we can rewrite this as
 $$
 \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx  = \int_\Omega f(x) v(x)\;dx + \int_{\partial \Omega} g(x) v(x)\;ds.
 $$
@@ -40,7 +40,7 @@ Convince yourself that $a(\cdot,\cdot)$ and $b(\cdot)$ are indeed (bi-) linear:
 * $a(u,c_1 v^{(1)} + c_2 v^{(2)}_2) = c_1 a(u,v^{(1)}) + c_2 a(u,v^{(2)})$ for all $c_1,c_2\in \mathbb{R}$, $u,v^{(1)}, v^{(2)} \in V$
 * $b(c_1 v^{(1)} + c_2 v^{(2)}_2)=c_1b( v^{(1)}) + c_2 b(v^{(2)}_2)$ for all $c_1,c_2\in \mathbb{R}$, $v^{(1)}, v^{(2)} \in V$
   
-and that $u(\cdot,\cdot)$ is symmetric:
+and that $a(\cdot,\cdot)$ is symmetric:
 * $a(v,u) = a(u,v)$ for all $u,v\in V$
   
 With these (bi-)linear forms, we can formulate the weak problem as follows: Find $u(x)\in V$ such that
@@ -65,7 +65,7 @@ It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cd
 $$
 \|u_h - u\|_V \le C \min_{v_h\in V_h}\|u-v_h\|_V.
 $$
-The term $\min_{v_h\in V_h}\|u-v_h\|_V$ only depends on the choice of function spaces $V$, $V_h$ and describes how well the function $u(x) \in V$ can be approximated by a function $v_h\in V_h$. For a suitable choice of $V_h$, which we will discuss later, one can show that $\min_{v_h\in V_h}\|u-v_h\|_V\le C' h^{2p}$ for some positive integer $p\ge 1$ and positive constant $C'>0$. Hence, the finite element solution $u_h(x)$ converges to the "true'' solution $u(x)$ as the mesh is refined ($h\rightarrow 0$):
+The term $\min_{v_h\in V_h}\|u-v_h\|_V$ only depends on the choice of function spaces $V$, $V_h$ and describes how well the function $u(x) \in V$ can be approximated by a function $v_h\in V_h$. For a suitable choice of $V_h$, which we will discuss later, one can show that $\min_{v_h\in V_h}\|u-v_h\|_V\le C' h^{2\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Hence, the finite element solution $u_h(x)$ converges to the "true'' solution $u(x)$ as the mesh is refined ($h\rightarrow 0$):
 $$
 \|u_h - u\|_V \le C C' h^{2\mu}.
 $$
@@ -88,7 +88,7 @@ At this point it is worth stressing that although $\boldsymbol{u}^{(h)}$ and $\b
 * The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $U_j^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in $(\star)$.
 * In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_j^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
 
-The reason for this is that $b(\cdot)$ is an element of the dual space $V^*$, which consists of all bounded linear functionals defined on the space $V$.
+The reason for this is that $b(\cdot)$ is an element of the dual space $V^*$, which consists of all linear functionals defined on the space $V$.
 ### Solution procedure
 In summary, the solution procedure for $(\ddagger_h)$ is this:
 1. Assemble the matrix $A^{(h)}$.

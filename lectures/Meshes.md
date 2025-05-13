@@ -7,7 +7,7 @@ In general, we might want to solve PDEs on a $d$-dimensional manifold $\Omega\su
 | facet (edge) $F$    | $1$            | $1$              |
 | vertex $v$          | $0$            | $2$              |
 
-The following figure shows a two-dimensional mesh in which all topological entities are labelled by their co-dimensional and a unique number.
+The following figure shows a two-dimensional mesh with $n_{\text{vertex}}=6$ vertices, $n_{\text{facet}}=10$ facets and $n_{\text{cell}}=5$ cells in which all topological entities are labelled by their co-dimension and a unique number.
 
 ![simple triangular mesh](figures/simple_mesh.svg)
 
@@ -74,11 +74,11 @@ In addition, we store a $n_{\text{vertices}}\times 2$ matrix $v$ such that the $
 ### Implementation
 The abstract class `Mesh` encodes the mesh. It has the following members
 
-* properties `ncells`, `nfacets` and `nvertices` which give the total number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$) and vertices ($=n_{\text{vertices}}$) respectively
+* properties `ncells`, `nfacets` and `nvertices` which give the total number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$) and vertices ($=n_{\text{vertex}}$) respectively
 * `cell2facet`: a list such that `cell2facet[i][j]` $= I^{F\gets K}_{ij}$
 * `facet2vertex`: a list such that `facet2vertex[j][k]` $= I^{v\gets F}_{jk}$
 * `cell2vertex`: a list such that `cell2vertex[i][k]` $= I^{v\gets K}_{ik}$. Since $I^{v\gets K}_{ik}$ can be derived from $I^{F\gets K}_{ij}$ and $I^{v\gets F}_{jk}$, `cell2vertex` is implemented as a `@cached_property`.
-* an array `coordinates` of shape $(n_{\text{vertices}},2)$ whose columns contain the two-dimensional coordinates of the mesh vertices
+* an array `coordinates` of shape $(n_{\text{vertex}},2)$ whose columns contain the two-dimensional coordinates of the mesh vertices
 
 The class also contains a method `refine(nref)` which can be used to construct a refined mesh from given mesh.
 

@@ -28,9 +28,9 @@ Note that this choice of points is not optimal for higher polynomial degrees $p$
 
 We order these points (and the associated basis functions) as follows:
 
-* points associated with the three vertices $v_0$, $v_1$, $v_2$ (in this order); there is $n^{(\text{vertex})}=1$ point per vertex
-* points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $n^{(\text{facet})}=p-1$ points per facet and on each facet these points are ordered according to the arrows in the figure above
-* points associated with the interior $K^0$; there are $n^{(\text{interior})}=\frac{1}{2}(p-1)(p-2)$ points of this type
+* points associated with the three vertices $v_0$, $v_1$, $v_2$ (in this order); there is $\nu_{\text{vertex}}=1$ point per vertex
+* points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in the figure above
+* points associated with the interior $K^0$; there are $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$ points of this type
 
 This is illustrated in the following figure, which also shows the ordering of the nodes for $p=1,2,3,4$:
 
@@ -110,27 +110,27 @@ We assume that each node is associated with a topological entity of the referenc
 * the vertices $v_0$, $v_1$, $v_2$ in this order
 * the facets $F_0$, $F_1$, $F_2$ in this order
 * the interior $K^0$ of $K$
-We further assume that $0\le n^{(\text{vertex})}$ nodes are associated with each vertex, $0\le n^{(\text{facet})}$ nodes are associated with each facet and $0\le n^{(\text{interior})}$ nodes are associated with the interior $K^0$. Then obviously
+We further assume that $0\le \nu_{\text{vertex}}$ nodes are associated with each vertex, $0\le \nu_{\text{facet}}$ nodes are associated with each facet and $0\le \nu_{\text{interior}}$ nodes are associated with the interior $K^0$. Then obviously
 $$
-d = 3( n^{(\text{vertex})}+n^{(\text{facet})})+n^{(\text{interior})}.
+d = 3( \nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}.
 $$
 Let $\ell_k^{(E_i)}$ be the $k$-th node associated with topological entity $E\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the unknowns $\{\ell_0,\dots,\ell_{d-1}\}$ in the following order:
 
-$\{\ell_0^{(v_0)},\dots,\ell_{n^{(\text{vertex})}-1}^{(v_0)},
-\ell_0^{(v_1)},\dots,\ell_{n^{(\text{vertex})}-1}^{(v_1)},
-\ell_0^{(v_2)},\dots,\ell_{n^{(\text{vertex})}-1}^{(v_2)},
-\ell_0^{(F_0)},\dots,\ell_{n^{(\text{facet})}-1}^{(F_0)},
-\ell_0^{(F_1)},\dots,\ell_{n^{(\text{facet})}-1}^{(F_1)},
-\ell_0^{(F_2)},\dots,\ell_{n^{(\text{facet})}-1}^{(F_2)},
-\ell_0^{(K^0)},\dots,\ell_{n^{(\text{interior})}-1}^{(K^0)}
+$\{\ell_0^{(v_0)},\dots,\ell_{\nu_{\text{vertex}}-1}^{(v_0)},
+\ell_0^{(v_1)},\dots,\ell_{\nu_{\text{vertex}}-1}^{(v_1)},
+\ell_0^{(v_2)},\dots,\ell_{\nu_{\text{vertex}}-1}^{(v_2)},
+\ell_0^{(F_0)},\dots,\ell_{\nu_{\text{facet}}-1}^{(F_0)},
+\ell_0^{(F_1)},\dots,\ell_{\nu_{\text{facet}}-1}^{(F_1)},
+\ell_0^{(F_2)},\dots,\ell_{\nu_{\text{facet}}-1}^{(F_2)},
+\ell_0^{(K^0)},\dots,\ell_{\nu_{\text{interior}}-1}^{(K^0)}
 \}$
 
 In other words $\ell_{j=\mu_{\text{dof}}(E,i,k)} = \ell_k^{(E_i)}$ with
 $$
 \mu_{\text{dof}}(E,i,k) = \begin{cases}
-i\cdot n^{(\text{vertex})} + k & \text{if $E=v_i$}\\
-3n^{(\text{vertex})} + i\cdot n^{(\text{facet})} + k & \text{if $E=F_i$}\\
-3(n^{(\text{vertex})} + n^{(\text{facet})}) + i & \text{if $E=K^0$}
+i\cdot \nu_{\text{vertex}} + k & \text{if $E=v_i$}\\
+3\nu_{\text{vertex}} + i\cdot \nu_{\text{facet}} + k & \text{if $E=F_i$}\\
+3(\nu_{\text{vertex}} + \nu_{\text{facet}}) + i & \text{if $E=K^0$}
 \end{cases}
 $$
 
@@ -192,7 +192,7 @@ $$
 ### Abstract bases class
 Since all finite elements share some common functionality, we start by defining an abstract base class, which defines an interface that all concrete implementations of a finite element need to satisfy. Each finite element should provide the following functionality:
 
-* Return the number of nodes associated with each topological entity. For this, we define abstract properties `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior` for $n^{(\text{vertex})}$, $n^{(\text{facet})}$ and $n^{(\text{interior})}$ respectively. The base class also contains a property `ndof` which returns $3(n^{(\text{vertex})}+n^{(\text{facet})})+n^{(\text{interior})}$.
+* Return the number of nodes associated with each topological entity. For this, we define abstract properties `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior` for $\nu_{\text{vertex}}$, $\nu_{\text{facet}}$ and $\nu_{\text{interior}}$ respectively. The base class also contains a property `ndof` which returns $3(\nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}$.
 * Tabulate the evaluation of all dofs for a given function $\hat{f}$, i.e. compute the vector $(\ell_0(\hat{f}),\ell_1(\hat{f}),\dots,\ell_{d-1}(\hat{f}))^\top$. This is done with the abstract method `tabulate_dofs(fhat)`
 * Tabulate the basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the $n\times d$ matrix $T$ with $T_{ij}=\phi_j(\zeta^{(i)})$. This is done with the abstract method `tabulate(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a vector of length $d$.
 * Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the rank 3 tensor $T^\partial$ of shape $n\times d\times 2$ with $T^\partial_{ijk}=\frac{\partial\phi_j}{\partial x_k}(\zeta^{(i)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a matrix of shape $d\times 2$.

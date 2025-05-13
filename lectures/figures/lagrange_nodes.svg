@@ -24,9 +24,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="0.84096521"
-     inkscape:cx="629.63366"
-     inkscape:cy="112.96543"
+     inkscape:zoom="3.3638608"
+     inkscape:cx="1079.5631"
+     inkscape:cy="145.66595"
      inkscape:window-width="1614"
      inkscape:window-height="981"
      inkscape:window-x="1666"
@@ -329,9 +329,9 @@
          id="tspan1627"
          style="font-size:6.35px;stroke-width:0.705556"
          x="176.73108"
-         y="31.686499">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2357">(facet)</tspan> = 3</tspan></text>
+         y="31.686499">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2357">facet</tspan> = 3</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#0006ff;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -353,9 +353,9 @@
          id="tspan2363"
          style="fill:#ff0000;fill-opacity:1;stroke-width:0.705556"
          x="182.02275"
-         y="38.364582">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2473">(vertex)</tspan> = 1</tspan></text>
+         y="38.364582">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2473">vertex</tspan> = 1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -366,9 +366,9 @@
          id="tspan2367"
          style="fill:#008000;fill-opacity:1;stroke-width:0.705556"
          x="187.31442"
-         y="45.269466">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2475">(interior)</tspan> = 3</tspan></text>
+         y="45.269466">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2475">interior</tspan> = 3</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8.46667px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -502,9 +502,9 @@
          id="tspan2677"
          style="font-size:6.35px;stroke-width:0.705556"
          x="13.747736"
-         y="31.421913">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2675">(facet)</tspan> = 1</tspan></text>
+         y="31.421913">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2675">facet</tspan> = 1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -515,9 +515,9 @@
          id="tspan2683"
          style="fill:#ff0000;fill-opacity:1;stroke-width:0.705556"
          x="19.039404"
-         y="38.099995">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2681">(vertex)</tspan> = 1</tspan></text>
+         y="38.099995">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2681">vertex</tspan> = 1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -528,9 +528,9 @@
          id="tspan2689"
          style="fill:#008000;fill-opacity:1;stroke-width:0.705556"
          x="24.331076"
-         y="45.004879">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2687">(interior)</tspan> = 0</tspan></text>
+         y="45.004879">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2687">interior</tspan> = 0</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8.46667px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -735,9 +735,9 @@
          id="tspan2791"
          style="font-size:6.35px;stroke-width:0.705556"
          x="96.297737"
-         y="31.686504">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2789">(facet)</tspan> = 2</tspan></text>
+         y="31.686504">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2789">facet</tspan> = 2</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -748,9 +748,9 @@
          id="tspan2797"
          style="fill:#ff0000;fill-opacity:1;stroke-width:0.705556"
          x="101.58939"
-         y="38.364586">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2795">(vertex)</tspan> = 1</tspan></text>
+         y="38.364586">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2795">vertex</tspan> = 1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -761,9 +761,9 @@
          id="tspan2803"
          style="fill:#008000;fill-opacity:1;stroke-width:0.705556"
          x="106.88108"
-         y="45.26947">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2801">(interior)</tspan> = 0</tspan></text>
+         y="45.26947">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2801">interior</tspan> = 0</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8.46667px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -843,9 +843,9 @@
          id="tspan2851"
          style="font-size:6.35px;stroke-width:0.705556"
          x="-69.331429"
-         y="31.686495">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2849">(facet)</tspan> = 0</tspan></text>
+         y="31.686495">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2551">facet</tspan> = 0</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -856,9 +856,9 @@
          id="tspan2857"
          style="fill:#ff0000;fill-opacity:1;stroke-width:0.705556"
          x="-64.039764"
-         y="38.364578">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2855">(vertex)</tspan> = 1</tspan></text>
+         y="38.364578">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2855">vertex</tspan> = 1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
@@ -869,9 +869,9 @@
          id="tspan2863"
          style="fill:#008000;fill-opacity:1;stroke-width:0.705556"
          x="-58.748089"
-         y="45.269463">n<tspan
-   style="font-size:65%;baseline-shift:super"
-   id="tspan2861">(interior)</tspan> = 0</tspan></text>
+         y="45.269463">ν<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan2861">interior</tspan> = 0</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8.46667px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"

@@ -1,26 +1,28 @@
 # Numerical quadrature
+The weak form of the PDE is defined via suitable integrals such as $\int_\Omega v(x)f(x)\;dx$. In general, it is not possible to evaluate these integrals exactly. Furthermore, since the finite element discretisation (replacing $V\mapsto V_h$ and solving the associated linear algebra problem) already introduces an error, exact integration is not necessary, provided we can come find an approximate integration method with error that are of the same order of magnitide.
 ## Gauss-Legendre quadrature in one dimension
 Numerical quadrature aims to approximate the integral of a function with a finite sum:
 
 $$
-\int_{-1}^{+1} f(z)\;dz \approx \sum_{q=0}^{n_q-1} w_q f(z^{(q)})
+\int_{-1}^{+1} f(z)\;dz \approx \sum_{q=0}^{n_q-1} \widetilde{w}_q f(\widetilde{\zeta}^{(q)})
 $$
 
-A particular quadrature rule $\mathcal{Q}=\{(z^{(q)},w_q)\}_{q=0}^{n_q-1}$ is defined by the sets of points $z^{(i)}$ and corresponding weights $w_i$. Here we will consider Gauss-Legendre quadrature $\mathcal{Q}^{(\text{GL})}_{n_q}$, for which the points are the roots of the [Legendre polynomial](https://mathworld.wolfram.com/LegendrePolynomial.html) $P_{n_q}(z)$ and the weights are given by $w_q = \frac{2}{(1-(z^{(q)})^2)(P_{n_q}'(z^{(q)}))^2}$. The points and weights can be constructed with [numpy.polynomial.legendre.leggauss](https://numpy.org/doc/stable/reference/generated/numpy.polynomial.legendre.leggauss.html):
+A particular quadrature rule $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ is defined by the sets of points $\widetilde{\zeta}^{(i)}$ and corresponding weights $w_i$. Here we will consider Gauss-Legendre quadrature $\mathcal{Q}^{(\text{GL})}_{n_q}$, for which the points are the roots of the [Legendre polynomial](https://mathworld.wolfram.com/LegendrePolynomial.html) $P_{n_q}(\zeta)$ and the weights are given by $\widetilde{w}_q = \frac{2}{(1-(\widetilde{\zeta}^{(q)})^2)(P_{n_q}'(\widetilde{\zeta}^{(q)}))^2}$. The points and weights can be constructed with [numpy.polynomial.legendre.leggauss](https://numpy.org/doc/stable/reference/generated/numpy.polynomial.legendre.leggauss.html):
 
 ```
 points, weights = numpy.polynomial.legendre.leggauss(n)
 ```
-The details are irrelevant for this course. Naturally one would expect that the quadrature approximates the integral better for larger numbers of points $n_q$. Crucially, Gauss-Legendre quadrature is exact if the function to be integrated is a polynomial of degree $2n_q-1$:
+The details of this construction are irrelevant for this course, but we need to have some understanding of how well the numerical scheme approximates the true value of the integral. Naturally one would expect that the quadrature approximates the integral better for larger numbers of points $n_q$. Crucially, Gauss-Legendre quadrature is exact if the function to be integrated is a polynomial of degree $2n_q-1$:
 
 $$
-\int_{-1}^{+1} p(z)\;dz = \sum_{q=0}^{n_q-1} w_q p(z^{(q)})\qquad\text{for $p\in\mathcal{P}_{2n_q-1}$}
+\int_{-1}^{+1} p(z)\;dz = \sum_{q=0}^{n_q-1} \widetilde{w}_q p(\widetilde{\zeta}^{(q)})\qquad\text{for $p\in\mathcal{P}_{2n_q-1}$}
 $$
 
 We also call the degree of the highest polynomial that can be integrated exactly with a given quadrature rule the **degree of precision** or short "dop":
 $$
 \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1
 $$
+While so far we have only considered inetgration over the interval $[-1,+1]$, it turns out that integration over more general domains and higher-dimensional can be reduced to this case.
 
 ## Integration along a line
 Next, imagine that we want to integrate a function along a straight line $\mathcal{C}\subset \mathbb{R}^2$ connecting two points $a,b\in \mathbb{R}^2$. To achieve this, pick a parametrisation $\gamma: [-1,1] \rightarrow \mathbb{R}^2$ of this line with $\gamma(-1)=a$, $\gamma(1)=b$
@@ -32,7 +34,7 @@ $$
 then
 
 $$
-\int_{\mathcal{C}} f(x)\;ds = \frac{\|b-a\|}{2} \int_{-1}^{1} f(\gamma(z))\;dz
+\int_{\mathcal{C}} f(x)\;ds = \frac{\|b-a\|}{2} \int_{-1}^{+1} f(\gamma(z))\;dz
 $$
 Let $\mathcal{Q}_{n_q}^{(\text{GL})}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ be the Gauss-Legendre quadrature rule for the interval $[-1,+1]$. Then we obtain
 
@@ -44,7 +46,11 @@ where the Gauss-Legendre quadrature rule on $\mathcal{C}$ is given by $\mathcal{
 
 $$
 \zeta_{\mathcal{C}}^{(q)} = \gamma(\widetilde{\zeta}^{(q)}) = \frac{1}{2}(1-\widetilde{\zeta}^{(q)})a + \frac{1}{2}(1+\widetilde{\zeta}^{(q)})b,\qquad
-w_q = \|\gamma'(\zeta^{(q)})\| \widetilde{w}_{\mathcal{C},q} = \frac{\|b-a\|}{2} \widetilde{w}_q.
+w_q = \|\gamma'(\zeta^{(q)})\| \widetilde{w}_{\mathcal{C},q} = \frac{\|b-a\|}{2} \widetilde{w}_q
+$$
+and
+$$
+\text{dop}(\mathcal{Q}^{(\mathcal{C})}_{n_q}) = \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1.
 $$
 
 
@@ -64,7 +70,7 @@ $$
 \widetilde{\zeta}^{(q)} = \left(\widetilde{\zeta}^{(q_0)}_0,\widetilde{\zeta}^{(q_1)}_1\right)^\top,\quad \widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1} \qquad \text{where $q=n_q q_0+q_1$}.
 $$
 
-Here $\mathcal{Q}_{n_q+1}^{(\text{GL})} = \{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}$ and $\mathcal{Q}_{n_q}^{(\text{GL})} =\{(\widetilde{\zeta}^{(q_1)}_0,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}$ are Gauss-Legendre quadrature rules with $n_q+1$ and $n_q$ points respectively (we need to integrate more accurately in the $0$-direction since and additional factor of $\widetilde{x}_0$ is introduced by the Duffy-transform). 
+Here $\mathcal{Q}_{n_q+1}^{(\text{GL})} = \{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}$ and $\mathcal{Q}_{n_q}^{(\text{GL})} =\{(\widetilde{\zeta}^{(q_1)}_0,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}$ are Gauss-Legendre quadrature rules with $n_q+1$ and $n_q$ points respectively (we need to integrate more accurately in the $0$-direction since an additional factor of $\widetilde{x}_0$ is introduced by the Duffy-transform). 
 
 ### Integration over $\boldsymbol{K}$
 The quadrature rule $\mathcal{Q}_{n_q}^{(K)} = \{(\zeta^{(q)},w_q)\}_{q=0}^{N_q-1} = \tau(\mathcal{Q}^{(S)}_{n_q})$ over $K$ is then obtained as

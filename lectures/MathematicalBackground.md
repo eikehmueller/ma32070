@@ -1,10 +1,10 @@
 # Mathematical background
 ## Model problem
-In this course we will focus on the following PDE of the diffusion-reaction type in some bounded domain $\Omega\subset \mathbb{R}^2$:
+In this course we will focus on the following partial differential equation (PDE) of the diffusion-reaction type in some bounded domain $\Omega\subset \mathbb{R}^2$:
 $$
 -\nabla \cdot (\kappa \nabla  u(x)) + \omega\; u(x) = f(x) \qquad \text{for $x\in \Omega$}\qquad(\dagger)
 $$
-with boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial \Omega$. We assume that $\omega, \kappa>0$ are positive constants and $f(x)$, $g(x)$ are given functions. Using zero-based indexing (as is used in Python) we will write $x=(x_0,x_1)\in\mathbb{R}^2$ such that $\nabla=(\frac{\partial}{\partial x_0},\frac{\partial}{\partial x_1})^\top$ is the nabla-operator. Note that in the case $\kappa=1$, $\omega=0$ the problem would reduce to the Poisson equation $-\Delta u(x)=f(x)$. Unfortunately, for the given boundary condition the solution of the Poisson equation is not unique, which is why we do not consider this case here. However, the methods developed in this course can be readily applied to this setup, provided we extend them to treat Dirichlet boundary conditions of the form $u(x)=\widetilde{g}(x)$ for $x\in\partial \Omega$.
+with boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial \Omega$. We assume that $\omega, \kappa>0$ are positive constants and $f(x)$, $g(x)$ are given functions. Using zero-based indexing (as is used in Python) we will write $x=(x_0,x_1)\in\mathbb{R}^2$ such that $\nabla=(\frac{\partial}{\partial x_0},\frac{\partial}{\partial x_1})^\top$ is the nabla-operator. Note that in the case $\kappa=1$, $\omega=0$ the problem would reduce to the Poisson equation $-\Delta u(x)=f(x)$. Unfortunately, for the given boundary condition the solution of the Poisson equation is not unique, which is why we do not consider this case here. However, the methods developed in this course can be readily applied to this setup, provided we extend them to treat Dirichlet boundary conditions of the form $u(x)=\widetilde{g}(x)$ for $x\in\partial \Omega$ and some given function $\widetilde{g}(x)$.
 
 ## Weak solutions
 To solve $(\dagger)$, we seek solutions $u(x)$ in some function space $V$. In the following we choose $V:=H^1(\Omega)\subset L_2(\Omega)$, which is the space of all real-valued functions on $\Omega$ which have a square-integrable first derivative. More specifically, define the following two norms
@@ -14,7 +14,7 @@ $$
 \| u\|_{V} = \| u\|_{H^1(\Omega)} &:= \left(\int_\Omega \left(u(x)^2+|\nabla u|^2\right)\;dx\right)^{\frac{1}{2}}
 \end{aligned}
 $$
-and then set $L_2(\Omega) = \left\{u(x) : ||u||_{L_2(\Omega)}<\infty\right\}$ (the space of square-integrable real unctions) and $H^1(\Omega) = \left\{u(x) : ||u||_{H_1(\Omega)}<\infty\right\}$. Since in $(\dagger)$ two derivatives act on $u(x)$, we can only determine the solution in the **weak sense**: Find $u(x)\in V$ such that
+and then set $L_2(\Omega) = \left\{u(x) : ||u||_{L_2(\Omega)}<\infty\right\}$ (the space of square-integrable real functions) and $H^1(\Omega) = \left\{u(x) : ||u||_{H_1(\Omega)}<\infty\right\}$. Since in $(\dagger)$ two derivatives act on $u(x)$, we can only determine the solution in the **weak sense**: Find $u(x)\in V$ such that
 $$
 \int_\Omega \left(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\right)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v(x)\in V$}.
 $$
@@ -72,7 +72,7 @@ $$
 ## Reduction to linear algebra problem
 Since $V_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_j(x)\}_{j=0}^{n-1}$ such that every function $u_h(x)\in V_h$ can be written as
 $$
-u_h(x) = \sum_{j=0}^{n-1} u^{(h)}_j \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$}\qquad(\star).
+u_h(x) = \sum_{j=0}^{n-1} u^{(h)}_j \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$.}\qquad(\star)
 $$
 The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h(x)$. Picking $v_h(x)=\Phi^{(h)}_i(x)$ and inserting the expansion of $u_h(x)$ in $(\star)$ into $(\ddagger_h)$ we obtain
 $$
@@ -85,7 +85,7 @@ A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
 $$
 At this point it is worth stressing that although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $\mathbb{R}^n$, they are constructed in a fundamentally different way:
 
-* The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $U_j^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in $(\star)$.
+* The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_j^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in $(\star)$.
 * In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_j^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
 
 The reason for this is that $b(\cdot)$ is an element of the dual space $V^*$, which consists of all linear functionals defined on the space $V$.
@@ -95,3 +95,5 @@ In summary, the solution procedure for $(\ddagger_h)$ is this:
 2. Assemble the right-hand-side vector $\boldsymbol{b}^{(h)}$.
 3. Solve the linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ for $\boldsymbol{u}^{(h)}$.
 4. Reconstruct the solution $u_h(x)$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in $(\star)$.
+
+In the rest of this course we will discuss how each of these steps can be implemented in Python. For the solution of the linear algebra system we will use an efficient library.

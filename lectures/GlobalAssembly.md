@@ -2,18 +2,28 @@
 
 ## Interpolation
 ## Assembly of RHS vector
-We compute
+We compute the entries of the vector $b^{(h)}$ by splitting the integral over the domain $\Omega$ into integrals over the cells $K$:
 
 $$
 \begin{aligned}
-b^{(h)}_{i_{\text{global}}} &= \int_\Omega f(x) \Phi^{(h)}_{i_{\text{global}}}(x)\;dx\\
-&= \sum_{K\in \Omega_h} \int_K f(x) \Phi_{i_{\text{global}}}(x) \; dx\\
-&= \sum_{K\in \Omega_h} \int_K \sum_{i}\widehat{f}_K(\widehat{x}) \phi_i(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}\\
-&\approx \sum_{K\in \Omega_h} \sum_{i}\sum_q w_q \widehat{f}_K(\xi^{(q)}) \phi_i(\xi^{(q)})\;|\det{J}(\xi^{(q)})|\\
-&= \sum_{K\in \Omega_h} \sum_{i}\sum_q w_q \widehat{f}_K(\xi^{(q)}) T_{qi}\;|\det{J}(\xi^{(q)})|
+b^{(h)}_{\ell_{\text{global}}} &= \int_\Omega f(x) \Phi_{\ell_{\text{global}}}(x)\;dx\\
+&= \sum_{K\in \Omega_h} \int_K f(x) \Phi_{\ell_{\text{global}}}(x) \; dx\\
 \end{aligned}
 $$
-with $\widehat{f}_K(\widehat{x}) := f(x)$ and thus
+If $i$ is the index of cell $K$, we can identify the *global* index $\ell_{\text{global}}$ with the *local* index, transform variables to integrate over the reference cell $\widehat{K}$ and write 
+$$
+\begin{aligned}
+b^{(h)}_{\ell_{\text{global}}} &= \sum_{K\in \Omega_h}\int_{\widehat{K}} \sum_{\ell}\widehat{f}_K(\widehat{x}) \phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}
+\end{aligned}
+$$
+where $\widehat{f}_K(\widehat{x}) := f(x)$. Next, replace the integration by numerical quadrature and use $T_{q\ell}=\phi_\ell(\xi^{(q)})$ to obtain
+$$
+\begin{aligned}
+b^{(h)}_{\ell_{\text{global}}} &\approx \sum_{K\in \Omega_h} \sum_{\ell}\sum_q w_q \widehat{f}_K(\xi^{(q)}) \phi_\ell(\xi^{(q)})\;|\det{J}(\xi^{(q)})|\\
+&= \sum_{K\in \Omega_h} \sum_{\ell}\sum_q w_q \widehat{f}_K(\xi^{(q)}) T_{q\ell}\;|\det{J}(\xi^{(q)})|
+\end{aligned}
+$$
+and thus
 $$
 \widehat{f}_K(\xi^{(q)}) = f(x_K^{(q)})
 $$
@@ -31,13 +41,13 @@ $$
 ### Algorithm
 1. Initialise $\boldsymbol{b}^{(h)} \gets \boldsymbol{0}$
 1. For all cells $K$ **do**:
-1. $~~~~$ Extract the coordinate dof-vector $\overline{X}$ with $\overline{X}_j = X_{j_\text{global}(K,j)}$
+1. $~~~~$ Extract the coordinate dof-vector $\overline{X}$ with $\overline{X}_\ell = X_{\ell_\text{global}(i,\ell)}$ where $i$ is the index of cell $K$
 1. $~~~~$ For all quadrature points $q$ **do**:
-1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_j \overline{X}_j T^{\times\partial}_{qjab}$
-1. $~~~~~~~~$ Compute $x_K^{(q)} = \sum_j T^\times_{qj} \overline{X}_j$ and evaluate $F_q = f(x_K^{(q)})$
+1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_\ell \overline{X}_\ell T^{\times\partial}_{q\ell ab}$
+1. $~~~~~~~~$ Compute $x_K^{(q)} = \sum_\ell T^\times_{q\ell} \overline{X}_\ell$ and evaluate $F_q = f(x_K^{(q)})$
 1. $~~~~$ **end do**
-1. $~~~~$ For all local dof-indices $i$ **do**:
-1. $~~~~~~~~$ Increment $b_{i_{\text{global}}}\gets b_{i_{\text{global}}} + \sum_q w_q F_q T_{qi} D_q$
+1. $~~~~$ For all local dof-indices $\ell$ **do**:
+1. $~~~~~~~~$ Increment $b_{\ell_{\text{global}}}\gets b_{\ell_{\text{global}}} + \sum_q w_q F_q T_{q\ell} D_q$
 1. $~~~~$ **end do**
 1. **end do**
 

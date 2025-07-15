@@ -143,7 +143,7 @@ A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 ```
 
 ## Interpolation
-The final operation we need is interpolation of a given function $u$, i.e. we want to approximate $u$ by some $u^{(h)}=\mathcal{I}(u)\in V_h$. This can be achieved by setting the entries of the dof-vector $\boldsymbol{u}^{(h)}$ which represents $u^{(h)}$ to
+The final operation we need is interpolation of a given function $u$ onto a function $u^{(h)}=\mathcal{I}_h(u)\in V_h$ such that $u^{(h)}\approx u$. This can be achieved by setting the entries of the dof-vector $\boldsymbol{u}^{(h)}$ which represents $u^{(h)}$ to
 $$
 u^{(h)}_{\ell_{\text{global}}} = \lambda^{(h)}_{\ell_{\text{global}}}(u)
 $$
@@ -161,15 +161,11 @@ $$
 $$
 In other words, the interpolation operation returns the same function:
 $$
-u^{(h)} \in V_h \quad\Rightarrow\quad \mathcal{I}(u^{(h)}) = u^{(h)}
+u^{(h)} \in V_h \quad\Rightarrow\quad \mathcal{I}_h(u^{(h)}) = u^{(h)}
 $$
 Observe in particular that if $\lambda^{(h)}_{\ell_\text{global}}$ correspond to point evaluations $\lambda^{(h)}_{\ell_\text{global}}(u) = u(x_{\ell_{\text{global}}})$, then we have that
 $$
 u^{(h)}(x_{\ell_{\text{global}}}) = u(x_{\ell_{\text{global}}}).
-$$
-It can further be shown that in this case
-$$
-\mathcal{I}(u) = \argmin_{v^{(h)}\in V_h} \|u-v^{(h)}\|_{L_2(\Omega)}
 $$
 Again, we implement the global interpolation by looping over all cells and using the local assembly operation. For this, we construct a function $\widehat{u}_K(\widehat{x})=u(x)$ on each cell and compute
 $$
@@ -190,3 +186,16 @@ This leads to the following procedure:
 6. $~~~~~~~~$ Set $u^{(h)}_{\ell_{\text{global}}} = u^{(h),\text{local}}_\ell$
 7. $~~~~$ **end do**
 8. **end do**
+
+### Interpolation error
+It is possible to derive bounds for the difference $u-\mathcal{I}_h(u)$, which in general depend on the particular choice of finite element discretisation. We will only present one result here, which applies to piecewise polynomial finite elements of degree $p$. There is a constant $D$, independent of $h$ such that
+
+$$
+\|u-\mathcal{I}_h(u)\|_{L_2(\Omega)} \le D h^{p+1} \|u\|_{H^{p+1}(\Omega)}
+$$
+where $h$ is the maximum diameter of all grid cells and $\|\cdot \|_{H^{p+1}(\Omega)}$ is a suitable norm that we will not discuss further here. Crucially, the interpolation error descreases with a power of the grid spacing and higher-order discretisations lead to smaller interpolation errors. See Section 11 of [Patrick Farrell's excellent lecture notes on Finite element methods](https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf) for more details.
+
+It should be stressed, however, that in general interpolation is not the same as $L_2(\Omega)$ projection, i.e.
+$$
+\mathcal{I}(u) \neq \argmin_{v^{(h)}\in V_h} \|u-v^{(h)}\|_{L_2(\Omega)}
+$$

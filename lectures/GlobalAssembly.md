@@ -4,7 +4,6 @@ $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
 $$
 With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution $u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_\ell \Phi^{(h)}_\ell(x)$. Recall that the entries of the right hand side vector and stiffness matrix are given by $b^{(h)}_\ell:=b(\Phi^{(h)}_\ell)$ and $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_\ell,\Phi^{(h)}_k\right)$. 
-## Interpolation
 ## Assembly of RHS vector
 Since $b(v) = \int_\Omega f(x)v(x)\;dx$ we compute the entries of the vector $b^{(h)}$ by splitting the integral over the domain $\Omega$ into the sum of integrals over the cells $K$:
 $$
@@ -54,11 +53,16 @@ Putting everything together, we arrive at the following procedure:
 1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
 1. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = f(x_K^{(q)})$
 1. $~~~~$ **end do**
-2. $~~~~$ Construct the local dof-vector $\boldsymbol{b}^{(h),\text{local}}$ with $b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$
+2. $~~~~$ Construct the local dof-vector $\boldsymbol{b}^{(h),\text{local}}$ with
+$$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$$
 3. $~~~~$ For all local dof-indices $\ell$ **do**:
 4. $~~~~~~~~$ Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$ with $\ell_{\text{global}} = \ell_{\text{global}}(i,\ell)$
 5. $~~~~$ **end do**
 6. **end do**
+
+#### Illustration
+The following figure visualises the assembly of the global vector $\boldsymbol{b}^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global vector entry $b^{(h)}_8$.
+![Global assembly of right hand side vector](figures/global_assembly_rhs.svg)
 
 #### Implementation
 The summation $\sum_q w_q F_q T_{q\ell} D_q$ of the local vector entries can be realised with numpy's [`einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) method.
@@ -111,25 +115,51 @@ Putting everything together we arrive at the following procedure:
 ### Algorithm: assembly of stiffness matrix $A^{(h)}$
 1. Initialise $A^{(h)} \gets 0$
 1. For all cells $K$ **do**:
-1. $~~~~$ For all quadrature points $q$ **do**:
-1. $~~~~~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(i,\ell^\times)}$
-1. $~~~~~~~~$ Compute the Jacobian $J(\xi^{(q)})$ with $J_{qab} = J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^{\times}ab}$
-1. $~~~~~~~~$ Compute the determinant $D_q$ of $J(\xi^{(q)})$
-2. $~~~~~~~~$ Compute the matrix $J^{(2)}_q = J^{\top}(\xi^{(q)}) J(\xi^{(q)})$ with $J^{(2)}_{qab} = \sum_{c} J_{qca}J_{qcb}$ and invert it to obtain $J^{(-2)}_{q} = \left(J^{(2)}_q\right)^{-1}$
-4. $~~~~$ **end do**
-5. $~~~~$ Construct the local stiffness matrix $A^{(h),\text{local}}$ with $A^{(h),\text{local}}_{\ell k} = \sum_{qab}w_q  \left(\kappa T^\partial_{q\ell a}(J^{(-2)}_q)_{ab} T^\partial_{qkb} +\omega T_{q\ell}T_{qk}\right)D_q$
-6. $~~~~$ For all local dof-indices $\ell$ **do**:
-7. $~~~~~~~~$ For all local dof-indices $k$ **do**:
-8. $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(i,\ell)$ and $k_{\text{global}} = k_{\text{global}}(i,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $i$
-9. $~~~~~~~~$ **end do**
-10. $~~~~$ **end do**
-11. **end do**
+2. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(i,\ell^\times)}$
+3. $~~~~$ For all quadrature points $q$ **do**:
+4. $~~~~~~~~$ Compute the Jacobian $J(\xi^{(q)})$ with $J_{qab} = J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^{\times}ab}$
+5. $~~~~~~~~$ Compute the determinant $D_q$ of $J(\xi^{(q)})$
+6. $~~~~~~~~$ Compute the matrix $J^{(2)}_q = J^{\top}(\xi^{(q)}) J(\xi^{(q)})$ with $J^{(2)}_{qab} = \sum_{c} J_{qca}J_{qcb}$ and invert it to obtain $J^{(-2)}_{q} = \left(J^{(2)}_q\right)^{-1}$
+7. $~~~~$ **end do**
+8. $~~~~$ Construct the local stiffness matrix $A^{(h),\text{local}}$ with
+$$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{q\ell a}(J^{(-2)}_q)_{ab} T^\partial_{qkb} D_q + \omega \sum_{q} w_q  T_{q\ell}T_{qk} D_q$$
+9. $~~~~$ For all local dof-indices $\ell$ **do**:
+10. $~~~~~~~~$ For all local dof-indices $k$ **do**:
+11. $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(i,\ell)$ and $k_{\text{global}} = k_{\text{global}}(i,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $i$
+12. $~~~~~~~~$ **end do**
+13. $~~~~$ **end do**
+14. **end do**
+
+#### Illustration
+The following figure visualises the assembly of the stiffness matrix $A^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global matrix entry $A^{(h)}_{8,8}$.
+![Global assembly of stiffness matrix](figures/global_assembly_stiffness_matrix.svg)
 
 #### Implementation
-Again, the summation $\sum_{qab}w_q  \left(\kappa T^\partial_{q\ell a}(J^{(2)}_q)_{ab} T^\partial_{qkb} +\omega T_{q\ell}T_{qk}\right)D_q$ of the local matrix entries can be realised with numpy's [`einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) method.
+Again, the summation $\sum_{c} J_{qca}J_{qcb}$ to compute the matrix entries of $J^{(2)}_q$ and the sums $\sum_{qab}w_q  T^\partial_{q\ell a}(J^{(2)}_q)_{ab} T^\partial_{qkb} D_q$, $\sum_{q}w_q  T_{q\ell}T_{qk} D_q$ required for the construction of the local matrix entries can be realised with numpy's [`einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) method.
 
-To insert the entries of the local stiffness matrix $A^{(h),\text{local}}$ into the global stiffness matrix $A^{(h)}$ we can use slicing notation and numpy's [`ix_()`](https://numpy.org/doc/2.2/reference/generated/numpy.ix_.html) method, i.e. write
+To insert the entries of the local stiffness matrix $A^{(h),\text{local}}$ into the global stiffness matrix $A^{(h)}$ we can again use slicing notation. Naively, one would expect to be able to do this with `A_h[ell_global, ell_global] += A_h_local[:,:]` where `ell_global = fs.local2global(i,range(ndof))` as above. however this does not work since we first need to construct the "product" $\ell_{\text{global}}\times \ell_{\text{global}}$ before we can use this to slice a matrix. This can be done with the numpy [`ix_()`](https://numpy.org/doc/2.2/reference/generated/numpy.ix_.html) method, i.e. write
 ```
 A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 ```
-where `ell_globalfs.local2global(i,range(ndof))` as above.
+
+## Interpolation
+The final operation we need is interpolation of a given function $u$, i.e. we want to approximate $u$ by some $u^{(h)}\in V_h$. This can be achieved by setting the entries of the dof-vector $\boldsymbol{u}^{(h)}$ which represents $u^{(h)}$ to
+$$
+u^{(h)}_{\ell_{\text{global}}} = \lambda^{(h)}_{\ell_{\text{global}}}(u)
+$$
+where $\lambda^{(h)}_{\ell_{\text{global}}}$ is the degree of freedom with index $\ell_{\text{global}}$. To see why this is a sensible definition, consider the case where $f=u^{(h)}\in V_h$, i.e. 
+$$
+u^{(h)}(x) = \sum_{\ell_{\text{global}}} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
+$$
+then
+$$
+\begin{aligned}
+\lambda^{(h)}_{\ell_{\text{global}}}\left(\sum_{k_{\text{global}}} u^{(h)}_{k_{\text{global}}} \Phi^{(h)}_{k_{\text{global}}}(x)\right) &= \sum_{k_{\text{global}}} u^{(h)}_{k_{\text{global}}} \lambda^{(h)}_{\ell_{\text{global}}}\left( \Phi^{(h)}_{k_{\text{global}}}(x)\right)\\
+&= \sum_{k_{\text{global}}} u^{(h)}_{k_{\text{global}}} \delta_{\ell_{\text{global}},k_{\text{global}}}\\
+&= u^{(h)}_{\ell_{\text{global}}}
+\end{aligned}
+$$
+Observe in particular that if $\lambda^{(h)}_{\ell_\text{global}}$ correspond to point evaluations $\lambda^{(h)}_{\ell_\text{global}}(u) = u(x_{\ell_{\text{global}}})$, then we have that
+$$
+u^{(h)}(x_{\ell_{\text{global}}}) = u(x_{\ell_{\text{global}}}).
+$$

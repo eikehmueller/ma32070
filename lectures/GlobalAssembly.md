@@ -143,7 +143,7 @@ A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 ```
 
 ## Interpolation
-The final operation we need is interpolation of a given function $u$, i.e. we want to approximate $u$ by some $u^{(h)}\in V_h$. This can be achieved by setting the entries of the dof-vector $\boldsymbol{u}^{(h)}$ which represents $u^{(h)}$ to
+The final operation we need is interpolation of a given function $u$, i.e. we want to approximate $u$ by some $u^{(h)}=\mathcal{I}(u)\in V_h$. This can be achieved by setting the entries of the dof-vector $\boldsymbol{u}^{(h)}$ which represents $u^{(h)}$ to
 $$
 u^{(h)}_{\ell_{\text{global}}} = \lambda^{(h)}_{\ell_{\text{global}}}(u)
 $$
@@ -156,10 +156,37 @@ $$
 \begin{aligned}
 \lambda^{(h)}_{\ell_{\text{global}}}\left(\sum_{k_{\text{global}}} u^{(h)}_{k_{\text{global}}} \Phi^{(h)}_{k_{\text{global}}}(x)\right) &= \sum_{k_{\text{global}}} u^{(h)}_{k_{\text{global}}} \lambda^{(h)}_{\ell_{\text{global}}}\left( \Phi^{(h)}_{k_{\text{global}}}(x)\right)\\
 &= \sum_{k_{\text{global}}} u^{(h)}_{k_{\text{global}}} \delta_{\ell_{\text{global}},k_{\text{global}}}\\
-&= u^{(h)}_{\ell_{\text{global}}}
+&= u^{(h)}_{\ell_{\text{global}}}.
 \end{aligned}
+$$
+In other words, the interpolation operation returns the same function:
+$$
+u^{(h)} \in V_h \quad\Rightarrow\quad \mathcal{I}(u^{(h)}) = u^{(h)}
 $$
 Observe in particular that if $\lambda^{(h)}_{\ell_\text{global}}$ correspond to point evaluations $\lambda^{(h)}_{\ell_\text{global}}(u) = u(x_{\ell_{\text{global}}})$, then we have that
 $$
 u^{(h)}(x_{\ell_{\text{global}}}) = u(x_{\ell_{\text{global}}}).
 $$
+It can further be shown that in this case
+$$
+\mathcal{I}(u) = \argmin_{v^{(h)}\in V_h} \|u-v^{(h)}\|_{L_2(\Omega)}
+$$
+Again, we implement the global interpolation by looping over all cells and using the local assembly operation. For this, we construct a function $\widehat{u}_K(\widehat{x})=u(x)$ on each cell and compute
+$$
+u^{(h)}_{\ell_{\text{global}}} = \lambda_\ell (\widehat{u}_K)
+$$
+with the cell-local degrees of freedom $\lambda_\ell$ on the reference cell $\widehat{K}$. The function $\widehat{u}_K(\widehat{x})$ is given by
+$$
+\widehat{u}_K(\widehat{x}) = u\left(\sum_{\ell^\times}\overline{X}_{\ell^\times} \phi^\times_{\ell^\times}(\widehat{x})\right)
+$$
+This leads to the following procedure:
+
+### Algorithm: interpolation on $V_h$
+1. For all cells $K$ **do**:
+2. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(i,\ell^\times)}$
+3. $~~~~$ Construct the function $\widehat{u}_K(\widehat{x}) = u\left(\sum_{\ell^\times}\overline{X}_{\ell^\times} \phi^\times_{\ell^\times}(\widehat{x})\right)$
+4. $~~~~$ Construct the local vector $u^{(h),\text{local}}_\ell = \lambda_\ell(\widehat{u}_K)$
+5. $~~~~$ For all local indices $\ell$ **do**
+6. $~~~~~~~~$ Set $u^{(h)}_{\ell_{\text{global}}} = u^{(h),\text{local}}_\ell$
+7. $~~~~$ **end do**
+8. **end do**

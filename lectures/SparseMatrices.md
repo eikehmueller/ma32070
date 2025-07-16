@@ -23,7 +23,7 @@ We could now also store the corresponding row-indices in an array $I$ of the sam
 
 However, there is a more efficient way of doing this: Since the arrays $V$ and $J$ are constructed by going through the matrix row by row, we only need to keep track of the positions where a new row starts. This can be encoded as follows:
 
-3. Store an array $R$ of length $n+1$ such that $R_i$ describes the index in $V$, $J$ where a new row starts. For convenience, we also store $R_{n} = n_{\text{nz}}+1$.
+3. Store an array $R$ of length $n+1$ such that $R_i$ describes the index in $V$, $J$ where a new row starts. For convenience, we also store $R_{n} = n_{\text{nz}}$.
 
 The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR)
 
@@ -38,23 +38,23 @@ The resulting storage format, consisting of the arrays $V$ (values), $J$ (column
 8. **end do**
 
 #### Example
-Consider the following $5\times 5$ matrix with $n_{\text{nz}}=9$ non-zero entries:
+Consider the following $5\times 5$ matrix with $n_{\text{nz}}=11$ non-zero entries:
 
 $$
 \begin{pmatrix}
-1 & 2 & 0 & 3 & 0 \\
-4 & 0 & 0 & 0 & 3 \\
-0 & 0 & 2 & 0 & 0 \\
+1 & 2 & 0 & 8 & 0 \\
+4 & 6 & 0 & 0 & 0 \\
+0 & 2 & 8 & 0 & 9 \\
 0 & 0 & 0 & 0 & 0 \\
-9 & 0 & 3 & 4 & 7
+0 & 3 & 1 & 0 & 7
 \end{pmatrix}
 $$
 
 We have the following arrays:
 
-1. Values: $V=[1,2,3,4,3,2,9,3,7]$
-2. Column indices: $J=[0,1,3,0,4,2,0,2,3,4]$
-3. Row pointers: $R=[0,3,5,6,6,10]$
+1. Values: $V=[1,2,8,4,6,2,8,9,3,1,7]$
+2. Column indices: $J=[0,1,3,0,1,1,2,4,1,2,4]$
+3. Row pointers: $R=[0,3,6,8,8,11]$
 
 Note that one of the rows contains only zero entries.
 
@@ -70,7 +70,104 @@ Note that one of the rows contains only zero entries.
 7. **end do**
 
 ## PETSc implementation
+To implement matrices in the CSR storage format, we use the [PETSc](https://petsc.org) library, more explicitly, the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After installation, this can be imported as follows:
+```python
+from petsc4py import PETSc
+```
+We can now create an (empty) matrix with
 
-### Creating sparsity structure
-### Inserting matrix entries
+```python
+matrix = PETSc.Mat()
+```
+
+To create the $5\times 5$ matrix above we first need to set up the sparsity structure, i.e. the arrays $J$ (`col_indices`) and $R$ (`row_start`):
+```python
+n_row = 5
+n_col = 5
+
+col_indices = [0, 1, 3, 0, 1, 1, 2, 4, 1, 2, 4]
+row_start = [0, 3, 5, 8, 8, 11]
+
+matrix.createAIJ((n_row, n_col), csr=(row_start, col_indices))
+```
+We can now insert values, for example we might want to set $A_{0,3} = 8$, as highlighted in red here:
+$$
+\begin{pmatrix}
+1 & 2 & 0 & \textcolor{red}{8} & 0 \\
+4 & 6 & 0 & 0 & 0 \\
+0 & 2 & 8 & 0 & 9 \\
+0 & 0 & 0 & 0 & 0 \\
+0 & 3 & 1 & 0 & 7
+\end{pmatrix}
+$$
+This can be done by calling the `setValue()` method:
+```python
+# Set 
+row = 0
+col = 3
+value = 8
+matrix.setValue(row, col, value)
+```
+Note that this method has an optional parameter `addv`, for `addv=True` the value will be added to an already existing value.
+
+We can also set blocks of value. For example, we might want to set the $2\times 2$ block in the upper left corner, as highlighhted in red here:
+$$
+\begin{pmatrix}
+\textcolor{red}{1} & \textcolor{red}{2} & 0 & 8 & 0 \\
+\textcolor{red}{4} & \textcolor{red}{6} & 0 & 0 & 0 \\
+0 & 2 & 8 & 0 & 9 \\
+0 & 0 & 0 & 0 & 0 \\
+0 & 3 & 1 & 0 & 7
+\end{pmatrix}
+$$
+For this, we need to specify the rows and columns in the target matrix as follows:
+```python
+rows = [0, 1]
+cols = [0, 1]
+local_matrix = np.asarray([1, 2, 4, 6])
+matrix.setValues(rows, cols, local_matrix)
+```
+Blocks do not have to be contiguous. We could, for example, set the 6 non-zero values highlighted in red here:
+$$
+\begin{pmatrix}
+1 & 2 & 0 & 8 & 0 \\
+4 & 6 & 0 & 0 & 0 \\
+0 & \textcolor{red}{2} & \textcolor{red}{8} & 0 & \textcolor{red}{9} \\
+0 & 0 & 0 & 0 & 0 \\
+0 & \textcolor{red}{3} & \textcolor{red}{1} & 0 & \textcolor{red}{7}
+\end{pmatrix}
+$$
+The indices of these values are described by the tensor product $(2,4)\times(1,2,4)$, and hence we need to do this:
+```python
+rows = [2, 4]
+cols = [1, 2, 4]
+local_matrix = np.asarray([2, 8, 9, 3, 1, 7])
+matrix.setValues(rows, cols, local_matrix)
+```
+Finally, before we can use the matrix, we need to assemble it:
+```python
+matrix.assemble()
+```
+For more information also see the [`petsc4py.Mat` documentation](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html).
+
 ### Matrix-vector multiplication
+PETSc also provides a vector class. For example, to create the vector
+$$
+v = \begin{pmatrix}
+8\\0\\9\\4\\5
+\end{pmatrix}
+$$
+we can do this:
+```python
+v = PETSc.Vec()
+v.createWithArray([8, 0, 9, 4, 5])
+```
+We can now multiply the matrix that we created above with this vector to compute $w=Av$:
+```python
+w = matrix @ v
+```
+To print the vector we need to first extract the underlying array with the `getArray()` method:
+```python
+print(w.getArray())
+```
+

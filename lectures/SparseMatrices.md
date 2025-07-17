@@ -1,4 +1,4 @@
-# Sparse matrix representations
+# Sparse matrix representations and solving linear systems in PETSc
 The stiffness matrices we obtain from out finite element discretisation contain a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid:
 
 ![Stiffness matrix](figures/stiffness_matrix.png)
@@ -42,17 +42,17 @@ Consider the following $5\times 5$ matrix with $n_{\text{nz}}=11$ non-zero entri
 
 $$
 \begin{pmatrix}
-1 & 2 & 0 & 8 & 0 \\
-4 & 6 & 0 & 0 & 0 \\
-0 & 2 & 8 & 0 & 9 \\
-0 & 0 & 0 & 0 & 0 \\
-0 & 3 & 1 & 0 & 7
+1.3 & 2.4 & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
+4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
 \end{pmatrix}
 $$
 
 We have the following arrays:
 
-1. Values: $V=[1,2,8,4,6,2,8,9,3,1,7]$
+1. Values: $V=[1.3, 2.4, 8.7, 4.5, 6.1, 2.1, 8.3, 9.4, 3.7, 1.1, 7.7]$
 2. Column indices: $J=[0,1,3,0,1,1,2,4,1,2,4]$
 3. Row pointers: $R=[0,3,6,8,8,11]$
 
@@ -70,14 +70,14 @@ Note that one of the rows contains only zero entries.
 7. **end do**
 
 ## PETSc implementation
-To implement matrices in the CSR storage format, we use the [PETSc](https://petsc.org) library, more explicitly, the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After installation, this can be imported as follows:
+To implement matrices in the CSR storage format, we use the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org) (pronounced "pet-see"). More specifically, we will work with the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After [installation](https://petsc.org/release/petsc4py/install.html), this can be imported as follows:
 ```python
 from petsc4py import PETSc
 ```
 We can now create an (empty) matrix with
 
 ```python
-matrix = PETSc.Mat()
+A = PETSc.Mat()
 ```
 
 To create the $5\times 5$ matrix above we first need to set up the sparsity structure, i.e. the arrays $J$ (`col_indices`) and $R$ (`row_start`):
@@ -88,16 +88,16 @@ n_col = 5
 col_indices = [0, 1, 3, 0, 1, 1, 2, 4, 1, 2, 4]
 row_start = [0, 3, 5, 8, 8, 11]
 
-matrix.createAIJ((n_row, n_col), csr=(row_start, col_indices))
+A.createAIJ((n_row, n_col), csr=(row_start, col_indices))
 ```
 We can now insert values, for example we might want to set $A_{0,3} = 8$, as highlighted in red here:
 $$
 \begin{pmatrix}
-1 & 2 & 0 & \textcolor{red}{8} & 0 \\
-4 & 6 & 0 & 0 & 0 \\
-0 & 2 & 8 & 0 & 9 \\
-0 & 0 & 0 & 0 & 0 \\
-0 & 3 & 1 & 0 & 7
+1.3 & 2.4 & \textcolor{lightgray}{0} & \textcolor{red}{8.7} & \textcolor{lightgray}{0} \\
+4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
 \end{pmatrix}
 $$
 This can be done by calling the `setValue()` method:
@@ -106,68 +106,138 @@ This can be done by calling the `setValue()` method:
 row = 0
 col = 3
 value = 8
-matrix.setValue(row, col, value)
+A.setValue(row, col, value)
 ```
 Note that this method has an optional parameter `addv`, for `addv=True` the value will be added to an already existing value.
 
 We can also set blocks of value. For example, we might want to set the $2\times 2$ block in the upper left corner, as highlighhted in red here:
 $$
 \begin{pmatrix}
-\textcolor{red}{1} & \textcolor{red}{2} & 0 & 8 & 0 \\
-\textcolor{red}{4} & \textcolor{red}{6} & 0 & 0 & 0 \\
-0 & 2 & 8 & 0 & 9 \\
-0 & 0 & 0 & 0 & 0 \\
-0 & 3 & 1 & 0 & 7
+\textcolor{red}{1.3} & \textcolor{red}{2.4} & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
+\textcolor{red}{4.5} & \textcolor{red}{6.1} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
 \end{pmatrix}
 $$
 For this, we need to specify the rows and columns in the target matrix as follows:
 ```python
 rows = [0, 1]
 cols = [0, 1]
-local_matrix = np.asarray([1, 2, 4, 6])
-matrix.setValues(rows, cols, local_matrix)
+local_matrix = np.asarray([1.3, 2.4, 4.5, 6.1])
+A.setValues(rows, cols, local_matrix)
 ```
 Blocks do not have to be contiguous. We could, for example, set the 6 non-zero values highlighted in red here:
 $$
 \begin{pmatrix}
-1 & 2 & 0 & 8 & 0 \\
-4 & 6 & 0 & 0 & 0 \\
-0 & \textcolor{red}{2} & \textcolor{red}{8} & 0 & \textcolor{red}{9} \\
-0 & 0 & 0 & 0 & 0 \\
-0 & \textcolor{red}{3} & \textcolor{red}{1} & 0 & \textcolor{red}{7}
+1.3 & 2.4 & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
+4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & \textcolor{red}{2.1} & \textcolor{red}{8.3} & \textcolor{lightgray}{0} & \textcolor{red}{9.4} \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & \textcolor{red}{3.7} & \textcolor{red}{1.1} & \textcolor{lightgray}{0} & \textcolor{red}{7.7}
 \end{pmatrix}
 $$
 The indices of these values are described by the tensor product $(2,4)\times(1,2,4)$, and hence we need to do this:
 ```python
 rows = [2, 4]
 cols = [1, 2, 4]
-local_matrix = np.asarray([2, 8, 9, 3, 1, 7])
-matrix.setValues(rows, cols, local_matrix)
+A_local = np.asarray([2.1, 8.3, 9.4, 3.7, 1.1, 7.7])
+A.setValues(rows, cols, A_local)
 ```
 Finally, before we can use the matrix, we need to assemble it:
 ```python
-matrix.assemble()
+A.assemble()
 ```
-For more information also see the [`petsc4py.Mat` documentation](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html).
 
+For debugging purposes, we might want to print out the matrix. This can be done by first converting the sparse matrix `A` to a dense matrix `A_dense` and then extracting the `numpy` array `A_numpy` which represents the values:
+```python
+A_dense = PETSc.Mat()
+A_dense = A.convert("dense")
+A_numpy = A_dense.getDenseArray()
+```
+#### Exercises
+Create two $3\times 3$ sparse PETSc matrices $A$, $B$.
+
+By using suitable functions (see [`petsc4py.Mat` documentation](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html)), compute
+* $AB$ 
+* $AB^\top$
+* $A+B$
 ### Matrix-vector multiplication
 PETSc also provides a vector class. For example, to create the vector
 $$
 v = \begin{pmatrix}
-8\\0\\9\\4\\5
+8.1\\0\\9.3\\-4.3\\5.2
 \end{pmatrix}
 $$
 we can do this:
 ```python
 v = PETSc.Vec()
-v.createWithArray([8, 0, 9, 4, 5])
+v.createWithArray([8.1, 0, 9.3, -4.3, 5.2])
 ```
 We can now multiply the matrix that we created above with this vector to compute $w=Av$:
 ```python
-w = matrix @ v
+w = PETSc.Vec()
+n = 5
+w.createSeq(n)
+A.mult(v, w)
+```
+Alternatively, we can just use the `@` operator:
+```python
+w = A @ v
 ```
 To print the vector we need to first extract the underlying array with the `getArray()` method:
 ```python
-print(w.getArray())
+w_numpy = w.getArray()
+print(w_numpy)
 ```
 
+
+## Solving linear systems
+The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $Au=b$. We will discuss this is more detail in the next lecture, but for now let us just look at a simple example:
+
+Consider the following $5\times 5$ matrix
+$$
+A=\begin{pmatrix}
+1.2 & 4.2 & 0 &  0 &  0 \\
+6.1 & 2.7 & 0 &  0 &  0 \\
+0 & 0 & 3.4 & 0 & 0 \\
+2.1 & 0 & 3.1 & 7.2 & 0 \\
+0 & 0 & 0 & 0 & 1.8
+ \end{pmatrix}
+$$
+which, in CSR format, corresponds to 
+* row pointers $R = [0, 2, 4, 5, 8, 9]$
+* column indices $J = [0, 1, 0, 1, 2, 0, 2, 3, 4]$
+* values $V = [1.2, 4.2, 6.1, 2.7, 3.4, 2.1, 3.1, 7.2, 1.8]$
+
+To create this matrix, we can proceed as follows:
+```python
+row_start = [0, 2, 4, 5, 8, 9]
+col_indices = [0, 1, 0, 1, 2, 0, 2, 3, 4]
+values = [1.2, 4.2, 6.1, 2.7, 3.4, 2.1, 3.1, 7.2, 1.8]
+
+A = PETSc.Mat().createAIJWithArrays(
+    (5, 5),
+    (
+        row_start,
+        col_indices,
+        values,
+    ),
+)
+A.assemble()
+```
+
+We can then solve the linear system $Au=b$ for $b = (8.1, 0, 9.3, -4.3, 5.2)^\top$ as follows:
+
+```python
+b = PETSc.Vec().createWithArray([8.1, 0, 9.3, -4.3, 5.2])
+u = PETSc.Vec().createSeq(b.size)
+
+ksp = PETSc.KSP().create()
+ksp.setOperators(A)
+ksp.solve(b, u)
+```
+
+Note that we create a `KSP` object, associate the matrix `A` with it and then call the `KSP`'s solve method.
+
+We will discuss `KSP`s and how to configure them to use efficient solver in more detail in the next lecture.

@@ -105,7 +105,7 @@ This can be done by calling the `setValue()` method:
 # Set 
 row = 0
 col = 3
-value = 8
+value = 8.7
 A.setValue(row, col, value)
 ```
 Note that this method has an optional parameter `addv`, for `addv=True` the value will be added to an already existing value.
@@ -198,23 +198,23 @@ The big advantage of using PETSc matrices and arrays is that this will give us a
 Consider the following $5\times 5$ matrix
 $$
 A=\begin{pmatrix}
-1.2 & 4.2 & 0 &  0 &  0 \\
-6.1 & 2.7 & 0 &  0 &  0 \\
-0 & 0 & 3.4 & 0 & 0 \\
+10.2 & 4.2 & 0 &  0 &  0 \\
+0.8 & 6.7 & 0 &  0 &  0 \\
+0 & 0 & 6.4 & 0 & 0 \\
 2.1 & 0 & 3.1 & 7.2 & 0 \\
-0 & 0 & 0 & 0 & 1.8
+0 & 0 & 0 & 0 & 9.8
  \end{pmatrix}
 $$
 which, in CSR format, corresponds to 
 * row pointers $R = [0, 2, 4, 5, 8, 9]$
 * column indices $J = [0, 1, 0, 1, 2, 0, 2, 3, 4]$
-* values $V = [1.2, 4.2, 6.1, 2.7, 3.4, 2.1, 3.1, 7.2, 1.8]$
+* values $V = [10.2, 4.2, 0.8, 6.7, 6.4, 2.1, 3.1, 7.2, 9.8]$
 
 To create this matrix, we can proceed as follows:
 ```python
 row_start = [0, 2, 4, 5, 8, 9]
 col_indices = [0, 1, 0, 1, 2, 0, 2, 3, 4]
-values = [1.2, 4.2, 6.1, 2.7, 3.4, 2.1, 3.1, 7.2, 1.8]
+values = [10.2, 4.2, 0.8, 6.7, 6.4, 2.1, 3.1, 7.2, 9.8]
 
 A = PETSc.Mat().createAIJWithArrays(
     (5, 5),

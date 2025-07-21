@@ -1,5 +1,8 @@
 name: Convert markdown to html
 on: [push]
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 jobs:
     convert_via_pandoc:
         permissions:

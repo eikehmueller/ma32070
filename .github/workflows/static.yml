@@ -12,37 +12,22 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
-            - name: Convert markdown to html with pandoc [MathematicalBackground]
+            - name: Convert markdown to html with pandoc
               uses: docker://pandoc/latex:3.5                
               with:
                 args: >- 
                     --standalone
                     --mathjax
-                    --output=lectures/MathematicalBackground.html
+                    --to chunkedhtml
+                    --output=docs.zip
                     lectures/MathematicalBackground.md
-            - name: Convert markdown to html with pandoc [ErrorAnalysis]
-              uses: docker://pandoc/latex:3.5                
-              with:
-                args: >-
-                    --standalone
-                    --mathjax
-                    --output=lectures/ErrorAnalysis.html
+                    lectures/FiniteElements.md
+                    lectures/Quadrature.md
                     lectures/ErrorAnalysis.md
-            - name: Convert markdown to html with pandoc [Meshes]
-              uses: docker://pandoc/latex:3.5                
-              with:
-                args: >-
-                    --standalone
-                    --mathjax
-                    --output=lectures/Meshes.html
                     lectures/Meshes.md
-            - name: Copy to deployment folder
+            - name: Unzip deployment folder
               run: |
-                    mkdir docs
-                    cp ./lectures/*.html ./docs/
-                    cp -r ./lectures/figures ./docs/
-            - name: Create index.html
-              run: echo "<h>Index</h>" > ./docs/index.html
+                    unzip docs.zip
             - name: Deploy html file to gh-pages branch
               uses: JamesIves/github-pages-deploy-action@3.6.2
               with:

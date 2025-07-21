@@ -54,6 +54,7 @@ a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h(x)\in V_h$ }.\qquad(\ddagger_h)
 $$
 ### Existence and convergence of the solution
 It can be shown that $(\ddagger)$ and $(\ddagger_h)$ have unique solutions provided the linear form $b(\cdot)$ and the bilinear form $a(\cdot,\cdot)$ satisfy the following two conditions:
+
 * **Boundedness**: there exists some positive constant $C_+ > 0$ such that 
 $$a(u,v) \le C_+ \|u\|_V \|v\|_V \qquad\text{and}$$
 $$b(v) \le C_+ \|v\|_V \qquad\text{for all $u,v\in V$}.$$
@@ -69,6 +70,7 @@ The term $\min_{v_h\in V_h}\|u-v_h\|_V$ only depends on the choice of function s
 $$
 \|u_h - u\|_V \le C C' h^{2\mu}.
 $$
+
 ## Reduction to linear algebra problem
 Since $V_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_j(x)\}_{j=0}^{n-1}$ such that every function $u_h(x)\in V_h$ can be written as
 $$

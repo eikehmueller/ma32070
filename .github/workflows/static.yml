@@ -6,7 +6,7 @@ concurrency:
 jobs:
     convert_via_pandoc:
         env:
-          Greeting: lectures_directory
+          lectures_directory: lectures
         name: Convert markdown to html
         permissions:
             contents: write           

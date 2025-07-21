@@ -8,18 +8,18 @@ jobs:
         runs-on: ubuntu-22.04
         steps:
             - name: Check out repository
-                uses: actions/checkout@v4
+              uses: actions/checkout@v4
             - name: Convert with pandoc
-                with:
-                    working_directory: lectures
-                uses: docker://pandoc/latex:3.5                
-                args: >-  # allows you to break string into multiple lines
+              with:
+                working_directory: lectures
+              uses: docker://pandoc/latex:3.5                
+              args: >-  # allows you to break string into multiple lines
                     --standalone
                     --mathjax
                     --output=MathematicalBackground.html
                     MathematicalBackground.md
             - name: Copy 
-                run: |
+              run: |
                     mkdir docs
                     cp ./lectures/MathematicalBackground.html ./docs/MathematicalBackground.html      
             - name: Deploy html file

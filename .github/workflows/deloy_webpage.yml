@@ -12,12 +12,11 @@ jobs:
             - name: Convert with pandoc
               uses: docker://pandoc/latex:3.5                
               with:
-                working_directory: lectures
                 args: >-  # allows you to break string into multiple lines
                     --standalone
                     --mathjax
-                    --output=MathematicalBackground.html
-                    MathematicalBackground.md
+                    --output=lectures/MathematicalBackground.html
+                    lectures/MathematicalBackground.md
             - name: Copy 
               run: |
                     mkdir docs

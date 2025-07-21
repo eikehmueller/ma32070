@@ -27,6 +27,10 @@ jobs:
                     lectures/Quadrature.md
                     lectures/ErrorAnalysis.md
                     lectures/Meshes.md
+                    lectures/FunctionSpaces.md
+                    lectures/GlobalAssembly.md
+                    lectures/SparseMatrices.md
+                    lectures/SolversAndPreconditioners.md
             - name: Unzip deployment folder
               run: |
                     mkdir docs

@@ -1,0 +1,34 @@
+name: Convert markdown to html
+on: [push]
+permissions:
+  contents: write 
+  pages: write  
+jobs:
+    convert_via_pandoc:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Check out repository
+                uses: actions/checkout@v4
+            - name: Convert with pandoc
+                with:
+                    working_directory: lectures
+                uses: docker://pandoc/latex:3.5                
+                args: >-  # allows you to break string into multiple lines
+                    --standalone
+                    --mathjax
+                    --output=MathematicalBackground.html
+                    MathematicalBackground.md
+            - name: Copy 
+                run: |
+                    mkdir docs
+                    cp ./lectures/MathematicalBackground.html ./docs/MathematicalBackground.html      
+            - name: Deploy html file
+                uses: JamesIves/github-pages-deploy-action@3.6.2
+                with:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    BRANCH: gh-pages
+                    CLEAN: true
+                    SINGLE_COMMIT: true
+                    FOLDER: out
+                    GIT_CONFIG_NAME: em459
+                    GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk

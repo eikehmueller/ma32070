@@ -1,12 +1,9 @@
 name: Convert markdown to html
 on: [push]
-permissions:
-  contents: write 
-  pages: write  
-  id-token: write
-  actions: read
 jobs:
     convert_via_pandoc:
+        permissions:
+            contents: write           
         environment:
             name: github-pages
             url: ${{ steps.deployment.outputs.page_url }}
@@ -42,6 +39,10 @@ jobs:
                 GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk
     deploy:
         needs: convert_via_pandoc
+        permissions:
+            pages: write  
+            id-token: write
+            actions: read
         runs-on: ubuntu-latest
         environment:
             name: github-pages

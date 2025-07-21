@@ -27,7 +27,7 @@ jobs:
             - name: Copy 
               run: |
                     mkdir docs
-                    cp ./lectures/MathematicalBackground.html ./docs/MathematicalBackground.html      
+                    # cp ./lectures/MathematicalBackground.html ./docs/MathematicalBackground.html      
             - name: Create index.html
               run: echo "<h>Index</h>" > ./docs/index.html
             - name: Deploy html file

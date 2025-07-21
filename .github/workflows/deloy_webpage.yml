@@ -13,7 +13,8 @@ jobs:
               with:
                 working_directory: lectures
               uses: docker://pandoc/latex:3.5                
-              args: >-  # allows you to break string into multiple lines
+              with:
+                args: >-  # allows you to break string into multiple lines
                     --standalone
                     --mathjax
                     --output=MathematicalBackground.html

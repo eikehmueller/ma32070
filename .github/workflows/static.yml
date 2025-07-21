@@ -19,7 +19,7 @@ jobs:
                     --standalone
                     --mathjax
                     --to chunkedhtml
-                    --output=docs.zip
+                    --output=notes.zip
                     --resource-path lectures
                     lectures/MathematicalBackground.md
                     lectures/FiniteElements.md
@@ -28,7 +28,10 @@ jobs:
                     lectures/Meshes.md
             - name: Unzip deployment folder
               run: |
-                    unzip docs.zip
+                    mkdir docs
+                    mv notes.zip docs
+                    cd docs
+                    unzip notes.zip
             - name: Deploy html file to gh-pages branch
               uses: JamesIves/github-pages-deploy-action@3.6.2
               with:

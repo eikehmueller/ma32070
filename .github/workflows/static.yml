@@ -5,6 +5,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
     convert_via_pandoc:
+        -name: Convert markdown to html
         permissions:
             contents: write           
         runs-on: ubuntu-latest
@@ -36,6 +37,7 @@ jobs:
                 GIT_CONFIG_NAME: eikehmueller
                 GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk
     deploy:
+        - name: Deploy to GitHub Pages
         needs: convert_via_pandoc
         permissions:
             pages: write  

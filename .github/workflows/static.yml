@@ -21,6 +21,7 @@ jobs:
                     --to chunkedhtml
                     --output=notes.zip
                     --resource-path lectures
+                    --metadata-file lectures/metadata.yml
                     lectures/MathematicalBackground.md
                     lectures/FiniteElements.md
                     lectures/Quadrature.md

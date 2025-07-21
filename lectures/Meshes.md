@@ -54,7 +54,6 @@ I^{F\gets K} &= \begin{pmatrix}
 8 & 5 & 7 & 5 & 4
 \end{pmatrix}^{\top}\\
 I^{v\gets F} &= \begin{pmatrix}
-
 0 & 1 & 1 & 2 & 2 & 1 & 3 & 2 & 0 & 0 \\
 1 & 4 & 2 & 5 & 3 & 5 & 5 & 4 & 4 & 5
 \end{pmatrix}^{\top}\\
@@ -62,10 +61,7 @@ I^{v\gets K} &= \begin{pmatrix}
 4 & 1 & 2 & 5 & 3 \\
 0 & 5 & 4 & 1 & 2 \\
 1 & 2 & 1 & 0 & 5
- \\
-
 \end{pmatrix}^{\top}
-
 \end{aligned}
 $$
 

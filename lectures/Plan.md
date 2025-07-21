@@ -92,18 +92,14 @@
   * Comparison of number of iterations
   * Robustness
 
-## 10. Firedrake
+## 10. Sparse assembly
 * General concepts, programming models, performance indicators
 * Implementation of Poisson-like problem
 
-## 11. Parallelisation
+## 11. Performance analysis and Parallelisation
+* Performance models
+* Roofline model
 * Parallelisation strategies
 * Domain decomposition
 * Demo in Firedrake
-
-## X. Advanced concepts
-* Mixed problems
-* DG methods
-* Implementing Dirichlet boundary conditions
-* Non-linear problems
 

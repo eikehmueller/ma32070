@@ -43,6 +43,7 @@ jobs:
             pages: write  
             id-token: write
             actions: read
+            contents: write           
         runs-on: ubuntu-latest
         environment:
             name: github-pages
@@ -53,7 +54,7 @@ jobs:
               with:
                 ref: 'gh-pages'
             - name: Upload artifacts
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                 path: '.'
                 name: github-pages

@@ -28,6 +28,6 @@ jobs:
                 BRANCH: gh-pages
                 CLEAN: true
                 SINGLE_COMMIT: true
-                FOLDER: out
+                FOLDER: docs
                 GIT_CONFIG_NAME: eikehmueller
                 GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk

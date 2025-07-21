@@ -34,6 +34,8 @@ jobs:
                 FOLDER: docs
                 GIT_CONFIG_NAME: eikehmueller
                 GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk
+            -name: Upload artifacts
+              uses: actions/upload-artifact@v4
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v4

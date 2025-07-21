@@ -21,6 +21,8 @@ jobs:
               run: |
                     mkdir docs
                     cp ./lectures/MathematicalBackground.html ./docs/MathematicalBackground.html      
+            - name: Create index.html
+              run: echo "<h>Index</h>" > ./docs/index.html
             - name: Deploy html file
               uses: JamesIves/github-pages-deploy-action@3.6.2
               with:

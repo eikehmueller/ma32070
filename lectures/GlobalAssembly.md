@@ -4,6 +4,7 @@ $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
 $$
 With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution $u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_\ell \Phi^{(h)}_\ell(x)$. Recall that the entries of the right hand side vector and stiffness matrix are given by $b^{(h)}_\ell:=b(\Phi^{(h)}_\ell)$ and $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_\ell,\Phi^{(h)}_k\right)$. 
+
 ## Assembly of RHS vector
 Since $b(v) = \int_\Omega f(x)v(x)\;dx$ we compute the entries of the vector $b^{(h)}$ by splitting the integral over the domain $\Omega$ into the sum of integrals over the cells $K$:
 $$
@@ -76,6 +77,7 @@ where `ell_global` is the list of global dof-indices that correspond to the loca
 ell_global = fs.local2global(i,range(ndof))
 ```
 In this expression `fs` is a `FunctionSpace` object and `ndof` is the number of local unknowns in each cell.
+
 ## Assembly of LHS matrix
 To assemble the stiffness matrix, we again split the integral into a sum of integrals over grid cells $K$:
 $$

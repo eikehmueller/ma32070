@@ -1,10 +1,14 @@
 # Error analysis
+
 ## Sources of error
 When solving a problem in Scientific Computing, there are several sources of error:
+
 #### Modelling error
 When modelling a physical phenomenon, we need to pick a set of equations. For example, we might want to use the Navier-Stokes equations to model fluid flow in the atmosphere. Since most equations are an approximation of the real physics, this will inevitably introduce modelling errors.
+
 #### Discretisation error
 To solve the chosen system of equations they need to be discretised so that they can be solved on a computer. The finite element discretisation will introduce errors that are typically of the form $Ch^\alpha$ for some positive constants $C$, $\alpha$ where $h$ is the grid spacing. The error can be reduced by refining the compututational grid or by choosing a better discretisation which might lead to smaller $C$ and larger $\alpha$.
+
 #### Computational (or rounding) error
 Since a computer can only perform inexact arithmetic for real numbers, the results will only be accurate up to rounding errors.
 
@@ -16,7 +20,6 @@ As a motivation, consider the solution of our model equation $-\kappa \Delta u +
 ![Relative error](figures/error_reference_triangle.png)
 
 Results are shown both for single precision and double precision arithmetic. We would expect that the error decreases for higher values of $p$ since the solution can be approximated better by higher degree polynomials. Although initially this is indeed the case, it appears that the error can not be reduced below a certain value and it in fact increases for larger values of $p$. To understand this behaviour, we need to discuss how (real) numbers are represented on a computer.
-
 
 ## Floating point numbers
 A general **floating point number system** $\mathbb{F}$ is specified by four integer numbers:
@@ -57,6 +60,7 @@ $$
 which is also called the **overflow threshold**.
 
 Obviously, the floating point number system $\mathbb{F}$ is not closed under standard arithmetic operations: for example, $x,y\in\mathbb{F}$ does not necessarily imply that $x+y\in\mathbb{F}$. If a computation with two numbers $x,y\in\mathbb{F}$ results in a number $z\not\in\mathbb{F}$ we need to somehow represent $z$ by some nearby element $\tilde{z} := \mathcal{R}_{\mathbb{F}}(z)\in\mathbb{F}$ such that $|z-\widetilde{z}|$ is small. A common choice is to employ some sort of rounding.
+
 ### IEEE 754 (Normalised) Arithmetic
 The most commonly used floating point systems on modern computers are single- and double-precision, which are implemented according to the [IEEE 754 standard](https://standards.ieee.org/ieee/754/6210/). In both cases, $\beta=2$ and it is implicitly assumed that $d_0=1$, so this number does not have to be stored.
 
@@ -116,6 +120,7 @@ $$
 
 ## Rounding errors
 As the following examples show, rounding errors can have serious consequences
+
 ### Example 1 (harmless)
 Consider the two numbers $x=4.7\cdot 10^{-16}$ and $x=2.9\cdot 10^{-16}$. Both can be represented exactly as floating point numbers. The same is true for their difference $z=x-y=1.8\cdot 10^{-16}$, i.e. $\widetilde{z}=\mathcal{G}_{\mathbb{F}}(z)=z$ and as a consequence the rounding error is zero of this operation is zero:
 
@@ -133,9 +138,7 @@ $$
 $$
 
 ### Example 3 (adding two numbers of very different size)
-
 Consider the linear system
-
 $$
 \begin{pmatrix}
 0 & 1 \\ 1 & 1 
@@ -194,7 +197,6 @@ $$
 and therefore $x_0=0$. Altogether we find $x_0=0$, $x_1=1$. This is very different from the exact solution $x_0=-\frac{1}{1+10^{-20}}$, $x_1=+\frac{1}{1+10^{-20}}$! Hence, although the rounding we performed in the numerical solution procedure appears to be innocent, we get a completely wrong solution. In this case, this problem can be fixed by using a slightly different solution procedure: subtract the first equation from the second equation to obtain $(1+10^{-20}) x_0 = -1$, which can be safely approximated by $x_0=-1$. Then use this in the second equation $x_0+x_1=0$ to conclude $x_1=+1$. Now this is very close to the exact solution of the perturbed system. It turns out that solving the perturbed linear system with [`np.linalg.solve()`](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.solve.html) will also give a good approximation. Unfortunately, this is not always the case, as the following example demonstrates.
 
 ### Example 4 (ill-conditioned matrix)
-
 For a given positive $\epsilon>0$ consider the following $2\times 2$ symmetric matrix
 
 $$
@@ -349,6 +351,7 @@ $$
 $$
 
 Hence, the smallness of $\|\boldsymbol{r}\|_\infty/\|\boldsymbol{b}\|_\infty$ only implies the smallness of the relative error if the condition number of $A$ is small.
+
 ### Proof of Theorem 1 (not examinable)
 Observe first that if $X$ is any $n\times n$ real-valued matrix with $\|X\|_\infty<1$ then $\|X^n\|_\infty\le \|X\|_\infty^n\rightarrow 0$ as $n\rightarrow\infty$. Thus
 

@@ -1,5 +1,6 @@
 # Finite Elements
 We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
+
 ## Triangular reference element
 Let us consider a very simple domain $K=\Omega$ which consists of the unit triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$. We label the edges (or facets) in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$:
 
@@ -40,6 +41,7 @@ This is illustrated in the following figure, which also shows the ordering of th
 The associated finite elements are also known as **Lagrange elements**.
 
 ### Examples
+
 #### Linear finite element
 For $p=1$ we obtain the (bi-)linear finite element with the following basis three functions:
 $$
@@ -49,6 +51,7 @@ $$
 \phi_2(x) &= x_1
 \end{aligned}
 $$
+
 #### Quadratic finite element
 For $=2$ there are six basis functions, three associated with vertices
 $$
@@ -70,9 +73,9 @@ These functions are visualised in the following figure (red arrows indicate grad
 
 ![Basis functions for quadratic finite element](figures/quadratic_element.png)
 
-
 ## Formal definition of finite elements
 It turns out that it is advantageous to define finite elements in a more general sense. Mirroring this more abstract mathematical definition in the Python code will help us to structure the code in a sensible way that will allow its easy adaptation to specific cases. For this we first need to introduce the notion of the dual $V^*$ for a function space $V$.
+
 ### Dual spaces
 Consider a domain $K$ and the space $\mathcal{V}=\mathcal{V}(K)$ of real-valued functions $w:K\rightarrow \mathbb{R}$ on $K$. A linear *functional* $\ell$ maps a function $w\in \mathcal{V}$ to a real value such that
 
@@ -182,6 +185,7 @@ Note that for any given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{
 $$
 V^{\partial}_{ijk}(\boldsymbol{\zeta}):=\frac{\partial b_j}{\partial x_k}(\zeta^{(i)}).
 $$
+
 ### Tabulation of basis functions
 This allows use to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, we have that
 
@@ -204,7 +208,9 @@ T^\partial_{ijk}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_j}{\partial x_k}(\z
  &= V^\partial_{imk}(\boldsymbol{\zeta})C_{mj}
  \end{aligned}
 $$
+
 ## Implementation
+
 ### Abstract bases class
 Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class, which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. More specifically, each finite element should provide the following functionality:
 

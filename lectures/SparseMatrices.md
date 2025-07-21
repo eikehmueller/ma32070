@@ -162,6 +162,7 @@ By using suitable functions (see [`petsc4py.Mat` documentation](https://petsc.or
 * $AB$ 
 * $AB^\top$
 * $A+B$
+* 
 ### Matrix-vector multiplication
 PETSc also provides a vector class. For example, to create the vector
 $$
@@ -190,7 +191,6 @@ To print the vector we need to first extract the underlying array with the `getA
 w_numpy = w.getArray()
 print(w_numpy)
 ```
-
 
 ## Solving linear systems
 The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $Au=b$. We will discuss this is more detail in the next lecture, but for now let us just look at a simple example:

@@ -1,4 +1,5 @@
 # Mathematical background
+
 ## Model problem
 In this course we will focus on the following partial differential equation (PDE) of the diffusion-reaction type in some bounded domain $\Omega\subset \mathbb{R}^2$:
 $$
@@ -34,6 +35,7 @@ and the linear form $b(\cdot):V\rightarrow \mathbb{R}$ with
 $$
 b(v) := \int_\Omega f(x) v(x)\;dx+ \int_{\partial \Omega} g(x) v(x)\;ds.
 $$
+
 #### Exercise
 Convince yourself that $a(\cdot,\cdot)$ and $b(\cdot)$ are indeed (bi-) linear:
 * $a(c_1 u^{(1)} + c_2 u^{(2)}_2,v) = c_1 a(u^{(1)},v) + c_2 a(u^{(2)},v)$ for all $c_1,c_2\in \mathbb{R}$, $u^{(1)}, u^{(2)},v \in V$
@@ -47,11 +49,13 @@ With these (bi-)linear forms, we can formulate the weak problem as follows: Find
 $$
 a(u,v) = b(v) \qquad \text{for all $v(x)\in V$}.\qquad(\ddagger)
 $$
+
 ## Finite element solutions
 Now, obviously it is not possible to solve $(\ddagger)$ on a computer since $V$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $V_h\subset V$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. Then the problem becomes: find $u_h\in V_h$ such that 
 $$
 a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h(x)\in V_h$ }.\qquad(\ddagger_h)
 $$
+
 ### Existence and convergence of the solution
 It can be shown that $(\ddagger)$ and $(\ddagger_h)$ have unique solutions provided the linear form $b(\cdot)$ and the bilinear form $a(\cdot,\cdot)$ satisfy the following two conditions:
 
@@ -91,6 +95,7 @@ At this point it is worth stressing that although $\boldsymbol{u}^{(h)}$ and $\b
 * In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_j^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
 
 The reason for this is that $b(\cdot)$ is an element of the dual space $V^*$, which consists of all linear functionals defined on the space $V$.
+
 ### Solution procedure
 In summary, the solution procedure for $(\ddagger_h)$ is this:
 1. Assemble the matrix $A^{(h)}$.

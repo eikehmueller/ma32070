@@ -31,6 +31,7 @@ jobs:
                     lectures/GlobalAssembly.md
                     lectures/SparseMatrices.md
                     lectures/SolversAndPreconditioners.md
+                    lectures/SparseAssembly.md
             - name: Unzip deployment folder
               run: |
                     mkdir docs

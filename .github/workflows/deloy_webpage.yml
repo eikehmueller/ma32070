@@ -33,3 +33,6 @@ jobs:
                 FOLDER: docs
                 GIT_CONFIG_NAME: eikehmueller
                 GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4

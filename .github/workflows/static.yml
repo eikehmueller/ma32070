@@ -23,7 +23,8 @@ jobs:
             - name: Copy to deployment folder
               run: |
                     mkdir docs
-                    cp ./lectures/MathematicalBackground.html ./docs/MathematicalBackground.html      
+                    cp ./lectures/*.html ./docs/
+                    cp -r ./lectures/figures ./docs/
             - name: Create index.html
               run: echo "<h>Index</h>" > ./docs/index.html
             - name: Deploy html file to gh-pages branch

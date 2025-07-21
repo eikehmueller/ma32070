@@ -10,10 +10,9 @@ jobs:
             - name: Check out repository
               uses: actions/checkout@v4
             - name: Convert with pandoc
-              with:
-                working_directory: lectures
               uses: docker://pandoc/latex:3.5                
               with:
+                working_directory: lectures
                 args: >-  # allows you to break string into multiple lines
                     --standalone
                     --mathjax

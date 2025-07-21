@@ -12,9 +12,8 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
-            - name: Change directory
-              run: cd lectures
             - name: Convert markdown to html with pandoc
+              working-directory: lectures
               uses: docker://pandoc/latex:3.5                
               with:
                 args: >- 

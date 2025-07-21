@@ -23,12 +23,12 @@ jobs:
                     mkdir docs
                     cp ./lectures/MathematicalBackground.html ./docs/MathematicalBackground.html      
             - name: Deploy html file
-                uses: JamesIves/github-pages-deploy-action@3.6.2
-                with:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                    BRANCH: gh-pages
-                    CLEAN: true
-                    SINGLE_COMMIT: true
-                    FOLDER: out
-                    GIT_CONFIG_NAME: eikehmueller
-                    GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk
+              uses: JamesIves/github-pages-deploy-action@3.6.2
+              with:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                BRANCH: gh-pages
+                CLEAN: true
+                SINGLE_COMMIT: true
+                FOLDER: out
+                GIT_CONFIG_NAME: eikehmueller
+                GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk

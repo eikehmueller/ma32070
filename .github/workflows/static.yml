@@ -5,8 +5,6 @@ concurrency:
   cancel-in-progress: false
 jobs:
     convert_via_pandoc:
-        env:
-          lectures_directory: lectures
         name: Convert markdown to html
         permissions:
             contents: write           
@@ -22,12 +20,12 @@ jobs:
                     --mathjax
                     --to chunkedhtml
                     --output=docs.zip
-                    --resource-path $lectures_directory
-                    $lectures_directory/MathematicalBackground.md
-                    $lectures_directory/FiniteElements.md
-                    $lectures_directory/Quadrature.md
-                    $lectures_directory/ErrorAnalysis.md
-                    $lectures_directory/Meshes.md
+                    --resource-path lectures
+                    lectures/MathematicalBackground.md
+                    lectures/FiniteElements.md
+                    lectures/Quadrature.md
+                    lectures/ErrorAnalysis.md
+                    lectures/Meshes.md
             - name: Unzip deployment folder
               run: |
                     unzip docs.zip

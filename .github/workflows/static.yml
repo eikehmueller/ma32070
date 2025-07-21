@@ -12,6 +12,8 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
+            - name: Change directory
+              run: cd lectures
             - name: Convert markdown to html with pandoc
               uses: docker://pandoc/latex:3.5                
               with:
@@ -20,11 +22,11 @@ jobs:
                     --mathjax
                     --to chunkedhtml
                     --output=docs.zip
-                    lectures/MathematicalBackground.md
-                    lectures/FiniteElements.md
-                    lectures/Quadrature.md
-                    lectures/ErrorAnalysis.md
-                    lectures/Meshes.md
+                    MathematicalBackground.md
+                    FiniteElements.md
+                    Quadrature.md
+                    ErrorAnalysis.md
+                    Meshes.md
             - name: Unzip deployment folder
               run: |
                     unzip docs.zip

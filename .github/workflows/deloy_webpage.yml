@@ -1,6 +1,7 @@
 name: Convert markdown to html
 on: [push]
 permissions:
+  id-token: write
   contents: write 
   pages: write  
 jobs:

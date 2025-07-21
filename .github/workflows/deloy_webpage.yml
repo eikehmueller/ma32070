@@ -1,9 +1,9 @@
 name: Convert markdown to html
 on: [push]
 permissions:
-  id-token: write
   contents: write 
   pages: write  
+  id-token: write
   actions: read
 jobs:
     convert_via_pandoc:
@@ -40,15 +40,22 @@ jobs:
                 FOLDER: docs
                 GIT_CONFIG_NAME: eikehmueller
                 GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk
-            - name: Check out repository
-              uses: actions/checkout@v4
-              with:
-                ref: 'gh-pages'
-            - name: Upload artifacts
-              uses: actions/upload-artifact@v4
-              with:
-                path: '.'
-                name: github-pages
-            - name: Deploy to GitHub Pages
-              id: deployment
-              uses: actions/deploy-pages@v4
+deploy:
+    needs: convert_via_pandoc
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+        - name: Check out repository
+          uses: actions/checkout@v4
+          with:
+            ref: 'gh-pages'
+        - name: Upload artifacts
+          uses: actions/upload-artifact@v4
+          with:
+            path: '.'
+            name: github-pages
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v4

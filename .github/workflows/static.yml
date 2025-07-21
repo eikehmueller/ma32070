@@ -5,7 +5,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
     convert_via_pandoc:
-        -name: Convert markdown to html
+        - name: Convert markdown to html
         permissions:
             contents: write           
         runs-on: ubuntu-latest

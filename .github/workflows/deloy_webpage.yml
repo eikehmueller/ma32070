@@ -47,7 +47,7 @@ jobs:
             - name: Upload artifacts
               uses: actions/upload-artifact@v4
               with:
-                path: './docs/MathematicalBackground.html'
+                path: './docs/'
                 name: github-pages
             - name: Deploy to GitHub Pages
               id: deployment

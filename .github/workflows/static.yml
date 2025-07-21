@@ -12,7 +12,7 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
-            - name: Convert with pandoc
+            - name: Convert markdown to html with pandoc
               uses: docker://pandoc/latex:3.5                
               with:
                 args: >-  # allows you to break string into multiple lines
@@ -20,7 +20,7 @@ jobs:
                     --mathjax
                     --output=lectures/MathematicalBackground.html
                     lectures/MathematicalBackground.md
-            - name: Copy 
+            - name: Copy to deployment folder
               run: |
                     mkdir docs
                     cp ./lectures/MathematicalBackground.html ./docs/MathematicalBackground.html      

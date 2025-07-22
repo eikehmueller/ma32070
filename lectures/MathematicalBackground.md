@@ -27,6 +27,8 @@ Crucially, only first derivatives of the solution $u(x)$ and test function $v(x)
 $$
 \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx  = \int_\Omega f(x) v(x)\;dx + \int_{\partial \Omega} g(x) v(x)\;ds.
 $$
+where now only the left hand side depends on the unknown function $u(x)$.
+
 Let us define the symmetric *bilinear form* $a(\cdot,\cdot): V\times V \rightarrow \mathbb{R}$  with
 $$
 a(u,v) := \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx
@@ -51,7 +53,7 @@ a(u,v) = b(v) \qquad \text{for all $v(x)\in V$}.\qquad(\ddagger)
 $$
 
 ## Finite element solutions
-Now, obviously it is not possible to solve $(\ddagger)$ on a computer since $V$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $V_h\subset V$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. Then the problem becomes: find $u_h\in V_h$ such that 
+Now, obviously it is not possible to solve $(\ddagger)$ on a computer since $V$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $V_h\subset V$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. In this case the problem becomes: find $u_h\in V_h$ such that 
 $$
 a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h(x)\in V_h$ }.\qquad(\ddagger_h)
 $$
@@ -66,17 +68,18 @@ $$b(v) \le C_+ \|v\|_V \qquad\text{for all $u,v\in V$}.$$
 $$ 
 a(u,u) \ge C_- \|u\|_V^2 \qquad\text{for all $u\in V$}.
 $$
-It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cdot)$ defined above. Furthermore, the solutions satisfy $\|u\|_V,\|u_h\|_V\le C:=C_+/C$ and the difference between the solution $u_h(x)$ of $(\ddagger_h)$ and the solution $u(x)$ of $(\ddagger)$ can be bounded as follows:
+It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cdot)$ defined above. Furthermore, the solutions satisfy $\|u\|_V,\|u_h\|_V\le C:=C_+/C_-$ and the difference between the solution $u_h(x)$ of $(\ddagger_h)$ and the solution $u(x)$ of $(\ddagger)$ can be bounded as follows:
 $$
 \|u_h - u\|_V \le C \min_{v_h\in V_h}\|u-v_h\|_V.
 $$
-The term $\min_{v_h\in V_h}\|u-v_h\|_V$ only depends on the choice of function spaces $V$, $V_h$ and describes how well the function $u(x) \in V$ can be approximated by a function $v_h\in V_h$. For a suitable choice of $V_h$, which we will discuss later, one can show that $\min_{v_h\in V_h}\|u-v_h\|_V\le C' h^{2\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Hence, the finite element solution $u_h(x)$ converges to the "true'' solution $u(x)$ as the mesh is refined ($h\rightarrow 0$):
+The constant $C$ on the right hand side is problem specific since it depends on $a(\cdot,\cdot)$ and $b(\cdot)$. In contrast, the term $\min_{v_h\in V_h}\|u-v_h\|_V$ only depends on the choice of function spaces $V$, $V_h$ and describes how well the function $u(x) \in V$ can be approximated by a function $v_h\in V_h$. For a suitable choice of $V_h$, which we will discuss later, one can show that $\min_{v_h\in V_h}\|u-v_h\|_V\le C' h^{2\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Hence, the finite element solution $u_h(x)$ converges to the "true" solution $u(x)$ as the mesh is refined ($h\rightarrow 0$):
 $$
 \|u_h - u\|_V \le C C' h^{2\mu}.
 $$
+This is why the finite element works: it can be used to systematically approximate the true solution of the PDE.
 
 ## Reduction to linear algebra problem
-Since $V_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_j(x)\}_{j=0}^{n-1}$ such that every function $u_h(x)\in V_h$ can be written as
+We now discuss how $u_h$ can be found in practice. Since $V_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_j(x)\}_{j=0}^{n-1}$ such that every function $u_h(x)\in V_h$ can be written as
 $$
 u_h(x) = \sum_{j=0}^{n-1} u^{(h)}_j \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$.}\qquad(\star)
 $$

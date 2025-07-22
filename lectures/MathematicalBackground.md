@@ -97,6 +97,7 @@ At this point it is worth stressing that although $\boldsymbol{u}^{(h)}$ and $\b
 The reason for this is that $b(\cdot)$ is an element of the dual space $V^*$, which consists of all linear functionals defined on the space $V$.
 
 ### Solution procedure
+
 In summary, the solution procedure for $(\ddagger_h)$ is this:
 1. Assemble the matrix $A^{(h)}$.
 2. Assemble the right-hand-side vector $\boldsymbol{b}^{(h)}$.

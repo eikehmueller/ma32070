@@ -42,7 +42,7 @@ jobs:
                   --output=setup.html
                   --resource-path generalinformation
                   --metadata-file metadata.yml
-                  generalinformation/setup.md
+                  generalinformation/Setup.md
             - name: Unzip deployment folder
               run: |
                     mkdir docs

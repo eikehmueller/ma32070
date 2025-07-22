@@ -1,6 +1,8 @@
 # Finite Elements
 We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
 
+*&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
+
 ## Triangular reference element
 Let us consider a very simple domain $K=\Omega$ which consists of the unit triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$. We label the edges (or facets) in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$:
 
@@ -11,10 +13,10 @@ In the following we will also refer to this as the *reference triangle*.
 Recall that the finite element approach starts with the choice of a suitable function space $V$. For this, consider the space of bi-variate polynomials of degree $p$ on $K$:
 
 $$
-\mathcal{P}_p(K) = \{q:q(x) = \sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}} a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1},\;a_{\alpha_0,\alpha_1}\in\mathbb{R}\}\subset H^1(K)
+\mathcal{P}_p(K) = \{q:q(x) = \sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}} a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1}\;\text{for all $x\in K$ with $a_{\alpha_0,\alpha_1}\in\mathbb{R}$}\}\subset H^1(K)
 $$
 
-The space $\mathcal{P}_p(K)$  is spanned by $d_p = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_j(x)\}_{j=0}^{d_p-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $d_p$ points $\{\xi^{(j)}\}_{j=0}^{d_p-1}$ in $K$ and define $\phi_j(x)\in\mathcal{P}_p(K)$ such that
+The space $\mathcal{P}_p(K)$  is spanned by $d = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_j(x)\}_{j=0}^{d-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $d$ points $\{\xi^{(j)}\}_{j=0}^{d-1}$ in $K$ and define $\phi_j(x)\in\mathcal{P}_p(K)$ such that
 $$
 \phi_j(\xi^{(k)}) = \delta_{jk} = \begin{cases}
     1 & \text{for $j=k$}\\
@@ -23,7 +25,7 @@ $$
 $$
 A possible choice of points is given by
 $$
-\{\xi^{(j)}\}_{j=0}^{d_p-1} = \left\{\left(\frac{j_0}{p},\frac{j_1}{p}\right) \quad \text{for $0\le j_0\le j_1 \le p$}\right\}.
+\{\xi^{(j)}\}_{j=0}^{d-1} = \left\{\left(\frac{j_0}{p},\frac{j_1}{p}\right) \quad \text{for $0\le j_0\le j_1 \le p$}\right\}.
 $$
 
 Note that this choice of points is not optimal for higher polynomial degrees $p$ in the sense that it can lead to numerical instabilities. For all problems we consider in this course this does not matter, however. 
@@ -172,15 +174,15 @@ VC = \mathbb{I}\quad \Leftrightarrow \quad C = V^{-1}
 $$
 with $\mathbb{I}$ the $d\times d$ identity matrix. In other words, we can obtain the coefficients $c_i^{(k)}$ by inverting the matrix $V$. For the Lagrange element, where $\ell_j(w) = w(\xi^{(j)})$ are nodal evaluations, the matrix $V$ is the Vandermonde matrix:
 $$
-V = V(\{\xi^{(j)}\}_{j=0}^{d_p-1}) = \begin{pmatrix}
+V = V(\{\xi^{(j)}\}_{j=0}^{d-1}) = \begin{pmatrix}
 1 & \xi^{(0)}_0 & \xi^{(0)}_1  & (\xi^{(0)}_0)^2 & \xi^{(0)}_0 \xi^{(0)}_1 & (\xi^{(0)}_1)^2 & \dots \\[1ex]
 1 & \xi^{(1)}_0 & \xi^{(1)}_1 & (\xi^{(1)}_0)^2 & \xi^{(1)}_0 \xi^{(1)}_1 & (\xi^{(1)}_1)^2 & \dots \\[1ex]
 1 & \xi^{(2)}_0 & \xi^{(2)}_1 & (\xi^{(2)}_0)^2 & \xi^{(2)}_0 \xi^{(2)}_1 & (\xi^{(2)}_1)^2 & \dots \\[1ex]
 \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots\\
-1 & \xi^{(d_p-1)}_0 & \xi^{(d_p-1)}_1 & (\xi^{(d_p-1)}_0)^2 & \xi^{(d_p-1)}_0 \xi^{(d_p-1)}_1 & (\xi^{(d_p-1)}_1)^2 & \dots
+1 & \xi^{(d-1)}_0 & \xi^{(d-1)}_1 & (\xi^{(d-1)}_0)^2 & \xi^{(d-1)}_0 \xi^{(d-1)}_1 & (\xi^{(d-1)}_1)^2 & \dots
 \end{pmatrix}
 $$
-Note that for any given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$ (which do not have to coincide with the nodal points $\{\xi^{(j)}\}_{j=0}^{d_p-1}$) we can construct the $n\times d_p$ matrix $V(\boldsymbol{\zeta})$ with $V_{ij}(\boldsymbol{\zeta}) = b_j(\zeta^{(i)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
+Note that for any given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$ (which do not have to coincide with the nodal points $\{\xi^{(j)}\}_{j=0}^{d-1}$) we can construct the $n\times d$ matrix $V(\boldsymbol{\zeta})$ with $V_{ij}(\boldsymbol{\zeta}) = b_j(\zeta^{(i)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
 
 $$
 V^{\partial}_{ijk}(\boldsymbol{\zeta}):=\frac{\partial b_j}{\partial x_k}(\zeta^{(i)}).
@@ -190,7 +192,7 @@ $$
 This allows use to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, we have that
 
 $$
-T_{ij}(\boldsymbol{\zeta}) := \phi_j(\zeta^{(i)}) = \sum_{m=0}^{d_p-1} c_m^{(j)} b_m(\zeta^{(i)}) = V_{im}(\boldsymbol{\zeta})C_{mj}
+T_{ij}(\boldsymbol{\zeta}) := \phi_j(\zeta^{(i)}) = \sum_{m=0}^{d-1} c_m^{(j)} b_m(\zeta^{(i)}) = V_{im}(\boldsymbol{\zeta})C_{mj}
 $$
 
 or, more compactly:
@@ -204,7 +206,7 @@ Furthermore, we have for the derivatives
 $$
 \begin{aligned}
 T^\partial_{ijk}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_j}{\partial x_k}(\zeta^{(i)}) 
- = \sum_{m=0}^{d_p-1} c_m^{(j)} \frac{\partial b_m}{\partial x_k}(\zeta^{(i)}) \\
+ = \sum_{m=0}^{d-1} c_m^{(j)} \frac{\partial b_m}{\partial x_k}(\zeta^{(i)}) \\
  &= V^\partial_{imk}(\boldsymbol{\zeta})C_{mj}
  \end{aligned}
 $$

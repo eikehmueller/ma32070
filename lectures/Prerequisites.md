@@ -1,6 +1,8 @@
 # Prerequisites and References
 In the following we list some prior knowledge that is expected for this course together with some links to further information.
 
+*&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
+
 ## Python
 To complete this course successfully you need to have a solid command of the Python language, which you should be familiar with from your first year *"Programming and Mathematics"* unit. Below you can find a (non-exhaustive) list of fundamental concepts that we will use frequently. If any of these ideas are new to you, follow the links or consult the [Python tutorial](https://docs.python.org/3/tutorial/index.html), [Python language reference](https://docs.python.org/3/reference/index.html) and the [numpy API reference](https://numpy.org/doc/stable/reference/index.html), in particular the section on [linear algebra](https://numpy.org/doc/stable/reference/routines.linalg.html). If you have never seen some of the concepts don't worry, since they will become more familiar over the course of this semester. A crucial skill of a successful scientific programmer is the ability to find and digest documentation: if you come across a concept that you are not familiar with you should actively try to understand it. For this, you might want to implement some simplified examples to see what is going on or use google to find additional documentation.
 
@@ -90,6 +92,12 @@ You should be familiar with the fundamental ideas behind the finite element meth
 
 ### Linear Algebra
 I expect you to be familiar with fundamental concepts of linear algebra: for example, you should know how to manipulate matrices and vectors, know what eigenvalues and eigenvectors are and understand under which conditions a matrix is invertible.
+
+### Numerical analysis
+We will use several basic concepts that you have come across in your Numerical Analsys lecture, in particular:
+
+* Interpolation of functions with [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html)
+* Numerical quadrature with the [Gauss-Legendre method](https://mathworld.wolfram.com/Legendre-GaussQuadrature.html)
 
 ### References
 The following references might be useful for further reading. You are not expected to study this material in detail, but they might be helpful as a reference and if you want to deepen your understanding further.

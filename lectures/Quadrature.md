@@ -1,5 +1,8 @@
 # Numerical quadrature
-The weak form of the PDE is defined via suitable integrals such as $\int_\Omega v(x)f(x)\;dx$. In general, it is not possible to evaluate these integrals exactly. Furthermore, since the finite element discretisation (replacing $V\mapsto V_h$ and solving the associated linear algebra problem) already introduces an error, exact integration is not necessary, provided we can come find an approximate integration method with error that are of the same order of magnitide.
+The weak form of the PDE is defined via suitable integrals such as $\int_\Omega v(x)f(x)\;dx$. In general, it is not possible to evaluate these integrals exactly. Furthermore, since the finite element discretisation (replacing $V\mapsto V_h$ and solving the associated linear algebra problem) already introduces an error, exact integration is not necessary, provided we can find an approximate integration method with errors that are of the same order of magnitude.
+
+*&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
+
 
 ## Gauss-Legendre quadrature in one dimension
 Numerical quadrature aims to approximate the integral of a function with a finite sum:

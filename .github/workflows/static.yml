@@ -22,6 +22,7 @@ jobs:
                     --output=notes.zip
                     --resource-path lectures
                     --metadata-file metadata.yml
+                    lectures/Prerequisites.md
                     lectures/MathematicalBackground.md
                     lectures/FiniteElements.md
                     lectures/Quadrature.md

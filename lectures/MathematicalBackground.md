@@ -79,23 +79,23 @@ $$
 This is why the finite element works: it can be used to systematically approximate the true solution of the PDE.
 
 ## Reduction to linear algebra problem
-We now discuss how $u_h$ can be found in practice. Since $V_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_j(x)\}_{j=0}^{n-1}$ such that every function $u_h(x)\in V_h$ can be written as
+We now discuss how $u_h$ can be found in practice. Since $V_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_k(x)\}_{k=0}^{n-1}$ such that every function $u_h(x)\in V_h$ can be written as
 $$
-u_h(x) = \sum_{j=0}^{n-1} u^{(h)}_j \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$.}\qquad(\star)
+u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$.}\qquad(\star)
 $$
-The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h(x)$. Picking $v_h(x)=\Phi^{(h)}_i(x)$ and inserting the expansion of $u_h(x)$ in $(\star)$ into $(\ddagger_h)$ we obtain
+The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h(x)$. Picking $v_h(x)=\Phi^{(h)}_\ell(x)$ and inserting the expansion of $u_h(x)$ in $(\star)$ into $(\ddagger_h)$ we obtain
 $$
-b^{(h)}_i:=b(\Phi^{(h)}_i) = a\left(\sum_{j=0}^{n-1} u^{(h)}_j \Phi^{(h)}_j,\Phi^{(h)}_i\right) = 
-\sum_{j=0}^{n-1} u^{(h)}_j a\left( \Phi^{(h)}_i,\Phi^{(h)}_j\right),
+b^{(h)}_i:=b(\Phi^{(h)}_\ell) = a\left(\sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k,\Phi^{(h)}_\ell\right) = 
+\sum_{k=0}^{n-1} u^{(h)}_k a\left( \Phi^{(h)}_\ell,\Phi^{(h)}_k\right),
 $$
-where we used the symmetry and bi-linearity of $a(\cdot,\cdot)$. Defining the vector $\boldsymbol{b}^{(h)} := (b(\Phi^{(h)}_0),b(\Phi^{(h)}_1,\dots,b(\Phi^{(h)}_{n-1})))$ and the $n\times n$ matrix $A^{(h)}$ with $A^{(h)}_{ij}:= a\left(\Phi^{(h)}_i,\Phi^{(h)}_j\right)$ we arrive at the following linear system for the dof-vector $\boldsymbol{u}^{(h)}$:
+where we used the symmetry and bi-linearity of $a(\cdot,\cdot)$. Defining the vector $\boldsymbol{b}^{(h)} := (b(\Phi^{(h)}_0),b(\Phi^{(h)}_1,\dots,b(\Phi^{(h)}_{n-1})))$ and the $n\times n$ matrix $A^{(h)}$ with $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_\ell,\Phi^{(h)}_k\right)$ we arrive at the following linear system for the dof-vector $\boldsymbol{u}^{(h)}$:
 $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
 $$
 At this point it is worth stressing that although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $\mathbb{R}^n$, they are constructed in a fundamentally different way:
 
-* The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_j^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in $(\star)$.
-* In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_j^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
+* The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_\ell^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in $(\star)$.
+* In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_\ell^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
 
 The reason for this is that $b(\cdot)$ is an element of the dual space $V^*$, which consists of all linear functionals defined on the space $V$.
 
@@ -107,4 +107,4 @@ In summary, the solution procedure for $(\ddagger_h)$ is this:
 3. Solve the linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ for $\boldsymbol{u}^{(h)}$.
 4. Reconstruct the solution $u_h(x)$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in $(\star)$.
 
-In the rest of this course we will discuss how each of these steps can be implemented in Python. For the solution of the linear algebra system we will use an efficient library.
+In the rest of this course we will discuss how each of these steps can be implemented in Python. For the solution of the linear algebra system we will use the [PETSc](https://petsc.org/) library.

@@ -93,6 +93,7 @@ I expect you to be familiar with fundamental concepts of linear algebra: for exa
 
 ### References
 The following references might be useful for further reading. You are not expected to study this material in detail, but they might be helpful as a reference and if you want to deepen your understanding further.
+
 * [[CH24]](https://finite-element.github.io/) Lecture notes on *"Finite elements: Analysis and implementation"* by Colin Cotter and David Ham (Imperial College)
 * [[Far21]](https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf) Lecture notes on  *"Finite Element Methods for PDEs"* by Patrick Farrell (Oxford)
 * [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) *"Automated Solution of Differential Equations by the Finite Element Method"* (the FEniCS book) by Anders Logg et al.

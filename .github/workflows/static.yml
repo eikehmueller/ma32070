@@ -12,7 +12,7 @@ jobs:
         steps:
             - name: Check out repository
               uses: actions/checkout@v4
-            - name: Convert markdown to html with pandoc
+            - name: Convert lecture markdown to html with pandoc
               uses: docker://pandoc/latex:3.5                
               with:
                 args: >- 
@@ -21,7 +21,7 @@ jobs:
                     --to chunkedhtml
                     --output=notes.zip
                     --resource-path lectures
-                    --metadata-file lectures/metadata.yml
+                    --metadata-file metadata.yml
                     lectures/MathematicalBackground.md
                     lectures/FiniteElements.md
                     lectures/Quadrature.md
@@ -32,11 +32,25 @@ jobs:
                     lectures/SparseMatrices.md
                     lectures/SolversAndPreconditioners.md
                     lectures/SparseAssembly.md
+            - name: Convert setup instructions markdown to html with pandoc
+              uses: docker://pandoc/latex:3.5                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --to html
+                  --output=setup.html
+                  --resource-path generalinformation
+                  --metadata-file metadata.yml
+                  generalinformation/setup.md
             - name: Unzip deployment folder
               run: |
                     mkdir docs
-                    mv notes.zip docs
-                    cd docs
+                    mkdir docs/lectures
+                    mkdir docs/general
+                    mv setup.html docs/general
+                    mv notes.zip docs/lectures
+                    cd docs/lectures
                     unzip notes.zip
             - name: Deploy html file to gh-pages branch
               uses: JamesIves/github-pages-deploy-action@3.6.2

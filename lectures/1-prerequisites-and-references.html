@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Prerequisites and References</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    html {
+      font-family: arial;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up"></a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top"></a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="2-mathematical-background-1.html" accesskey="n" rel="next">Mathematical background</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="index.html" accesskey="p" rel="previous"></a>
+</span>
+</div>
+</nav>
+<h1 data-number="1" id="prerequisites-and-references">Prerequisites and
+References</h1>
+<p>In the following we list some prior knowledge that is expected for
+this course together with some links to further information.</p>
+<p><em>© Eike Mueller, University of Bath 2025. These lecture notes are
+copyright of Eike Mueller, University of Bath. They are provided
+exclusively for educational purposes at the University and are to be
+downloaded or copied for your private study only. Further distribution,
+e.g. by upload to external repositories, is prohibited.</em></p>
+<h2 data-number="1.1" id="python">Python</h2>
+<p>To complete this course successfully you need to have a solid command
+of the Python language, which you should be familiar with from your
+first year <em>“Programming and Mathematics”</em> unit. Below you can
+find a (non-exhaustive) list of fundamental concepts that we will use
+frequently. If any of these ideas are new to you, follow the links or
+consult the <a
+href="https://docs.python.org/3/tutorial/index.html">Python
+tutorial</a>, <a
+href="https://docs.python.org/3/reference/index.html">Python language
+reference</a> and the <a
+href="https://numpy.org/doc/stable/reference/index.html">numpy API
+reference</a>, in particular the section on <a
+href="https://numpy.org/doc/stable/reference/routines.linalg.html">linear
+algebra</a>. If you have never seen some of the concepts don’t worry,
+since they will become more familiar over the course of this semester. A
+crucial skill of a successful scientific programmer is the ability to
+find and digest documentation: if you come across a concept that you are
+not familiar with you should actively try to understand it. For this,
+you might want to implement some simplified examples to see what is
+going on or use google to find additional documentation.</p>
+<h3 data-number="1.1.1" id="fundamental-python-concepts">Fundamental
+Python concepts</h3>
+<h4 data-number="1.1.1.1" id="control-flow-and-code-structure">Control
+flow and code structure</h4>
+<ul>
+<li>Definining <a
+href="https://docs.python.org/3/tutorial/controlflow.html#defining-functions">functions</a>
+and <a
+href="https://docs.python.org/3/tutorial/controlflow.html#more-on-defining-functions">passing
+arguments</a></li>
+<li><a
+href="https://docs.python.org/3/tutorial/controlflow.html#for-statements">for-loops</a>,
+and the <a
+href="https://docs.python.org/3/tutorial/controlflow.html#the-range-function">range()</a>
+function</li>
+<li>Control-flow with <a
+href="https://docs.python.org/3/tutorial/controlflow.html#if-statements">if-statements</a></li>
+<li>Organising functionality in <a
+href="https://docs.python.org/3/tutorial/modules.html">modules</a></li>
+</ul>
+<h4 data-number="1.1.1.2" id="data-types">Data types</h4>
+<ul>
+<li>integer and floating point <a
+href="https://docs.python.org/3/tutorial/introduction.html#numbers">numbers</a></li>
+<li><a
+href="https://docs.python.org/3/tutorial/introduction.html#text">strings</a>
+for storing characters and text</li>
+<li><a
+href="https://docs.python.org/3/tutorial/introduction.html#lists">lists</a>
+and <a
+href="https://docs.python.org/3/tutorial/datastructures.html#sets">sets</a>
+to store collections of items</li>
+<li><a
+href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries">dictionaries</a>
+to efficiently store (key <span
+class="math inline">\(\rightarrow\)</span> value) pairs.</li>
+</ul>
+<h4 data-number="1.1.1.3" id="object-oriented-programming">Object
+Oriented programming</h4>
+<ul>
+<li>Defining <a
+href="https://docs.python.org/3/tutorial/classes.html">classes</a></li>
+<li>Class <a
+href="https://docs.python.org/3/tutorial/classes.html#method-objects">methods</a>
+and <a
+href="https://docs.python.org/3/tutorial/classes.html#instance-objects">properties</a></li>
+<li>Reusing functionality with <a
+href="https://docs.python.org/3/tutorial/classes.html#inheritance">inheritance</a></li>
+<li><a href="https://docs.python.org/3/library/abc.html">Abstract
+classes</a></li>
+</ul>
+<h4 data-number="1.1.1.4" id="more-advanced-python-concepts">More
+advanced Python concepts</h4>
+<ul>
+<li>Anonymous functions with <a
+href="https://docs.python.org/3/tutorial/controlflow.html#lambda-expressions">lambda
+expressions</a></li>
+<li>Manipulating lists with <a
+href="https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions">list
+comprehensions</a></li>
+<li>Fancy <a
+href="https://docs.python.org/3/tutorial/inputoutput.html#fancier-output-formatting">output
+formatting</a></li>
+<li><a href="https://peps.python.org/pep-0318/">Decorators</a> for
+modifying methods</li>
+</ul>
+<h4 data-number="1.1.1.5" id="numpy">Numpy</h4>
+<ul>
+<li>Constructing <a
+href="https://numpy.org/doc/stable/user/basics.creation.html">arrays</a></li>
+<li><a
+href="https://numpy.org/doc/stable/user/basics.indexing.html">Indexing
+and slicing</a> arrays</li>
+<li>Matrix- and vector manipulation such as <a
+href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.transpose.html">matrix
+transposition</a> and <a
+href="https://numpy.org/devdocs/reference/generated/numpy.matmul.html">matrix
+multiplication</a></li>
+<li>Other basic <a
+href="https://numpy.org/doc/stable/reference/routines.linalg.html#module-numpy.linalg">numerical
+linear algebra</a> operations</li>
+</ul>
+<h3 data-number="1.1.2" id="documentation-and-style">Documentation and
+style</h3>
+<p>Comment your code as much as possible (but be concise). In
+particular, use <a
+href="https://docs.python.org/3/tutorial/controlflow.html#documentation-strings">docstrings</a>
+to describe the input, output and functionality of functions. Use a
+consistent style and naming convention (for example, start class names
+with capital letters and variables with lowercase letters). You might
+want to take some inspiration form the <a
+href="https://peps.python.org/pep-0008/">PEP8 style guide</a>, but there
+is no need to strictly conform to this. It is much more important that
+you use a consistent style. VSCode (see below) can help with enforcing
+this. <a
+href="https://object-oriented-python.github.io/4_style.html">Section 4
+of [Ham23]</a> contains a useful discussion of style.</p>
+<h3 data-number="1.1.3" id="further-reading">Further reading</h3>
+<p>The following two books contain additional information on Python and
+how to use it to implement mathematical software.</p>
+<ul>
+<li><a
+href="https://www.oreilly.com/library/view/fluent-python-2nd/9781492056348/">[Ram22]</a>
+<em>“Fluent Python”</em> by Luciano Ramalho, 2nd edition 2022 (available
+through the University library)</li>
+<li><a href="https://object-oriented-python.github.io/">[Ham23]</a>
+<em>“Object-oriented Programming in Python for Mathematicians”</em> by
+David Ham</li>
+</ul>
+<p><a
+href="https://www.oreilly.com/library/view/fluent-python-2nd/9781492056348/">[Ram22]</a>
+provides a comprehensive overview of Python concepts, including advanced
+topics. It is a useful reference if you want to develop a deeper
+understanding of the inner workings of Python. <a
+href="https://object-oriented-python.github.io/">[Ham23]</a> uses Python
+as a tool to implement mathematical objects. It contains many
+higher-level ideas such as the use of suitable abstractions for writing
+well-designed code.</p>
+<h2 data-number="1.2" id="other-tools">Other tools</h2>
+<h3 data-number="1.2.1" id="visual-studio-code">Visual Studio Code</h3>
+<p><a href="https://code.visualstudio.com/">Visual Studio (VS) Code</a>
+is an extremely powerful editor which is used by many developers today.
+It supports static code analysis via <a
+href="https://code.visualstudio.com/docs/python/linting">linting</a> and
+automatic <a
+href="https://code.visualstudio.com/docs/python/formatting">formatting</a>
+which can be incredibly helpful. Furthermore, it comes with a built-in
+<a
+href="https://code.visualstudio.com/docs/debugtest/debugging">debugger</a>.
+You are free to use a different editor for this course, but it is quite
+difficult to beat VSCode’s functionality.</p>
+<h3 data-number="1.2.2" id="version-control-with-git">Version control
+with git</h3>
+<p>The de-facto standard for version control nowadays is <a
+href="https://git-scm.com/">git</a>. This is a tool which allows the
+easy tracking of changes in source code and collaboration with other
+developers through hosting sites such as <a
+href="https://github.com/">github</a>. We won’t have time to discuss git
+in this course and it is not compulsory for you to use version control
+when developing your code, but it is recommended to make your life
+easier. A good introduction to git is the Software Carpentry course on
+<a href="https://swcarpentry.github.io/git-novice/">Version Control with
+git</a>. Here we will only need the git command line tool download the
+provided finite library. There are several graphical user interfaces
+such as <a href="https://www.sourcetreeapp.com/">Sourcetree</a> and <a
+href="https://www.gitkraken.com/">GitKraken</a> which you might want to
+try out; VSCode also has built-in git support.</p>
+<h3 data-number="1.2.3" id="testing">Testing</h3>
+<p>Remember that <strong>all untested code is wrong.</strong> When
+writing any code it is important to simultaneously implement tests that
+verify its correctness. Fortunately, this is very straightforward with
+the <a href="https://docs.pytest.org/en/stable/">pytest</a> package.</p>
+<p>Let’s look at a simply example. To test a function
+<code>addition(a,b)</code> which adds the two numbers <span
+class="math inline">\(a\)</span> and <span
+class="math inline">\(b\)</span> we simply implement a function</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_addition():</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> addition(<span class="dv">3</span>,<span class="dv">4</span>) <span class="op">==</span> <span class="dv">7</span></span></code></pre></div>
+<p>in a script called <code>test_summation.py</code>. Running
+<code>pytest -v</code> in the directory which contains
+<code>test_summation.py</code> will automatically look for all methods
+starting with <code>test_</code> and check whether the corresponding
+assertions are satisfied or not:</p>
+<pre><code>$ pytest -v
+
+============================= test session starts ==============================
+platform darwin -- Python 3.13.3, pytest-8.3.5, pluggy-1.5.0 -- /opt/homebrew/opt/python@3.13/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /Users/eikehmueller/Work/Bath/git_workspace/ma32070
+collected 1 item
+
+test_summation.py::test_addition PASSED                                  [100%]
+
+============================== 1 passed in 0.01s ===============================</code></pre>
+<h3 data-number="1.2.4" id="debugging">Debugging</h3>
+<p>Having a good strategy for debugging code is equally important, and
+you should already know the basics from your first year programming
+course. <a
+href="https://object-oriented-python.github.io/8_debugging.html">Section
+8 of [Ham23]</a> contains a detailed discussion of this topic and a
+description of some popular debugging tools, including the built-in
+debugger of VSCode. While you will notice that your debugging skills
+naturally improve through practice, and you should use the techniques
+and tools that best work for you, I encourage you to read David Ham’s
+discussion of <a
+href="https://object-oriented-python.github.io/8_debugging.html#debugging-strategy">Debugging
+Strategy</a>.</p>
+<h2 data-number="1.3" id="mathematical-background">Mathematical
+background</h2>
+<h3 data-number="1.3.1" id="the-finite-element-method">The Finite
+Element method</h3>
+<p>You should be familiar with the fundamental ideas behind the finite
+element method, as taught in <em>“MA30366: Numerical solution of
+elliptic partial differential equations”</em>. However, we will
+recapitulate the key concepts at the beginning of this course and the
+focus is on implementing the finite element method, not on proofs and
+theory.</p>
+<h3 data-number="1.3.2" id="linear-algebra">Linear Algebra</h3>
+<p>I expect you to be familiar with fundamental concepts of linear
+algebra: for example, you should know how to manipulate matrices and
+vectors, know what eigenvalues and eigenvectors are and understand under
+which conditions a matrix is invertible.</p>
+<h3 data-number="1.3.3" id="numerical-analysis">Numerical analysis</h3>
+<p>We will use several basic concepts that you have come across in your
+Numerical Analsys lecture, in particular:</p>
+<ul>
+<li>Interpolation of functions with <a
+href="https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html">Lagrange
+polynomials</a></li>
+<li>Numerical quadrature with the <a
+href="https://mathworld.wolfram.com/Legendre-GaussQuadrature.html">Gauss-Legendre
+method</a></li>
+</ul>
+<h3 data-number="1.3.4" id="references">References</h3>
+<p>The following references might be useful for further reading. You are
+not expected to study this material in detail, but they might be helpful
+as a reference and if you want to deepen your understanding further.</p>
+<ul>
+<li><a href="https://finite-element.github.io/">[CH24]</a> Lecture notes
+on <em>“Finite elements: Analysis and implementation”</em> by Colin
+Cotter and David Ham (Imperial College)</li>
+<li><a
+href="https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf">[Far21]</a>
+Lecture notes on <em>“Finite Element Methods for PDEs”</em> by Patrick
+Farrell (Oxford)</li>
+<li><a
+href="http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf">[Log11]</a>
+<em>“Automated Solution of Differential Equations by the Finite Element
+Method”</em> (the FEniCS book) by Anders Logg et al.</li>
+</ul>
+</body>
+</html>

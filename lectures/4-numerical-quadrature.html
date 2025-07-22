@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Numerical quadrature</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    html {
+      font-family: arial;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up"></a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top"></a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="5-error-analysis.html" accesskey="n" rel="next">Error analysis</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="3-finite-elements.html" accesskey="p" rel="previous">Finite Elements</a>
+</span>
+</div>
+</nav>
+<h1 data-number="4" id="numerical-quadrature">Numerical quadrature</h1>
+<p>The weak form of the PDE is defined via suitable integrals such as
+<span class="math inline">\(\int_\Omega v(x)f(x)\;dx\)</span>. In
+general, it is not possible to evaluate these integrals exactly.
+Furthermore, since the finite element discretisation (replacing <span
+class="math inline">\(V\mapsto V_h\)</span> and solving the associated
+linear algebra problem) already introduces an error, exact integration
+is not necessary, provided we can find an approximate integration method
+with errors that are of the same order of magnitude.</p>
+<p><em>© Eike Mueller, University of Bath 2025. These lecture notes are
+copyright of Eike Mueller, University of Bath. They are provided
+exclusively for educational purposes at the University and are to be
+downloaded or copied for your private study only. Further distribution,
+e.g. by upload to external repositories, is prohibited.</em></p>
+<h2 data-number="4.1"
+id="gauss-legendre-quadrature-in-one-dimension">Gauss-Legendre
+quadrature in one dimension</h2>
+<p>Numerical quadrature aims to approximate the integral of a function
+with a finite sum:</p>
+<p><span class="math display">\[
+\int_{-1}^{+1} f(z)\;dz \approx \sum_{q=0}^{n_q-1} \widetilde{w}_q
+f(\widetilde{\zeta}^{(q)})
+\]</span></p>
+<p>A particular quadrature rule <span
+class="math inline">\(\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}\)</span>
+is defined by the sets of points <span
+class="math inline">\(\widetilde{\zeta}^{(i)}\)</span> and corresponding
+weights <span class="math inline">\(w_i\)</span>. Here we will consider
+Gauss-Legendre quadrature <span
+class="math inline">\(\mathcal{Q}^{(\text{GL})}_{n_q}\)</span>, for
+which the points are the roots of the <a
+href="https://mathworld.wolfram.com/LegendrePolynomial.html">Legendre
+polynomial</a> <span class="math inline">\(P_{n_q}(\zeta)\)</span> and
+the weights are given by <span class="math inline">\(\widetilde{w}_q =
+\frac{2}{(1-(\widetilde{\zeta}^{(q)})^2)(P_{n_q}&#39;(\widetilde{\zeta}^{(q)}))^2}\)</span>.
+The points and weights can be constructed with <a
+href="https://numpy.org/doc/stable/reference/generated/numpy.polynomial.legendre.leggauss.html">numpy.polynomial.legendre.leggauss</a>:</p>
+<pre><code>points, weights = numpy.polynomial.legendre.leggauss(n)</code></pre>
+<p>The details of this construction are irrelevant for this course, but
+we need to have some understanding of how well the numerical scheme
+approximates the true value of the integral. Naturally one would expect
+that the quadrature approximates the integral better for larger numbers
+of points <span class="math inline">\(n_q\)</span>. Crucially,
+Gauss-Legendre quadrature is exact if the function to be integrated is a
+polynomial of degree <span class="math inline">\(2n_q-1\)</span>:</p>
+<p><span class="math display">\[
+\int_{-1}^{+1} p(z)\;dz = \sum_{q=0}^{n_q-1} \widetilde{w}_q
+p(\widetilde{\zeta}^{(q)})\qquad\text{for $p\in\mathcal{P}_{2n_q-1}$}
+\]</span></p>
+<p>We also call the degree of the highest polynomial that can be
+integrated exactly with a given quadrature rule the <strong>degree of
+precision</strong> or short “dop”: <span class="math display">\[
+\text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1
+\]</span> While so far we have only considered inetgration over the
+interval <span class="math inline">\([-1,+1]\)</span>, it turns out that
+integration over more general domains and higher-dimensional can be
+reduced to this case.</p>
+<h2 data-number="4.2" id="integration-along-a-line">Integration along a
+line</h2>
+<p>Next, imagine that we want to integrate a function along a straight
+line <span class="math inline">\(\mathcal{C}\subset
+\mathbb{R}^2\)</span> connecting two points <span
+class="math inline">\(a,b\in \mathbb{R}^2\)</span>. To achieve this,
+pick a parametrisation <span class="math inline">\(\gamma: [-1,1]
+\rightarrow \mathbb{R}^2\)</span> of this line with <span
+class="math inline">\(\gamma(-1)=a\)</span>, <span
+class="math inline">\(\gamma(1)=b\)</span></p>
+<p><span class="math display">\[
+\gamma(z) = \frac{1-z}{2}a+\frac{1+z}{2}b
+\]</span></p>
+<p>then</p>
+<p><span class="math display">\[
+\int_{\mathcal{C}} f(x)\;ds = \frac{\|b-a\|}{2} \int_{-1}^{+1}
+f(\gamma(z))\;dz
+\]</span> Let <span
+class="math inline">\(\mathcal{Q}_{n_q}^{(\text{GL})}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}\)</span>
+be the Gauss-Legendre quadrature rule for the interval <span
+class="math inline">\([-1,+1]\)</span>. Then we obtain</p>
+<p><span class="math display">\[
+\int_{\mathcal{C}} f(x)\;ds \approx \sum_{q=0}^{n_q-1} w_{\mathcal{C},q}
+f(\zeta_{\mathcal{C}}^{(q)})
+\]</span></p>
+<p>where the Gauss-Legendre quadrature rule on <span
+class="math inline">\(\mathcal{C}\)</span> is given by <span
+class="math inline">\(\mathcal{Q}^{(\mathcal{C})}_{n_q}=\{(\zeta^{(q)}_{\mathcal{C}},w_{\mathcal{C},q})\}_{q=0}^{n_q-1}\)</span>
+with</p>
+<p><span class="math display">\[
+\zeta_{\mathcal{C}}^{(q)} = \gamma(\widetilde{\zeta}^{(q)}) =
+\frac{1}{2}(1-\widetilde{\zeta}^{(q)})a +
+\frac{1}{2}(1+\widetilde{\zeta}^{(q)})b,\qquad
+w_q = \|\gamma&#39;(\zeta^{(q)})\| \widetilde{w}_{\mathcal{C},q} =
+\frac{\|b-a\|}{2} \widetilde{w}_q
+\]</span> and <span class="math display">\[
+\text{dop}(\mathcal{Q}^{(\mathcal{C})}_{n_q}) =
+\text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1.
+\]</span></p>
+<h2 data-number="4.3"
+id="two-dimensional-quadrature-for-the-reference-triangle">Two-dimensional
+quadrature for the reference triangle</h2>
+<p>To numerically integrate functions over the reference triangle <span
+class="math inline">\(K\)</span>, first observe that <span
+class="math inline">\(K\)</span> is the image of the square <span
+class="math inline">\(S=[-1,+1]\times [-1,+1]\)</span> under the Duffy
+transform <span class="math inline">\(\tau\)</span> which maps a point
+<span
+class="math inline">\(\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in
+S\)</span> to</p>
+<p><span class="math display">\[
+\begin{aligned}
+\tau(\widetilde{x}) =
+\left(\frac{1}{2}(1+\widetilde{x}_0),\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\right)^\top
+\in K
+\end{aligned}
+\]</span></p>
+<h3 data-number="4.3.1" id="integration-over-boldsymbols">Integration
+over <span class="math inline">\(\boldsymbol{S}\)</span></h3>
+<p>Since <span class="math inline">\(S=[-1,+1]\times[-1,+1]\)</span> is
+the product of two intervals, we can integrate functions over <span
+class="math inline">\(S\)</span> by picking quadrature points and
+weights <span
+class="math inline">\(\mathcal{Q}_{n_q}^{(S)}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{N_q-1}\)</span>
+with <span class="math inline">\(N_q = n_q(n_q+1)\)</span> and</p>
+<p><span class="math display">\[
+\widetilde{\zeta}^{(q)} =
+\left(\widetilde{\zeta}^{(q_0)}_0,\widetilde{\zeta}^{(q_1)}_1\right)^\top,\quad
+\widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1}
+\qquad \text{where $q=n_q q_0+q_1$}.
+\]</span></p>
+<p>Here <span class="math inline">\(\mathcal{Q}_{n_q+1}^{(\text{GL})} =
+\{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}\)</span>
+and <span class="math inline">\(\mathcal{Q}_{n_q}^{(\text{GL})}
+=\{(\widetilde{\zeta}^{(q_1)}_0,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}\)</span>
+are Gauss-Legendre quadrature rules with <span
+class="math inline">\(n_q+1\)</span> and <span
+class="math inline">\(n_q\)</span> points respectively (we need to
+integrate more accurately in the <span
+class="math inline">\(0\)</span>-direction since an additional factor of
+<span class="math inline">\(\widetilde{x}_0\)</span> is introduced by
+the Duffy-transform).</p>
+<h3 data-number="4.3.2" id="integration-over-boldsymbolk">Integration
+over <span class="math inline">\(\boldsymbol{K}\)</span></h3>
+<p>The quadrature rule <span
+class="math inline">\(\mathcal{Q}_{n_q}^{(K)} =
+\{(\zeta^{(q)},w_q)\}_{q=0}^{N_q-1} =
+\tau(\mathcal{Q}^{(S)}_{n_q})\)</span> over <span
+class="math inline">\(K\)</span> is then obtained as</p>
+<p><span class="math display">\[
+\begin{aligned}
+\zeta^{(q)} &amp;= \tau(\widetilde{\zeta}^{(q)}) =
+\left(\frac{1}{2}(1+\widetilde{\zeta}^{(q_0)}_0),\frac{1}{4}(1-\widetilde{\zeta}^{(q_0)}_0)(1+\widetilde{\zeta}^{(q_1)}_1)\right)^\top,\\
+w_q &amp;= \widetilde{w}_q \left|\det\left(\frac{\partial \tau}{\partial
+\widetilde{x}}\right)\right|_{\widetilde{x}=\widetilde{\zeta}^{(q)}} =
+\frac{1}{8}\widetilde{w}_{0,q_0}\widetilde{w}_{1,q_1}(1-\widetilde{\zeta}^{(q_0)}_0)
+\qquad \text{where $q=n_qq_0+q_1$.}
+\end{aligned}
+\]</span></p>
+<p>The following figure shows the quadrature points on <span
+class="math inline">\(S\)</span> and <span
+class="math inline">\(K\)</span> for <span
+class="math inline">\(n=2\)</span> points.</p>
+<figure>
+<img src="figures/quadrature.png" alt="Quadrature points on S and K" />
+<figcaption aria-hidden="true">Quadrature points on <span
+class="math inline">\(S\)</span> and <span
+class="math inline">\(K\)</span></figcaption>
+</figure>
+<h2 data-number="4.4" id="implementation-in-python">Implementation in
+Python</h2>
+<h2 data-number="4.5" id="fem-method-on-reference-triangle">FEM method
+on reference triangle</h2>
+<p>We can now implement a simple finite element method on the domain
+<span class="math inline">\(\Omega=K\)</span> defined by the reference
+triangle. For this, note that the entries of the stiffness matrix are
+given by: <span class="math display">\[
+\begin{aligned}
+A^{(h)}_{ij} = a(\phi_i,\phi_j) &amp;= \int_K \left(\kappa
+\sum_{k=0}^{d-1}\frac{\partial\phi_i}{\partial x_k}(x)
+\frac{\partial\phi_j}{\partial x_k}(x) + \omega\; \phi_i(x)
+\phi_j(x)\right)\;dx\\
+&amp;\approx
+\sum_{q=0}^{N_q-1} w_q\left(\kappa
+\sum_{k=0}^{d-1}\frac{\partial\phi_i}{\partial x_k}(\zeta^{(q)})
+\frac{\partial\phi_j}{\partial x_k}(\zeta^{(q)}) + \omega\;
+\phi_i(\zeta^{(q)}) \phi_j(\zeta^{(q)})\right)\\
+&amp;= \kappa \sum_{q=0}^{N_q-1}\sum_{k=0}^{d-1} w_q  T^\partial_{qik}
+(\boldsymbol{\zeta})T^\partial_{qjk} (\boldsymbol{\zeta})
++\omega \sum_{q=0}^{N_q-1}
+w_qT_{qi}(\boldsymbol{\zeta})T_{qj}(\boldsymbol{\zeta})
+\end{aligned}
+\]</span> Here <span class="math inline">\(d=2\)</span> is the dimension
+of the domain and <span
+class="math inline">\(\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}\)</span> is a
+suitable quadrature rule on <span class="math inline">\(K\)</span>. If
+we use a Lagrange finite element of polynomial degree <span
+class="math inline">\(p\)</span>, then we need that make sure that the
+degree of precision of the quadrature rule is <span
+class="math inline">\(2p\)</span> to ensure that the product <span
+class="math inline">\(\phi_i(x)\phi_j(x)\)</span> is integrated exactly.
+Hence, we should use the quadrature rule <span
+class="math inline">\(\mathcal{Q}_{p+1}^{(K)}\)</span>.</p>
+<p>The entries of the right-hand side vector <span
+class="math inline">\(\boldsymbol{b}^{(h)}\)</span> are computed like
+this: <span class="math display">\[
+\begin{aligned}
+b^{(h)}_i = b(\phi_i) &amp;= \int_K f(x)\phi_i(x)\;dx + \int_{\partial
+K} g(x)\phi_i(x)\;dx\\
+&amp;\approx \sum_{q=0}^{N_q-1} w_q f(\zeta^{(q)}) \phi_i(\zeta^{(q)}) +
+\sum_{\text{facets}\;F_m} \sum_{q=0}^{n_q-1 }w_{F_m,q}
+g(\zeta_{F_m}^{(q)})\phi_i(\zeta_{F_m}^{(q)}) \\
+&amp;= \sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta})
+T_{qi}(\boldsymbol{\zeta}) + \sum_{\text{facets}\;F_m} \sum_{q=0}^{n_q-1
+}w_{F_m,q}
+g_{q}(\boldsymbol{\zeta}_{F_m})T_{qi}(\boldsymbol{\zeta}_{F_m})
+\end{aligned}
+\]</span> with <span
+class="math inline">\(f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})\)</span>
+and <span class="math inline">\(g_{q}(\boldsymbol{\zeta}_{F_m}) :=
+g(\zeta_{F_m}^{(q)})\)</span>. We choose the quadrature rules <span
+class="math inline">\(\mathcal{Q}_{n_q}^{(F_m)} =
+\{w_{F_m,q},\zeta^{(q)}_{F_m}\}_{q=0}^{n_q-1}\)</span> with <span
+class="math inline">\(n_q=p+1\)</span> on the facets <span
+class="math inline">\(F_m\)</span>.</p>
+<p>The error <span
+class="math inline">\(e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)\)</span>
+is the difference between the exact and numerical solution. Furthermore,
+we have that</p>
+<p><span class="math display">\[
+e^{(h)}(x) = \sum_{j=0}^{d_p-1} \underbrace{\left(u^{(h)}_j -
+(u^{(h)}_{\text{exact}})_j\right)}_{=:e^{(h)}_j}\phi_j(x) =
+\sum_{j=0}^{d_p-1} e^{(h)}_j \phi_j(x)
+\]</span> with <span class="math inline">\((u^{(h)}_{\text{exact}})_j =
+\ell_j(u_\text{exact})\)</span> since the Lagrange element is nodal.</p>
+<p>The square of the <span class="math inline">\(L_2\)</span> norm of
+the error is given by</p>
+<p><span class="math display">\[
+\begin{aligned}
+\|e^{(h)}\|_{L_2}^2 &amp;= \int_K (e^{(h)}(x))^2\;dx\\
+&amp;= \int_K\sum_{j,k=0}^{d_p-1} e^{(h)}_je^{(h)}_k
+\phi_j(x)\phi_k(x)\;dx\\
+&amp;\approx
+\sum_q ^{N_q-1}\sum_{j,k=0}^{d_p-1} w_q e^{(h)}_je^{(h)}_k
+\phi_j(\zeta^{(q)})\phi_k(\zeta^{(q)})\\
+&amp;= \sum_q ^{N_q-1}\sum_{j,k=0}^{d_p-1} w_q e^{(h)}_je^{(h)}_k
+T_{qj}T_{qk}.
+\end{aligned}
+\]</span></p>
+<p>where <span
+class="math inline">\(\mathcal{Q}_{n_q}^{(K)}=\{w_q\zeta^{(q)}\}_{q=0}^{N_q-1}\)</span>
+is a suitable quadrature rule on <span
+class="math inline">\(K\)</span>.</p>
+<p>To test this, we use the method of manufactured solutions. For this,
+we pick a right-hand side <span class="math inline">\(f(x)\)</span> and
+boundary condition <span class="math inline">\(g(x)\)</span> such that
+the exact solution of <span class="math inline">\(-\kappa \Delta u(x) +
+\omega u(x) = f(x)\)</span> is given by</p>
+<p><span class="math display">\[
+u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]
+\]</span></p>
+<p>A straightforward calculation shows that</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(x) &amp;=
+\left(\left(2\frac{\kappa}{\sigma^2}+\omega\right)-\frac{\kappa}{\sigma^4}(x-x_0)^2\right)
+u_{\text{exact}}(x)
+\\
+g(x) &amp;= -\frac{\kappa}{\sigma^2}n\cdot(x-x_0)u_{\text{exact}}(x)
+\\
+n &amp;= \begin{cases}
+\frac{1}{\sqrt{2}}\begin{pmatrix}1 \\ 1\end{pmatrix} &amp; \text{for
+$x\in F_0$, i.e. $0\le x_0\le 1$, $x_0+x_1=1$}\\[3ex]
+\begin{pmatrix}0 \\ -1\end{pmatrix} &amp; \text{for $x\in F_1$, i.e.
+$0\le x_0\le 1$, $x_1=0$}\\[3ex]
+\begin{pmatrix}-1 \\ 0\end{pmatrix} &amp; \text{for $x\in F_2$, i.e.
+$x_0=0$, $0\le x_1\le 1$}
+\end{cases}
+\end{aligned}
+\]</span></p>
+<h3 data-number="4.5.1" id="exercise-1">Exercise</h3>
+<ul>
+<li>Implement a method
+<code>assemble_lhs_reference_triangle(element, n_q)</code> which
+assembles the stiffness matrix <span
+class="math inline">\(A^{(h)}\)</span> using the Gauss-Legendre
+quadrature rule. The method should be passed:
+<ul>
+<li>An instance <code>element</code> of a subclass of
+<code>FiniteElement</code></li>
+<li>The number of points <code>n_q</code> used for the Gauss-Legendre
+quadrature</li>
+</ul></li>
+<li>Implement a method
+<code>assemble_rhs_reference_triangle(f, g, element, n_q)</code> which
+assembles the right-hand side vector <span
+class="math inline">\(\boldsymbol{b}^{(h)}\)</span> using the
+Gauss-Legenre quadrature rule. The method should be passed:
+<ul>
+<li>The function <code>f</code> which describes the right-hand side
+function <span class="math inline">\(f(x)\)</span></li>
+<li>The function <code>g</code> which describes the Neumann boundary
+function <span class="math inline">\(g(x)\)</span></li>
+<li>An instance <code>element</code> of a subclass of
+<code>FiniteElement</code></li>
+<li>The number of points <code>n_q</code> used for the Gauss-Legendre
+quadrature</li>
+</ul></li>
+<li>Implement a method
+<code>two_norm_reference_triangle(w, element, n_q)</code> which computes
+the <span class="math inline">\(L_2\)</span> norm of a function <span
+class="math inline">\(w^{(h)}(x)=\sum_{j=0}^{d_p-1} w^{(h)}_j
+\phi_j(x)\)</span>. The method should be passed:
+<ul>
+<li>The vector <span class="math inline">\(\boldsymbol{w}^{(h)}\)</span>
+that defines the function <span
+class="math inline">\(w^{(h)}(x)\)</span></li>
+<li>An instance <code>element</code> of a subclass of
+<code>FiniteElement</code></li>
+<li>The number of points <code>n_q</code> used for the Gauss-Legendre
+quadrature</li>
+</ul></li>
+<li>Solve the linear system <span
+class="math inline">\(A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}\)</span>
+for the vector <span class="math inline">\(\boldsymbol{u}^{(h)}\)</span>
+by using <a
+href="https://numpy.org/doc/2.0/reference/generated/numpy.linalg.solve.html">numpy.linalg.solve()</a></li>
+<li>Apply the <code>tabulate_dofs()</code> method of the finite element
+class to the exact solution <span
+class="math inline">\(u_{\text{exact}}(x)\)</span> to obtain a vector
+<span
+class="math inline">\(\boldsymbol{u}_{\text{exact}}^{(h)}\)</span>.</li>
+<li>Compute the error norm <span
+class="math inline">\(\|e^{(h)}\|_{L_2}=\|\boldsymbol{u}_{\text{exact}}^{(h)}-\boldsymbol{u}^{(h)}\|_{L_2}\)</span>.</li>
+<li>How does <span class="math inline">\(\|e^{(h)}\|_{L_2}\)</span>
+depend on the polynomial degree <span class="math inline">\(p\)</span>
+of the Lagrange element?</li>
+<li>What happens for large values of <span
+class="math inline">\(p\)</span>?</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Error analysis</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    html {
+      font-family: arial;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up"></a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top"></a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="6-unstructured-meshes.html" accesskey="n" rel="next">Unstructured meshes</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="4-numerical-quadrature.html" accesskey="p" rel="previous">Numerical quadrature</a>
+</span>
+</div>
+</nav>
+<h1 data-number="5" id="error-analysis">Error analysis</h1>
+<h2 data-number="5.1" id="sources-of-error">Sources of error</h2>
+<p>When solving a problem in Scientific Computing, there are several
+sources of error:</p>
+<h4 data-number="5.1.0.1" id="modelling-error">Modelling error</h4>
+<p>When modelling a physical phenomenon, we need to pick a set of
+equations. For example, we might want to use the Navier-Stokes equations
+to model fluid flow in the atmosphere. Since most equations are an
+approximation of the real physics, this will inevitably introduce
+modelling errors.</p>
+<h4 data-number="5.1.0.2" id="discretisation-error">Discretisation
+error</h4>
+<p>To solve the chosen system of equations they need to be discretised
+so that they can be solved on a computer. The finite element
+discretisation will introduce errors that are typically of the form
+<span class="math inline">\(Ch^\alpha\)</span> for some positive
+constants <span class="math inline">\(C\)</span>, <span
+class="math inline">\(\alpha\)</span> where <span
+class="math inline">\(h\)</span> is the grid spacing. The error can be
+reduced by refining the compututational grid or by choosing a better
+discretisation which might lead to smaller <span
+class="math inline">\(C\)</span> and larger <span
+class="math inline">\(\alpha\)</span>.</p>
+<h4 data-number="5.1.0.3"
+id="computational-or-rounding-error">Computational (or rounding)
+error</h4>
+<p>Since a computer can only perform inexact arithmetic for real
+numbers, the results will only be accurate up to rounding errors.</p>
+<p>Obviously, it is crucial to minimise the total error, which is made
+up of the three components above. Modelling errors are discussed
+elsewhere and beyond the scope of this course, in which we will
+concentrate on the PDE <span class="math inline">\(-\kappa \Delta u +
+\omega u = f\)</span>. A detailled analysis of finite element
+discretisation errors is presented in the course on “Numerical solution
+of elliptic PDEs”. In the following we focus on rounding errors.</p>
+<h2 data-number="5.2" id="results-from-numerical-experiment">Results
+from numerical experiment</h2>
+<p>As a motivation, consider the solution of our model equation <span
+class="math inline">\(-\kappa \Delta u + \omega u = f\)</span> on the
+reference triangle for <span class="math inline">\(\kappa =
+0.9\)</span>, <span class="math inline">\(\omega = 0.4\)</span>. The
+boundary conditions and right-hand side were chosen such that the exact
+solution is given by <span class="math inline">\(u_{\text{exact}}(x) =
+\exp[-\frac{1}{2\sigma^2}(x-x_0)^2]\)</span> with <span
+class="math inline">\(\sigma = 0.5\)</span>, <span
+class="math inline">\(x_0 = (0.6, 0.25)\)</span>. The following figure
+shows the relative squared error <span
+class="math inline">\(\|u-u_{\text{exact}}\|^2_{L_2}/\|u_{\text{exact}}\|^2_{L_2}\)</span>
+as a function of the polynomial degree <span
+class="math inline">\(p\)</span>:</p>
+<figure>
+<img src="figures/error_reference_triangle.png" alt="Relative error" />
+<figcaption aria-hidden="true">Relative error</figcaption>
+</figure>
+<p>Results are shown both for single precision and double precision
+arithmetic. We would expect that the error decreases for higher values
+of <span class="math inline">\(p\)</span> since the solution can be
+approximated better by higher degree polynomials. Although initially
+this is indeed the case, it appears that the error can not be reduced
+below a certain value and it in fact increases for larger values of
+<span class="math inline">\(p\)</span>. To understand this behaviour, we
+need to discuss how (real) numbers are represented on a computer.</p>
+<h2 data-number="5.3" id="floating-point-numbers">Floating point
+numbers</h2>
+<p>A general <strong>floating point number system</strong> <span
+class="math inline">\(\mathbb{F}\)</span> is specified by four integer
+numbers: * a base <span
+class="math inline">\(1&lt;\beta\in\mathbb{N}\)</span> * a precision
+<span class="math inline">\(0&lt;p\in\mathbb{N}\)</span> * a range of
+exponents defined by <span
+class="math inline">\(L,U\in\mathbb{Z}\)</span> with <span
+class="math inline">\(L&lt;0\le U\)</span></p>
+<p>The set <span class="math inline">\(\mathbb{F}\)</span> consists of
+all numbers <span class="math inline">\(x\)</span> of the form</p>
+<p><span class="math display">\[
+x = \pm \underbrace{\left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} +
+\dots+d_{p-1}\beta^{1-p}\right)}_{\text{mantissa}}\cdot\beta^E\qquad(\dagger)
+\]</span></p>
+<p>where the coefficients <span class="math inline">\(d_i\in
+\{0,1,2,\dots,\beta-1\}\)</span> and the <strong>exponent</strong> <span
+class="math inline">\(E\)</span> with <span class="math inline">\(L\le
+E\le U\)</span> are natural numbers. The expression in brackets is
+called the <strong>mantissa</strong>. Note that although <span
+class="math inline">\(\beta,p,L,U\)</span> as well as <span
+class="math inline">\(E,d_i\)</span> are integers, they represent real
+numbers through <span class="math inline">\((\dagger)\)</span>.</p>
+<p>The floating point number system <span
+class="math inline">\(\mathbb{F}\)</span> is called <em>normalised</em>
+if <span class="math inline">\(d_0&gt;0\)</span>; this makes each number
+in <span class="math inline">\(\mathbb{F}\)</span> unique.</p>
+<h4 data-number="5.3.0.1" id="example">Example</h4>
+<p>The number <span class="math inline">\(234.7\)</span> is <span
+class="math display">\[
+\left(2+3\cdot 10^{-1}+4\cdot 10^{-2} +7\cdot 10^{-3}\right)\cdot 10^2
+\]</span></p>
+<p>in precision 4, base 10 arithmetic. It cannot be represented exactly
+in precision 3, base 10 arithmetic (and would have to be approximated as
+<span class="math inline">\(\left(2+3\cdot 10^{-1}+5\cdot
+10^{-2}\right)\cdot 10^2 = 235\)</span> in this case).</p>
+<p>The smallest positive normalised number of the from <span
+class="math inline">\((\dagger)\)</span> is obtained by setting <span
+class="math inline">\(d_0=1\)</span>, <span
+class="math inline">\(d_i=0\)</span> for <span
+class="math inline">\(i&gt;0\)</span> and <span
+class="math inline">\(E=L\)</span>. This results in <span
+class="math inline">\(1\cdot \beta^L\)</span> which is also is called
+the <strong>underflow threshold</strong>.</p>
+<p>The largest positive normalised number in <span
+class="math inline">\(\mathbb{F}\)</span> is obtained by setting <span
+class="math inline">\(d_i=\beta-1\)</span>, for <span
+class="math inline">\(i\le 0\)</span> and <span
+class="math inline">\(E=U\)</span>. This results in</p>
+<p><span class="math display">\[
+\begin{aligned}
+(\beta-1)\left(1+\beta^{-1}+\beta^{-2}+\dots+\beta^{1-p}\right)\cdot
+\beta^U &amp;=
+(\beta-1) \beta^U \sum_{j=0}^{p-1} \beta^{-p}\\
+&amp;= (1-\beta^{-p})\beta^{U+1},
+\end{aligned}
+\]</span></p>
+<p>which is also called the <strong>overflow threshold</strong>.</p>
+<p>Obviously, the floating point number system <span
+class="math inline">\(\mathbb{F}\)</span> is not closed under standard
+arithmetic operations: for example, <span
+class="math inline">\(x,y\in\mathbb{F}\)</span> does not necessarily
+imply that <span class="math inline">\(x+y\in\mathbb{F}\)</span>. If a
+computation with two numbers <span
+class="math inline">\(x,y\in\mathbb{F}\)</span> results in a number
+<span class="math inline">\(z\not\in\mathbb{F}\)</span> we need to
+somehow represent <span class="math inline">\(z\)</span> by some nearby
+element <span class="math inline">\(\tilde{z} :=
+\mathcal{R}_{\mathbb{F}}(z)\in\mathbb{F}\)</span> such that <span
+class="math inline">\(|z-\widetilde{z}|\)</span> is small. A common
+choice is to employ some sort of rounding.</p>
+<h3 data-number="5.3.1" id="ieee-754-normalised-arithmetic">IEEE 754
+(Normalised) Arithmetic</h3>
+<p>The most commonly used floating point systems on modern computers are
+single- and double-precision, which are implemented according to the <a
+href="https://standards.ieee.org/ieee/754/6210/">IEEE 754 standard</a>.
+In both cases, <span class="math inline">\(\beta=2\)</span> and it is
+implicitly assumed that <span class="math inline">\(d_0=1\)</span>, so
+this number does not have to be stored.</p>
+<h4 data-number="5.3.1.1" id="single-precision">Single precision</h4>
+<p><code>np.float32</code>: One binary digit (=bit) is used to store the
+sign, 8 for the exponent and 23 for the mantissa <span
+class="math inline">\(\Rightarrow\)</span> 32 bits (4 bytes) in
+total.</p>
+<figure>
+<img src="figures/bits_single_precision.svg"
+alt="bits single precision" />
+<figcaption aria-hidden="true">bits single precision</figcaption>
+</figure>
+<ul>
+<li><span class="math inline">\(p=24\)</span></li>
+<li><span class="math inline">\(L=-126\)</span>, <span
+class="math inline">\(U=127\)</span></li>
+<li>Underfloat threshold = <span class="math inline">\(2^{-126} \approx
+10^{-38}\)</span></li>
+<li>Overflow threshold = <span class="math inline">\(2^{128} \approx
+10^{38}\)</span></li>
+</ul>
+<h4 data-number="5.3.1.2" id="double-precision">Double precision</h4>
+<p><code>np.float64</code>: One binary digit is used to store the sign,
+11 for the exponent and 52 for the mantissa <span
+class="math inline">\(\Rightarrow\)</span> 64 bits (8 bytes) in
+total.</p>
+<figure>
+<img src="figures/bits_double_precision.svg"
+alt="bits double precision" />
+<figcaption aria-hidden="true">bits double precision</figcaption>
+</figure>
+<ul>
+<li><span class="math inline">\(p=53\)</span></li>
+<li><span class="math inline">\(L=-1022\)</span>, <span
+class="math inline">\(U=1023\)</span>.</li>
+<li>Underfloat threshold = <span class="math inline">\(2^{-1022} \approx
+10^{-308}\)</span></li>
+<li>Overflow threshold = <span class="math inline">\(2^{1024} \approx
+10^{308}\)</span></li>
+</ul>
+<h3 data-number="5.3.2"
+id="representation-of-special-values">Representation of special
+values</h3>
+<p>Since <span class="math inline">\(d_0=1\)</span> it appears that we
+can not store the number zero. To represent this number and some other
+special cases, several dedicated bit patterns are reserved:</p>
+<ul>
+<li>The number zero is stored as
+<code>s000 0000 0000 0000 0000 0000 0000 0000</code> where <span
+class="math inline">\(s\)</span> is the sign bit. Note that there is
+both <span class="math inline">\(+0\)</span> (<span
+class="math inline">\(s=1\)</span>) and <span
+class="math inline">\(-0\)</span> (<span
+class="math inline">\(s=0\)</span>).</li>
+<li><code>NaN</code> (“not a number”) is stored as
+<code>s111 1111 1xxx xxxx xxxx xxxx xxxx xxxx</code> where the sequence
+denotes with <span class="math inline">\(x\)</span> stands for any
+non-zero number and the sign <span class="math inline">\(s\)</span> is
+usually ignored. The result of mathematically invalid operations (such
+as taking the square root of a negative number) is stored as a
+<code>NaN</code></li>
+<li>Infinity (<span class="math inline">\(\pm\infty\)</span>) is stored
+as <code>s111 1111 1000 0000 0000 0000 0000 0000</code> where again
+<span class="math inline">\(s\)</span> denotes the sign. This result can
+arise from division by zero.</li>
+</ul>
+<h3 data-number="5.3.3" id="machine-epsilon">Machine epsilon</h3>
+<p>From <span class="math inline">\((\dagger)\)</span> it can be seen
+that gaps between numbers in <span
+class="math inline">\(\mathbb{F}\)</span> increase for larger numbers.
+For each exponent <span class="math inline">\(E\)</span> the interval
+<span class="math inline">\([2^E,2^{E+1}]\)</span> is discretised into
+<span class="math inline">\(2^{p-1}\)</span> equal pieces of size <span
+class="math inline">\(2^{1-p}\cdot 2^E\)</span>, as shown in the
+following figure:</p>
+<figure>
+<img src="figures/floating_point_spacing.svg"
+alt="floating point number spacing" />
+<figcaption aria-hidden="true">floating point number
+spacing</figcaption>
+</figure>
+<p>Setting <span class="math inline">\(E=0\)</span>, we see that the
+size of gap of numbers in <span
+class="math inline">\(\mathbb{F}\)</span> around <span
+class="math inline">\(1\)</span> is</p>
+<p><span class="math display">\[
+2^{1-p} = \begin{cases}
+2^{-23} \approx 10^{-7} &amp; \text{in single precision}\\
+2^{-52} \approx 2\cdot 10^{-16} &amp; \text{in double precision}
+\end{cases}
+\]</span></p>
+<p>This quantity is also known as the <strong>machine</strong> epsilon
+<span class="math inline">\(\varepsilon_{\text{mach}}\)</span>. It is
+the smallest positive number in <span
+class="math inline">\(\mathbb{x}\)</span> that can be added to <span
+class="math inline">\(1\)</span> such that (after rounding to <span
+class="math inline">\(\mathbb{F}\)</span>) the result is different from
+<span class="math inline">\(1\)</span>:</p>
+<p><span class="math display">\[
+\varepsilon_{\text{mach}} := \min_{x\in\mathbb{F},x&gt;0}\{x:
+\mathcal{R}_{\mathbb{F}}(1+x)\neq 1\}
+\]</span></p>
+<p>Put differently, the machine epsilon is the relative size of rounding
+errors or the relative size of floating point operations. If <span
+class="math inline">\(z\)</span> is the result of some arithmetic
+operation involving numbers from <span
+class="math inline">\(\mathbb{F}\)</span> then</p>
+<p><span class="math display">\[
+\frac{|\mathcal{R}_{\mathbb{F}}(z)-z|}{|z|} \sim
+\varepsilon_{\text{mach}}.
+\]</span></p>
+<h2 data-number="5.4" id="rounding-errors">Rounding errors</h2>
+<p>As the following examples show, rounding errors can have serious
+consequences</p>
+<h3 data-number="5.4.1" id="example-1-harmless">Example 1
+(harmless)</h3>
+<p>Consider the two numbers <span class="math inline">\(x=4.7\cdot
+10^{-16}\)</span> and <span class="math inline">\(x=2.9\cdot
+10^{-16}\)</span>. Both can be represented exactly as floating point
+numbers. The same is true for their difference <span
+class="math inline">\(z=x-y=1.8\cdot 10^{-16}\)</span>, i.e. <span
+class="math inline">\(\widetilde{z}=\mathcal{G}_{\mathbb{F}}(z)=z\)</span>
+and as a consequence the rounding error is zero of this operation is
+zero:</p>
+<p><span class="math display">\[
+\frac{\mathcal{R}_{\mathbb{F}}(z)-z}{z} =
+\frac{\mathcal{R}_{\mathbb{F}}(x)-\mathcal{R}_{\mathbb{F}}(y)-z}{z} =
+\frac{(4.7 -2.9 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} = 0.
+\]</span> In general, adding or subtracting numbers leads to small
+relative errors provided both the numbers and the result of the
+computation are of comparable size. As the following example shows, the
+final point is crucial.</p>
+<h3 data-number="5.4.2"
+id="example-2-subtracting-two-numbers-that-are-very-close">Example 2
+(subtracting two numbers that are very close)</h3>
+<p>Now assume that we compute the difference of the two numbers by first
+adding <span class="math inline">\(x\)</span> and <span
+class="math inline">\(y\)</span> to one and then subtract the resulting
+numbers: <span class="math inline">\(x&#39;=1+x\)</span>, <span
+class="math inline">\(y&#39;=1+y\)</span>, <span
+class="math inline">\(z&#39;=x&#39;-y&#39;\)</span>. Although in exact
+arithmetic <span class="math inline">\(z&#39;\)</span> will be identical
+to <span class="math inline">\(x-y\)</span>, this is not true in
+floating point arithmetic. First observe that <span
+class="math inline">\(x&#39;\)</span> will be rounded to <span
+class="math inline">\(\mathcal{R}_{\mathbb{F}}(x&#39;)=1.00000000000000044\)</span>
+and <span class="math inline">\(y&#39;\)</span> will be rounded to <span
+class="math inline">\(\mathcal{R}_{\mathbb{F}}(x&#39;)=1.00000000000000022\)</span>.
+The relative error of <span class="math inline">\(z&#39;\)</span>
+is:</p>
+<p><span class="math display">\[
+\frac{\mathcal{R}_{\mathbb{F}}(z&#39;)-z}{z} =
+\frac{\mathcal{R}_{\mathbb{F}}(x&#39;)-\mathcal{R}_{\mathbb{F}}(y&#39;)-z}{z}
+= \frac{(4.4 - 2.2 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} =
+\frac{0.4}{1.8} \approx 23\%
+\]</span></p>
+<h3 data-number="5.4.3"
+id="example-3-adding-two-numbers-of-very-different-size">Example 3
+(adding two numbers of very different size)</h3>
+<p>Consider the linear system <span class="math display">\[
+\begin{pmatrix}
+0 &amp; 1 \\ 1 &amp; 1
+\end{pmatrix}
+\begin{pmatrix}
+x_0 \\ x_1
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 \\ 0
+\end{pmatrix}
+\]</span> The solution is <span class="math inline">\(x_0=-1\)</span>,
+<span class="math inline">\(x_1=+1\)</span>. Now consider a small
+perturbation of this problem, namely <span class="math display">\[
+\begin{pmatrix}
+-10^{-20} &amp; 1 \\ 1 &amp; 1
+\end{pmatrix}
+\begin{pmatrix}
+x_0 \\ x_1
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 \\ 0
+\end{pmatrix}
+\]</span> It is easy to see that the solution of the perturbed problem
+is <span class="math inline">\(x_0=-\frac{1}{1+10^{-20}}\)</span>, <span
+class="math inline">\(x_1=+\frac{1}{1+10^{-20}}\)</span>, which is very
+close to the solution of the unperturbed system.</p>
+<p>Let us solve the perturbed system numerically. For this, we write it
+as</p>
+<p><span class="math display">\[
+\begin{aligned}
+-10^{-20} x_0 + x_1 &amp;= 1\\
+x_0 + x_1 &amp;= 0
+\end{aligned}
+\]</span> To eliminate <span class="math inline">\(x_0\)</span> from the
+second equation, we multiply the first equation with <span
+class="math inline">\(10^{20}\)</span> and add it to the second equation
+to obtain <span class="math display">\[
+\begin{aligned}
+-10^{-20} x_0 + x_1 &amp;= 1\\
+(1+10^{20}) x_1 &amp;= 10^{20}
+\end{aligned}
+\]</span> Now, since <span class="math inline">\(10^{20}\gg 1\)</span>,
+we can replace <span class="math inline">\(1+10^{20}\)</span> by <span
+class="math inline">\(10^{20}\)</span> to obtain <span
+class="math display">\[
+\begin{aligned}
+-10^{-20} x_0 + x_1 &amp;= 1\\
+10^{20} x_1 &amp;= 10^{20},
+\end{aligned}
+\]</span> which immediately implies <span class="math inline">\(x_1 =
+1\)</span>. Inserting this into the first equation gives <span
+class="math display">\[
+\begin{aligned}
+-10^{-20} x_0 + 1 &amp;= 1
+\end{aligned}
+\]</span> and therefore <span class="math inline">\(x_0=0\)</span>.
+Altogether we find <span class="math inline">\(x_0=0\)</span>, <span
+class="math inline">\(x_1=1\)</span>. This is very different from the
+exact solution <span
+class="math inline">\(x_0=-\frac{1}{1+10^{-20}}\)</span>, <span
+class="math inline">\(x_1=+\frac{1}{1+10^{-20}}\)</span>! Hence,
+although the rounding we performed in the numerical solution procedure
+appears to be innocent, we get a completely wrong solution. In this
+case, this problem can be fixed by using a slightly different solution
+procedure: subtract the first equation from the second equation to
+obtain <span class="math inline">\((1+10^{-20}) x_0 = -1\)</span>, which
+can be safely approximated by <span
+class="math inline">\(x_0=-1\)</span>. Then use this in the second
+equation <span class="math inline">\(x_0+x_1=0\)</span> to conclude
+<span class="math inline">\(x_1=+1\)</span>. Now this is very close to
+the exact solution of the perturbed system. It turns out that solving
+the perturbed linear system with <a
+href="https://numpy.org/doc/2.2/reference/generated/numpy.linalg.solve.html"><code>np.linalg.solve()</code></a>
+will also give a good approximation. Unfortunately, this is not always
+the case, as the following example demonstrates.</p>
+<h3 data-number="5.4.4" id="example-4-ill-conditioned-matrix">Example 4
+(ill-conditioned matrix)</h3>
+<p>For a given positive <span
+class="math inline">\(\epsilon&gt;0\)</span> consider the following
+<span class="math inline">\(2\times 2\)</span> symmetric matrix</p>
+<p><span class="math display">\[
+\begin{aligned}
+A &amp;= \begin{pmatrix}
+1+\frac{1}{\sqrt{2}} + \frac{2+\sqrt{2}}{4}\epsilon &amp;
+\frac{1}{\sqrt{2}}-\frac{\sqrt{2}}{4}\epsilon\\[1ex]
+\frac{1}{\sqrt{2}}-\frac{\sqrt{2}}{4}\epsilon &amp;
+1-\frac{1}{\sqrt{2}}+\frac{2-\sqrt{2}}{4}\epsilon
+\end{pmatrix}
+\\
+&amp;\approx
+\begin{pmatrix}
+1.7071067811865475 + 0.8535533905932737 \cdot\epsilon &amp;
+0.7071067811865475 - 0.3535533905932738 \cdot\epsilon \\
+0.7071067811865475 - 0.3535533905932738 \cdot\epsilon &amp;
+0.2928932188134525 + 0.1464466094067262\cdot\epsilon
+\end{pmatrix}
+\end{aligned}
+\]</span></p>
+<p>and vector</p>
+<p><span class="math display">\[
+\boldsymbol{b} = \begin{pmatrix}
+\frac{\sqrt{2+\sqrt{2}}+\sqrt{2-\sqrt{2}}}{2}\\[1ex]
+\frac{\sqrt{2+\sqrt{2}}-\sqrt{2-\sqrt{2}}}{2}
+\end{pmatrix}
+\approx
+\begin{pmatrix}
+1.3065629648763766\\0.5411961001461970
+\end{pmatrix}
+\]</span></p>
+<p>It can be shown that independent of <span
+class="math inline">\(\epsilon\)</span> the exact solution of the linear
+system <span
+class="math inline">\(A\boldsymbol{u}=\boldsymbol{b}\)</span> is given
+by</p>
+<p><span class="math display">\[
+\boldsymbol{u}_{\text{exact}} =
+\begin{pmatrix}
+\frac{\sqrt{2 - \sqrt{2}}}{2}\\[1ex]
+\frac{\sqrt{2 + \sqrt{2}}}{2}
+\end{pmatrix}
+\approx
+\begin{pmatrix}
+0.3826834323650897\\0.9238795325112867
+\end{pmatrix}
+\]</span></p>
+<p>Hence, we would expect that if we solve the linear system with a
+numerical method, we would get a solution that is at least close to the
+exact solution. The following table shows the solution <span
+class="math inline">\(\boldsymbol{u}\)</span> of <span
+class="math inline">\(A\boldsymbol{u}=\boldsymbol{b}\)</span> that is
+obtained with</p>
+<pre><code>u = np.linalg.solve(A,b)</code></pre>
+<p>for different values of <span
+class="math inline">\(\epsilon\)</span>. The final column shows the
+relative error <span
+class="math inline">\(\|\boldsymbol{u}-\boldsymbol{u}_{\text{exact}}\|_2|/\|\boldsymbol{u}_{\text{exact}}\|_2\)</span></p>
+<table>
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 32%" />
+<col style="width: 49%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th><span class="math inline">\(\epsilon\)</span></th>
+<th>solution <span class="math inline">\(\boldsymbol{u}\)</span></th>
+<th>relative error <span
+class="math inline">\(\|\|\boldsymbol{u}-\boldsymbol{u}_{\text{exact}}\|\|_2/\|\|\boldsymbol{u}_{\text{exact}}\|\|_2\)</span></th>
+<th>condition number <span class="math inline">\(\kappa\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math inline">\(10^{-3}\)</span></td>
+<td><span class="math inline">\(\begin{pmatrix}0.3826834323650560 \\
+0.9238795325113685\end{pmatrix}\)</span></td>
+<td><span class="math inline">\(8.8408\cdot 10^{-14}\)</span></td>
+<td><span class="math inline">\(4\cdot 10^3\)</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\(10^{-6}\)</span></td>
+<td><span class="math inline">\(\begin{pmatrix}0.3826834323171860
+\\0.9238795326269368\end{pmatrix}\)</span></td>
+<td><span class="math inline">\(1.2518\cdot 10^{-10}\)</span></td>
+<td><span class="math inline">\(4\cdot 10^6\)</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\(10^{-9}\)</span></td>
+<td><span class="math inline">\(\begin{pmatrix}0.3826834290672392
+\\0.9238795404730024\end{pmatrix}\)</span></td>
+<td><span class="math inline">\(8.6177\cdot 10^{-9}\)</span></td>
+<td><span class="math inline">\(4\cdot 10^9\)</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\(10^{-12}\)</span></td>
+<td><span class="math inline">\(\begin{pmatrix}0.3826776593455781 \\
+0.9238934698132879\end{pmatrix}\)</span></td>
+<td><span class="math inline">\(1.5086\cdot10^{-5}\)</span></td>
+<td><span class="math inline">\(4\cdot 10^{12}\)</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\(10^{-15}\)</span></td>
+<td><span class="math inline">\(\begin{pmatrix}0.3888090807546386
+\\0.9090909090909092\end{pmatrix}\)</span></td>
+<td><span class="math inline">\(1.6007\cdot10^{-2}\)</span></td>
+<td><span class="math inline">\(4\cdot 10^{15}\)</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\(8\cdot 10^{-16}\)</span></td>
+<td><span class="math inline">\(\begin{pmatrix} 0.2919799363037854
+\\1.1428571428571428\end{pmatrix}\)</span></td>
+<td><span class="math inline">\(2.3702\cdot 10^{-1}\)</span></td>
+<td><span class="math inline">\(5\cdot 10^{15}\)</span></td>
+</tr>
+<tr>
+<td><span class="math inline">\(4\cdot 10^{-16}\)</span></td>
+<td><span class="math inline">\(\begin{pmatrix} -0.0630602600160104 \\
+2.0000000000000000\end{pmatrix}\)</span></td>
+<td><span class="math inline">\(1.1648\)</span></td>
+<td><span class="math inline">\(10^{16}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Clearly, the errors increase for smaller values of <span
+class="math inline">\(\epsilon\)</span>. This is related to the fact
+that the condition number of the matrix increases: The eigenvalues of
+<span class="math inline">\(A\)</span> are</p>
+<p><span class="math display">\[
+\lambda_{\pm} = 1+\frac{\epsilon}{2}\pm\sqrt{1-\frac{\epsilon^2}{4}}
+\approx \{2,\frac{\epsilon}{2}\} \qquad\text{for $\epsilon\ll 1$}
+\]</span></p>
+<p>and hence the condition number, which is the ratio of the largest and
+smallest eigenvalue, is</p>
+<p><span class="math display">\[
+\kappa = \frac{\lambda_+}{\lambda_-} =
+\frac{1+\frac{\epsilon}{2}+\sqrt{1-\frac{\epsilon^2}{4}}}{1+\frac{\epsilon}{2}-\sqrt{1-\frac{\epsilon^2}{4}}}
+\approx \frac{4}{\epsilon}
+\]</span></p>
+<h2 data-number="5.5" id="backward-error-analysis">Backward error
+analysis</h2>
+<p>In general, when solving linear systems with <span
+class="math inline">\(n\)</span> equations we are interested in
+quantifying the error on the solution.</p>
+<p>In exact arithmetic the solution <span
+class="math inline">\(\boldsymbol{u}\in\mathbb{R}^n\)</span>
+satisfies</p>
+<p><span class="math display">\[
+A\boldsymbol{u} = \boldsymbol{b}
+\]</span></p>
+<p>where <span class="math inline">\(A\)</span> is a <span
+class="math inline">\(n\times n\)</span> matrix. However, due to
+rounding errors, the solution <span
+class="math inline">\(\boldsymbol{u}&#39;=\boldsymbol{u}+\delta\boldsymbol{u}\)</span>
+that we actually compute corresponds to the system</p>
+<p><span class="math display">\[
+(A+\delta A)(\boldsymbol{u}+\delta\boldsymbol{u}) = \boldsymbol{b} +
+\delta\boldsymbol{b}
+\]</span></p>
+<p>If we set <span class="math inline">\(\delta\boldsymbol{b}=0\)</span>
+for the moment, we can derive a bound on <span
+class="math inline">\(\delta\boldsymbol{u}\)</span> for the case where
+Gaussian elimination is used to solve the linear system. For this we use
+the following norm on vectors and matrices:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\|\boldsymbol{w}\|_\infty &amp;:= \max_{i=0,\dots,n-1} |w_i|,\\
+\|A\|_\infty &amp;:=
+\max_{\boldsymbol{w}\in\mathbb{R}^n,\boldsymbol{w}\neq \boldsymbol{0}}
+\frac{\|A\boldsymbol{w}\|_\infty}{\|\boldsymbol{w}\|_\infty} =
+\max_{0\le i &lt; n} \sum_{j=0}^{n-1} |A_{ij}|
+\end{aligned}
+\]</span></p>
+<p>Using the definition, it is easy to see that <span
+class="math inline">\(\|A\boldsymbol{w}\|_\infty\le
+\|A\|_\infty\|\boldsymbol{w}\|_\infty\)</span> and <span
+class="math inline">\(\|AB\|_\infty\le\|A\|_\infty\|B\|_\infty\)</span>.</p>
+<p>The condition number of a matrix <span
+class="math inline">\(A\)</span> is given by</p>
+<p><span class="math display">\[
+\text{cond}(A) := \|A^{-1}\|_\infty\|A\|_\infty.
+\]</span></p>
+<p>(For a real-valued symmetric positive matrix this is identical to the
+ratio of the largest and smallest eigenvalue).</p>
+<p>We now have the following</p>
+<h3 data-number="5.5.1" id="theorem-1">Theorem 1</h3>
+<p>If the <span class="math inline">\(n\times n\)</span> matrix <span
+class="math inline">\(A\)</span> is non-singular and <span
+class="math inline">\(\delta A\)</span> is sufficiently small,
+namely</p>
+<p><span class="math display">\[
+\|\delta A\|_{\infty} \|A^{-1}\|_\infty \le \frac{1}{2}
+\]</span></p>
+<p>then <span class="math inline">\(A+\delta A\)</span> is non-singular
+and</p>
+<p><span class="math display">\[
+\frac{\|\delta\boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} \le
+2\text{cond}(A) \frac{\|\delta A\|_\infty}{\|A\|_\infty}.
+\]</span></p>
+<p>Furthermore, it can be shown that if Gaussian elimination is used to
+solve the linear system (and this is the method used by <a
+href="https://numpy.org/doc/2.2/reference/generated/numpy.linalg.solve.html">numpy.linalg.solve</a>),
+then the effect of roundoff errors is</p>
+<p><span class="math display">\[
+\frac{\|\delta A\|_\infty}{\|A\|_\infty} \le n \varepsilon_{\text{mach}}
+G(A),
+\]</span></p>
+<p>where <span class="math inline">\(G(A)\)</span> is a “well-behaved”
+number that depends on the matrix <span
+class="math inline">\(A\)</span>. Although it is possible to construct
+pathological examples for which <span
+class="math inline">\(G(A)\)</span> is large, it is reasonable to assume
+that for the matrices that we consider here <span
+class="math inline">\(G(A)\)</span> is small and only depends weakly on
+<span class="math inline">\(A\)</span>. Putting everything together, we
+find that</p>
+<h3 data-number="5.5.2" id="theorem-2">Theorem 2</h3>
+<p>Under the conditions of Theorem 1 and if Gaussian elimination is used
+to solve the linear system, the error <span class="math inline">\(\delta
+\boldsymbol{u}\)</span> can be bounded</p>
+<p><span class="math display">\[
+\frac{\|\delta\boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} \le
+2G(A)\cdot n\cdot \text{cond}(A)\cdot \varepsilon_{\text{mach}}.
+\]</span></p>
+<h3 data-number="5.5.3" id="summary">Summary</h3>
+<p>Although this is only an upper bound which does not necessarily have
+to be tight, this result implies that the (relative) error <span
+class="math inline">\(\|\delta\boldsymbol{u}\|_\infty/\|\boldsymbol{u}\|_\infty\)</span></p>
+<ul>
+<li>is proportional to the machine epsilon <span
+class="math inline">\(\varepsilon_{\text{mach}}\)</span>,</li>
+<li>increases with problem size <span
+class="math inline">\(n\)</span>,</li>
+<li>and grows with the condition number <span
+class="math inline">\(\text{cond}(A)\)</span> of the matrix.</li>
+</ul>
+<h3 data-number="5.5.4" id="estimating-the-error">Estimating the
+error</h3>
+<p>In general it is not possible to compute the error <span
+class="math inline">\(\delta\boldsymbol{u}\)</span>. However, since
+<span
+class="math inline">\(\boldsymbol{b}-A\boldsymbol{u}=\boldsymbol{0}\)</span>,
+it is natural to consider the residual <span
+class="math inline">\(\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}&#39;\)</span>
+which measures to which degree the numerical solution <span
+class="math inline">\(\boldsymbol{u}&#39;\)</span> fails to satisfy the
+linear system. Unfortunately, if <span
+class="math inline">\(\|\boldsymbol{r}\|_\infty\)</span> is small this
+does not necessarily imply the smallness of <span
+class="math inline">\(\|\boldsymbol{u}\|_\infty\)</span>. To see this,
+first observe that <span
+class="math inline">\(\boldsymbol{r}=A\delta\boldsymbol{u}\)</span>.
+Then note that since <span
+class="math inline">\(\|\boldsymbol{b}\|_\infty \le \|A\|_\infty
+\|\boldsymbol{u}\|_\infty\)</span> and <span
+class="math inline">\(\|\delta\boldsymbol{u}\|_\infty \le
+\|A^{-1}\|_\infty \|\boldsymbol{r}\|_\infty\)</span></p>
+<p><span class="math display">\[
+\frac{\|\delta \boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty}
+\le \|A^{-1}\|_\infty\| \boldsymbol{r}\|_\infty
+\frac{\|A\|_\infty}{\|\boldsymbol{b}\|_\infty}\\
+=
+\text{cond}(A)\frac{\|\boldsymbol{r}\|_\infty}{\|\boldsymbol{b}\|_\infty}
+\]</span></p>
+<p>Hence, the smallness of <span
+class="math inline">\(\|\boldsymbol{r}\|_\infty/\|\boldsymbol{b}\|_\infty\)</span>
+only implies the smallness of the relative error if the condition number
+of <span class="math inline">\(A\)</span> is small.</p>
+<h3 data-number="5.5.5" id="proof-of-theorem-1-not-examinable">Proof of
+Theorem 1 (not examinable)</h3>
+<p>Observe first that if <span class="math inline">\(X\)</span> is any
+<span class="math inline">\(n\times n\)</span> real-valued matrix with
+<span class="math inline">\(\|X\|_\infty&lt;1\)</span> then <span
+class="math inline">\(\|X^n\|_\infty\le \|X\|_\infty^n\rightarrow
+0\)</span> as <span class="math inline">\(n\rightarrow\infty\)</span>.
+Thus</p>
+<p><span class="math display">\[
+(I-X)(1+X+X^2+\dots+X^n) = 1-X^{n+1} \rightarrow I\quad\text{as
+$n\rightarrow\infty$}.
+\]</span></p>
+<p>This implies that</p>
+<p><span class="math display">\[
+(I-X)^{-1}=\sum_{j=0}^{\infty} X^j
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\|(I-X)^{-1}\|_\infty \le \sum_{j=0}^{\infty} \|X^j\|_\infty \le
+\sum_{j=0}^{\infty} \|X\|_\infty^j = (1-\|X\|_\infty)^{-1} \qquad(\star)
+\]</span></p>
+<p>Now write</p>
+<p><span class="math display">\[
+A + \delta A = (I+\delta A\;A^{-1})A
+\]</span></p>
+<p>and set <span class="math inline">\(X=-\delta A\;A\)</span>. By the
+assumption <span class="math inline">\(\|X\|_\infty\le
+\frac{1}{2}&lt;1\)</span> and we can apply <span
+class="math inline">\((\star)\)</span> to show that <span
+class="math inline">\(I+\delta A\;A^{-1}\)</span> is non-singular and
+that</p>
+<p><span class="math display">\[
+\|(I+\delta A\;A)^{-1}\|_\infty\le (1-\|\delta A\;A^{-1}\|_\infty)^{-1}
+\le 2.
+\]</span></p>
+<p>As a consequence, <span class="math inline">\(A+\delta A\)</span> is
+non-singular and</p>
+<p><span class="math display">\[
+\|(A+\delta A)^{-1}\|_\infty = \|A^{-1}(I+\delta
+A\;A^{-1})^{-1}\|_\infty \le 2\|A^{-1}\|_\infty
+\]</span></p>
+<p>Finally, subtract the two equations <span
+class="math inline">\((A+\delta
+A)(\boldsymbol{u}+\delta\boldsymbol{u})=\boldsymbol{b}\)</span> and
+<span class="math inline">\(A\boldsymbol{u}=\boldsymbol{b}\)</span> to
+obtain <span class="math inline">\((A+\delta A)\delta\boldsymbol{u} =
+-\delta A \boldsymbol{u}\)</span>. After multiplication by the inverse
+of <span class="math inline">\(A+\delta A\)</span> this becomes</p>
+<p><span class="math display">\[
+\delta\boldsymbol{u} = (A+\delta A)^{-1}\delta A\boldsymbol{u}.
+\]</span></p>
+<p>Taking the norm leads to</p>
+<p><span class="math display">\[
+\begin{aligned}
+\|\delta \boldsymbol{u}\|_\infty &amp;\le \|(A+\delta A)^{-1}\|_\infty
+\|\delta A\|_\infty \|\boldsymbol{u}\|_\infty\\
+&amp;\le 2 \underbrace{\|A^{-1}\|_\infty\|A\|_\infty}_{=\text{cond}(A)}
+\frac{\|\delta A\|_\infty}{\|A\|_\infty}\|\boldsymbol{u}\|_\infty
+\end{aligned}
+\]</span></p>
+<p>To finish the proof, divide both sides of this inequality by <span
+class="math inline">\(\|\boldsymbol{u}\|_\infty\)</span>.</p>
+</body>
+</html>

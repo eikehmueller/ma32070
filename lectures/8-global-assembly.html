@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Global assembly</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    html {
+      font-family: arial;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up"></a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top"></a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="9-sparse-matrix-representations-and-solving-linear-systems-in-petsc.html" accesskey="n" rel="next">Sparse matrix representations and solving linear systems in PETSc</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="7-function-spaces.html" accesskey="p" rel="previous">Function spaces</a>
+</span>
+</div>
+</nav>
+<h1 data-number="8" id="global-assembly">Global assembly</h1>
+<p>We are now ready to assemble the stiffness matrix <span
+class="math inline">\(A^{(h)}\)</span> and the right hand side vector
+<span class="math inline">\(\boldsymbol{b}^{(h)}\)</span> which define
+the linear system <span class="math display">\[
+A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
+\]</span> With knowledge of the dof-vector <span
+class="math inline">\(\boldsymbol{u}^{(h)}\)</span> we can reconstruct
+the finite element solution <span class="math inline">\(u_h(x) =
+\sum_{\ell=0}^{n-1} u^{(h)}_\ell \Phi^{(h)}_\ell(x)\)</span>. Recall
+that the entries of the right hand side vector and stiffness matrix are
+given by <span
+class="math inline">\(b^{(h)}_\ell:=b(\Phi^{(h)}_\ell)\)</span> and
+<span class="math inline">\(A^{(h)}_{\ell k}:=
+a\left(\Phi^{(h)}_\ell,\Phi^{(h)}_k\right)\)</span>.</p>
+<h2 data-number="8.1" id="assembly-of-rhs-vector">Assembly of RHS
+vector</h2>
+<p>Since <span class="math inline">\(b(v) = \int_\Omega
+f(x)v(x)\;dx\)</span> we compute the entries of the vector <span
+class="math inline">\(b^{(h)}\)</span> by splitting the integral over
+the domain <span class="math inline">\(\Omega\)</span> into the sum of
+integrals over the cells <span class="math inline">\(K\)</span>: <span
+class="math display">\[
+\begin{aligned}
+b^{(h)}_{\ell_{\text{global}}} &amp;= \int_\Omega f(x)
+\Phi_{\ell_{\text{global}}}(x)\;dx\\
+&amp;= \sum_{K\in \Omega_h} \int_K f(x) \Phi_{\ell_{\text{global}}}(x)
+\; dx\\
+\end{aligned}
+\]</span> If <span class="math inline">\(i\)</span> is the index of cell
+<span class="math inline">\(K\)</span>, we can identify the
+<em>global</em> index <span
+class="math inline">\(\ell_{\text{global}}\)</span> with the
+corresponding cell-<em>local</em> index <span
+class="math inline">\(\ell\)</span>, transform variables to integrate
+over the reference cell <span class="math inline">\(\widehat{K}\)</span>
+and write <span class="math display">\[
+\begin{aligned}
+b^{(h)}_{\ell_{\text{global}}} &amp;= \sum_{K\in
+\Omega_h}\int_{\widehat{K}} \widehat{f}_K(\widehat{x})
+\phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}
+\end{aligned}
+\]</span> where <span class="math inline">\(\widehat{f}_K(\widehat{x})
+:= f(x)\)</span>. Note that for degrees of freedom which are shared
+between neighbouring cells, there can be contributions different cells
+since several <span class="math inline">\((i,\ell)\)</span> can
+correspond to the same <span
+class="math inline">\(\ell_{\text{global}}\)</span>.</p>
+<p>Next, replace the integration by numerical quadrature and use the
+tabulated basis functions <span
+class="math inline">\(T_{q\ell}=\phi_\ell(\xi^{(q)})\)</span> to obtain
+<span class="math display">\[
+\begin{aligned}
+b^{(h)}_{\ell_{\text{global}}} &amp;\approx \sum_{K\in \Omega_h} \sum_q
+w_q \widehat{f}_K(\xi^{(q)})
+\phi_\ell(\xi^{(q)})\;|\det{J}(\xi^{(q)})|\\
+&amp;= \sum_{K\in \Omega_h} \sum_q w_q \widehat{f}_K(\xi^{(q)})
+T_{q\ell}\;|\det{J}(\xi^{(q)})|.
+\end{aligned}
+\]</span> To evaluate the cell-local function <span
+class="math inline">\(\widehat{f}_K\)</span> at the quadrature point we
+need to work out the global coordinate <span
+class="math inline">\(x_K^{(q)}\)</span> which corresponds to this point
+and use <span class="math display">\[
+\widehat{f}_K(\xi^{(q)}) = f(x_K^{(q)})
+\]</span> Next, we use the fact that in each cell <span
+class="math inline">\(x_K\)</span> can be expanded in terms of
+vector-valued basis functions as <span class="math display">\[
+(x_K^{(q)})_a = (X_K(\xi^{(q)}))_a = \sum_{\ell^\times}
+(\phi^\times_{\ell^\times}(\xi^{(q)}))_a X_{\ell^\times_{\text{global}}}
+= \sum_{\ell^\times} T^\times_{q\ell^\times a}
+\overline{X}_{\ell^\times}
+\]</span> where <span
+class="math inline">\(\ell^\times_{\text{global}}\)</span> is the global
+dof-index of the coordinate field which corresponds to the cell index
+<span class="math inline">\(i\)</span> and the local dof-index <span
+class="math inline">\(\ell^\times\)</span>. <span
+class="math inline">\(\overline{\boldsymbol{X}}\)</span> is the
+cell-local dof-vector with <span
+class="math inline">\(\overline{X}_{\ell^\times} =
+X_{\ell_{\text{global}}^\times}\)</span>.</p>
+<p>The Jacobian is given by <span class="math display">\[
+J_{ab}(\xi^{(q)}) = \frac{\partial (x_K^{(q)})_a }{\partial x_b} =
+\frac{\partial (X_K)_a }{\partial x_b}(\xi^{(q)})
+= \sum_{\ell^\times} X_{\ell^\times_{\text{global}}} \frac{\partial
+(\phi^\times_{\ell^\times})_a }{\partial x_b}(\xi^{(q)})
+= \sum_{\ell^\times} \overline{X}_{\ell^\times}
+T^{\times\partial}_{q\ell^\times ab}
+\]</span> Putting everything together, we arrive at the following
+procedure:</p>
+<h3 data-number="8.1.1"
+id="algorithm-assembly-of-right-hand-side-vector-boldsymbolbh">Algorithm:
+assembly of right-hand-side vector <span
+class="math inline">\(\boldsymbol{b}^{(h)}\)</span></h3>
+<ol type="1">
+<li>Initialise <span class="math inline">\(\boldsymbol{b}^{(h)} \gets
+\boldsymbol{0}\)</span></li>
+<li>For all cells <span class="math inline">\(K\)</span>
+<strong>do</strong>:</li>
+<li><span class="math inline">\(~~~~\)</span> Extract the coordinate
+dof-vector <span
+class="math inline">\(\overline{\boldsymbol{X}}\)</span> with <span
+class="math inline">\(\overline{X}_{\ell^\times} =
+X_{\ell^\times_\text{global}(i,{\ell^\times})}\)</span> where <span
+class="math inline">\(i\)</span> is the index of cell <span
+class="math inline">\(K\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> For all quadrature points
+<span class="math inline">\(q\)</span> <strong>do</strong>:</li>
+<li><span class="math inline">\(~~~~~~~~\)</span> Compute the
+determinant <span class="math inline">\(D_q\)</span> of the Jacobian
+<span class="math inline">\(J(\xi^{(q)})\)</span> with <span
+class="math inline">\(J_{ab}(\xi^{(q)}) = \sum_{\ell^\times}
+\overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times
+ab}\)</span></li>
+<li><span class="math inline">\(~~~~~~~~\)</span> Compute <span
+class="math inline">\((x_K^{(q)})_a = \sum_{\ell^\times}
+T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}\)</span> and
+evaluate <span class="math inline">\(F_q = f(x_K^{(q)})\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> <strong>end
+do</strong></li>
+<li><span class="math inline">\(~~~~\)</span> Construct the local
+dof-vector <span
+class="math inline">\(\boldsymbol{b}^{(h),\text{local}}\)</span> with
+<span class="math display">\[b^{(h),\text{local}}_{\ell} = \sum_q w_q
+F_q T_{q\ell} D_q\]</span></li>
+<li><span class="math inline">\(~~~~\)</span> For all local dof-indices
+<span class="math inline">\(\ell\)</span> <strong>do</strong>:</li>
+<li><span class="math inline">\(~~~~~~~~\)</span> Increment <span
+class="math inline">\(b_{\ell_{\text{global}}}^{(h)}\gets
+b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell\)</span> with
+<span class="math inline">\(\ell_{\text{global}} =
+\ell_{\text{global}}(i,\ell)\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> <strong>end
+do</strong></li>
+<li><strong>end do</strong></li>
+</ol>
+<h4 data-number="8.1.1.1" id="illustration">Illustration</h4>
+<p>The following figure visualises the assembly of the global vector
+<span class="math inline">\(\boldsymbol{b}^{(h)}\)</span>. The two cells
+have global indices <span
+class="math inline">\(\ell_{\text{global}}=[2,4,8]\)</span> and <span
+class="math inline">\(\ell_{\text{global}}=[8,11,16]\)</span>
+respectively. Note that both cells contribute to the global vector entry
+<span class="math inline">\(b^{(h)}_8\)</span>. <img
+src="figures/global_assembly_rhs.svg"
+alt="Global assembly of right hand side vector" /></p>
+<h4 data-number="8.1.1.2" id="implementation-2">Implementation</h4>
+<p>The summation <span class="math inline">\(\sum_q w_q F_q T_{q\ell}
+D_q\)</span> of the local vector entries can be realised with numpy’s <a
+href="https://numpy.org/doc/stable/reference/generated/numpy.einsum.html"><code>einsum()</code></a>
+method.</p>
+<p>To insert the entries of the local vector <span
+class="math inline">\(\boldsymbol{b}^{(h),\text{local}}\)</span> into
+the global vector <span
+class="math inline">\(\boldsymbol{b}^{(h)}\)</span> we can use slicing
+notation, i.e. write</p>
+<pre><code>b_h[ell_global] = b_h_local[:]</code></pre>
+<p>where <code>ell_global</code> is the list of global dof-indices that
+correspond to the local dof-indices in the cell. In the code, this list
+can be constructed as</p>
+<pre><code>ell_global = fs.local2global(i,range(ndof))</code></pre>
+<p>In this expression <code>fs</code> is a <code>FunctionSpace</code>
+object and <code>ndof</code> is the number of local unknowns in each
+cell.</p>
+<h2 data-number="8.2" id="assembly-of-lhs-matrix">Assembly of LHS
+matrix</h2>
+<p>To assemble the stiffness matrix, we again split the integral into a
+sum of integrals over grid cells <span class="math inline">\(K\)</span>:
+<span class="math display">\[
+\begin{aligned}
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &amp;= \int_\Omega
+\left(\kappa \nabla \Phi^{(h)}_{\ell_{\text{global}}}(x)
+\cdot\nabla\Phi^{(h)}_{k_{\text{global}}}(x)+\omega
+\Phi^{(h)}_{\ell_{\text{global}}}(x)\Phi^{(h)}_{k_{\text{global}}}(x)\right)dx\\
+&amp;= \sum_{K\in\Omega_h}\int_K \left(\kappa \nabla
+\Phi^{(h)}_{\ell_{\text{global}}}(x)
+\cdot\nabla\Phi^{(h)}_{k_{\text{global}}}(x)+\omega
+\Phi^{(h)}_{\ell_{\text{global}}}(x)\Phi^{(h)}_{k_{\text{global}}}(x)\right)dx
+\end{aligned}
+\]</span> Next, we change variables in each cell to convert the
+integrals into integrals over the reference cell <span
+class="math inline">\(K\)</span>. For this, note that the global basis
+functions and their derivatives transform as follows: <span
+class="math display">\[
+\begin{aligned}
+\Phi^{(h)}_{\ell_{\text{global}}}(x) &amp;= \phi_\ell(\widehat{x})\\
+\nabla \Phi^{(h)}_{\ell_{\text{global}}}(x) &amp;=
+J^{-\top}(\widehat{x}) \widehat{\nabla}\phi_\ell(\widehat{x})
+\end{aligned}
+\]</span> Here <span class="math inline">\(\ell_{\text{global}}\)</span>
+is the global dof-index that is associated with the local dof-index
+<span class="math inline">\(\ell\)</span> in the cell with index <span
+class="math inline">\(i\)</span>. The second identity can be easily
+verified by using the chain rule. With this we find <span
+class="math display">\[
+\begin{aligned}
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &amp;= \sum_{K\in
+\Omega_h}\int_K \left(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla}
+\phi_\ell (\widehat{x})\cdot
+J^{-\top}(\widehat{x})\widehat{\nabla}\phi_k(\widehat{x}) +
+\omega\phi_\ell(\widehat{x})\phi_k(\widehat{x})\right)|\det{J}(\widehat{x})|d\widehat{x}.
+\end{aligned}
+\]</span> Next, approximate the integrals by numerical quadrature and
+use the tabulated basis functions <span class="math inline">\(T_{q\ell}
+= \phi_\ell(\xi^{(q)})\)</span>, <span
+class="math inline">\(T^\partial_{q\ell a} =
+\frac{\partial\phi_\ell}{\partial \widehat{x}_a}(\xi^{(q)})\)</span> to
+obtain <span class="math display">\[
+\begin{aligned}
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &amp;\approx \sum_{K\in
+\Omega_h}\int_K  w_q \left(\kappa \widehat{\nabla}
+\phi_\ell(\xi^{(q)})(J^{\top}(\xi^{(q)})
+J(\xi^{(q)}))^{-1}\phi_k(\xi^{(q)}) +
+\omega\phi_\ell(\xi^{(q)})\phi_k(\xi^{(q)})\right)|\det{J}(\xi^{(q)})|d\widehat{x}
+\\
+&amp;= \sum_{K\in \Omega_h} \sum_q w_q  \left(\kappa T^\partial_{q\ell
+a}(J^{(-2)}_q)_{ab} T^\partial_{qkb} +\omega
+T_{q\ell}T_{qk}\right)|\det{J}(\xi^{(q)})|
+\end{aligned}
+\]</span> with the <span class="math inline">\(2\times 2\)</span> matrix
+<span class="math display">\[
+J^{(-2)}_{q} =  \left(J^{\top}(\xi^{(q)}) J(\xi^{(q)})\right)^{-1} =
+\left(J^{(2)}\right)^{-1}.
+\]</span> The value <span class="math inline">\(J(\xi^{(q)})\)</span> of
+the Jacobian at the quadrature points can be computed as above.</p>
+<p>Putting everything together we arrive at the following procedure:</p>
+<h3 data-number="8.2.1"
+id="algorithm-assembly-of-stiffness-matrix-ah">Algorithm: assembly of
+stiffness matrix <span class="math inline">\(A^{(h)}\)</span></h3>
+<ol type="1">
+<li>Initialise <span class="math inline">\(A^{(h)} \gets 0\)</span></li>
+<li>For all cells <span class="math inline">\(K\)</span>
+<strong>do</strong>:</li>
+<li><span class="math inline">\(~~~~\)</span> Extract the coordinate
+dof-vector <span
+class="math inline">\(\overline{\boldsymbol{X}}\)</span> with <span
+class="math inline">\(\overline{X}_{\ell^\times} =
+X_{\ell^\times_\text{global}(i,\ell^\times)}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> For all quadrature points
+<span class="math inline">\(q\)</span> <strong>do</strong>:</li>
+<li><span class="math inline">\(~~~~~~~~\)</span> Compute the Jacobian
+<span class="math inline">\(J(\xi^{(q)})\)</span> with <span
+class="math inline">\(J_{qab} = J_{ab}(\xi^{(q)}) = \sum_{\ell^\times}
+\overline{X}_{\ell^\times}
+T^{\times\partial}_{q\ell^{\times}ab}\)</span></li>
+<li><span class="math inline">\(~~~~~~~~\)</span> Compute the
+determinant <span class="math inline">\(D_q\)</span> of <span
+class="math inline">\(J(\xi^{(q)})\)</span></li>
+<li><span class="math inline">\(~~~~~~~~\)</span> Compute the matrix
+<span class="math inline">\(J^{(2)}_q = J^{\top}(\xi^{(q)})
+J(\xi^{(q)})\)</span> with <span class="math inline">\(J^{(2)}_{qab} =
+\sum_{c} J_{qca}J_{qcb}\)</span> and invert it to obtain <span
+class="math inline">\(J^{(-2)}_{q} =
+\left(J^{(2)}_q\right)^{-1}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> <strong>end
+do</strong></li>
+<li><span class="math inline">\(~~~~\)</span> Construct the local
+stiffness matrix <span
+class="math inline">\(A^{(h),\text{local}}\)</span> with <span
+class="math display">\[A^{(h),\text{local}}_{\ell k} = \kappa
+\sum_{qab}w_q  T^\partial_{q\ell a}(J^{(-2)}_q)_{ab} T^\partial_{qkb}
+D_q + \omega \sum_{q} w_q  T_{q\ell}T_{qk} D_q\]</span></li>
+<li><span class="math inline">\(~~~~\)</span> For all local dof-indices
+<span class="math inline">\(\ell\)</span> <strong>do</strong>:</li>
+<li><span class="math inline">\(~~~~~~~~\)</span> For all local
+dof-indices <span class="math inline">\(k\)</span>
+<strong>do</strong>:</li>
+<li><span class="math inline">\(~~~~~~~~~~~~\)</span> Increment <span
+class="math inline">\(A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} +
+A^{(h),\text{local}}_{\ell k}\)</span> with <span
+class="math inline">\(\ell_{\text{global}} =
+\ell_{\text{global}}(i,\ell)\)</span> and <span
+class="math inline">\(k_{\text{global}} =
+k_{\text{global}}(i,k)\)</span> the global dof-indices corresponding to
+the local dof-indices <span class="math inline">\(\ell\)</span>, <span
+class="math inline">\(k\)</span> in the cell with index <span
+class="math inline">\(i\)</span></li>
+<li><span class="math inline">\(~~~~~~~~\)</span> <strong>end
+do</strong></li>
+<li><span class="math inline">\(~~~~\)</span> <strong>end
+do</strong></li>
+<li><strong>end do</strong></li>
+</ol>
+<h4 data-number="8.2.1.1" id="illustration-1">Illustration</h4>
+<p>The following figure visualises the assembly of the stiffness matrix
+<span class="math inline">\(A^{(h)}\)</span>. The two cells have global
+indices <span
+class="math inline">\(\ell_{\text{global}}=[2,4,8]\)</span> and <span
+class="math inline">\(\ell_{\text{global}}=[8,11,16]\)</span>
+respectively. Note that both cells contribute to the global matrix entry
+<span class="math inline">\(A^{(h)}_{8,8}\)</span>. <img
+src="figures/global_assembly_stiffness_matrix.svg"
+alt="Global assembly of stiffness matrix" /></p>
+<h4 data-number="8.2.1.2" id="implementation-3">Implementation</h4>
+<p>Again, the summation <span class="math inline">\(\sum_{c}
+J_{qca}J_{qcb}\)</span> to compute the matrix entries of <span
+class="math inline">\(J^{(2)}_q\)</span> and the sums <span
+class="math inline">\(\sum_{qab}w_q  T^\partial_{q\ell
+a}(J^{(2)}_q)_{ab} T^\partial_{qkb} D_q\)</span>, <span
+class="math inline">\(\sum_{q}w_q  T_{q\ell}T_{qk} D_q\)</span> required
+for the construction of the local matrix entries can be realised with
+numpy’s <a
+href="https://numpy.org/doc/stable/reference/generated/numpy.einsum.html"><code>einsum()</code></a>
+method.</p>
+<p>To insert the entries of the local stiffness matrix <span
+class="math inline">\(A^{(h),\text{local}}\)</span> into the global
+stiffness matrix <span class="math inline">\(A^{(h)}\)</span> we can
+again use slicing notation. Naively, one would expect to be able to do
+this with <code>A_h[ell_global, ell_global] += A_h_local[:,:]</code>
+where <code>ell_global = fs.local2global(i,range(ndof))</code> as above.
+however this does not work since we first need to construct the
+“product” <span class="math inline">\(\ell_{\text{global}}\times
+\ell_{\text{global}}\)</span> before we can use this to slice a matrix.
+This can be done with the numpy <a
+href="https://numpy.org/doc/2.2/reference/generated/numpy.ix_.html"><code>ix_()</code></a>
+method, i.e. write</p>
+<pre><code>A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]</code></pre>
+<h2 data-number="8.3" id="interpolation">Interpolation</h2>
+<p>The final operation we need is interpolation of a given function
+<span class="math inline">\(u\)</span> onto a function <span
+class="math inline">\(u^{(h)}=\mathcal{I}_h(u)\in V_h\)</span> such that
+<span class="math inline">\(u^{(h)}\approx u\)</span>. This can be
+achieved by setting the entries of the dof-vector <span
+class="math inline">\(\boldsymbol{u}^{(h)}\)</span> which represents
+<span class="math inline">\(u^{(h)}\)</span> to <span
+class="math display">\[
+u^{(h)}_{\ell_{\text{global}}} = \lambda^{(h)}_{\ell_{\text{global}}}(u)
+\]</span> where <span
+class="math inline">\(\lambda^{(h)}_{\ell_{\text{global}}}\)</span> is
+the degree of freedom with index <span
+class="math inline">\(\ell_{\text{global}}\)</span>. To see why this is
+a sensible definition, consider the case where <span
+class="math inline">\(f=u^{(h)}\in V_h\)</span>, i.e.  <span
+class="math display">\[
+u^{(h)}(x) = \sum_{\ell_{\text{global}}} u^{(h)}_{\ell_{\text{global}}}
+\Phi^{(h)}_{\ell_{\text{global}}}(x)
+\]</span> then <span class="math display">\[
+\begin{aligned}
+\lambda^{(h)}_{\ell_{\text{global}}}\left(\sum_{k_{\text{global}}}
+u^{(h)}_{k_{\text{global}}} \Phi^{(h)}_{k_{\text{global}}}(x)\right)
+&amp;= \sum_{k_{\text{global}}} u^{(h)}_{k_{\text{global}}}
+\lambda^{(h)}_{\ell_{\text{global}}}\left(
+\Phi^{(h)}_{k_{\text{global}}}(x)\right)\\
+&amp;= \sum_{k_{\text{global}}} u^{(h)}_{k_{\text{global}}}
+\delta_{\ell_{\text{global}},k_{\text{global}}}\\
+&amp;= u^{(h)}_{\ell_{\text{global}}}.
+\end{aligned}
+\]</span> In other words, the interpolation operation returns the same
+function: <span class="math display">\[
+u^{(h)} \in V_h \quad\Rightarrow\quad \mathcal{I}_h(u^{(h)}) = u^{(h)}
+\]</span> Observe in particular that if <span
+class="math inline">\(\lambda^{(h)}_{\ell_\text{global}}\)</span>
+correspond to point evaluations <span
+class="math inline">\(\lambda^{(h)}_{\ell_\text{global}}(u) =
+u(x_{\ell_{\text{global}}})\)</span>, then we have that <span
+class="math display">\[
+u^{(h)}(x_{\ell_{\text{global}}}) = u(x_{\ell_{\text{global}}}).
+\]</span> Again, we implement the global interpolation by looping over
+all cells and using the local assembly operation. For this, we construct
+a function <span
+class="math inline">\(\widehat{u}_K(\widehat{x})=u(x)\)</span> on each
+cell and compute <span class="math display">\[
+u^{(h)}_{\ell_{\text{global}}} = \lambda_\ell (\widehat{u}_K)
+\]</span> with the cell-local degrees of freedom <span
+class="math inline">\(\lambda_\ell\)</span> on the reference cell <span
+class="math inline">\(\widehat{K}\)</span>. The function <span
+class="math inline">\(\widehat{u}_K(\widehat{x})\)</span> is given by
+<span class="math display">\[
+\widehat{u}_K(\widehat{x}) =
+u\left(\sum_{\ell^\times}\overline{X}_{\ell^\times}
+\phi^\times_{\ell^\times}(\widehat{x})\right)
+\]</span> This leads to the following procedure:</p>
+<h3 data-number="8.3.1" id="algorithm-interpolation-on-v_h">Algorithm:
+interpolation on <span class="math inline">\(V_h\)</span></h3>
+<ol type="1">
+<li>For all cells <span class="math inline">\(K\)</span>
+<strong>do</strong>:</li>
+<li><span class="math inline">\(~~~~\)</span> Extract the coordinate
+dof-vector <span
+class="math inline">\(\overline{\boldsymbol{X}}\)</span> with <span
+class="math inline">\(\overline{X}_{\ell^\times} =
+X_{\ell^\times_\text{global}(i,\ell^\times)}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Construct the function
+<span class="math inline">\(\widehat{u}_K(\widehat{x}) =
+u\left(\sum_{\ell^\times}\overline{X}_{\ell^\times}
+\phi^\times_{\ell^\times}(\widehat{x})\right)\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Construct the local vector
+<span class="math inline">\(u^{(h),\text{local}}_\ell =
+\lambda_\ell(\widehat{u}_K)\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> For all local indices
+<span class="math inline">\(\ell\)</span> <strong>do</strong></li>
+<li><span class="math inline">\(~~~~~~~~\)</span> Set <span
+class="math inline">\(u^{(h)}_{\ell_{\text{global}}} =
+u^{(h),\text{local}}_\ell\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> <strong>end
+do</strong></li>
+<li><strong>end do</strong></li>
+</ol>
+<h3 data-number="8.3.2" id="interpolation-error">Interpolation
+error</h3>
+<p>It is possible to derive bounds for the difference <span
+class="math inline">\(u-\mathcal{I}_h(u)\)</span>, which in general
+depend on the particular choice of finite element discretisation. We
+will only present one result here, which applies to piecewise polynomial
+finite elements of degree <span class="math inline">\(p\)</span>. There
+is a constant <span class="math inline">\(D\)</span>, independent of
+<span class="math inline">\(h\)</span> such that</p>
+<p><span class="math display">\[
+\|u-\mathcal{I}_h(u)\|_{L_2(\Omega)} \le D h^{p+1}
+\|u\|_{H^{p+1}(\Omega)}
+\]</span> where <span class="math inline">\(h\)</span> is the maximum
+diameter of all grid cells and <span class="math inline">\(\|\cdot
+\|_{H^{p+1}(\Omega)}\)</span> is a suitable norm that we will not
+discuss further here. Crucially, the interpolation error descreases with
+a power of the grid spacing and higher-order discretisations lead to
+smaller interpolation errors. See Section 11 of <a
+href="https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf">Patrick
+Farrell’s excellent lecture notes on Finite element methods</a> for more
+details.</p>
+<p>It should be stressed, however, that in general interpolation is not
+the same as <span class="math inline">\(L_2(\Omega)\)</span> projection,
+i.e. <span class="math display">\[
+\mathcal{I}(u) \neq \argmin_{v^{(h)}\in V_h} \|u-v^{(h)}\|_{L_2(\Omega)}
+\]</span></p>
+</body>
+</html>

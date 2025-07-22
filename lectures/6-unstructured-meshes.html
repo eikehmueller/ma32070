@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Unstructured meshes</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    html {
+      font-family: arial;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up"></a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top"></a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="7-function-spaces.html" accesskey="n" rel="next">Function spaces</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="5-error-analysis.html" accesskey="p" rel="previous">Error analysis</a>
+</span>
+</div>
+</nav>
+<h1 data-number="6" id="unstructured-meshes">Unstructured meshes</h1>
+<p>In general, we might want to solve PDEs on a <span
+class="math inline">\(d\)</span>-dimensional manifold <span
+class="math inline">\(\Omega\subset \mathbb{R}^D\)</span> that is
+embedded in <span class="math inline">\(D\)</span> dimensional space.
+For example, we might want to solve the Navier-Stokes equations on the
+surface of a sphere. The manifold is then approximated by a mesh, which
+can be described as a collection of topological entities. For example,
+if <span class="math inline">\(d=2\)</span>, the mesh will consist of
+zero-dimensional vertices, one-dimensional edges and two-dimensional
+triangular cells (although it is also possible to use more general
+polygonal cells we do not consider this here). In general, the
+co-dimension <span class="math inline">\(c\)</span> of a <span
+class="math inline">\(d&#39;\)</span>-dimensional mesh entity is given
+by <span class="math inline">\(c=d-d&#39;\)</span>. In the following we
+will only consider the case <span class="math inline">\(d=D=2\)</span>.
+In this case we have:</p>
+<table>
+<thead>
+<tr>
+<th>topological entity</th>
+<th>dimension <span class="math inline">\(d&#39;\)</span></th>
+<th>co-dimension <span class="math inline">\(c\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cell (triangle) <span class="math inline">\(K\)</span></td>
+<td><span class="math inline">\(2\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+</tr>
+<tr>
+<td>facet (edge) <span class="math inline">\(F\)</span></td>
+<td><span class="math inline">\(1\)</span></td>
+<td><span class="math inline">\(1\)</span></td>
+</tr>
+<tr>
+<td>vertex <span class="math inline">\(v\)</span></td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\(2\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The following figure shows a two-dimensional mesh with <span
+class="math inline">\(n_{\text{vertex}}=6\)</span> vertices, <span
+class="math inline">\(n_{\text{facet}}=10\)</span> facets and <span
+class="math inline">\(n_{\text{cell}}=5\)</span> cells in which all
+topological entities are labelled by their co-dimension and a unique
+number.</p>
+<figure>
+<img src="figures/simple_mesh.svg" alt="simple triangular mesh" />
+<figcaption aria-hidden="true">simple triangular mesh</figcaption>
+</figure>
+<h2 data-number="6.1" id="topology">Topology</h2>
+<p>The mesh topology is defined by which entities are connected to which
+other entities. For example, each cell has exactly three facets and each
+facet is defined by exactly two vertices.</p>
+<p>This information can be encoded in two matricies: An <span
+class="math inline">\(n_{\text{cell}}\times 3\)</span> matrix <span
+class="math inline">\(I^{F\gets K}\)</span> with</p>
+<p><span class="math display">\[
+I^{F\gets K}_{ij} = \text{index of $j$-th facet of cell $i$}
+\]</span></p>
+<p>and an <span class="math inline">\(n_{\text{facet}}\times 2\)</span>
+matrix <span class="math inline">\(I^{v\gets F}\)</span> with</p>
+<p><span class="math display">\[
+I^{v\gets F}_{jk} = \text{index of $k$-th vertex of facet $j$}.
+\]</span></p>
+<p>Note that there is some freedom as to how we number the facets
+associated each cell; the numbering we adopt here is one in which for
+each cell <span class="math inline">\(i\)</span> the facets with indices
+<span class="math inline">\(I^{F\gets K}_{i0}\)</span>, <span
+class="math inline">\(I^{F\gets K}_{i1}\)</span> and <span
+class="math inline">\(I^{F\gets K}_{i2}\)</span> are arranged in a
+counter-clockwise fashion (note that there are three possible orderings
+that satisfy this condition). Similarly, we adapt an ordering of the
+vertices associated with each facet such that for each facet <span
+class="math inline">\(j\)</span> we have that <span
+class="math inline">\(I^{v\gets F}_{j0} &lt; I^{v\gets
+F}_{j1}\)</span>.</p>
+<p>For convenience, we can also use <span
+class="math inline">\(I^{F\gets K}\)</span> and <span
+class="math inline">\(I^{v\gets F}\)</span> to construct the <span
+class="math inline">\(n_{\text{cell}}\times 3\)</span> matrix <span
+class="math inline">\(I^{v\gets K}\)</span> with</p>
+<p><span class="math display">\[
+I^{v\gets K}_{ik} = \text{index of $k$-th vertex of cell $i$}
+\]</span></p>
+<p>In each cell <span class="math inline">\(i\)</span>, we number the
+vertices in a counter-clockwise fashion such that the <span
+class="math inline">\(k\)</span>-th vertex lies opposite the <span
+class="math inline">\(k\)</span>-the edge of the cell:</p>
+<p><span class="math display">\[
+\begin{aligned}
+I^{v\gets K}_{ik} \not\in \{I^{v\gets F}_{j0},I^{v\gets
+F}_{j1}\}\quad\text{for $j =I^{F\gets K}_{ik}$}
+\end{aligned}
+\]</span></p>
+<p>Note that the counter-clockwise numbering of the facets and vertices
+in each cell is consistent with the numbering of unknown on the
+reference triangle.</p>
+<p>For example, the matrices <span class="math inline">\(I^{F\gets
+K}\)</span>, <span class="math inline">\(I^{v\gets F}\)</span> and <span
+class="math inline">\(I^{v\gets K}\)</span> for the simple mesh shown
+above are given by</p>
+<p><span class="math display">\[
+\begin{aligned}
+I^{F\gets K} &amp;= \begin{pmatrix}
+0 &amp; 3 &amp; 1 &amp; 0 &amp; 3 \\
+1 &amp; 2 &amp; 2 &amp; 9 &amp; 6 \\
+8 &amp; 5 &amp; 7 &amp; 5 &amp; 4
+\end{pmatrix}^{\top}\\
+I^{v\gets F} &amp;= \begin{pmatrix}
+0 &amp; 1 &amp; 1 &amp; 2 &amp; 2 &amp; 1 &amp; 3 &amp; 2 &amp; 0 &amp;
+0 \\
+1 &amp; 4 &amp; 2 &amp; 5 &amp; 3 &amp; 5 &amp; 5 &amp; 4 &amp; 4 &amp;
+5
+\end{pmatrix}^{\top}\\
+I^{v\gets K} &amp;= \begin{pmatrix}
+4 &amp; 1 &amp; 2 &amp; 5 &amp; 3 \\
+0 &amp; 5 &amp; 4 &amp; 1 &amp; 2 \\
+1 &amp; 2 &amp; 1 &amp; 0 &amp; 5
+\end{pmatrix}^{\top}
+\end{aligned}
+\]</span></p>
+<p>In addition, we store a <span
+class="math inline">\(n_{\text{vertices}}\times 2\)</span> matrix <span
+class="math inline">\(v\)</span> such that the <span
+class="math inline">\(k\)</span>-th column of <span
+class="math inline">\(v\)</span> contains the coordinates of the <span
+class="math inline">\(k\)</span>-th vertex in the mesh.</p>
+<h3 data-number="6.1.1" id="implementation-1">Implementation</h3>
+<p>The abstract class <code>Mesh</code> encodes the mesh. It has the
+following members</p>
+<ul>
+<li>properties <code>ncells</code>, <code>nfacets</code> and
+<code>nvertices</code> which give the total number of cells (<span
+class="math inline">\(=n_{\text{cell}}\)</span>), facets (<span
+class="math inline">\(=n_{\text{facet}}\)</span>) and vertices (<span
+class="math inline">\(=n_{\text{vertex}}\)</span>) respectively</li>
+<li><code>cell2facet</code>: a list such that
+<code>cell2facet[i][j]</code> <span class="math inline">\(= I^{F\gets
+K}_{ij}\)</span></li>
+<li><code>facet2vertex</code>: a list such that
+<code>facet2vertex[j][k]</code> <span class="math inline">\(= I^{v\gets
+F}_{jk}\)</span></li>
+<li><code>cell2vertex</code>: a list such that
+<code>cell2vertex[i][k]</code> <span class="math inline">\(= I^{v\gets
+K}_{ik}\)</span>. Since <span class="math inline">\(I^{v\gets
+K}_{ik}\)</span> can be derived from <span
+class="math inline">\(I^{F\gets K}_{ij}\)</span> and <span
+class="math inline">\(I^{v\gets F}_{jk}\)</span>,
+<code>cell2vertex</code> is implemented as a
+<code>@cached_property</code>.</li>
+<li>an array <code>coordinates</code> of shape <span
+class="math inline">\((n_{\text{vertex}},2)\)</span> whose columns
+contain the two-dimensional coordinates of the mesh vertices</li>
+</ul>
+<p>The class also contains a method <code>refine(nref)</code> which can
+be used to construct a refined mesh from given mesh.</p>
+<p>Two concrete classes are derived from this class:</p>
+<ul>
+<li><code>RectangleMesh(Lx=1.0, Ly=1.0, nref=0)</code> is a
+triangulation of the domain <span
+class="math inline">\([0,L_x]\times[0,L_y]\)</span> with a given number
+of refinements <span class="math inline">\(n_{\text{ref}}\)</span>. The
+number of cells is <span class="math inline">\(n_{\text{cells}} =
+2^{n_{\text{ref}}+1}\)</span></li>
+<li><code>TriangleMesh(corners=None, nref=0)</code> is a triangulation
+of the domain triangle defined by the array <code>corners</code> (if
+this is <code>None</code>, the reference triangle us used) with a given
+number of refinements <span
+class="math inline">\(n_{\text{ref}}\)</span>. The number of cells is
+<span class="math inline">\(n_{\text{cells}} =
+2^{n_{\text{ref}}}\)</span></li>
+</ul>
+</body>
+</html>

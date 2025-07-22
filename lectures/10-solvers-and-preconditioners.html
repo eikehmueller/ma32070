@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Solvers and Preconditioners</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    html {
+      font-family: arial;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up"></a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top"></a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="11-assembly-of-stiffness-matrix.html" accesskey="n" rel="next">Assembly of stiffness matrix</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="9-sparse-matrix-representations-and-solving-linear-systems-in-petsc.html" accesskey="p" rel="previous">Sparse matrix representations and solving linear systems in PETSc</a>
+</span>
+</div>
+</nav>
+<h1 data-number="10" id="solvers-and-preconditioners">Solvers and
+Preconditioners</h1>
+<p>We now consider methods for solving the linear system <span
+class="math inline">\(Au=b\)</span> with PETSc. Although PETSc also
+supports direct solvers such as Gaussian elimination, the design
+philosophy of the library assumes that all solvers are iterative
+methods. This means that, starting from a starting guess, <span
+class="math inline">\(u^{(0)}\)</span>, the solution is updated
+iteratively as <span class="math inline">\(u^{(k+1)}\gets
+u^{(k)}\)</span> such that (hopefully) <span
+class="math inline">\(u^{(k)}\)</span> converges to the true solution
+<span class="math inline">\(u\)</span>. Direct solvers can be considered
+as a special case in which this iteration converges in a single
+step.</p>
+<h2 data-number="10.1" id="petsc-solver-architecture">PETSc solver
+architecture</h2>
+<p>PETSc solvers are separated into two components:</p>
+<ol type="1">
+<li>an <em>iterative solver</em> or <code>KSP</code> object which
+describes how to perform the update <span
+class="math inline">\(u^{(k+1)}\gets u^{(k)}\)</span>; we have already
+seen this in the previous lecture.</li>
+<li>a <em>preconditioner</em> or <code>PC</code> object which
+accelerates the iteration.</li>
+</ol>
+<p>To motivate this architecture and explain what a preconditioner is,
+let us consider a very simple iterative method. For this, we multiply
+the linear equation by a matrix <span
+class="math inline">\(P^{-1}\)</span> to obtain the equivalent
+system</p>
+<p><span class="math display">\[
+P^{-1} A u = P^{-1} b
+\]</span></p>
+<p>The matrix <span class="math inline">\(P\)</span>, which we assume to
+be full rank and invertible, is the preconditioner. More precisely, in
+PETSc a <code>PC</code> object provides a way of inverting <span
+class="math inline">\(P\)</span>, i.e. solving <span
+class="math inline">\(Pz=r\)</span> for a given vector <span
+class="math inline">\(r\)</span>. In principle, we could choose any
+matrix such as <span class="math inline">\(P=\mathbb{I}\)</span> the
+identity matrix or the <span class="math inline">\(P=D\)</span> the
+diagonal of <span class="math inline">\(A\)</span>. A good
+preconditioner has two properties:</p>
+<ol type="1">
+<li>It should be “close” to <span class="math inline">\(A\)</span>,
+i.e. <span class="math inline">\(P\approx A\)</span> (in some
+sense)</li>
+<li>Multiplication by <span class="math inline">\(P^{-1}\)</span> should
+be inexpensive, i.e. solving the linear system <span
+class="math inline">\(Pz=r\)</span> for a given vector <span
+class="math inline">\(r\)</span> should be cheap.</li>
+</ol>
+<h2 data-number="10.2"
+id="richardson-iteration-with-jacobi-preconditioner">Richardson
+iteration with Jacobi preconditioner</h2>
+<p>As an example, we now construct a very simple iterative procedure.
+Assume that we know the approximate solution <span
+class="math inline">\(u^{(k)}\)</span>. If we knew the error <span
+class="math inline">\(e^{(k)} := u-u^{(k)}\)</span>, it would be
+possible to compute the solution by simply adding <span
+class="math inline">\(e^{(k)}\)</span> to <span
+class="math inline">\(u^{(k)}\)</span>. Unfortunately, this is not
+possible since knowledge of <span class="math inline">\(e^{(k)}\)</span>
+would require knowledge of the exact solution! Instead, let’s try to
+construct an approximation <span class="math inline">\(z^{(k)}\)</span>
+to the true error, namely <span class="math display">\[
+z^{(k)} = P^{-1} A e^{(k)}
+\]</span> If <span class="math inline">\(P\approx A\)</span>, this will
+be a good approximation. Interestingly we can compute <span
+class="math inline">\(\widetilde{e}^{(k)}\)</span> since <span
+class="math display">\[
+\begin{aligned}
+z^{(k)} &amp;= P^{-1} A (u-u^{(k)})\\
+&amp;= P^{-1}(Au-Au^{(k)})\\
+&amp;= P^{-1}(b-Au^{(k)})
+\end{aligned}
+\]</span> The quantity <span class="math inline">\(z^{(k)}\)</span> is
+also known as the preconditioned residual, since <span
+class="math inline">\(b-Au^{(k)}\)</span> measures by how much the
+approximate solution violates the equation <span
+class="math inline">\(Au=b\)</span>.</p>
+<p>This leads to the preconditioned Richardson iteration: <span
+class="math display">\[
+\begin{aligned}
+u^{(k+1)} &amp;= u^{(k)} + z^{(k)}\\
+&amp;= u^{(k)} + P^{-1}(b-Au^{(k)})
+\end{aligned}
+\]</span> Which can be written as follows:</p>
+<h3 data-number="10.2.1"
+id="algorithm-preconditioned-richardson-iteration">Algorithm:
+preconditioned Richardson iteration</h3>
+<ol type="1">
+<li><strong>for</strong> <span
+class="math inline">\(k=0,1,\dots,k_{\text{max}}-1\)</span>
+<strong>do</strong></li>
+<li><span class="math inline">\(~~~~\)</span> Compute <span
+class="math inline">\(r^{(k)} = b - Au^{(k)}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Solve <span
+class="math inline">\(Pz^{(k)} = r^{(k)}\)</span> for <span
+class="math inline">\(z^{(k)}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Check for convergence</li>
+<li><span class="math inline">\(~~~~\)</span> Update <span
+class="math inline">\(u^{(k+1)} = u^{(k)} + z^{(k)}\)</span></li>
+<li><strong>end for</strong></li>
+</ol>
+<p>It can be shown that <span class="math display">\[
+e^{(k+1)} = \left(\mathbb{I} - P^{-1} A\right)e^{(k)}
+\]</span> Hence, if the spectral radius of <span
+class="math inline">\(\mathbb{I} - P^{-1} A\)</span> is smaller than
+<span class="math inline">\(1\)</span>, the iteration will converge to
+the true solution.</p>
+<p>Note in particular that if we set <span
+class="math inline">\(P=A\)</span>, the iteration converges in a single
+step.</p>
+<p>One possible preconditioner is the diagonal <span
+class="math inline">\(D\)</span> of <span
+class="math inline">\(A\)</span>, i.e. <span class="math display">\[
+D_{ij} = \begin{cases}
+A_{ii} &amp; \text{if $i=j$}\\
+0 &amp; \text{otherwise}
+\end{cases}
+\]</span> This matrix is very simple to invert: to solve <span
+class="math inline">\(Pz=r\)</span> we can compute <span
+class="math inline">\(z_i = r_i A_{ii}\)</span>. The choice <span
+class="math inline">\(P=D\)</span> is also know as the <em>Jacobi</em>
+preconditioner.</p>
+<h3 data-number="10.2.2" id="petsc-options">PETSc options</h3>
+<p>To use a particular solver/preconditioner combination in PETSc, we
+need to specify solver options via the command line. For this, we need
+to add the following at the beginning of our Python script:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> petsc4py</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>petsc4py.init(sys.argv)</span></code></pre></div>
+<p>This will ensure than any options passed to the script are parsed by
+PETSc. Then, when setting up the <code>KSP</code> object, we pass these
+options by calling</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ksp.setFromOptions()</span></code></pre></div>
+<p>For example, to use the Richardson iteration with Jacobi
+preconditioner, we call our script like this:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> script.py <span class="at">-ksp_type</span> richardson <span class="at">-pc_type</span> jacobi</span></code></pre></div>
+<p>To monitor convergence, we can add the option
+<code>-ksp_monitor</code>, which will print out the norm <span
+class="math inline">\(\|z^{(k)}\|\)</span> of the (preconditioned)
+residual at each iteration. The iteration will stop once the residual
+norm has been reduced by a factor of at least <span
+class="math inline">\(\epsilon\)</span>, i.e. <span
+class="math inline">\(\|z^{(k)}\|/\|r^{(0)}|\|&lt;\epsilon\)</span>.
+This tolerance can be controlled by <code>-ksp_rtol epsilon</code> (it
+is also possible to set an absolute convergence criterion <span
+class="math inline">\(\|z^{(k)}\|&lt;\epsilon_{\text{abs}}\)</span> with
+<code>-ksp_atol</code>). Furthermore, we can tell PETSc to print
+information on the solver to some file <code>ksp_view.txt</code> with
+<code>-ksp_view :ksp_view.txt</code>. So, in summary to solve to a
+relative tolerance of <span
+class="math inline">\(\epsilon=10^{-9}\)</span> with the
+Jacobi-preconditioned Richardson iteration we would call:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> script.py <span class="at">-ksp_type</span> richardson <span class="at">-pc_type</span> jacobi <span class="at">-ksp_monitor</span> <span class="at">-ksp_rtol</span> 1.0E-9 <span class="at">-ksp_view</span> :ksp_view.txt</span></code></pre></div>
+<p>The output looks like this:</p>
+<pre><code>  0 KSP Residual norm 1.838591537060e+00
+  1 KSP Residual norm 8.624966321088e-01
+  2 KSP Residual norm 3.904353664205e-02
+  3 KSP Residual norm 1.230500385292e-02
+  4 KSP Residual norm 1.919611985913e-03
+  5 KSP Residual norm 6.049870199858e-04
+  6 KSP Residual norm 9.437951818362e-05
+  7 KSP Residual norm 2.974475251910e-05
+  8 KSP Residual norm 4.640257259221e-06
+  9 KSP Residual norm 1.462428569925e-06
+ 10 KSP Residual norm 2.281425870008e-07
+ 11 KSP Residual norm 7.190166811597e-08
+ 12 KSP Residual norm 1.121684357597e-08
+ 13 KSP Residual norm 3.535112890997e-09
+ 14 KSP Residual norm 5.514865252918e-10</code></pre>
+<p>and we can inspect the file <code>ksp_view.txt</code> to double check
+that the solver options have been set correctly:</p>
+<p>At the beginning, it lists details on the <code>KSP Object</code>,
+which describes the iterative solver:</p>
+<pre><code>KSP Object: 1 MPI process
+  type: richardson
+    damping factor=1.
+  maximum iterations=10000, initial guess is zero
+  tolerances: relative=1e-09, absolute=1e-50, divergence=10000.
+  left preconditioning
+  using PRECONDITIONED norm type for convergence test</code></pre>
+<p>This is followed by details on the <code>PC Object</code>, which
+describes the preconditioner:</p>
+<pre><code>PC Object: 1 MPI process
+  type: jacobi
+    type DIAGONAL
+  linear system matrix = precond matrix:
+  Mat Object: 1 MPI process
+    type: seqdense
+    rows=5, cols=5
+    total: nonzeros=25, allocated nonzeros=25
+    total number of mallocs used during MatSetValues calls=0</code></pre>
+<h4 data-number="10.2.2.1" id="exercise-2">Exercise</h4>
+<p>Instead of <span class="math inline">\(P=D\)</span>, we could also
+use the lower triangular part of <span class="math inline">\(A\)</span>
+and set <span class="math inline">\(P=D+L\)</span> where <span
+class="math display">\[
+L = \begin{cases}
+A_{ij} &amp; \text{if $i&lt;j$} \\
+0 &amp; \text{otherwise}
+\end{cases}
+\]</span> Convince yourself that for a given vector <span
+class="math inline">\(r\)</span> the equation <span
+class="math inline">\((D+L)z=r\)</span> can be solved row-by-row,
+i.e. by computing first <span class="math inline">\(z_0 =
+r_0/A_{00}\)</span>, then computing <span class="math inline">\(z_1 =
+(r_1 - A_{10}z_0)/A_{11}\)</span>, <span class="math inline">\(z_2=(r_2
+- A_{20}z_0 - A_{21}z_1)/A_{22}\)</span> and so once. The corresponding
+preconditioner is also known as the successive overrelaxation (SOR)
+method. It can be chosen by setting `-pc_type sor``. Run the code with
+this preconditioner - how does the number of iterations change?</p>
+<h3 data-number="10.2.3" id="direct-solvers">Direct solvers</h3>
+<p>PETSc also supports direct solvers, which are implemented as
+preconditioners. For example, to use Gaussian elimination, we would set
+<code>-pc_type lu</code>. In this case, PETSc computes the factorisation
+<span class="math inline">\(P=A=LU\)</span>, where <span
+class="math inline">\(L\)</span> and <span
+class="math inline">\(U\)</span> and lower- and upper-triangular
+matrices. Knowing <span class="math inline">\(L\)</span> and <span
+class="math inline">\(U\)</span> we can solve <span
+class="math inline">\(Az=LUz=r\)</span> by solving <span
+class="math inline">\(Lz&#39;=r\)</span> and then <span
+class="math inline">\(Uz=z&#39;\)</span>. In this case, iterative solver
+will converge in a single iteration:</p>
+<pre><code>  0 KSP Residual norm 2.291531974978e+00
+  1 KSP Residual norm 2.640425190731e-16</code></pre>
+<p>In this case, we can request that PETSc only applies the
+preconditioner, i.e. computes <span class="math inline">\(u^{(1)} =
+P^{-1}b\)</span> directly. Be careful with using
+<code>-ksp_type preonly</code>: if the preconditioner is not a direct
+solver, the iteration will simply stop after one iteration and return an
+incorrect result. For example,
+<code>-ksp_type preonly -pc_type richardson</code> will print out</p>
+<pre><code>  0 KSP Residual norm 1.405809375413e+01
+  1 KSP Residual norm 6.204942588128e+00</code></pre>
+<p>and it is up to us to recognise that the computed solution does not
+solve <span class="math inline">\(Au=b\)</span>.</p>
+<h3 data-number="10.2.4"
+id="algorithm-conjugate-gradient-method">Algorithm: Conjugate Gradient
+method</h3>
+<ol type="1">
+<li>Set <span class="math inline">\(r^{(0)}\gets b -
+Au^{(0)}\)</span></li>
+<li>Solve <span class="math inline">\(Pz^{(0)} = r^{(0)}\)</span></li>
+<li>Set <span class="math inline">\(p^{(0)}\gets z^{(0)}\)</span></li>
+<li><strong>for</strong> <span
+class="math inline">\(k=1,2,\dots,k_{\text{max}}\)</span>
+<strong>do</strong></li>
+<li><span class="math inline">\(~~~~\)</span> Compute <span
+class="math inline">\(\alpha_{k-1} = \frac{z^{(k-1)^\top}
+r^{(k-1)}}{p^{(k-1)\top} Ap^{(k-1)}}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Set <span
+class="math inline">\(u^{(k)} \gets u^{(k-1)} + \alpha_{k-1}
+p^{(k-1)}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Set <span
+class="math inline">\(r^{(k)} \gets r^{(k-1)} - \alpha_k A
+p^{(k-1)}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Solve <span
+class="math inline">\(Pz^{(k)}=r^{(k)}\)</span> for <span
+class="math inline">\(z^{(k)}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Compute <span
+class="math inline">\(\beta_k =
+\frac{z^{(k)\top}r^{(k)}}{z^{(k-1)\top}r^{(k-1)}}\)</span></li>
+<li><span class="math inline">\(~~~~\)</span> Set <span
+class="math inline">\(p^{(k)} \gets z^{(k)} + \beta_k
+p^{(k-1)}\)</span></li>
+<li><strong>end do</strong></li>
+</ol>
+</body>
+</html>

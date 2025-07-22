@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Finite Elements</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    html {
+      font-family: arial;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up"></a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top"></a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="4-numerical-quadrature.html" accesskey="n" rel="next">Numerical quadrature</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="2-mathematical-background-1.html" accesskey="p" rel="previous">Mathematical background</a>
+</span>
+</div>
+</nav>
+<h1 data-number="3" id="finite-elements">Finite Elements</h1>
+<p>We start by solving the weak form of the PDE for a special case,
+namely a domain consisting of a single triangle. By doing this, we will
+develop the fundamental concepts and techniques of finite element
+analysis and discuss their implementation in Python. As we will see
+later, the solution of the PDE on more complicated domains can be
+reduced to this case.</p>
+<p><em>© Eike Mueller, University of Bath 2025. These lecture notes are
+copyright of Eike Mueller, University of Bath. They are provided
+exclusively for educational purposes at the University and are to be
+downloaded or copied for your private study only. Further distribution,
+e.g. by upload to external repositories, is prohibited.</em></p>
+<h2 data-number="3.1" id="triangular-reference-element">Triangular
+reference element</h2>
+<p>Let us consider a very simple domain <span
+class="math inline">\(\widehat{K}=\Omega\)</span> which consists of the
+unit triangle with vertices <span
+class="math inline">\(v_0=(0,0)\)</span>, <span
+class="math inline">\(v_1=(1,0)\)</span> and <span
+class="math inline">\(v_2=(0,1)\)</span>, shown in red in the following
+figure. We label the edges (or facets), shown in blue, in a
+counter-clockwise fashion as <span class="math inline">\(F_0 =
+\overrightarrow{v_1v_2}\)</span>, <span class="math inline">\(F_1 =
+\overrightarrow{v_2v_0}\)</span> and <span class="math inline">\(F_2 =
+\overrightarrow{v_0v_1}\)</span>:</p>
+<figure>
+<img src="figures/reference_triangle.svg" alt="reference triangle" />
+<figcaption aria-hidden="true">reference triangle</figcaption>
+</figure>
+<p>In the following we will also refer to this as the <em>reference
+triangle</em>.</p>
+<p>Recall that the finite element approach starts with the choice of a
+suitable function space <span
+class="math inline">\(\mathcal{V}\)</span>. For this, consider the space
+of bi-variate polynomials of degree <span
+class="math inline">\(p\)</span> on <span
+class="math inline">\(\widehat{K}\)</span>:</p>
+<p><span class="math display">\[
+\mathcal{P}_p(\widehat{K}) = \{q:q(x) =
+\sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}}
+a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1}\;\text{for all $x\in
+K$ with $a_{\alpha_0,\alpha_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
+\]</span></p>
+<p>The space <span
+class="math inline">\(\mathcal{P}_p(\widehat{K})\)</span> is spanned by
+<span class="math inline">\(d = {p+2 \choose 2} =
+\frac{1}{2}(p+2)(p+1)\)</span> basis functions <span
+class="math inline">\(\{\phi_j(x)\}_{j=0}^{d-1}\)</span>. These can be
+chosen to be the monomials <span
+class="math inline">\(\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots\)</span>},
+but a better choice is to pick <a
+href="https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html">Lagrange
+polynomials</a>. This will later allow us to construct <span
+class="math inline">\(H^1(\Omega)\)</span> functions on a mesh that
+consists of little triangles by “glueing together” the functions on
+neighbouring triangles. To construct Lagrange polynomials, we choose
+<span class="math inline">\(d\)</span> points <span
+class="math inline">\(\{\xi^{(j)}\}_{j=0}^{d-1}\)</span> in <span
+class="math inline">\(\widehat{K}\)</span> and define <span
+class="math inline">\(\phi_j(x)\in\mathcal{P}_p(K)\)</span> such that
+<span class="math display">\[
+\phi_j(\xi^{(k)}) = \delta_{jk} = \begin{cases}
+    1 &amp; \text{for $j=k$}\\
+    0 &amp; \text{otherwise}.
+\end{cases}
+\]</span> A possible choice of points is given by (see figure below for
+some examples) <span class="math display">\[
+\{\xi^{(j)}\}_{j=0}^{d-1} =
+\left\{\left(\frac{j_0}{p},\frac{j_1}{p}\right) \quad \text{for
+$j_0,j_1\in\mathbb{N}$ with $0\le j_0\le j_1 \le p$}\right\}.
+\]</span></p>
+<p>We order these points (and the associated basis functions <span
+class="math inline">\(\phi_j(x)\)</span>) as follows:</p>
+<ul>
+<li>Points associated with the three vertices <span
+class="math inline">\(v_0\)</span>, <span
+class="math inline">\(v_1\)</span>, <span
+class="math inline">\(v_2\)</span> (in this order); there is <span
+class="math inline">\(\nu_{\text{vertex}}=1\)</span> point per
+vertex,</li>
+<li>points associated with the facets <span
+class="math inline">\(F_0\)</span>, <span
+class="math inline">\(F_1\)</span>, <span
+class="math inline">\(F_2\)</span> (in this order); there are <span
+class="math inline">\(\nu_{\text{facet}}=p-1\)</span> points per facet
+and on each facet these points are ordered according to the arrows in
+the figure above and finally</li>
+<li>points associated with the interior <span
+class="math inline">\(K^0\)</span> of the cell <span
+class="math inline">\(\widehat{K}\)</span>; there are <span
+class="math inline">\(\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)\)</span>
+points of this type.</li>
+</ul>
+<p>This is illustrated in the following figure, which shows the ordering
+of the points for <span class="math inline">\(p=1,2,3,4\)</span>:</p>
+<figure>
+<img src="figures/lagrange_nodes.svg" alt="Nodes of Lagrane elements" />
+<figcaption aria-hidden="true">Nodes of Lagrane elements</figcaption>
+</figure>
+<p>The associated finite elements are known as <strong>Lagrange
+elements</strong>.</p>
+<h3 data-number="3.1.1" id="examples">Examples</h3>
+<h4 data-number="3.1.1.1" id="linear-finite-element">Linear finite
+element</h4>
+<p>For <span class="math inline">\(p=1\)</span> we obtain the
+(bi-)linear finite element with the following basis three functions:
+<span class="math display">\[
+\begin{aligned}
+\phi_0(x) &amp;= 1-x_0-y_0\\
+\phi_1(x) &amp;= x_0\\
+\phi_2(x) &amp;= x_1
+\end{aligned}
+\]</span></p>
+<h4 data-number="3.1.1.2" id="quadratic-finite-element">Quadratic finite
+element</h4>
+<p>For <span class="math inline">\(p=2\)</span> there are six basis
+functions, three associated with vertices <span class="math display">\[
+\begin{aligned}
+\phi_0(x,y) &amp;= (1-x-y)(1-2x-2y),\\
+\phi_1(x,y) &amp;= x(2x-1),\\
+\phi_2(x,y) &amp;= y(2y-1),
+\end{aligned}
+\]</span> and three associated with facets <span class="math display">\[
+\begin{aligned}
+\phi_3(x,y) &amp;= 4xy,\\
+\phi_4(x,y) &amp;= 4y(1-x-y),\\
+\phi_5(x,y) &amp;= 4x(1-x-y).
+\end{aligned}
+\]</span> These functions are visualised in the following figure (red
+arrows indicate gradients):</p>
+<figure>
+<img src="figures/quadratic_element.png"
+alt="Basis functions for quadratic finite element" />
+<figcaption aria-hidden="true">Basis functions for quadratic finite
+element</figcaption>
+</figure>
+<h2 data-number="3.2" id="formal-definition-of-finite-elements">Formal
+definition of finite elements</h2>
+<p>It turns out that it is advantageous to define finite elements in a
+more general sense. Mirroring this more abstract mathematical definition
+in the Python code will help us to structure the code in a sensible way
+that will allow its easy adaptation to specific cases. For this we first
+need to introduce the notion of the dual <span
+class="math inline">\(\mathcal{V}^*\)</span> of a given function space
+<span class="math inline">\(\mathcal{V}\)</span>.</p>
+<h3 data-number="3.2.1" id="dual-spaces">Dual spaces</h3>
+<p>Consider a domain <span class="math inline">\(K\)</span> and the
+space <span class="math inline">\(\mathcal{V}=\mathcal{V}(K)\)</span> of
+real-valued functions <span class="math inline">\(w:K\rightarrow
+\mathbb{R}\)</span> on <span class="math inline">\(K\)</span>. A linear
+<em>functional</em> <span class="math inline">\(\lambda\)</span> maps a
+function <span class="math inline">\(w\in \mathcal{V}\)</span> to a real
+value such that</p>
+<p><span class="math display">\[
+\lambda(c_1 w^{(1)}+c_2 w^{(2)}) = c_1\lambda(w^{(1)})+c_2
+\lambda(w^{(2)}) \qquad\text{for all $c_1,c_2\in\mathbb{R}$, $w^{(1)},
+w^{(2)} \in \mathcal{V}$}
+\]</span></p>
+<p>The space of all linear functionals on <span
+class="math inline">\(\mathcal{V}\)</span> is called the <strong>dual
+space</strong> <span class="math inline">\(\mathcal{V}^*\)</span>.</p>
+<h4 data-number="3.2.1.1" id="examples-1">Examples</h4>
+<p>Let <span class="math inline">\(K\subset \mathbb{R}^2\)</span> and
+<span class="math inline">\(\mathcal{V}=H^1(K)\)</span> be the space of
+functions with a square integrable first derivative. Then the following
+<span class="math inline">\(\lambda\)</span> are linear functionals: *
+point evaluation: <span class="math inline">\(\lambda(w) :=
+w(\xi)\)</span> for some point <span class="math inline">\(\xi\in
+K\)</span> * differentiation: <span class="math inline">\(\lambda(w) :=
+\frac{\partial w}{\partial x_0}\)</span> * integration: <span
+class="math inline">\(\lambda(w) := \int_K f(x)w(x)\)</span> for some
+function <span class="math inline">\(f(x)\in L_2(K)\)</span></p>
+<h3 data-number="3.2.2"
+id="ciarlets-definition-of-the-finite-element">Ciarlet’s definition of
+the finite element</h3>
+<p>This now leads to the following definition, originally due to Ciarlet
+(see <a
+href="http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf">[Log11]</a>
+for the version used here): a finite element is a triple <span
+class="math inline">\((\widehat{K},\mathcal{V},\mathcal{L})\)</span>
+which consists of * the <strong>domain</strong> <span
+class="math inline">\(\widehat{K}\)</span> * the <strong>function
+space</strong> <span
+class="math inline">\(\mathcal{V}=\mathcal{V}(\widehat{K})\)</span> of
+real-valued functions on <span
+class="math inline">\(\widehat{K}\)</span>, * the <strong>degrees of
+freedom</strong> (or <strong>nodes</strong>) <span
+class="math inline">\(\mathcal{L} = \{\lambda\}_{j=0}^{d-1}\)</span>,
+which is a basis for <span class="math inline">\(\mathcal{V}^*\)</span>,
+the dual of <span class="math inline">\(\mathcal{V}\)</span></p>
+<p>Crucially, we define the finite element by choosing a basis of the
+<em>dual</em> space <span class="math inline">\(\mathcal{V}^*\)</span>.
+However, we can always construct a so-called <em>nodal</em> basis <span
+class="math inline">\(\{\phi_j\}_{j=0}^{d-1}\)</span> of <span
+class="math inline">\(\mathcal{V}\)</span> by requiring that <span
+class="math display">\[
+\lambda_j (\phi_k) = \delta_{jk} \qquad\text{for all
+$j,k=0,1,\dots,d-1$}.
+\]</span> In the following we will assume that <span
+class="math inline">\(\widehat{K}\)</span> is the reference triangle
+introduced above, unless specified otherwise.</p>
+<h4 data-number="3.2.2.1" id="examples-2">Examples</h4>
+<p>The <strong>polynomial Lagrange element</strong> we described above
+is a special case of this with * <span class="math inline">\(\mathcal{V}
+= \mathcal{P}_p(\widehat{K})\)</span>, the space of bi-variate
+polynomials of degree <span class="math inline">\(p\)</span> * <span
+class="math inline">\(\lambda: \lambda_j(w) = w(\xi^{(j)})\)</span> the
+point evaluation at the nodal points <span
+class="math inline">\(\xi^{(j)}\)</span></p>
+<p>An alternative choice for the nodes would have been to define for
+some point <span class="math inline">\(\mathring{\xi}\in
+\widehat{K}\)</span>: <span class="math display">\[
+\lambda_j (w) = \frac{\partial^{j_a}w}{\partial x_0^{j_b} \partial
+x_1^{j_a-j_b}}(\mathring{\xi}) \qquad\text{for $0\le j_b \le j_a\le p$
+and $j=\frac{1}{2}j_a(j_a-1) + j_b$}
+\]</span></p>
+<p>The <strong>Argyris finite element</strong> (see Section 3.7.1 in <a
+href="http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf">[Log11]</a>)
+is given by * <span class="math inline">\(\mathcal{V} =
+\mathcal{P}_5(\widehat{K})\)</span>, the space of quintic bi-variate
+polynomials * the 21 nodes defined as follows: - <span
+class="math inline">\(\lambda_i(w) = w(v_j)\)</span> (evaluation at each
+vertex <span class="math inline">\(v_i\)</span> <span
+class="math inline">\(\Rightarrow\)</span> 3 nodes) - <span
+class="math inline">\(\lambda_{3+2i+j}(w) = \frac{\partial w}{\partial
+x_j}(v_i)\)</span> (two gradient evaluations at each vertex <span
+class="math inline">\(\Rightarrow\)</span> 6 nodes) - <span
+class="math inline">\(\lambda_{9+3i+2j+k}(w) = \frac{\partial^2
+w}{\partial x_j \partial x_k}(v_i)\)</span> with <span
+class="math inline">\(0\le j\le k\le 1\)</span> (Hessian evaluation at
+each vertex <span class="math inline">\(\Rightarrow\)</span> 9 nodes) -
+<span class="math inline">\(\lambda_{18+j}(w) = n_i\cdot \nabla
+w(m_i)\)</span> (normal derivative evaluation at the midpoints <span
+class="math inline">\(m_i\)</span> of each facet <span
+class="math inline">\(F_i\)</span> <span
+class="math inline">\(\Rightarrow\)</span> 3 nodes)</p>
+<p>Note that the Argyris element and the quintic Lagrange element only
+differ in the choice of nodes. It turns out that the Argyris allows the
+construction of function spaces that have a bounded second
+derivative.</p>
+<h3 data-number="3.2.3" id="node-numbering">Node numbering</h3>
+<p>As we will see later, it is crucial to establish a consistent
+ordering of the degrees of freedom. For this, assume that each node is
+associated with a topological entity of the reference triangle <span
+class="math inline">\(\widehat{K}\)</span>. These entities are * the
+vertices <span class="math inline">\(v_0\)</span>, <span
+class="math inline">\(v_1\)</span>, <span
+class="math inline">\(v_2\)</span> in this order * the facets <span
+class="math inline">\(F_0\)</span>, <span
+class="math inline">\(F_1\)</span>, <span
+class="math inline">\(F_2\)</span> in this order * the interior <span
+class="math inline">\(K^0\)</span> of <span
+class="math inline">\(\widehat{K}\)</span> We further assume that <span
+class="math inline">\(0\le \nu_{\text{vertex}}\)</span> nodes are
+associated with each vertex, <span class="math inline">\(0\le
+\nu_{\text{facet}}\)</span> nodes are associated with each facet and
+<span class="math inline">\(0\le \nu_{\text{interior}}\)</span> nodes
+are associated with the interior <span
+class="math inline">\(K^0\)</span>. Then obviously <span
+class="math display">\[
+d = 3( \nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}.
+\]</span> Let <span class="math inline">\(\lambda_k^{(E_i)}\)</span> be
+the <span class="math inline">\(k\)</span>-th node associated with
+topological entity <span class="math inline">\(E_i\in
+\{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}\)</span>. Then we arrange the unknowns
+<span class="math inline">\(\{\lambda_0,\dots,\lambda_{d-1}\}\)</span>
+in the following order:</p>
+<p><span
+class="math inline">\(\{\lambda_0^{(v_0)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_0)},
+\lambda_0^{(v_1)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_1)},
+\lambda_0^{(v_2)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_2)},
+\lambda_0^{(F_0)},\dots,\lambda_{\nu_{\text{facet}}-1}^{(F_0)},
+\lambda_0^{(F_1)},\dots,\lambda_{\nu_{\text{facet}}-1}^{(F_1)},
+\lambda_0^{(F_2)},\dots,\lambda_{\nu_{\text{facet}}-1}^{(F_2)},
+\lambda_0^{(K^0)},\dots,\lambda_{\nu_{\text{interior}}-1}^{(K^0)}
+\}\)</span></p>
+<p>In other words <span
+class="math inline">\(\lambda_{j=\mu_{\text{dof}}(E,i,k)} =
+\lambda_k^{(E_i)}\)</span> with the indirection map <span
+class="math display">\[
+\mu_{\text{dof}}(E,i,k) = \begin{cases}
+i\cdot \nu_{\text{vertex}} + k &amp; \text{if $E=v_i$}\\
+3\nu_{\text{vertex}} + i\cdot \nu_{\text{facet}} + k &amp; \text{if
+$E=F_i$}\\
+3(\nu_{\text{vertex}} + \nu_{\text{facet}}) + k &amp; \text{if $E=K^0$}
+\end{cases}
+\]</span> This is illustrated for the polynomial Lagrange element in the
+figure above.</p>
+<h2 data-number="3.3" id="vandermonde-matrix">Vandermonde matrix</h2>
+<p>Having picked the nodes, how can we construct the nodal basis
+functions <span class="math inline">\(\{\phi_k(x)\}_{k=0}^{d-1}\)</span>
+for a given set of nodes <span
+class="math inline">\(\{\lambda_j\}_{j=0}^{d-1}\)</span>? For this,
+assume that we know some set of basis functions <span
+class="math inline">\(\{\theta_i(x)\}_{i=0}^{d-1}\)</span> of <span
+class="math inline">\(\mathcal{V}\)</span>. For the Lagrange elements,
+these could for example be the monomials <span
+class="math inline">\(1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots\)</span>. Since
+<span class="math inline">\(\{\theta_i(x)\}_{i=0}^{d-1}\)</span> is a
+basis of <span class="math inline">\(\mathcal{V}\)</span>, we can write
+for each <span class="math inline">\(k=0,1,\dots,d-1\)</span></p>
+<p><span class="math display">\[
+\phi_k(x) = \sum_{i=0}^{d-1} c_i^{(k)} \theta_i(x)
+\]</span></p>
+<p>for some coefficients <span class="math inline">\(c_i^{(k)}\)</span>.
+Further, since per definition <span
+class="math inline">\(\{\phi_k\}_{k=0}^{d-1}\)</span> is a
+<em>nodal</em> basis of <span class="math inline">\(\mathcal{V}\)</span>
+and <span class="math inline">\(\lambda_j\)</span> are linear
+functionals we know that</p>
+<p><span class="math display">\[
+\delta_{jk} = \lambda_j(\phi_k) = \sum_{i=0}^{d-1}
+\underbrace{c_i^{(k)}}_{C_{ik}}
+\underbrace{\lambda_j(\theta_i)}_{V_{ji}}.
+\]</span></p>
+<p>If we define the <span class="math inline">\(d\times d\)</span>
+matrices <span class="math inline">\(V\)</span>, <span
+class="math inline">\(C\)</span> with <span class="math inline">\(V_{ji}
+:= \lambda_j(\theta_i)\)</span> and <span
+class="math inline">\(C_{ik}:=c_i^{(k)}\)</span>, then this equation can
+be written in matrix form as <span class="math display">\[
+VC = \mathbb{I}\quad \Leftrightarrow \quad C = V^{-1}
+\]</span> with <span class="math inline">\(\mathbb{I}\)</span> the <span
+class="math inline">\(d\times d\)</span> identity matrix. In other
+words, we can obtain the coefficients <span
+class="math inline">\(c_i^{(k)}\)</span> by inverting the matrix <span
+class="math inline">\(V\)</span>. For the Lagrange element, where <span
+class="math inline">\(\lambda_j(w) = w(\xi^{(j)})\)</span> are nodal
+evaluations, the matrix <span class="math inline">\(V\)</span> is the
+Vandermonde matrix: <span class="math display">\[
+V = V(\{\xi^{(j)}\}_{j=0}^{d-1}) = \begin{pmatrix}
+1 &amp; \xi^{(0)}_0 &amp; \xi^{(0)}_1  &amp; (\xi^{(0)}_0)^2 &amp;
+\xi^{(0)}_0 \xi^{(0)}_1 &amp; (\xi^{(0)}_1)^2 &amp; \dots \\[1ex]
+1 &amp; \xi^{(1)}_0 &amp; \xi^{(1)}_1 &amp; (\xi^{(1)}_0)^2 &amp;
+\xi^{(1)}_0 \xi^{(1)}_1 &amp; (\xi^{(1)}_1)^2 &amp; \dots \\[1ex]
+1 &amp; \xi^{(2)}_0 &amp; \xi^{(2)}_1 &amp; (\xi^{(2)}_0)^2 &amp;
+\xi^{(2)}_0 \xi^{(2)}_1 &amp; (\xi^{(2)}_1)^2 &amp; \dots \\[1ex]
+\vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots
+&amp; \ddots\\
+1 &amp; \xi^{(d-1)}_0 &amp; \xi^{(d-1)}_1 &amp; (\xi^{(d-1)}_0)^2 &amp;
+\xi^{(d-1)}_0 \xi^{(d-1)}_1 &amp; (\xi^{(d-1)}_1)^2 &amp; \dots
+\end{pmatrix}.
+\]</span> In fact, observe that for <em>any</em> given set of <span
+class="math inline">\(n\)</span> points <span
+class="math inline">\(\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}\)</span>,
+which do not have to coincide with the nodal points <span
+class="math inline">\(\{\xi^{(j)}\}_{j=0}^{d-1}\)</span>, we can
+construct the <span class="math inline">\(n\times d\)</span> matrix
+<span class="math inline">\(V(\boldsymbol{\zeta})\)</span> with <span
+class="math inline">\(V_{ij}(\boldsymbol{\zeta}) =
+\theta_j(\zeta^{(i)})\)</span> in the same way. We further define the
+rank 3 tensor <span
+class="math inline">\(V^{\partial}(\boldsymbol{\zeta})\)</span> with</p>
+<p><span class="math display">\[
+V^{\partial}_{ija}(\boldsymbol{\zeta}):=\frac{\partial
+\theta_j}{\partial x_a}(\zeta^{(i)}).
+\]</span></p>
+<h3 data-number="3.3.1" id="tabulation-of-basis-functions">Tabulation of
+basis functions</h3>
+<p>This allows use to <em>tabulate</em> the basis functions: for a given
+set of points <span
+class="math inline">\(\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}\)</span>,
+we have that</p>
+<p><span class="math display">\[
+T_{ij}(\boldsymbol{\zeta}) := \phi_j(\zeta^{(i)}) = \sum_{m=0}^{d-1}
+c_m^{(j)} \theta_m(\zeta^{(i)}) = V_{im}(\boldsymbol{\zeta})C_{mj}
+\]</span></p>
+<p>or, more compactly:</p>
+<p><span class="math display">\[
+T(\boldsymbol{\zeta}) = V(\boldsymbol{\zeta}) C
+\]</span></p>
+<p>Furthermore, we have for the derivatives</p>
+<p><span class="math display">\[
+\begin{aligned}
+T^\partial_{ija}(\boldsymbol{\zeta}) &amp;:= \frac{\partial
+\phi_j}{\partial x_a}(\zeta^{(i)})
+= \sum_{m=0}^{d-1} c_m^{(j)} \frac{\partial \theta_m}{\partial
+x_a}(\zeta^{(i)}) \\
+&amp;= V^\partial_{ima}(\boldsymbol{\zeta})C_{mj}.
+\end{aligned}
+\]</span></p>
+<h2 data-number="3.4" id="implementation">Implementation</h2>
+<h3 data-number="3.4.1" id="abstract-bases-class">Abstract bases
+class</h3>
+<p>Since all finite elements share the common functionality that is
+encapsulated in Ciarlet’s definition, we start by writing down an
+abstract base class, which establishes an interface that all concrete
+implementations of a finite element need to satisfy. The advantage of
+this approach is that we do not have to duplicate code that can be
+shared between all finite element implementation. More specifically,
+each finite element should provide the following functionality:</p>
+<ul>
+<li>Return the number of nodes associated with each topological entity.
+For this, we define abstract properties <code>ndof_per_vertex</code>,
+<code>ndof_per_facet</code> and <code>ndof_per_interior</code> for <span
+class="math inline">\(\nu_{\text{vertex}}\)</span>, <span
+class="math inline">\(\nu_{\text{facet}}\)</span> and <span
+class="math inline">\(\nu_{\text{interior}}\)</span> respectively. The
+base class also contains a property <code>ndof</code> which returns
+<span
+class="math inline">\(3(\nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}\)</span>.</li>
+<li>Tabulate the evaluation of all dofs for a given function <span
+class="math inline">\(\hat{f}\)</span>, i.e. compute the vector <span
+class="math inline">\((\lambda_0(\hat{f}),\lambda_1(\hat{f}),\dots,\lambda_{d-1}(\hat{f}))^\top\in\mathbb{R}^d\)</span>.
+This is done with the abstract method <code>tabulate_dofs(fhat)</code>
+which gets passed a Python function <code>fhat</code>.</li>
+<li>Tabulate the basis functions for a given set of points <span
+class="math inline">\(\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}\)</span>.
+This computes the <span class="math inline">\(n\times d\)</span> matrix
+<span class="math inline">\(T\)</span> with <span
+class="math inline">\(T_{ij}=\phi_j(\zeta^{(i)})\)</span> with the
+abstract method <code>tabulate(zeta)</code>. If only a single point
+<span class="math inline">\(\zeta\)</span> is passed to the subroutine
+it should return a vector of length <span
+class="math inline">\(d\)</span>.</li>
+<li>Tabulate the gradients of all basis functions for a given set of
+points <span
+class="math inline">\(\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}\)</span>.
+This computes the rank 3 tensor <span
+class="math inline">\(T^\partial\)</span> of shape <span
+class="math inline">\(n\times d\times 2\)</span> with <span
+class="math inline">\(T^\partial_{ija}=\frac{\partial\phi_j}{\partial
+x_a}(\zeta^{(i)})\)</span>. This is done with the abstract method
+<code>tabulate_gradient(zeta)</code>. If only a single point <span
+class="math inline">\(\zeta\)</span> is passed to the subroutine it
+should return a matrix of shape <span class="math inline">\(d\times
+2\)</span>.</li>
+<li>Implement the element dof-map <span
+class="math inline">\(\mu_{\text{dof}}(E,i,k)\)</span> and its inverse.
+This is done with the methods <code>dofmap(entity_type,i,k)</code> and
+its inverse <code>inverse_dofmap(j)</code>. Since these methods will be
+called frequently with the same arguments, a <a
+href="https://docs.python.org/3/library/functools.html#functools.cache"><code>@functools.cache</code></a>
+decorator is added to automatically remember previously used
+values.</li>
+</ul>
+<h3 data-number="3.4.2" id="concrete-implementations">Concrete
+implementations</h3>
+<p>Any concrete implementations of finite elements are obtained by
+subclassing the <code>FiniteElement</code> base class. These concrete
+classes have to provide concrete implementations of the following
+methods/properties: * <code>ndof_per_vertex</code>,
+<code>ndof_per_facet</code> and <code>ndof_per_interior</code> *
+<code>tabulate_dofs(fhat)</code> to evaluate the degrees of freedom for
+a given function * <code>tabulate(zeta)</code> to tabulate the values of
+the basis functions at a given set of points *
+<code>tabulate_gradient(zeta)</code> to tabulate the gradients of the
+basis functions for a given set of points</p>
+<h3 data-number="3.4.3" id="linear-element">Linear element</h3>
+<p>The bi-linear element is implemented in
+<code>LinearElement</code></p>
+<h2 data-number="3.5" id="exercises">Exercises</h2>
+<p>Implement the cubic Lagrange element <code>CubicElement</code> (<span
+class="math inline">\(p=3\)</span>) by subclassing the abstract base
+class <code>FiniteElement</code>. The Lagrange points are in this order
+(see also figure above):</p>
+<p><span class="math display">\[
+\{\xi^{(j)}\}_{j=0}^{9}=
+\left\{
+\underbrace{
+\begin{pmatrix}0\\[1ex]0\end{pmatrix},
+\begin{pmatrix}0\\[1ex]1\end{pmatrix},
+\begin{pmatrix}1\\[1ex]1\end{pmatrix}}_{\text{vertices}},
+\underbrace{\begin{pmatrix}\frac{2}{3}\\[1ex]\frac{1}{3}\end{pmatrix},
+\begin{pmatrix}\frac{1}{3}\\[1ex]\frac{2}{3}\end{pmatrix},
+\begin{pmatrix}0\\[1ex]\frac{2}{3}\end{pmatrix},
+\begin{pmatrix}0\\[1ex]\frac{1}{3}\end{pmatrix},
+\begin{pmatrix}\frac{1}{3}\\[1ex]0\end{pmatrix},
+\begin{pmatrix}\frac{2}{3}\\[1ex]0\end{pmatrix}}_{\text{facets}},
+\underbrace{\begin{pmatrix}\frac{1}{3}\\[1ex]\frac{1}{3}\end{pmatrix}}_{\text{interior}}\right\}
+\]</span> * Your class should store the Lagrange points in an attribute
+<code>_nodal_points</code> * Your class should contain a method
+<code>vandermonde_matrix(zeta,grad=False)</code> which accepts as an
+argument a <span class="math inline">\(n\times 2\)</span> matrix of
+<span class="math inline">\(n\)</span> two-dimensional points. The
+method should compute the <span class="math inline">\(n\times
+n_{\text{dof}}\)</span> matrix <span
+class="math inline">\(V(\boldsymbol{\zeta})\)</span> if
+<code>grad=False</code> and the <span class="math inline">\(n\times
+n_{\text{dof}}\times 2\)</span> tensor <span
+class="math inline">\(V^\partial(\boldsymbol{\zeta})\)</span> if
+<code>grad=True</code>. * Use the <code>vandermonde_matrix()</code>
+method together with <code>_nodal_points</code> to construct the
+coefficient matrix <code>C</code> * Use the coefficient matrix
+<code>C</code> and the <code>vandermonde_matrix()</code> method to
+tabulate the basis functions and their gradients by using the
+expressions above. You might find the <a
+href="https://numpy.org/doc/2.2/reference/generated/numpy.einsum.html"><code>numpy.einsum()</code></a>
+method useful to compute <span
+class="math inline">\(T^\partial(\boldsymbol{\zeta})\)</span> * Use <a
+href="https://docs.pytest.org/">pytest</a> to develop a suite of
+suitable tests to check that your implementation is correct.</p>
+<h3 data-number="3.5.1" id="general-lagrange-element">General Lagrange
+element</h3>
+<p>The general polynomial element is implemented in the class
+<code>PolynomialElement</code></p>
+</body>
+</html>

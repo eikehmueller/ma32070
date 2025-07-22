@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Function spaces</title>
+  <style>
+    div.sitenav { display: flex; flex-direction: row; flex-wrap: wrap; }
+    span.navlink { flex: 1; }
+    span.navlink-label { display: inline-block; min-width: 4em; }
+    html {
+      font-family: arial;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: blue;
+    }
+    a:visited {
+      color: blue;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<nav id="sitenav">
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Up:</span> <a href="index.html" accesskey="u" rel="up"></a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Top:</span> <a href="index.html" accesskey="t" rel="top"></a>
+</span>
+</div>
+<div class="sitenav">
+<span class="navlink">
+<span class="navlink-label">Next:</span> <a href="8-global-assembly.html" accesskey="n" rel="next">Global assembly</a>
+</span>
+<span class="navlink">
+<span class="navlink-label">Previous:</span> <a href="6-unstructured-meshes.html" accesskey="p" rel="previous">Unstructured meshes</a>
+</span>
+</div>
+</nav>
+<h1 data-number="7" id="function-spaces">Function spaces</h1>
+<h2 data-number="7.1" id="grid-cells-and-reference-elements">Grid cells
+and reference elements</h2>
+<p>We can now construct a function space <span
+class="math inline">\(V_h\subset H^1(\Omega_h)\)</span> on the domain
+<span class="math inline">\(\Omega_h\)</span> defined by the mesh as
+follows. First, we assume that each cell <span
+class="math inline">\(K\)</span> of the mesh is the image of the
+reference cell <span class="math inline">\(\widehat{K}\)</span> under a
+map <span class="math inline">\(X_K\)</span>. Next, assume that the
+function <span class="math inline">\(u|_K\)</span> in each cell is
+defined such that its pullback under the map <span
+class="math inline">\(X_K\)</span> is a polynomial. More specifically we
+set <span class="math display">\[
+V_h := \{u\in H^1(\Omega_h): u|_K(x) = \widehat{u}_K(\widehat{x})\quad
+\text{for some $\widehat{u}_K\in\mathcal{P}_p(\widehat{K})$ with
+$x=X_K(\widehat{x})$ for all cells $K\in\Omega_h$}\}
+\]</span></p>
+<figure>
+<img src="figures/reference_mapping.svg"
+alt="pullback to reference element" />
+<figcaption aria-hidden="true">pullback to reference
+element</figcaption>
+</figure>
+<p>We can now use the basis for <span
+class="math inline">\(\mathcal{P}_p(\widehat{K})\)</span> that we
+constructed in one of the previous lectures to represent the functions
+<span class="math inline">\(\widehat{u}_K\)</span>. However, care has to
+be taken to ensure that the function is continuous across facets and at
+the vertices. To guarantee this, we need to think carefully about the
+arrangement of unknowns on the mesh.</p>
+<h3 data-number="7.1.1" id="arrangement-of-unknowns">Arrangement of
+unknowns</h3>
+<p>Assume that we have a finite element with <span
+class="math inline">\(\nu_{\text{vertex}}\)</span> unknowns per vertex,
+<span class="math inline">\(\nu_{\text{facet}}\)</span> unknowns per
+facet and <span class="math inline">\(\nu_{\text{interior}}\)</span>
+unknowns per cell. Let <span class="math inline">\(N_{\text{vertex}} =
+n_{\text{vertex}}\cdot \nu_{\text{vertex}}\)</span>, <span
+class="math inline">\(N_{\text{facet}} = n_{\text{facet}}\cdot
+\nu_{\text{facet}}\)</span> and <span
+class="math inline">\(N_{\text{interior}} = n_{\text{cell}}\cdot
+\nu_{\text{interior}}\)</span> be the total number of unknowns
+associated with vertices, facets and cell interiors respectively.</p>
+<p>We number the unknowns by using the first <span
+class="math inline">\(N_{\text{vertex}}\)</span> indices for unknowns
+associated with vertices, the next <span
+class="math inline">\(N_{\text{facet}}\)</span> indices for unknowns
+associated with cells and the remaining <span
+class="math inline">\(N_{\text{interior}}\)</span> indices for unknowns
+associated with cell interiors. More specifically:</p>
+<ul>
+<li>unknowns with indices <span class="math inline">\(k\cdot
+\nu_{\text{vertex}},\dots,(k+1)\cdot \nu_{\text{vertex}}-1\)</span> are
+associated with the <span class="math inline">\(k\)</span>-th
+vertex</li>
+<li>unknowns with indices <span
+class="math inline">\(N_{\text{vertex}}+j\cdot
+\nu_{\text{facet}},\dots,N_{\text{vertex}}+(j+1)\cdot
+\nu_{\text{facet}}-1\)</span> are associated with the <span
+class="math inline">\(j\)</span>-th facet</li>
+<li>unknowns with indices <span
+class="math inline">\(N_{\text{vertex}}+N_{\text{facet}}+i\cdot
+\nu_{\text{interior}},\dots,N_{\text{vertex}}+N_{\text{facet}}+(i+1)\cdot
+\nu_{\text{interior}}-1\)</span> are associated with the <span
+class="math inline">\(i\)</span>-th cell</li>
+</ul>
+<p>The facet-unknowns are ordered along the orientation of each
+edge.</p>
+<p>The following figure shows an example for the <span
+class="math inline">\(p=3\)</span> Lagrange element. For this mesh there
+are <span class="math inline">\(N_{\text{vertex}}=6\)</span> unknowns
+associated with the vertices, <span
+class="math inline">\(N_{\text{facet}}=10\cdot 2=20\)</span> unknowns
+associated with the facets and <span
+class="math inline">\(N_{\text{interior}} = 5\)</span> unknowns
+associated with the cell interiors.</p>
+<figure>
+<img src="figures/simple_mesh_with_dof_numbers.svg"
+alt="simple triangular mesh with unknowns" />
+<figcaption aria-hidden="true">simple triangular mesh with
+unknowns</figcaption>
+</figure>
+<h3 data-number="7.1.2" id="local-to-global-map">Local-to-global
+map</h3>
+<p>On each cell with index <span class="math inline">\(i\)</span> we
+need to map the <span class="math inline">\(\ell\)</span>-th local
+dof-index to the global dof-index <span
+class="math inline">\(\ell_{\text{global}}\)</span>. Note that this map
+is surjective but not injective since the unknowns associated with the
+facets and vertices are shared.</p>
+<p>The map <span class="math inline">\((i,\ell) \mapsto
+\ell_{\text{global}}\)</span> is realised in two steps:</p>
+<ol type="1">
+<li>For the given <span class="math inline">\(\ell\)</span>, we first
+work out the entity-type <span class="math inline">\(E\)</span> (cell,
+facet or vertex) it is associated with, as well as the index <span
+class="math inline">\(j\)</span> of this entity on the reference
+triangle and the index <span class="math inline">\(k\)</span> of the dof
+on that reference entity. Recall that for the finite element we have the
+dof-map <span class="math inline">\(\mu_{\text{dof}}\)</span> that <span
+class="math inline">\(\ell = \mu_{\text{dof}}(E,j,k)\)</span>, so we can
+obtain <span class="math inline">\(E\)</span>, <span
+class="math inline">\(j\)</span> and <span
+class="math inline">\(k\)</span> from the inverse of this map.</li>
+<li>Next, we map this to the global index taking into account the
+arrangement of unknowns described above:
+<ol type="1">
+<li>If <span class="math inline">\(E=\text{vertex}\)</span>: <span
+class="math inline">\(\ell_{\text{global}} = v\cdot
+\nu_{\text{vertex}}+k\)</span> where <span
+class="math inline">\(v=I^{v\gets K}_{ij}\)</span> is the global index
+of the vertex with local index <span
+class="math inline">\(j\)</span>.</li>
+<li>If <span class="math inline">\(E=\text{facet}\)</span>: <span
+class="math inline">\(\ell_{\text{global}} = N_{\text{vertex}}+f\cdot
+\nu_{\text{facet}}+\widetilde{k}\)</span> where <span
+class="math inline">\(f=I^{F\gets K}_{ij}\)</span> is the global index
+of the facet with local index <span class="math inline">\(j\)</span>.
+Note that the orientation of the facet does not necessarily match the
+orientation on the reference element <span
+class="math inline">\(\widehat{K}\)</span>. To take this into account,
+set <span class="math inline">\(\widetilde{k}=k\)</span> if the
+orientations agree and set <span class="math inline">\(\widetilde{k} =
+\nu_{\text{facet}}-1-k\)</span> otherwise.</li>
+<li>If <span class="math inline">\(E=\text{cell}\)</span>: <span
+class="math inline">\(\ell_{\text{global}} =
+N_{\text{vertex}}+N_{\text{facet}}+i\cdot
+\nu_{\text{interior}}+k\)</span></li>
+</ol></li>
+</ol>
+<h2 data-number="7.2" id="encoding-geometry-information">Encoding
+geometry information</h2>
+<p>The geometry of the mesh is encoded in the functions <span
+class="math inline">\(X_K\)</span>. We can combine the <span
+class="math inline">\(X_K\)</span> in each cell into a function <span
+class="math inline">\(X\)</span> which is defined on the entire mesh.
+The crucial observation is now that each component of <span
+class="math inline">\(X_K\)</span> can be represented by a function in a
+finite element space <span class="math inline">\(W_h\)</span> which is
+defined in the same way as <span class="math inline">\(V_h\)</span> (but
+possibly with a different polynomial degree). Hence, we can define a
+coordinate function</p>
+<p><span class="math display">\[
+X \in W_h^{\times} = W_h \times W_h
+\]</span></p>
+<p>The space <span class="math inline">\(W_h^{\times}\)</span> is a
+vector function space. Let <span
+class="math inline">\(w=(w_0,w_1):\widehat{K}\rightarrow
+\mathbb{R}^2\)</span> be a vector-valued function. Then the degrees of
+freedom <span class="math inline">\(\ell^\times\)</span> of <span
+class="math inline">\(W^\times_h\)</span> are given by:</p>
+<p><span class="math display">\[
+\ell^\times_j(w) = \begin{cases}
+\ell_{j/2}(w_0) &amp; \text{for $j$ even}\\
+\ell_{(j-1)/2}(w_1) &amp; \text{for $j$ odd}\\
+\end{cases}
+\]</span></p>
+<p>The vector-valued basis functions <span
+class="math inline">\(\phi^\times_j\)</span> are <span
+class="math display">\[
+\phi^\times_j(x) =
+\begin{cases}
+\begin{pmatrix}\phi_{j/2}(x)\\0\end{pmatrix} &amp; \text{for $j$
+even}\\[2ex]
+\begin{pmatrix}0 \\\phi_{(j-1)/2}(x)\end{pmatrix} &amp; \text{for $j$
+odd}
+\end{cases}
+\]</span></p>
+<h3 data-number="7.2.1" id="tabulation-of-basis-functions-1">Tabulation
+of basis functions</h3>
+<p>As for scalar-valued function spaces we can <em>tabulate</em> the
+basis functions. For a given set of points <span
+class="math inline">\(\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}\)</span>,
+we obtain the <span class="math inline">\(n \times \nu^\times \times
+2\)</span> matrix <span class="math inline">\(T^\times\)</span> with</p>
+<p><span class="math display">\[
+T^\times_{ij\ell}(\boldsymbol{\zeta}) :=
+(\phi^\times_j(\zeta^{(i)}))_\ell =
+\begin{cases}
+\phi_{j/2}(\zeta^{(i)}) = T_{i,j/2}&amp; \text{if $j$ even and $\ell=0$}
+\\
+\phi_{(j-1)/2}(\zeta^{(i)}) = T_{i,(j-1)/2} &amp; \text{if $j$ odd and
+$\ell=1$} \\
+0 &amp; \text{otherwise}
+\end{cases}
+\]</span></p>
+<p>Furthermore, the derivatives are collected in the <span
+class="math inline">\(n \times \nu^\times \times 2\times 2\)</span>
+matrix <span class="math inline">\(T^{\times\partial}\)</span> matrix
+with</p>
+<p><span class="math display">\[
+T^{\times\partial}_{ij\ell k}(\boldsymbol{\zeta}) := \frac{(\partial
+\phi^\times_j)_\ell}{\partial x_k}(\zeta^{(i)})  = \begin{cases}
+\frac{\phi_{j/2}}{\partial x_k}(\zeta^{(i)}) = T_{i,j/2,k}&amp; \text{if
+$j$ even and $\ell=0$} \\
+\frac{\partial\phi_{(j-1)/2}}{\partial x_k}(\zeta^{(i)}) =
+T_{i,(j-1)/2,k} &amp; \text{if $j$ odd and $\ell=1$} \\
+0 &amp; \text{otherwise}
+\end{cases}
+\]</span></p>
+<p>We can now write</p>
+<p><span class="math display">\[
+X_K(\xi^{(i)}) = \sum_j X_j \phi_j^\times(\xi^{(i)}) = \sum_j
+T^\times_{ij} X_j
+\]</span></p>
+<p>and the Jacobian is</p>
+<p><span class="math display">\[
+J_{ab}(\xi^{(i)}) = \frac{\partial (X_K)_a }{\partial x_b}(\xi^{(i)})
+= \sum_j X_j \frac{\partial (\phi^\times_j)_a }{\partial x_b}(\xi^{(i)})
+= \sum_j X_j T^{\times\partial}_{ijab}
+\]</span></p>
+<h2 data-number="7.3" id="implementation-in-python-1">Implementation in
+Python</h2>
+</body>
+</html>

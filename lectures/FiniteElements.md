@@ -220,7 +220,7 @@ $$
 
 ## Implementation
 
-### Abstract bases class
+### Abstract base class
 Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class, which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. More specifically, each finite element should provide the following functionality:
 
 * Return the number of nodes associated with each topological entity. For this, we define abstract properties `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior` for $\nu_{\text{vertex}}$, $\nu_{\text{facet}}$ and $\nu_{\text{interior}}$ respectively. The base class also contains a property `ndof` which returns $\nu =3(\nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}$.

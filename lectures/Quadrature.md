@@ -100,51 +100,69 @@ $$
 
 ## Implementation in Python
 
+### Abstract base class
+All quadrature rules are characterised by the weights and points. We therefore implement them as subclasses of an abstract base class `Quadrature` (in `fem/quadrature.py`) which has the following abstract properties:
+* `nodes` the quadrature nodes $\{\xi^{(q)}\}_{q=0}^{n_q-1}$, represented by an array of shape $n_q\times 2$
+* `weights` the quadrature weights $\{w_q\}_{q=0}^{n_q-1}$, represented by an array of length $n_q$
+* `degree_of_precision` tegree of precision, i.e. the highest polynomial degree that can be integrated exactly
+
+### Concrete implementations
+The file `fem/quadrature.py` also contains specific subclasses
+
+* A quadrature rule $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}$ over line segments based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureLineSegment(v_a, v_b, npoints)`. The following parameters are passed to the constructor:
+    - `v_a` the start point $a$ of the line segment
+    - `v_b` the end point $b$ of the line segment
+    - `npoints` the number of points $n_q$
+* A quadrature rule $\mathcal{Q}^{(\text{GL},\widehat{K})}_{n_q}$ over the reference triangle $\widehat{K}$ based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureReferenceTriangle(npoints)`. The constructor is passed the number of points $n_q$.
+
 ## FEM method on reference triangle
-We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle. For this, note that the entries of the stiffness matrix are given by:
+We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle.
+
+### Stiffness matrix
+For this, note that the entries of the stiffness matrix are given by:
 $$
 \begin{aligned}
-A^{(h)}_{\ell k} = a(\phi_\ell,\phi_k) &= \int_{\widehat{K}} \left(\kappa \sum_{k=0}^{d-1}\frac{\partial\phi_i}{\partial x_k}(x) \frac{\partial\phi_j}{\partial x_k}(x) + \omega\; \phi_i(x) \phi_j(x)\right)\;dx\\
+A^{(h)}_{\ell k} = a(\phi_\ell,\phi_k) &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_\ell}{\partial x_a}(x) \frac{\partial\phi_k}{\partial x_a}(x) + \omega\; \phi_\ell(x) \phi_k(x)\right)\;dx\\
 &\approx 
-\sum_{q=0}^{N_q-1} w_q\left(\kappa \sum_{k=0}^{d-1}\frac{\partial\phi_i}{\partial x_k}(\zeta^{(q)}) \frac{\partial\phi_j}{\partial x_k}(\zeta^{(q)}) + \omega\; \phi_i(\zeta^{(q)}) \phi_j(\zeta^{(q)})\right)\\
-&= \kappa \sum_{q=0}^{N_q-1}\sum_{k=0}^{d-1} w_q  T^\partial_{qik} (\boldsymbol{\zeta})T^\partial_{qjk} (\boldsymbol{\zeta})
-+\omega \sum_{q=0}^{N_q-1} w_qT_{qi}(\boldsymbol{\zeta})T_{qj}(\boldsymbol{\zeta})
+\sum_{q=0}^{N_q-1} w_q\left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(q)}) \frac{\partial\phi_k}{\partial x_a}(\zeta^{(q)}) + \omega\; \phi_\ell(\zeta^{(q)}) \phi_k(\zeta^{(q)})\right)\\
+&= \kappa \sum_{q=0}^{N_q-1}\sum_{a=0}^{d-1} w_q  T^\partial_{q\ell a} (\boldsymbol{\zeta})T^\partial_{qka} (\boldsymbol{\zeta})
++\omega \sum_{q=0}^{N_q-1} w_qT_{q\ell}(\boldsymbol{\zeta})T_{qk}(\boldsymbol{\zeta})
 \end{aligned}
 $$
-Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\widehat{K})}$.
+Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$.
 
+### Right hand side vector
 The entries of the right-hand side vector $\boldsymbol{b}^{(h)}$ are computed like this:
 $$
 \begin{aligned}
-b^{(h)}_i = b(\phi_i) &= \int_{\widehat{K}} f(x)\phi_i(x)\;dx + \int_{\partial \widehat{K}} g(x)\phi_i(x)\;dx\\
-&\approx \sum_{q=0}^{N_q-1} w_q f(\zeta^{(q)}) \phi_i(\zeta^{(q)}) + \sum_{\text{facets}\;F_m} \sum_{q=0}^{n_q-1 }w_{F_m,q} g(\zeta_{F_m}^{(q)})\phi_i(\zeta_{F_m}^{(q)}) \\
-&= \sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{qi}(\boldsymbol{\zeta}) + \sum_{\text{facets}\;F_m} \sum_{q=0}^{n_q-1 }w_{F_m,q} g_{q}(\boldsymbol{\zeta}_{F_m})T_{qi}(\boldsymbol{\zeta}_{F_m})
+b^{(h)}_\ell = b(\phi_\ell) &= \int_{\widehat{K}} f(x)\phi_\ell(x)\;dx + \int_{\partial \widehat{K}} g(x)\phi_\ell(x)\;dx\\
+&\approx \sum_{q=0}^{N_q-1} w_q f(\zeta^{(q)}) \phi_\ell(\zeta^{(q)}) + \sum_{\text{facets}\;F_m} \sum_{q=0}^{n_q-1 }w_{F_m,q} g(\zeta_{F_m}^{(q)})\phi_\ell(\zeta_{F_m}^{(q)}) \\
+&= \sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta}) + \sum_{\text{facets}\;F_m} \sum_{q=0}^{n_q-1 }w_{F_m,q} g_{q}(\boldsymbol{\zeta}_{F_m})T_{q\ell}(\boldsymbol{\zeta}_{F_m})
 \end{aligned}
 $$
-with $f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$ and $g_{q}(\boldsymbol{\zeta}_{F_m}) := g(\zeta_{F_m}^{(q)})$. We choose the quadrature rules $\mathcal{Q}_{n_q}^{(F_m)} = \{w_{F_m,q},\zeta^{(q)}_{F_m}\}_{q=0}^{n_q-1}$ with $n_q=p+1$ on the facets $F_m$.
+with $f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$ and $g_{q}(\boldsymbol{\zeta}_{F_m}) := g(\zeta_{F_m}^{(q)})$. We choose the quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},F_m)} = \{w_{F_m,q},\zeta^{(q)}_{F_m}\}_{q=0}^{n_q-1}$ with $n_q=p+1$ on the facets $F_m$.
 
-The error $e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)$ is the difference between the exact and numerical solution. Furthermore, we have that
+### Error
+The error $e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)$ is the difference between the exact and numerical solution. We can write $e^{(h)}$ as
 
 $$
-e^{(h)}(x) = \sum_{j=0}^{d_p-1} \underbrace{\left(u^{(h)}_j - (u^{(h)}_{\text{exact}})_j\right)}_{=:e^{(h)}_j}\phi_j(x) = 
-\sum_{j=0}^{d_p-1} e^{(h)}_j \phi_j(x)
+e^{(h)}(x) = u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)
 $$
-with $(u^{(h)}_{\text{exact}})_j = \ell_j(u_\text{exact})$ since the Lagrange element is nodal.
 
 The square of the $L_2$ norm of the error is given by
 
 $$
 \begin{aligned}
-\|e^{(h)}\|_{L_2}^2 &= \int_{\widehat{K}} (e^{(h)}(x))^2\;dx\\
-&= \int_K\sum_{j,k=0}^{d_p-1} e^{(h)}_je^{(h)}_k \phi_j(x)\phi_k(x)\;dx\\
+\|e^{(h)}\|_{L_2(\widehat{K})}^2 &= \int_{\widehat{K}} \left(u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\right)^2\;dx\\
 &\approx 
-\sum_q ^{N_q-1}\sum_{j,k=0}^{d_p-1} w_q e^{(h)}_je^{(h)}_k \phi_j(\zeta^{(q)})\phi_k(\zeta^{(q)})\\
-&= \sum_q ^{N_q-1}\sum_{j,k=0}^{d_p-1} w_q e^{(h)}_je^{(h)}_k T_{qj}T_{qk}.
-\end{aligned}
+\sum_q ^{N_q-1} w_q \left(u_{\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(\zeta^{(q)})\right)^2 \\
+&= \sum_q ^{N_q-1} w_q e_q^2\quad\text{with}\;\; e_q := u^{(\text{exact})}_q - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell T_{q\ell},\;u^{(\text{exact})}_q := u_{\text{exact}}(\zeta^{(q)}).
+\end{aligned}\qquad(\dagger)
 $$
 
-where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$.
+where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$.
 
+### Numerical experiment
 To test this, we use the method of manufactured solutions. For this, we pick a right-hand side $f(x)$ and boundary condition $g(x)$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
 
 $$
@@ -168,20 +186,93 @@ n &= \begin{cases}
 $$
 
 ### Exercise
-* Implement a method `assemble_lhs_reference_triangle(element, n_q)` which assembles the stiffness matrix $A^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
+* Implement a method `assemble_lhs(element, n_q)` which assembles the stiffness matrix $A^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Implement a method `assemble_rhs_reference_triangle(f, g, element, n_q)` which assembles the right-hand side vector $\boldsymbol{b}^{(h)}$ using the Gauss-Legenre quadrature rule. The method should be passed:
+* Implement a method `assemble_rhs(f, g, element, n_q)` which assembles the right-hand side vector $\boldsymbol{b}^{(h)}$ using the Gauss-Legenre quadrature rule. The method should be passed:
   - The function `f` which describes the right-hand side function $f(x)$
   - The function `g` which describes the Neumann boundary function $g(x)$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Implement a method `two_norm_reference_triangle(w, element, n_q)` which computes the $L_2$ norm of a function $w^{(h)}(x)=\sum_{j=0}^{d_p-1} w^{(h)}_j \phi_j(x)$. The method should be passed:
-  - The vector $\boldsymbol{w}^{(h)}$ that defines the function $w^{(h)}(x)$ 
+* Implement a method `error_nrm(u, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e^{(h)}\|_{L_2(\widehat{K})}$ by using the approximation in $(\dagger). The method should be passed:
+  - The vector $\boldsymbol{u}^{(h)}$ that defines the function $u^{(h)}(x)$ 
+  - A function $u_{\text{exact}}$ which represents the exact solution and which can be evaluated at arbirtrary points $\zeta\in \widehat{K}$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
 * Solve the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ for the vector $\boldsymbol{u}^{(h)}$ by using [numpy.linalg.solve()](https://numpy.org/doc/2.0/reference/generated/numpy.linalg.solve.html)
-* Apply the `tabulate_dofs()` method of the finite element class to the exact solution $u_{\text{exact}}(x)$ to obtain a vector $\boldsymbol{u}_{\text{exact}}^{(h)}$.
-* Compute the error norm $\|e^{(h)}\|_{L_2}=\|\boldsymbol{u}_{\text{exact}}^{(h)}-\boldsymbol{u}^{(h)}\|_{L_2}$.
-* How does $\|e^{(h)}\|_{L_2}$ depend on the polynomial degree $p$ of the Lagrange element?
+
+#### Numerical experiments
+* Apply the `tabulate_dofs()` method of the finite element class to the exact solution $u_{\text{exact}}(x)$ to obtain a vector $\boldsymbol{u}_{\text{exact}}^{(h)}$. For this pick the following parameters:
+  - width of peak $\sigma = 0.5$
+  - location of peak $x_0 = (0.6, 0.25)^\top$
+  - Coefficient of diffusion term $\kappa = 0.9$
+  - Coefficient of zero order term $\omega = 0.4$
+* Compute the error norm $\|e^{(h)}\|_{L_2(\widehat{K})}$.
+* How does $\|e^{(h)}\|_{L_2(\widehat{K})}$ depend on the polynomial degree $p$ of the Lagrange element?
 * What happens for large values of $p$?
+
+#### Practicalities
+
+* Implement `assemble_lhs`, `assemble_rhs` and `error_nrm` in the file `algorithms.py`
+
+You can use the Python functions given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points.
+
+```Python
+def u_exact(x, sigma, x0):
+    """Analytical solution
+
+    :arg x: point at which the function is evaluated
+    :arg sigma: width of peak
+    :arg x0: location of peak"""
+    return np.exp(
+        -1 / (2 * sigma**2) * ((x[..., 0] - x0[0]) ** 2 + (x[..., 1] - x0[1]) ** 2)
+    )
+
+
+def f(x, kappa, omega, sigma, x0):
+    """function to interpolate
+
+    :arg x: point at which the function is evaluated
+    :arg kappa: coefficient of diffusion term
+    :arg omega: coefficient of zero-order term
+    :arg sigma: width of peak
+    :arg x0: location of peak
+    """
+    x_sq = (x[..., 0] - x0[0]) ** 2 + (x[..., 1] - x0[1]) ** 2
+    return (2 * kappa / sigma**2 + omega - kappa / sigma**4 * x_sq) * u_exact(
+        x, sigma, x0
+    )
+
+
+def g(x, kappa, sigma, x0):
+    """boundary function
+
+    :arg x: point at which the function is evaluated
+    :arg kappa: coefficient of diffusion term
+    :arg sigma: width of peak
+    :arg x0: location of peak
+    """
+    if np.all(x[..., 1]) < 1e-12:
+        # facet F_1
+        n_dot_x = -(x[..., 1] - x0[1])
+    elif np.all(x[..., 0]) < 1e-12:
+        # facet F_2
+        n_dot_x = -(x[..., 0] - x0[0])
+    else:
+        # facet F_0
+        n_dot_x = (x[..., 0] - x0[0] + x[..., 1] - x0[1]) / np.sqrt(2)
+    return -kappa / sigma**2 * n_dot_x * u_exact(x, sigma, x0)
+```
+
+To pass these functions to a method which expects a function $f(x)$ with a single argument $x$ you can use [`functools.partial`](https://docs.python.org/3/library/functools.html#functools.partial):
+
+```Python
+import functools
+f_prime = functools.partial(x, kappa=0.9, omega=0.4, sigma=0.5, x0=[0.6, 0.25])
+```
+
+We can now call the function $f'(x)$ with a single argument $x$:
+```Python
+x = np.asarray([0.4,0.7])
+f_prime(x)
+```

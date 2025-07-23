@@ -1,4 +1,6 @@
 # Unstructured meshes
+*&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
+
 In general, we might want to solve PDEs on a $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ that is embedded in $D$ dimensional space. For example, we might want to solve the Navier-Stokes equations on the surface of a sphere. The manifold is then approximated by a mesh, which can be described as a collection of topological entities. For example, if $d=2$, the mesh will consist of zero-dimensional vertices, one-dimensional edges and two-dimensional triangular cells (although it is also possible to use more general polygonal cells we do not consider this here). In general, the co-dimension $c$ of a $d'$-dimensional mesh entity is given by $c=d-d'$. In the following we will only consider the case $d=D=2$. In this case we have:
 
 | topological entity  | dimension $d'$ | co-dimension $c$ |

@@ -193,7 +193,7 @@ print(w_numpy)
 ```
 
 ## Solving linear systems
-The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $Au=b$. We will discuss this is more detail in the next lecture, but for now let us just look at a simple example:
+The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $A\boldsymbol{u}=\boldsymbol{b}$. We will discuss this is more detail in the next lecture, but for now let us just look at a simple example:
 
 Consider the following $5\times 5$ matrix
 $$
@@ -227,7 +227,7 @@ A = PETSc.Mat().createAIJWithArrays(
 A.assemble()
 ```
 
-We can then solve the linear system $Au=b$ for $b = (8.1, 0, 9.3, -4.3, 5.2)^\top$ as follows:
+We can then solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ for given $\boldsymbol{b} = (8.1, 0, 9.3, -4.3, 5.2)^\top$ as follows:
 
 ```python
 b = PETSc.Vec().createWithArray([8.1, 0, 9.3, -4.3, 5.2])

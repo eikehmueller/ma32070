@@ -254,8 +254,8 @@ $$
 \left\{
 \underbrace{
 \begin{pmatrix}0\\[1ex]0\end{pmatrix},
-\begin{pmatrix}0\\[1ex]1\end{pmatrix},
-\begin{pmatrix}1\\[1ex]1\end{pmatrix}}_{\text{vertices}},
+\begin{pmatrix}1\\[1ex]0\end{pmatrix},
+\begin{pmatrix}0\\[1ex]1\end{pmatrix}}_{\text{vertices}},
 \underbrace{\begin{pmatrix}\frac{2}{3}\\[1ex]\frac{1}{3}\end{pmatrix},
 \begin{pmatrix}\frac{1}{3}\\[1ex]\frac{2}{3}\end{pmatrix},
 \begin{pmatrix}0\\[1ex]\frac{2}{3}\end{pmatrix},

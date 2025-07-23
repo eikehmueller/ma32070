@@ -71,7 +71,7 @@ def error_nrm(u_numerical, u_exact, element, n_q):
     x_q_hat = np.asarray(quad.nodes)
     w_q = quad.weights
     phi = element.tabulate(x_q_hat)
-    u_q = np.asarray([u_exact(xi) for xi in x_q_hat])
+    u_q = u_exact(x_q_hat)
     e_q = u_q - phi @ u_numerical
     nrm2 = np.sum(w_q * e_q**2)
     return np.sqrt(nrm2)

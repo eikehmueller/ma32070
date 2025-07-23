@@ -16,19 +16,19 @@ $$
 \mathcal{P}_p(\widehat{K}) = \{q:q(x) = \sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}} a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1}\;\text{for all $x\in K$ with $a_{\alpha_0,\alpha_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
 $$
 
-The space $\mathcal{P}_p(\widehat{K})$  is spanned by $\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_j(x)\}_{j=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $d$ points $\{\xi^{(j)}\}_{j=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_j(x)\in\mathcal{P}_p(K)$ such that
+The space $\mathcal{P}_p(\widehat{K})$  is spanned by $\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
 $$
-\phi_j(\xi^{(k)}) = \delta_{jk} = \begin{cases}
-    1 & \text{for $j=k$}\\
+\phi_\ell(\xi^{(k)}) = \delta_{\ell k} = \begin{cases}
+    1 & \text{for $\ell=k$}\\
     0 & \text{otherwise}.
 \end{cases}
 $$
 A possible choice of points is given by (see figure below for some examples)
 $$
-\{\xi^{(j)}\}_{j=0}^{\nu-1} = \left\{\left(\frac{j_0}{p},\frac{j_1}{p}\right) \quad \text{for $j_0,j_1\in\mathbb{N}$ with $0\le j_0\le j_1 \le p$}\right\}.
+\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1} = \left\{\left(\frac{\ell_0}{p},\frac{\ell_1}{p}\right) \quad \text{for $\ell_0,\ell_1\in\mathbb{N}$ with $0\le \ell_0\le \ell_1 \le p$}\right\}.
 $$
 
-We order these points (and the associated basis functions $\phi_j(x)$) as follows:
+We order these points (and the associated basis functions $\phi_\ell(x)$) as follows:
 
 * Points associated with the three vertices $v_0$, $v_1$, $v_2$ (in this order); there is $\nu_{\text{vertex}}=1$ point per vertex,
 * points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in the figure above and finally
@@ -95,28 +95,28 @@ Let $K\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(K)$ be the space of functions w
 This now leads to the following definition, originally due to Ciarlet (see [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) for the version used here): a finite element is a triple $(\widehat{K},\mathcal{V},\mathcal{L})$ which consists of
 * the **domain** $\widehat{K}$
 * the **function space** $\mathcal{V}=\mathcal{V}(\widehat{K})$ of real-valued functions on $\widehat{K}$,
-* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda\}_{j=0}^{\nu-1}$, which is a basis for $\mathcal{V}^*$, the dual of $\mathcal{V}$
+* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda\}_{\ell=0}^{\nu-1}$, which is a basis for $\mathcal{V}^*$, the dual of $\mathcal{V}$
 
-Crucially, we define the finite element by choosing a basis of the *dual* space $\mathcal{V}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_j\}_{j=0}^{\nu-1}$ of $\mathcal{V}$ by requiring that
+Crucially, we define the finite element by choosing a basis of the *dual* space $\mathcal{V}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ of $\mathcal{V}$ by requiring that
 $$
-\lambda_j (\phi_k) = \delta_{jk} \qquad\text{for all $j,k=0,1,\dots,\nu-1$}.
+\lambda_\ell (\phi_k) = \delta_{\ell k} \qquad\text{for all $\ell,k=0,1,\dots,\nu-1$}.
 $$
 In the following we will assume that $\widehat{K}$ is the reference triangle introduced above, unless specified otherwise.
 
 #### Examples
 The **polynomial Lagrange element** we described above is a special case of this with 
 * $\mathcal{V} = \mathcal{P}_p(\widehat{K})$, the space of bi-variate polynomials of degree $p$
-* $\lambda: \lambda_j(w) = w(\xi^{(j)})$ the point evaluation at the nodal points $\xi^{(j)}$
+* $\lambda: \lambda_\ell(w) = w(\xi^{(\ell)})$ the point evaluation at the nodal points $\xi^{(\ell)}$
 
 An alternative choice for the nodes would have been to define for some point $\mathring{\xi}\in \widehat{K}$:
 $$
-\lambda_j (w) = \frac{\partial^{j_a}w}{\partial x_0^{j_b} \partial x_1^{j_a-j_b}}(\mathring{\xi}) \qquad\text{for $0\le j_b \le j_a\le p$ and $j=\frac{1}{2}j_a(j_a-1) + j_b$}
+\lambda_j (w) = \frac{\partial^{\ell_a}w}{\partial x_0^{\ell_b} \partial x_1^{\ell_a-\ell_b}}(\mathring{\xi}) \qquad\text{for $0\le \ell_b \le \ell_a\le p$ and $\ell=\frac{1}{2}\ell_a(\ell_a-1) + \ell_b$}
 $$
 
 The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
 * $\mathcal{V} = \mathcal{P}_5(\widehat{K})$, the space of quintic bi-variate polynomials
-* the 21 nodes defined as follows:
-  - $\lambda_i(w) = w(v_j)$ (evaluation at each vertex $v_i$ $\Rightarrow$ 3 nodes)
+* the 21 nodes (with $\nu_{\text{vertex}}=6$, $\nu_{\text{facet}}=1$, $\nu_{\text{interior}}=0$) defined as follows:
+  - $\lambda_i(w) = w(v_i)$ (evaluation at each vertex $v_i$ $\Rightarrow$ 3 nodes)
   - $\lambda_{3+2i+j}(w) = \frac{\partial w}{\partial x_j}(v_i)$ (two gradient evaluations at each vertex $\Rightarrow$ 6 nodes)
   - $\lambda_{9+3i+2j+k}(w) = \frac{\partial^2 w}{\partial x_j \partial x_k}(v_i)$ with $0\le j\le k\le 1$ (Hessian evaluation at each vertex $\Rightarrow$ 9 nodes)
   - $\lambda_{18+j}(w) = n_i\cdot \nabla w(m_i)$ (normal derivative evaluation at the midpoints $m_i$ of each facet $F_i$ $\Rightarrow$ 3 nodes)
@@ -132,7 +132,15 @@ We further assume that $0\le \nu_{\text{vertex}}$ nodes are associated with each
 $$
 \nu = 3( \nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}.
 $$
-Let $\lambda_k^{(E_i)}$ be the $k$-th node associated with topological entity $E_i\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the unknowns $\{\lambda_0,\dots,\lambda_{\nu-1}\}$ in the following order:
+Let $\lambda_j^{(E_i)}$ be the $j$-th node associated with topological entity $E_i\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the unknowns $\{\lambda_0,\dots,\lambda_{\nu-1}\}$ in the order
+
+$$
+\underbrace{v_0 \rightarrow v_1 \rightarrow v_2}_{\text{(vertices)}}
+\rightarrow \underbrace{F_0 \rightarrow F_1 \rightarrow F_2}_{\text{(facets)}}
+\rightarrow \underbrace{K^0}_{\text{(interior)}}
+$$
+
+i.e.
 
 $\{\lambda_0^{(v_0)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_0)},
 \lambda_0^{(v_1)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_1)},
@@ -143,36 +151,37 @@ $\{\lambda_0^{(v_0)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_0)},
 \lambda_0^{(K^0)},\dots,\lambda_{\nu_{\text{interior}}-1}^{(K^0)}
 \}$
 
-In other words $\lambda_{j=\mu_{\text{dof}}(E,i,k)} = \lambda_k^{(E_i)}$ with the indirection map
+In other words, we define the indirection map $\mu_{\text{dof}}$ such that $\lambda_{\ell=\mu_{\text{dof}}(E,i,j)} = \lambda_j^{(E_i)}$ with
+
 $$
-\mu_{\text{dof}}(E,i,k) = \begin{cases}
-i\cdot \nu_{\text{vertex}} + k & \text{if $E=v_i$}\\
-3\nu_{\text{vertex}} + i\cdot \nu_{\text{facet}} + k & \text{if $E=F_i$}\\
-3(\nu_{\text{vertex}} + \nu_{\text{facet}}) + k & \text{if $E=K^0$}
+\mu_{\text{dof}}(E,i,j) = \begin{cases}
+i\cdot \nu_{\text{vertex}} + j & \text{if $E$ is the $i$-th vertex}\\
+3\nu_{\text{vertex}} + i\cdot \nu_{\text{facet}} + j & \text{if $E$ is the $i$-th facet}\\
+3(\nu_{\text{vertex}} + \nu_{\text{facet}}) + j & \text{if $E$ is the interior}
 \end{cases}
 $$
 This is illustrated for the polynomial Lagrange element in the figure above.
 
 ## Vandermonde matrix
-Having picked the nodes, how can we construct the nodal basis functions $\{\phi_k(x)\}_{k=0}^{\nu-1}$ for a given set of nodes $\{\lambda_j\}_{j=0}^{\nu-1}$? For this, assume that we know some set of basis functions $\{\theta_i(x)\}_{i=0}^{\nu-1}$ of $\mathcal{V}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_i(x)\}_{i=0}^{\nu-1}$ is a basis of $\mathcal{V}$, we can write for each $k=0,1,\dots,\nu-1$
+Having picked the nodes, how can we construct the nodal basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$ for a given set of nodes $\{\lambda_\ell\}_{\ell=0}^{\nu-1}$? For this, assume that we know some set of basis functions $\{\theta_m(x)\}_{m=0}^{\nu-1}$ of $\mathcal{V}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_m(x)\}_{m=0}^{\nu-1}$ is a basis of $\mathcal{V}$, we can write for each $k=0,1,\dots,\nu-1$
 
 $$
-\phi_k(x) = \sum_{i=0}^{\nu-1} c_i^{(k)} \theta_i(x)
+\phi_k(x) = \sum_{m=0}^{\nu-1} c_m^{(k)} \theta_m(x)
 $$
 
-for some coefficients $c_i^{(k)}$. Further, since per definition $\{\phi_k\}_{k=0}^{\nu-1}$ is a *nodal* basis of $\mathcal{V}$ and $\lambda_j$ are linear functionals we know that
+for some coefficients $c_m^{(k)}$. Further, since per definition $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ is a *nodal* basis of $\mathcal{V}$ and $\lambda_\ell$ are linear functionals we know that
 
 $$
-\delta_{jk} = \lambda_j(\phi_k) = \sum_{i=0}^{\nu-1} \underbrace{c_i^{(k)}}_{C_{ik}} \underbrace{\lambda_j(\theta_i)}_{V_{ji}}.
+\delta_{\ell k} = \lambda_\ell(\phi_k) = \sum_{m=0}^{\nu-1} \underbrace{c_m^{(k)}}_{C_{mk}} \underbrace{\lambda_\ell(\theta_m)}_{V_{\ell m}}.
 $$
 
-If we define the $\nu\times\nu$ matrices $V$, $C$ with $V_{ji} := \lambda_j(\theta_i)$ and $C_{ik}:=c_i^{(k)}$, then this equation can be written in matrix form as
+If we define the $\nu\times\nu$ matrices $V$, $C$ with $V_{\ell m} := \lambda_\ell(\theta_m)$ and $C_{mk}:=c_m^{(k)}$, then this equation can be written in matrix form as
 $$
 VC = \mathbb{I}\quad \Leftrightarrow \quad C = V^{-1}
 $$
-with $\mathbb{I}$ the $\nu\times\nu$ identity matrix. In other words, we can obtain the coefficients $c_i^{(k)}$ by inverting the matrix $V$. For the Lagrange element, where $\lambda_j(w) = w(\xi^{(j)})$ are nodal evaluations, the matrix $V$ is the Vandermonde matrix:
+with $\mathbb{I}$ the $\nu\times\nu$ identity matrix. In other words, we can obtain the coefficients $c_m^{(k)}$ by inverting the matrix $V$. For the Lagrange element, where $\lambda_\ell(w) = w(\xi^{(\ell)})$ are nodal evaluations and thus $V_{\ell m} = \lambda_{\ell}(\theta_m) = \theta_m(\xi^{(\ell)})$, the matrix $V$ is the Vandermonde matrix:
 $$
-V = V(\{\xi^{(j)}\}_{j=0}^{\nu-1}) = \begin{pmatrix}
+V = V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}) = \begin{pmatrix}
 1 & \xi^{(0)}_0 & \xi^{(0)}_1  & (\xi^{(0)}_0)^2 & \xi^{(0)}_0 \xi^{(0)}_1 & (\xi^{(0)}_1)^2 & \dots \\[1ex]
 1 & \xi^{(1)}_0 & \xi^{(1)}_1 & (\xi^{(1)}_0)^2 & \xi^{(1)}_0 \xi^{(1)}_1 & (\xi^{(1)}_1)^2 & \dots \\[1ex]
 1 & \xi^{(2)}_0 & \xi^{(2)}_1 & (\xi^{(2)}_0)^2 & \xi^{(2)}_0 \xi^{(2)}_1 & (\xi^{(2)}_1)^2 & \dots \\[1ex]
@@ -180,17 +189,17 @@ V = V(\{\xi^{(j)}\}_{j=0}^{\nu-1}) = \begin{pmatrix}
 1 & \xi^{(\nu-1)}_0 & \xi^{(\nu-1)}_1 & (\xi^{(\nu-1)}_0)^2 & \xi^{(\nu-1)}_0 \xi^{(\nu-1)}_1 & (\xi^{(\nu-1)}_1)^2 & \dots
 \end{pmatrix}.
 $$
-In fact, observe that for *any* given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, which do not have to coincide with the nodal points $\{\xi^{(j)}\}_{j=0}^{\nu-1}$, we can construct the $n\times\nu$ matrix $V(\boldsymbol{\zeta})$ with $V_{ij}(\boldsymbol{\zeta}) = \theta_j(\zeta^{(i)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
+In fact, observe that for *any* given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, which do not have to coincide with the nodal points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$, we can construct the $n\times\nu$ matrix $V(\boldsymbol{\zeta})$ with $V_{im}(\boldsymbol{\zeta}) = \theta_m(\zeta^{(i)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
 
 $$
-V^{\partial}_{ija}(\boldsymbol{\zeta}):=\frac{\partial \theta_j}{\partial x_a}(\zeta^{(i)}).
+V^{\partial}_{ima}(\boldsymbol{\zeta}):=\frac{\partial \theta_m}{\partial x_a}(\zeta^{(i)}).
 $$
 
 ### Tabulation of basis functions
 This allows use to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, we have that
 
 $$
-T_{ij}(\boldsymbol{\zeta}) := \phi_j(\zeta^{(i)}) = \sum_{m=0}^{\nu-1} c_m^{(j)} \theta_m(\zeta^{(i)}) = V_{im}(\boldsymbol{\zeta})C_{mj}
+T_{i\ell}(\boldsymbol{\zeta}) := \phi_\ell(\zeta^{(i)}) = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \theta_m(\zeta^{(i)}) = \sum_{m=0}^{\nu-1}V_{im}(\boldsymbol{\zeta})C_{m\ell}
 $$
 
 or, more compactly:
@@ -203,9 +212,9 @@ Furthermore, we have for the derivatives
 
 $$
 \begin{aligned}
-T^\partial_{ija}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_j}{\partial x_a}(\zeta^{(i)}) 
- = \sum_{m=0}^{\nu-1} c_m^{(j)} \frac{\partial \theta_m}{\partial x_a}(\zeta^{(i)}) \\
- &= V^\partial_{ima}(\boldsymbol{\zeta})C_{mj}.
+T^\partial_{i\ell a}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_\ell}{\partial x_a}(\zeta^{(i)}) 
+ = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \frac{\partial \theta_m}{\partial x_a}(\zeta^{(i)}) \\
+ &= V^\partial_{ima}(\boldsymbol{\zeta})C_{m\ell}.
  \end{aligned}
 $$
 
@@ -216,9 +225,9 @@ Since all finite elements share the common functionality that is encapsulated in
 
 * Return the number of nodes associated with each topological entity. For this, we define abstract properties `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior` for $\nu_{\text{vertex}}$, $\nu_{\text{facet}}$ and $\nu_{\text{interior}}$ respectively. The base class also contains a property `ndof` which returns $\nu =3(\nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}$.
 * Tabulate the evaluation of all dofs for a given function $\hat{f}$, i.e. compute the vector $(\lambda_0(\hat{f}),\lambda_1(\hat{f}),\dots,\lambda_{\nu-1}(\hat{f}))^\top\in\mathbb{R}^d$. This is done with the abstract method `tabulate_dofs(fhat)` which gets passed a Python function `fhat`.
-* Tabulate the basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the $n\times\nu$ matrix $T$ with $T_{ij}=\phi_j(\zeta^{(i)})$ with the abstract method `tabulate(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a vector of length $\nu$.
-* Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{ija}=\frac{\partial\phi_j}{\partial x_a}(\zeta^{(i)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a matrix of shape $d\times 2$.
-* Implement the element dof-map $\mu_{\text{dof}}(E,i,k)$ and its inverse. This is done with the methods `dofmap(entity_type,i,k)` and its inverse `inverse_dofmap(j)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously used values.
+* Tabulate the basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the $n\times\nu$ matrix $T$ with $T_{i\ell}=\phi_\ell(\zeta^{(i)})$ with the abstract method `tabulate(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a vector of length $\nu$.
+* Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{i\ell a}=\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(i)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a matrix of shape $d\times 2$.
+* Implement the element dof-map $\mu_{\text{dof}}(E,i,j)$ and its inverse. This is done with the methods `dofmap(entity_type,i,j)` and its inverse `inverse_dofmap(ell)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously used values.
 
 ### Concrete implementations
 Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class in `fem/finiteelement.py`. These concrete classes have to provide concrete implementations of the following methods/properties:

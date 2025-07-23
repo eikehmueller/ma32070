@@ -1,5 +1,5 @@
 # Numerical quadrature
-The weak form of the PDE is defined via suitable integrals such as $\int_\Omega v(x)f(x)\;dx$. In general, it is not possible to evaluate these integrals exactly. Furthermore, since the finite element discretisation (replacing $V\mapsto V_h$ and solving the associated linear algebra problem) already introduces an error, exact integration is not necessary, provided we can find an approximate integration method with errors that are of the same order of magnitude.
+The weak form of the PDE is defined via suitable integrals such as $\int_\Omega v(x)f(x)\;dx$. In general, it is not possible to evaluate these integrals exactly. Furthermore, since the finite element discretisation (replacing $\mathcal{V}\mapsto \mathcal{V}_h$ and solving the associated linear algebra problem) already introduces an error, exact integration is not necessary, provided we can find an approximate integration method with errors that are of the same order of magnitude as the discretisation.
 
 *&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
 
@@ -46,7 +46,7 @@ $$
  \int_{\mathcal{C}} f(x)\;ds \approx \sum_{q=0}^{n_q-1} w_{\mathcal{C},q} f(\zeta_{\mathcal{C}}^{(q)})
 $$
 
-where the Gauss-Legendre quadrature rule on $\mathcal{C}$ is given by $\mathcal{Q}^{(\mathcal{C})}_{n_q}=\{(\zeta^{(q)}_{\mathcal{C}},w_{\mathcal{C},q})\}_{q=0}^{n_q-1}$ with
+where the Gauss-Legendre quadrature rule on $\mathcal{C}$ is given by $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}=\{(\zeta^{(q)}_{\mathcal{C}},w_{\mathcal{C},q})\}_{q=0}^{n_q-1}$ with
 
 $$
 \zeta_{\mathcal{C}}^{(q)} = \gamma(\widetilde{\zeta}^{(q)}) = \frac{1}{2}(1-\widetilde{\zeta}^{(q)})a + \frac{1}{2}(1+\widetilde{\zeta}^{(q)})b,\qquad
@@ -54,30 +54,32 @@ w_q = \|\gamma'(\zeta^{(q)})\| \widetilde{w}_{\mathcal{C},q} = \frac{\|b-a\|}{2}
 $$
 and
 $$
-\text{dop}(\mathcal{Q}^{(\mathcal{C})}_{n_q}) = \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1.
+\text{dop}(\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}) = \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1.
 $$
 
 
 ## Two-dimensional quadrature for the reference triangle
-To numerically integrate functions over the reference triangle $K$, first observe that $K$ is the image of the square $S=[-1,+1]\times [-1,+1]$ under the Duffy transform $\tau$ which maps a point $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$ to
+To numerically integrate functions over the reference triangle $\widehat{K}$, first observe that $\widehat{K}$ is the image of the square $S=[-1,+1]\times [-1,+1]$ under the Duffy transform $\tau$ which maps a point $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$ to
 
 $$
 \begin{aligned}
-\tau(\widetilde{x}) = \left(\frac{1}{2}(1+\widetilde{x}_0),\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\right)^\top \in K
+\tau(\widetilde{x}) = \left(\frac{1}{2}(1+\widetilde{x}_0),\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\right)^\top \in \widehat{K}
 \end{aligned}
 $$
 
+(see figure below)
+
 ### Integration over $\boldsymbol{S}$
-Since $S=[-1,+1]\times[-1,+1]$ is the product of two intervals, we can integrate functions over $S$ by picking quadrature points and weights $\mathcal{Q}_{n_q}^{(S)}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{N_q-1}$ with $N_q = n_q(n_q+1)$ and
+Since $S=[-1,+1]\times[-1,+1]$ is the product of two intervals, we can integrate functions over $S$ by picking quadrature points and weights $\mathcal{Q}_{n_q}^{(\text{GL},S)}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{N_q-1}$ with $N_q = n_q(n_q+1)$ and
 
 $$
-\widetilde{\zeta}^{(q)} = \left(\widetilde{\zeta}^{(q_0)}_0,\widetilde{\zeta}^{(q_1)}_1\right)^\top,\quad \widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1} \qquad \text{where $q=n_q q_0+q_1$}.
+\widetilde{\zeta}^{(q)} = \left(\widetilde{\zeta}^{(q_0)}_0,\widetilde{\zeta}^{(q_1)}_1\right)^\top\in\mathbb{R}^2,\quad \widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1} \qquad \text{where $q=n_q q_0+q_1$}.
 $$
 
 Here $\mathcal{Q}_{n_q+1}^{(\text{GL})} = \{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}$ and $\mathcal{Q}_{n_q}^{(\text{GL})} =\{(\widetilde{\zeta}^{(q_1)}_0,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}$ are Gauss-Legendre quadrature rules with $n_q+1$ and $n_q$ points respectively (we need to integrate more accurately in the $0$-direction since an additional factor of $\widetilde{x}_0$ is introduced by the Duffy-transform). 
 
-### Integration over $\boldsymbol{K}$
-The quadrature rule $\mathcal{Q}_{n_q}^{(K)} = \{(\zeta^{(q)},w_q)\}_{q=0}^{N_q-1} = \tau(\mathcal{Q}^{(S)}_{n_q})$ over $K$ is then obtained as
+### Integration over $\boldsymbol{\widehat{K}}$
+The quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},\widehat{K})} = \{(\zeta^{(q)},w_q)\}_{q=0}^{N_q-1} = \tau(\mathcal{Q}^{(S)}_{n_q})$ over $\widehat{K}$ is then obtained as
 
 $$
 \begin{aligned}
@@ -87,29 +89,34 @@ w_q &= \widetilde{w}_q \left|\det\left(\frac{\partial \tau}{\partial \widetilde{
 \end{aligned}
 $$
 
-The following figure shows the quadrature points on $S$ and $K$ for $n=2$ points.
+The following figure shows the quadrature points on $S$ and $\widehat{K}$ for $n_q=2$.
 
-![Quadrature points on $S$ and $K$](figures/quadrature.png)
+![Quadrature points on $S$ and $\widehat{K}$](figures/quadrature.png)
+
+Based on this construction we find that
+$$
+\text{dop}(\mathcal{Q}^{(\text{GL},\widehat{K})}_{n_q}) = \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1.
+$$
 
 ## Implementation in Python
 
 ## FEM method on reference triangle
-We can now implement a simple finite element method on the domain $\Omega=K$ defined by the reference triangle. For this, note that the entries of the stiffness matrix are given by:
+We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle. For this, note that the entries of the stiffness matrix are given by:
 $$
 \begin{aligned}
-A^{(h)}_{ij} = a(\phi_i,\phi_j) &= \int_K \left(\kappa \sum_{k=0}^{d-1}\frac{\partial\phi_i}{\partial x_k}(x) \frac{\partial\phi_j}{\partial x_k}(x) + \omega\; \phi_i(x) \phi_j(x)\right)\;dx\\
+A^{(h)}_{\ell k} = a(\phi_\ell,\phi_k) &= \int_{\widehat{K}} \left(\kappa \sum_{k=0}^{d-1}\frac{\partial\phi_i}{\partial x_k}(x) \frac{\partial\phi_j}{\partial x_k}(x) + \omega\; \phi_i(x) \phi_j(x)\right)\;dx\\
 &\approx 
 \sum_{q=0}^{N_q-1} w_q\left(\kappa \sum_{k=0}^{d-1}\frac{\partial\phi_i}{\partial x_k}(\zeta^{(q)}) \frac{\partial\phi_j}{\partial x_k}(\zeta^{(q)}) + \omega\; \phi_i(\zeta^{(q)}) \phi_j(\zeta^{(q)})\right)\\
 &= \kappa \sum_{q=0}^{N_q-1}\sum_{k=0}^{d-1} w_q  T^\partial_{qik} (\boldsymbol{\zeta})T^\partial_{qjk} (\boldsymbol{\zeta})
 +\omega \sum_{q=0}^{N_q-1} w_qT_{qi}(\boldsymbol{\zeta})T_{qj}(\boldsymbol{\zeta})
 \end{aligned}
 $$
-Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $K$. If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(K)}$.
+Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\widehat{K})}$.
 
 The entries of the right-hand side vector $\boldsymbol{b}^{(h)}$ are computed like this:
 $$
 \begin{aligned}
-b^{(h)}_i = b(\phi_i) &= \int_K f(x)\phi_i(x)\;dx + \int_{\partial K} g(x)\phi_i(x)\;dx\\
+b^{(h)}_i = b(\phi_i) &= \int_{\widehat{K}} f(x)\phi_i(x)\;dx + \int_{\partial \widehat{K}} g(x)\phi_i(x)\;dx\\
 &\approx \sum_{q=0}^{N_q-1} w_q f(\zeta^{(q)}) \phi_i(\zeta^{(q)}) + \sum_{\text{facets}\;F_m} \sum_{q=0}^{n_q-1 }w_{F_m,q} g(\zeta_{F_m}^{(q)})\phi_i(\zeta_{F_m}^{(q)}) \\
 &= \sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{qi}(\boldsymbol{\zeta}) + \sum_{\text{facets}\;F_m} \sum_{q=0}^{n_q-1 }w_{F_m,q} g_{q}(\boldsymbol{\zeta}_{F_m})T_{qi}(\boldsymbol{\zeta}_{F_m})
 \end{aligned}
@@ -128,7 +135,7 @@ The square of the $L_2$ norm of the error is given by
 
 $$
 \begin{aligned}
-\|e^{(h)}\|_{L_2}^2 &= \int_K (e^{(h)}(x))^2\;dx\\
+\|e^{(h)}\|_{L_2}^2 &= \int_{\widehat{K}} (e^{(h)}(x))^2\;dx\\
 &= \int_K\sum_{j,k=0}^{d_p-1} e^{(h)}_je^{(h)}_k \phi_j(x)\phi_k(x)\;dx\\
 &\approx 
 \sum_q ^{N_q-1}\sum_{j,k=0}^{d_p-1} w_q e^{(h)}_je^{(h)}_k \phi_j(\zeta^{(q)})\phi_k(\zeta^{(q)})\\
@@ -136,7 +143,7 @@ $$
 \end{aligned}
 $$
 
-where $\mathcal{Q}_{n_q}^{(K)}=\{w_q\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $K$.
+where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$.
 
 To test this, we use the method of manufactured solutions. For this, we pick a right-hand side $f(x)$ and boundary condition $g(x)$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
 

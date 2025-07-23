@@ -77,7 +77,7 @@ Installation should be straightforward with the provided download links.
 You should clone the provided finite element library by running
 
 ```
-git clone git@bitbucket.org:em459/finiteelements.git
+git clone git@github.com:eikehmueller/finiteelements.git
 ```
 
 in your `ma32070` directory. Once you have done this, change to `ma32070/finitelements` and run

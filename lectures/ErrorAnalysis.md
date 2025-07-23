@@ -1,5 +1,7 @@
 # Error analysis
+We discuss different sources of error that can arise in a numerical calculation.
 
+*&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
 ## Sources of error
 When solving a problem in Scientific Computing, there are several sources of error:
 

@@ -7,7 +7,13 @@ jobs:
     convert_via_pandoc:
         name: Convert markdown to html
         permissions:
-            contents: write           
+          pages: write  
+          id-token: write
+          actions: read
+          contents: read
+        environment:
+          name: github-pages
+          url: ${{ steps.deployment.outputs.page_url }}
         runs-on: ubuntu-latest
         steps:
             - name: Check out repository
@@ -53,37 +59,10 @@ jobs:
                     mv notes.zip docs/lectures
                     cd docs/lectures
                     unzip notes.zip
-            - name: Deploy html file to gh-pages branch
-              uses: JamesIves/github-pages-deploy-action@3.6.2
-              with:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                BRANCH: gh-pages
-                CLEAN: true
-                SINGLE_COMMIT: true
-                FOLDER: docs
-                GIT_CONFIG_NAME: eikehmueller
-                GIT_CONFIG_EMAIL: e.mueller@bath.ac.uk
-    deploy:
-        name: Deploy to GitHub Pages
-        needs: convert_via_pandoc
-        permissions:
-            pages: write  
-            id-token: write
-            actions: read
-            contents: read
-        runs-on: ubuntu-latest
-        environment:
-            name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
-        steps:
-            - name: Check out repository
-              uses: actions/checkout@v4
-              with:
-                ref: 'gh-pages'
             - name: Upload artifacts
               uses: actions/upload-pages-artifact@v3
               with:
-                path: '.'
+                path: './docs/'
                 name: github-pages
             - name: Deploy to GitHub Pages
               id: deployment

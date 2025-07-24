@@ -60,7 +60,7 @@ jobs:
                     mkdir docs/general
                     mv setup.html docs/general
                     mv notes.html docs/lectures
-                    cp -r figures docs/lectures
+                    cp -r lectures/figures docs/lectures
                     cd docs/lectures
             - name: Upload artifacts
               uses: actions/upload-pages-artifact@v3

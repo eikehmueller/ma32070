@@ -16,6 +16,15 @@ jobs:
           url: ${{ steps.deployment.outputs.page_url }}
         runs-on: ubuntu-latest
         steps:
+            - name: Check out pandoc templates
+              uses: actions/checkout@4
+              with:
+                name: ryangrose/easy-pandoc-templates
+                ref: 80d5aa611ceaee12cd55ac344a1e19cfb7781d14
+            - name: Copy pandoc templates
+              run: |
+                mkdir -p ~/.pandoc/templates
+                cp easy-pandoc-templates/html/*.html ~/.pandoc/templates
             - name: Check out repository
               uses: actions/checkout@v4
             - name: Convert lecture markdown to html with pandoc
@@ -23,22 +32,14 @@ jobs:
               with:
                 args: >- 
                     --standalone
+                    --toc
                     --mathjax
-                    --to chunkedhtml
-                    --output=notes.zip
+                    --to html
+                    --output=notes.html
                     --resource-path lectures
                     --metadata-file metadata.yml
-                    lectures/Prerequisites.md
-                    lectures/MathematicalBackground.md
-                    lectures/FiniteElements.md
-                    lectures/Quadrature.md
-                    lectures/ErrorAnalysis.md
-                    lectures/Meshes.md
-                    lectures/FunctionSpaces.md
-                    lectures/GlobalAssembly.md
-                    lectures/SparseMatrices.md
-                    lectures/SolversAndPreconditioners.md
-                    lectures/SparseAssembly.md
+                    --template=uikit.html
+                    lectures/notes.md
             - name: Convert setup instructions markdown to html with pandoc
               uses: docker://pandoc/latex:3.5                
               with:
@@ -47,6 +48,7 @@ jobs:
                   --mathjax
                   --to html
                   --output=setup.html
+                  --template=uikit.html
                   --resource-path generalinformation
                   --metadata-file metadata.yml
                   generalinformation/Setup.md
@@ -56,9 +58,8 @@ jobs:
                     mkdir docs/lectures
                     mkdir docs/general
                     mv setup.html docs/general
-                    mv notes.zip docs/lectures
+                    mv notes.html docs/lectures
                     cd docs/lectures
-                    unzip notes.zip
             - name: Upload artifacts
               uses: actions/upload-pages-artifact@v3
               with:

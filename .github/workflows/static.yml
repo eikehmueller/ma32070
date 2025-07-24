@@ -27,6 +27,7 @@ jobs:
             - run: |
                 ls
                 pwd
+                ls ..
             - name: Convert lecture markdown to html with pandoc
               uses: docker://pandoc/latex:3.5
               with:

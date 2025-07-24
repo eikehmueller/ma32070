@@ -1713,19 +1713,31 @@ In this case, we can request that PETSc only applies the preconditioner, i.e. co
 ```
 and it is up to us to recognise that the computed solution does not solve $Au=b$.
 
+## Conjugate Gradient method
+The (preconditioned) Richardson iteration is not very efficient. A better alternative for symmetric positive definite (SPD) $A$ is the Conjugate Gradient algorithm, which is given as follows:
+
 ### Algorithm: Conjugate Gradient method
 1. Set $\boldsymbol{r}^{(0)}\gets \boldsymbol{b} - A\boldsymbol{u}^{(0)}$
 2. Solve $P\boldsymbol{z}^{(0)} = \boldsymbol{r}^{(0)}$
 3. Set $\boldsymbol{p}^{(0)}\gets \boldsymbol{z}^{(0)}$
 4. **for** $k=1,2,\dots,k_{\text{max}}$ **do**
-5. $~~~~$ Compute $\alpha_{k-1} = \frac{\boldsymbol{z}^{(k-1)^\top} \boldsymbol{r}^{(k-1)}}{\boldsymbol{p}^{(k-1)\top} A\boldsymbol{p}^{(k-1)}}$
+5. $~~~~$ Compute $\alpha_{k-1} = \boldsymbol{z}^{(k-1)^\top} \boldsymbol{r}^{(k-1)}/\boldsymbol{p}^{(k-1)\top} A\boldsymbol{p}^{(k-1)}$
 6. $~~~~$ Set $\boldsymbol{u}^{(k)} \gets \boldsymbol{u}^{(k-1)} + \alpha_{k-1} \boldsymbol{p}^{(k-1)}$
 7. $~~~~$ Set $\boldsymbol{r}^{(k)} \gets \boldsymbol{r}^{(k-1)} - \alpha_k A \boldsymbol{p}^{(k-1)}$
 8. $~~~~$ Solve $P\boldsymbol{z}^{(k)}=\boldsymbol{r}^{(k)}$ for $\boldsymbol{z}^{(k)}$
-9. $~~~~$ Compute $\beta_k = \frac{\boldsymbol{z}^{(k)\top}\boldsymbol{r}^{(k)}}{\boldsymbol{z}^{(k-1)\top}\boldsymbol{r}^{(k-1)}}$
+9. $~~~~$ Compute $\beta_k = \boldsymbol{z}^{(k)\top}\boldsymbol{r}^{(k)}/\boldsymbol{z}^{(k-1)\top}\boldsymbol{r}^{(k-1)}$
 10. $~~~~$ Set $\boldsymbol{p}^{(k)} \gets \boldsymbol{z}^{(k)} + \beta_k \boldsymbol{p}^{(k-1)}$
 11. **end do**
     
+Crucially, the fundamental operations that are required are very similar to those in the Richardson iteration
+
+* multiplication of a vector $\boldsymbol{x}$ with the matrix $A$ to compute $\bolsymbol{y}=A\boldsymbol{x}$
+* addition and scaling of vectors: $\boldsymbol{z} = \alpha \boldsymbol{x}+\beta \boldsymbol{y}$ for $\alpha,\beta\in\mathbb{R}$
+* dot-products of vectors: $\boldsymbol{x}^\top\boldsymbol{y}$
+* Preconditioner applications: solve $P\boldsymbol{P}\boldsymbol{z}=\boldsymbol{r}$ for $\boldsymbol{z}$
+
+In PETSc, the Conjugate Gradient method can be invoked with `-ksp_type cg`. This is an example of a so-called Krylov subspace method. While Conjugate Gradient iteration only works for SPD matrices, there are other Krylov subspace methods that work for more general matrices. The most important one is the Generalised Minimal Residual (GMRES) method, which can be invoked with `-ksp_type gmres`.
+
 # Assembly of stiffness matrix
 
 ### Algorithm: create sparsity structure

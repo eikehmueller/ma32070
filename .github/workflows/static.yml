@@ -24,8 +24,8 @@ jobs:
                 path: easy-pandoc-templates
             - name: Copy pandoc templates
               run: |
-                mkdir -p ~/.pandoc/templates
-                cp easy-pandoc-templates/html/*.html ~/.pandoc/templates
+                mkdir -p ~/templates
+                cp easy-pandoc-templates/html/*.html ~/templates
                 cp easy-pandoc-templates/html/uikit.html .
             - name: Check out repository
               uses: actions/checkout@v4
@@ -40,7 +40,6 @@ jobs:
                     --output notes.html
                     --resource-path lectures
                     --metadata-file metadata.yml
-                    --data-dir ~/.pandoc
                     --template uikit.html
                     lectures/notes.md
             - name: Convert setup instructions markdown to html with pandoc
@@ -54,7 +53,6 @@ jobs:
                   --template=uikit.html
                   --resource-path generalinformation
                   --metadata-file metadata.yml
-                  --data-dir=~/.pandoc
                   generalinformation/Setup.md
             - name: Unzip deployment folder
               run: |

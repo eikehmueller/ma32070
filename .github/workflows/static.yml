@@ -21,6 +21,7 @@ jobs:
               with:
                 repository: ryangrose/easy-pandoc-templates
                 ref: '80d5aa611ceaee12cd55ac344a1e19cfb7781d14'
+                path: easy-pandoc-templates
             - name: Copy pandoc templates
               run: |
                 mkdir -p ~/.pandoc/templates

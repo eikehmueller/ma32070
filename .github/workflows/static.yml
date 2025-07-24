@@ -22,14 +22,12 @@ jobs:
                 repository: ryangrose/easy-pandoc-templates
                 ref: '80d5aa611ceaee12cd55ac344a1e19cfb7781d14'
                 path: easy-pandoc-templates
-            - run: |
-                mkdir -p ~/.pandoc/templates
-                cp easy-pandoc-templates/uikit.html ~/.pandoc/templates/
+            - run: |                
+                cp easy-pandoc-templates/uikit.html ~/uikit.html
             - name: Check out repository
               uses: actions/checkout@v4
-            - name: Copy templates to .
             - run: |
-                cp ~/.pandoc/templates/uikit.html ./uikit.html
+                cp ~/uikit.html .
                 ls
             - name: Convert lecture markdown to html with pandoc
               uses: docker://pandoc/latex:3.5

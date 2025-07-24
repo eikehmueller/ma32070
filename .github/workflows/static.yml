@@ -26,11 +26,13 @@ jobs:
               run: |
                 mkdir -p ~/.pandoc/templates
                 cp easy-pandoc-templates/html/*.html ~/.pandoc/templates
-                ls ~/.pandoc/templates
             - name: Check out repository
               uses: actions/checkout@v4
+            - name: List contents
+              run: |
+                ls ~/.pandoc/templates
             - name: Convert lecture markdown to html with pandoc
-              uses: docker://pandoc/latex:3.5                
+              uses: docker://pandoc/latex:3.5
               with:
                 args: >- 
                     --standalone

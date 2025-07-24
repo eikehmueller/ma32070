@@ -67,14 +67,29 @@ jobs:
                   --resource-path generalinformation
                   --metadata-file metadata.yml
                   generalinformation/Setup.md
+            - name: Convert setup instructions markdown to html with pandoc
+              uses: docker://pandoc/latex:3.5                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --toc
+                  --to html
+                  --output exercises.html
+                  --template uikit.html
+                  --resource-path exercises
+                  --metadata-file metadata.yml
+                  exercises/Exercises.md
             - name: Copy to deployment folder
               run: |
                     mkdir docs
                     mkdir docs/lectures
                     mkdir docs/general
+                    mkdir docs/exercises
                     mv setup.html docs/general
                     mv prerequisites.html docs/general
                     mv notes.html docs/lectures
+                    mv exercises.html docs/exercises
                     cp -r lectures/figures docs/lectures
                     cd docs/lectures
             - name: Upload artifacts

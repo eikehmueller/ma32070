@@ -17,7 +17,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out pandoc templates
-              uses: actions/checkout@4
+              uses: actions/checkout@v4
               with:
                 name: ryangrose/easy-pandoc-templates
                 ref: 80d5aa611ceaee12cd55ac344a1e19cfb7781d14

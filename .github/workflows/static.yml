@@ -41,6 +41,18 @@ jobs:
                     --metadata-file metadata.yml
                     --template uikit.html
                     lectures/notes.md
+            - name: Convert prerequisites markdown to html with pandoc
+              uses: docker://pandoc/latex:3.5                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --to html
+                  --output prerequisites.html
+                  --template uikit.html
+                  --resource-path generalinformation
+                  --metadata-file metadata.yml
+                  generalinformation/Prerequisites.md
             - name: Convert setup instructions markdown to html with pandoc
               uses: docker://pandoc/latex:3.5                
               with:
@@ -53,12 +65,13 @@ jobs:
                   --resource-path generalinformation
                   --metadata-file metadata.yml
                   generalinformation/Setup.md
-            - name: Unzip deployment folder
+            - name: Copy to deployment folder
               run: |
                     mkdir docs
                     mkdir docs/lectures
                     mkdir docs/general
                     mv setup.html docs/general
+                    mv prerequisites.html docs/general
                     mv notes.html docs/lectures
                     cp -r lectures/figures docs/lectures
                     cd docs/lectures

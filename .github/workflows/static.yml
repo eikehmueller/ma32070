@@ -40,7 +40,7 @@ jobs:
                     --output=notes.html
                     --resource-path lectures
                     --metadata-file metadata.yml
-                    --template=easy-pandoc-templates/html/uikit.html
+                    --template=uikit.html
                     lectures/notes.md
             - name: Convert setup instructions markdown to html with pandoc
               uses: docker://pandoc/latex:3.5                

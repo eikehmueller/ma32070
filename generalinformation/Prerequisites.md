@@ -1,7 +1,9 @@
-# Prerequisites and References
+# Prerequisites and background reading
 In the following we list some prior knowledge that is expected for this course together with some links to further information.
 
-*&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
+*&#169; Eike Mueller, University of Bath 2025. These notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
+
+*html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
 
 ## Python
 To complete this course successfully you need to have a solid command of the Python language, which you should be familiar with from your first year *"Programming and Mathematics"* unit. Below you can find a (non-exhaustive) list of fundamental concepts that we will use frequently. If any of these ideas are new to you, follow the links or consult the [Python tutorial](https://docs.python.org/3/tutorial/index.html), [Python language reference](https://docs.python.org/3/reference/index.html) and the [numpy API reference](https://numpy.org/doc/stable/reference/index.html), in particular the section on [linear algebra](https://numpy.org/doc/stable/reference/routines.linalg.html). If you have never seen some of the concepts don't worry, since they will become more familiar over the course of this semester. A crucial skill of a successful scientific programmer is the ability to find and digest documentation: if you come across a concept that you are not familiar with you should actively try to understand it. For this, you might want to implement some simplified examples to see what is going on or use google to find additional documentation.

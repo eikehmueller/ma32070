@@ -2,6 +2,9 @@
 In the following we will give a first overview of the finite element method and review some of the fundamental ideas as to why it works. The details will be discuss in later lectures.
 
 *&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
+
+*html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
+
 ## Model problem
 In this course we will focus on the following partial differential equation (PDE) of the diffusion-reaction type in some bounded domain $\Omega\subset \mathbb{R}^2$:
 $$
@@ -670,7 +673,6 @@ f_prime(x)
 # Error analysis
 We discuss different sources of error that can arise in a numerical calculation.
 
-*&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
 ## Sources of error
 When solving a problem in Scientific Computing, there are several sources of error:
 

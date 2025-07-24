@@ -22,8 +22,7 @@ jobs:
                 repository: ryangrose/easy-pandoc-templates
                 ref: '80d5aa611ceaee12cd55ac344a1e19cfb7781d14'
                 path: easy-pandoc-templates
-            - name: copy pandoc templates
-              run: |
+            - run: |
                 mkdir -p ~/.pandoc/templates
                 cp easy-pandoc-templates/uikit.html ~/.pandoc/templates/
             - name: Check out repository

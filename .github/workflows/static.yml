@@ -47,6 +47,7 @@ jobs:
                 args: >- 
                   --standalone
                   --mathjax
+                  --toc
                   --to html
                   --output prerequisites.html
                   --template uikit.html
@@ -59,6 +60,7 @@ jobs:
                 args: >- 
                   --standalone
                   --mathjax
+                  --toc
                   --to html
                   --output setup.html
                   --template uikit.html

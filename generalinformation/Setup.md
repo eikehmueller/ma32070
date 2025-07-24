@@ -1,26 +1,29 @@
-# Setup
-Please read through the following instructions carefully and install the necessary software on your computer. If you run into difficulties, please follow the guidance in the "Troubleshooting" section at the end of this document.
+<div align="center">
+  <p style="font-size:50px;">MA32070 setup instructions</p>
+</div>
 
-*&#169; Eike Mueller, University of Bath 2025. These notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
+----
 
-*html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
+*&#169; Eike Mueller, University of Bath 2025. These notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited. html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
 
-## General setup
+----
 
-### Using the command line
+# General setup
+
+## Using the command line
 Scientific software is usually developed in a command line environment: the user interacts with the system by typing commands at a command line prompt, also known as a "shell". This allows the user to do things like creating files and directories and executing Python scripts. Linux and Mac computers provide a Unix-like environment which you can access by launching a terminal session. On Windows systems, you will have to first install the [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/) (see below), which gives you access to a Linux-like system.
 
 If you have never used the command line, familiarise yourself with the basics by working through sections 1 to 3 of the [Software Carpentry tutorial on the Unix shell](https://swcarpentry.github.io/shell-novice/).
 
-### Directory structure
+## Directory structure
 Make sure that you organise your code in a sensible way. It is recommended that you create a single directory, called `ma32070` for this course. Inside this directory, create a subdirectory `ma32070/workspace` for any code you develop.
 
-## Required software
+# Required software
 
-### Windows computers
+## Windows computers
 If you are working on a Windows computer, you should install the [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/) by following the [WSL installation instructions](https://learn.microsoft.com/en-us/windows/wsl/install), see also the [troubleshooting section](https://learn.microsoft.com/en-us/windows/wsl/troubleshooting?source=recommendations) if you run into problems. Use a suitable Linux distribution, such as Ubuntu-24.04. Make sure you activate the WSL after installation (you will need to create a user account and password for this). Inside the WSL Linux system, you might then have to install additional packages, see below.
 
-### Python
+## Python
 We will use Python (version 3) for software development. Most computers nowadays come with a working Python3 installation, check that you have a recent version (anything from 3.12 upwards should be fine) by running
 
 ```
@@ -29,7 +32,7 @@ python3 --version
 
 in the command line prompt.
 
-### Virtual environment
+## Virtual environment
 It is strongly recommended to carry out all work for this course inside a dedicated Python [virtual environment (venv)](https://docs.python.org/3/library/venv.html): this will allow you to install Python packages in a controlled way, without affecting the system-wide Python installation. If you have a working Python installation, you should be able to create a virtual environment with
 
 ```
@@ -49,7 +52,7 @@ Hence, whenever you work on this course, you should do this at the beginning of 
 3. Navigate to the `ma32070` course directory
 4. Activate the virtual environment
 
-### Required Python packages
+## Required Python packages
 We will require several Python packages, which can usually be installed with
 
 ```
@@ -65,10 +68,10 @@ where `PACKAGE` is the name of the package to be installed:
 
 Install these packages inside the virtual environment you created. If this is not possible (this might be the case if you are using the WSL), you will likely have to pass the additional flag `--break-system-packages` to `python3 -m pip install`.
 
-#### Installing petsc4py
+### Installing petsc4py
 The installation of petsc4py can be tricky since it requires building the PETSc library itself. For this, you might have to install additional (non-Python) packages such as `libblas-dev` and `liblapack-dev`. We will only need petsc4py towards at the end of the course, so you do not have to get it working in the first week.
 
-### Additional software
+## Additional software
 We will use the following additional software:
 
 * [git](https://git-scm.com/) for version control. This is a command line tool which should be installed on most systems. When writing your own code, you are welcome to use graphical interfaces such as [Sourcetree](https://www.sourcetreeapp.com/) or [GitKraken](https://www.gitkraken.com/).
@@ -77,7 +80,7 @@ We will use the following additional software:
 
 Installation should be straightforward with the provided download links.
 
-## Installing the finite element library
+# Installing the finite element library
 You should clone the provided finite element library by running
 
 ```
@@ -110,14 +113,14 @@ print (f"number of vertices = {mesh.nvertices}")
 
 to create a rectangle mesh and print out the number of cells and vertices.
 
-## Final directory layout
+# Final directory layout
 If you followed all steps above, your `ma32070` directory should now contain the following subfolders:
 
 * `ma32070/venv` for the virtual environment
 * `ma32070/finiteelements` for the finite element library
 * `ma32070/workspace` for your own work
 
-## Troubleshooting
+# Troubleshooting
 If you run into problems, please first try to resolve these yourself: in many cases it helps to google the relevant error messages or suitable keywords that summarise the problem. Searching pages such as [stackoverflow](https://stackoverflow.com/) can also be helpful since it is likely that someone else will have encountered the same problem.
 
 If you do get stuck and need help from your course tutor, please make sure that you provide sufficient information with your request. For this, try to answer the following questions:

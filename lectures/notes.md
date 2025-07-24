@@ -1,9 +1,16 @@
-# Mathematical background
-In the following we will give a first overview of the finite element method and review some of the fundamental ideas as to why it works. The details will be discuss in later lectures.
 
+<div align="center">
+  <p style="font-size:50px;">MA32070 lecture notes</p>
+</div>
+
+<span style="color:blue">
 *&#169; Eike Mueller, University of Bath 2025. These lecture notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.*
 
 *html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
+</span>
+
+# Mathematical background
+In the following we will give a first overview of the finite element method and review some of the fundamental ideas as to why it works. The details will be discuss in later lectures.
 
 ## Model problem
 In this course we will focus on the following partial differential equation (PDE) of the diffusion-reaction type in some bounded domain $\Omega\subset \mathbb{R}^2$:

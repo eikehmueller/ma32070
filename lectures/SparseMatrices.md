@@ -166,7 +166,7 @@ By using suitable functions (see [`petsc4py.Mat` documentation](https://petsc.or
 ### Matrix-vector multiplication
 PETSc also provides a vector class. For example, to create the vector
 $$
-v = \begin{pmatrix}
+\boldsymbol{v} = \begin{pmatrix}
 8.1\\0\\9.3\\-4.3\\5.2
 \end{pmatrix}
 $$
@@ -175,7 +175,7 @@ we can do this:
 v = PETSc.Vec()
 v.createWithArray([8.1, 0, 9.3, -4.3, 5.2])
 ```
-We can now multiply the matrix that we created above with this vector to compute $w=Av$:
+We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$:
 ```python
 w = PETSc.Vec()
 n = 5

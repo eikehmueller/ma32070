@@ -355,15 +355,15 @@ More specifically, each finite element should provide the following functionalit
 * Implement the element dof-map $\mu_{\text{dof}}(E,\rho,j)$ and its inverse. This is done with the method `dofmap(entity_type,rho,j)` and its inverse `inverse_dofmap(ell)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously computed values.
 
 ### Concrete implementations
-Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class in `fem/finiteelement.py`. These concrete classes have to provide concrete implementations of the following methods/properties:
+Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class in [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py). These concrete classes have to provide concrete implementations of the following methods/properties:
 * `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior`
 * `tabulate_dofs(fhat)` to evaluate the degrees of freedom for a given function
 * `tabulate(zeta)` to tabulate the values of the basis functions at a given set of points
 * `tabulate_gradient(zeta)` to tabulate the gradients of the basis functions for a given set of points
 
 The [`finiteelements`](https://github.com/eikehmueller/finiteelements) library provides the following implementations:
-* The bi-linear element is implemented as the class `LinearElement` in `fem/linearelement.py`
-* The general polynomial element is implemented as the class `PolynomialElement` in `fem/polynomialelement.py`
+* The bi-linear element is implemented as the class `LinearElement` in [`fem/linearelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py)
+* The general polynomial element is implemented as the class `PolynomialElement` in [`fem/polynomialelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/polynomialelement.py)
 
 These elements can be used as follows:
 ```python

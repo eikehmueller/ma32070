@@ -28,7 +28,6 @@ jobs:
               uses: actions/checkout@v4
             - run: |
                 cp ~/uikit.html .
-                ls
             - name: Convert lecture markdown to html with pandoc
               uses: docker://pandoc/latex:3.5
               with:
@@ -49,8 +48,8 @@ jobs:
                   --standalone
                   --mathjax
                   --to html
-                  --output=setup.html
-                  --template=uikit.html
+                  --output setup.html
+                  --template uikit.html
                   --resource-path generalinformation
                   --metadata-file metadata.yml
                   generalinformation/Setup.md
@@ -61,6 +60,7 @@ jobs:
                     mkdir docs/general
                     mv setup.html docs/general
                     mv notes.html docs/lectures
+                    cp -r figures docs/lectures
                     cd docs/lectures
             - name: Upload artifacts
               uses: actions/upload-pages-artifact@v3

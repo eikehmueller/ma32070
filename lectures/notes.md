@@ -133,7 +133,7 @@ In the following we will also refer to this as the *reference triangle*.
 Recall that the finite element approach starts with the choice of a suitable function space $\mathcal{V}$. For this, consider the space of bi-variate polynomials of degree $p$ on $\widehat{K}$:
 
 $$
-\mathcal{P}_p(\widehat{K}) = \{q:q(x) = \sum_{\substack{\alpha_0,\alpha_1\\\alpha_0+\alpha_1\le p}} a_{\alpha_0,\alpha_1} x_0^{\alpha_0}x_1^{\alpha_1}\;\text{for all $x\in K$ with $a_{\alpha_0,\alpha_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
+\mathcal{P}_p(\widehat{K}) = \{q:q(x) = \sum_{\substack{s_0,s_1\\s_0+s_1\le p}} a_{s_0,s_1} x_0^{s_0}x_1^{s_1}\;\text{for all $x\in K$ with $a_{s_0,s_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
 $$
 
 The space $\mathcal{P}_p(\widehat{K})$  is spanned by $\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
@@ -236,10 +236,10 @@ $$
 The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
 * $\mathcal{V} = \mathcal{P}_5(\widehat{K})$, the space of quintic bi-variate polynomials
 * the 21 nodes (with $\nu_{\text{vertex}}=6$, $\nu_{\text{facet}}=1$, $\nu_{\text{interior}}=0$) defined as follows:
-  - $\lambda_i(w) = w(v_i)$ (evaluation at each vertex $v_i$ $\Rightarrow$ 3 nodes)
-  - $\lambda_{3+2i+j}(w) = \frac{\partial w}{\partial x_j}(v_i)$ (two gradient evaluations at each vertex $\Rightarrow$ 6 nodes)
-  - $\lambda_{9+3i+2j+k}(w) = \frac{\partial^2 w}{\partial x_j \partial x_k}(v_i)$ with $0\le j\le k\le 1$ (Hessian evaluation at each vertex $\Rightarrow$ 9 nodes)
-  - $\lambda_{18+j}(w) = n_i\cdot \nabla w(m_i)$ (normal derivative evaluation at the midpoints $m_i$ of each facet $F_i$ $\Rightarrow$ 3 nodes)
+  - $\lambda_\rho(w) = w(v_\rho)$ (evaluation at each vertex $v_\rho$ $\Rightarrow$ 3 nodes)
+  - $\lambda_{3+2\rho+a}(w) = \frac{\partial w}{\partial x_a}(v_\rho)$ (two gradient evaluations at each vertex $v_\rho$ $\Rightarrow$ 6 nodes)
+  - $\lambda_{9+3\rho+2a+b}(w) = \frac{\partial^2 w}{\partial x_a \partial x_b}(v_\rho)$ with $0\le a\le b\le 1$ (Hessian evaluation at each vertex $v_\rho$ $\Rightarrow$ 9 nodes)
+  - $\lambda_{18+\rho}(w) = n_\rho\cdot \nabla w(m_\rho)$ (normal derivative evaluation at the midpoints $m_\rho$ of each facet $F_\rho$ $\Rightarrow$ 3 nodes)
 
 Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative.
 
@@ -252,7 +252,7 @@ We further assume that $0\le \nu_{\text{vertex}}$ nodes are associated with each
 $$
 \nu = 3( \nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}.
 $$
-Let $\lambda_j^{(E_i)}$ be the $j$-th node associated with topological entity $E_i\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the unknowns $\{\lambda_0,\dots,\lambda_{\nu-1}\}$ in the order
+Let $\lambda_j^{(E_\rho)}$ be the $j$-th node associated with topological entity $E_\rho\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the unknowns $\{\lambda_0,\dots,\lambda_{\nu-1}\}$ in the order
 
 $$
 \underbrace{v_0 \rightarrow v_1 \rightarrow v_2}_{\text{(vertices)}}
@@ -271,12 +271,12 @@ $\{\lambda_0^{(v_0)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_0)},
 \lambda_0^{(K^0)},\dots,\lambda_{\nu_{\text{interior}}-1}^{(K^0)}
 \}$
 
-In other words, we define the indirection map $\mu_{\text{dof}}$ such that $\lambda_{\ell=\mu_{\text{dof}}(E,i,j)} = \lambda_j^{(E_i)}$ with
+In other words, we define the indirection map $\mu_{\text{dof}}$ such that $\lambda_{\ell=\mu_{\text{dof}}(E,\rho,j)} = \lambda_j^{(E_\rho)}$ with
 
 $$
-\mu_{\text{dof}}(E,i,j) = \begin{cases}
-i\cdot \nu_{\text{vertex}} + j & \text{if $E$ is the $i$-th vertex}\\
-3\nu_{\text{vertex}} + i\cdot \nu_{\text{facet}} + j & \text{if $E$ is the $i$-th facet}\\
+\mu_{\text{dof}}(E,\rho,j) = \begin{cases}
+\rho\cdot \nu_{\text{vertex}} + j & \text{if $E$ is the $\rho$-th vertex}\\
+3\nu_{\text{vertex}} + \rho\cdot \nu_{\text{facet}} + j & \text{if $E$ is the $\rho$-th facet}\\
 3(\nu_{\text{vertex}} + \nu_{\text{facet}}) + j & \text{if $E$ is the interior}
 \end{cases}
 $$
@@ -299,7 +299,7 @@ If we define the $\nu\times\nu$ matrices $V$, $C$ with $V_{\ell m} := \lambda_\e
 $$
 VC = \mathbb{I}\quad \Leftrightarrow \quad C = V^{-1}
 $$
-with $\mathbb{I}$ the $\nu\times\nu$ identity matrix. In other words, we can obtain the coefficients $c_m^{(k)}$ by inverting the matrix $V$. For the Lagrange element, where $\lambda_\ell(w) = w(\xi^{(\ell)})$ are nodal evaluations and thus $V_{\ell m} = \lambda_{\ell}(\theta_m) = \theta_m(\xi^{(\ell)})$, the matrix $V$ is the Vandermonde matrix:
+with $\mathbb{I}$ the $\nu\times\nu$ identity matrix. In other words, we can obtain the coefficients $c_m^{(k)}$ by inverting the matrix $V$. For the Lagrange element, where $\lambda_\ell(w) = w(\xi^{(\ell)})$ are nodal evaluations and thus $V_{\ell m} = \lambda_{\ell}(\theta_m) = \theta_m(\xi^{(\ell)})$, the matrix $V$ is the [Vandermonde matrix](https://mathworld.wolfram.com/VandermondeMatrix.html):
 $$
 V = V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}) = \begin{pmatrix}
 1 & \xi^{(0)}_0 & \xi^{(0)}_1  & (\xi^{(0)}_0)^2 & \xi^{(0)}_0 \xi^{(0)}_1 & (\xi^{(0)}_1)^2 & \dots \\[1ex]
@@ -309,17 +309,17 @@ V = V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}) = \begin{pmatrix}
 1 & \xi^{(\nu-1)}_0 & \xi^{(\nu-1)}_1 & (\xi^{(\nu-1)}_0)^2 & \xi^{(\nu-1)}_0 \xi^{(\nu-1)}_1 & (\xi^{(\nu-1)}_1)^2 & \dots
 \end{pmatrix}.
 $$
-In fact, observe that for *any* given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, which do not have to coincide with the nodal points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$, we can construct the $n\times\nu$ matrix $V(\boldsymbol{\zeta})$ with $V_{im}(\boldsymbol{\zeta}) = \theta_m(\zeta^{(i)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
+In fact, for *any* given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, which do not have to coincide with the nodal points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$, we can construct the $n\times\nu$ matrix $V(\boldsymbol{\zeta})$ with $V_{rm}(\boldsymbol{\zeta}) = \theta_m(\zeta^{(r)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
 
 $$
-V^{\partial}_{ima}(\boldsymbol{\zeta}):=\frac{\partial \theta_m}{\partial x_a}(\zeta^{(i)}).
+V^{\partial}_{rma}(\boldsymbol{\zeta}):=\frac{\partial \theta_m}{\partial x_a}(\zeta^{(r)}).
 $$
 
 ### Tabulation of basis functions
-This allows use to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, we have that
+This allows us to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, we have that
 
 $$
-T_{i\ell}(\boldsymbol{\zeta}) := \phi_\ell(\zeta^{(i)}) = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \theta_m(\zeta^{(i)}) = \sum_{m=0}^{\nu-1}V_{im}(\boldsymbol{\zeta})C_{m\ell}
+T_{r\ell}(\boldsymbol{\zeta}) := \phi_\ell(\zeta^{(r)}) = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \theta_m(\zeta^{(r)}) = \sum_{m=0}^{\nu-1}V_{rm}(\boldsymbol{\zeta})C_{m\ell}
 $$
 
 or, more compactly:
@@ -328,26 +328,31 @@ $$
 T(\boldsymbol{\zeta}) = V(\boldsymbol{\zeta}) C
 $$
 
+where $C=V^{-1}$ is obtained by inverting the Vandermonde matrix $V$.
+
 Furthermore, we have for the derivatives
 
 $$
 \begin{aligned}
-T^\partial_{i\ell a}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_\ell}{\partial x_a}(\zeta^{(i)}) 
- = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \frac{\partial \theta_m}{\partial x_a}(\zeta^{(i)}) \\
- &= V^\partial_{ima}(\boldsymbol{\zeta})C_{m\ell}.
+T^\partial_{r\ell a}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_\ell}{\partial x_a}(\zeta^{(r)}) 
+ = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \frac{\partial \theta_m}{\partial x_a}(\zeta^{(r)}) \\
+ &= V^\partial_{rma}(\boldsymbol{\zeta})C_{m\ell}.
  \end{aligned}
 $$
 
 ## Implementation
 
 ### Abstract base class
-Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class, which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. More specifically, each finite element should provide the following functionality:
+Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class, which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. Furthermore, any code that later uses a concrete finite element implementation will "know" which functionality it is allowed to use.
+
+
+More specifically, each finite element should provide the following functionality:
 
 * Return the number of nodes associated with each topological entity. For this, we define abstract properties `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior` for $\nu_{\text{vertex}}$, $\nu_{\text{facet}}$ and $\nu_{\text{interior}}$ respectively. The base class also contains a property `ndof` which returns $\nu =3(\nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}$.
-* Tabulate the evaluation of all dofs for a given function $\hat{f}$, i.e. compute the vector $(\lambda_0(\hat{f}),\lambda_1(\hat{f}),\dots,\lambda_{\nu-1}(\hat{f}))^\top\in\mathbb{R}^d$. This is done with the abstract method `tabulate_dofs(fhat)` which gets passed a Python function `fhat`.
-* Tabulate the basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the $n\times\nu$ matrix $T$ with $T_{i\ell}=\phi_\ell(\zeta^{(i)})$ with the abstract method `tabulate(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a vector of length $\nu$.
-* Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(i)}\}_{i=0}^{n-1}$. This computes the rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{i\ell a}=\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(i)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta$ is passed to the subroutine it should return a matrix of shape $d\times 2$.
-* Implement the element dof-map $\mu_{\text{dof}}(E,i,j)$ and its inverse. This is done with the methods `dofmap(entity_type,i,j)` and its inverse `inverse_dofmap(ell)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously used values.
+* Tabulate the evaluation of all dofs for a given function $\hat{f}$, i.e. compute the vector $(\lambda_0(\hat{f}),\lambda_1(\hat{f}),\dots,\lambda_{\nu-1}(\hat{f}))^\top\in\mathbb{R}^\nu$. This is done with the abstract method `tabulate_dofs(fhat)` which gets passed a Python function `fhat`.
+* Tabulate the basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$ which are stored as a $n\times 2$ array. This computes the $n\times\nu$ matrix $T$ with $T_{r\ell}=\phi_\ell(\zeta^{(r)})$ with the abstract method `tabulate(zeta)`. If only a single point $\zeta\in\mathbb{R}^2$ is passed to the subroutine it should return a vector of length $\nu$.
+* Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$  which are stored as a $n\times 2$ array. This computes the rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{r\ell a}=\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(r)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta\in\mathbb{R}^2$ is passed to the subroutine it should return a matrix of shape $d\times 2$.
+* Implement the element dof-map $\mu_{\text{dof}}(E,\rho,j)$ and its inverse. This is done with the method `dofmap(entity_type,rho,j)` and its inverse `inverse_dofmap(ell)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously computed values.
 
 ### Concrete implementations
 Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class in `fem/finiteelement.py`. These concrete classes have to provide concrete implementations of the following methods/properties:
@@ -356,14 +361,14 @@ Any concrete implementations of finite elements are obtained by subclassing the 
 * `tabulate(zeta)` to tabulate the values of the basis functions at a given set of points
 * `tabulate_gradient(zeta)` to tabulate the gradients of the basis functions for a given set of points
 
-The `finiteelements` library provides the following implementations:
+The [`finiteelements`](https://github.com/eikehmueller/finiteelements) library provides the following implementations:
 * The bi-linear element is implemented as the class `LinearElement` in `fem/linearelement.py`
 * The general polynomial element is implemented as the class `PolynomialElement` in `fem/polynomialelement.py`
 
 These elements can be used as follows:
 ```python
-from fem.linearelement implement LinearElement
-from fem.polynomialelement implement PolynomialElement
+from fem.linearelement import LinearElement
+from fem.polynomialelement import PolynomialElement
 ```
   
 # Numerical quadrature
@@ -376,7 +381,7 @@ $$
 \int_{-1}^{+1} f(z)\;dz \approx \sum_{q=0}^{n_q-1} \widetilde{w}_q f(\widetilde{\zeta}^{(q)})
 $$
 
-A particular quadrature rule $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ is defined by the sets of points $\widetilde{\zeta}^{(i)}$ and corresponding weights $w_i$. Here we will consider Gauss-Legendre quadrature $\mathcal{Q}^{(\text{GL})}_{n_q}$, for which the points are the roots of the [Legendre polynomial](https://mathworld.wolfram.com/LegendrePolynomial.html) $P_{n_q}(\zeta)$ and the weights are given by $\widetilde{w}_q = \frac{2}{(1-(\widetilde{\zeta}^{(q)})^2)(P_{n_q}'(\widetilde{\zeta}^{(q)}))^2}$. The points and weights can be constructed with [numpy.polynomial.legendre.leggauss](https://numpy.org/doc/stable/reference/generated/numpy.polynomial.legendre.leggauss.html):
+A particular quadrature rule $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ is defined by the sets of points $\widetilde{\zeta}^{(q)}$ and corresponding weights $w_q$. Here we will consider Gauss-Legendre quadrature $\mathcal{Q}^{(\text{GL})}_{n_q}$, for which the points are the roots of the [Legendre polynomial](https://mathworld.wolfram.com/LegendrePolynomial.html) $P_{n_q}(\zeta)$ and the weights are given by $\widetilde{w}_q = \frac{2}{(1-(\widetilde{\zeta}^{(q)})^2)(P_{n_q}'(\widetilde{\zeta}^{(q)}))^2}$. The points and weights can be constructed with [numpy.polynomial.legendre.leggauss](https://numpy.org/doc/stable/reference/generated/numpy.polynomial.legendre.leggauss.html):
 
 ```
 points, weights = numpy.polynomial.legendre.leggauss(n)
@@ -480,12 +485,11 @@ The file `fem/quadrature.py` also contains specific subclasses
     - `npoints` the number of points $n_q$
 * A quadrature rule $\mathcal{Q}^{(\text{GL},\widehat{K})}_{n_q}$ over the reference triangle $\widehat{K}$ based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureReferenceTriangle(npoints)`. The constructor is passed the number of points $n_q$.
 
-# Local assembly
-## FEM method on reference triangle
-We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle.
+# Local assembly: FEM method on reference triangle
+We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle. For this we need to be able to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$.
 
 ### Stiffness matrix
-For this, note that the entries of the stiffness matrix are given by:
+To assemble $A^{(h)}$, observe that the entries of the stiffness matrix are given by:
 $$
 \begin{aligned}
 A^{(h)}_{\ell k} = a(\phi_\ell,\phi_k) &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_\ell}{\partial x_a}(x) \frac{\partial\phi_k}{\partial x_a}(x) + \omega\; \phi_\ell(x) \phi_k(x)\right)\;dx\\
@@ -495,7 +499,9 @@ A^{(h)}_{\ell k} = a(\phi_\ell,\phi_k) &= \int_{\widehat{K}} \left(\kappa \sum_{
 +\omega \sum_{q=0}^{N_q-1} w_qT_{q\ell}(\boldsymbol{\zeta})T_{qk}(\boldsymbol{\zeta})
 \end{aligned}
 $$
-Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$.
+Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. We used the tabulation matrix $T$ of the basis function and the corresponding matrix $T^\partial$ for the partial derivatives.
+
+If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$.
 
 ### Right hand side vector
 The entries of the right-hand side vector $\boldsymbol{b}^{(h)}$ are computed like this:
@@ -509,10 +515,10 @@ $$
 with $f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$ and $g_{q}(\boldsymbol{\zeta}_{F_m}) := g(\zeta_{F_m}^{(q)})$. We choose the quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},F_m)} = \{w_{F_m,q},\zeta^{(q)}_{F_m}\}_{q=0}^{n_q-1}$ with $n_q=p+1$ on the facets $F_m$.
 
 ### Error
-The error $e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)$ is the difference between the exact and numerical solution. We can write $e^{(h)}$ as
+The error $e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)$ is the difference between the exact and numerical solution. Expanding $u^{(h)}$ in terms of the basis functions $\phi_\ell(x)$, can write $e^{(h)}$ as
 
 $$
-e^{(h)}(x) = u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)
+e^{(h)}(x) = u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x).
 $$
 
 The square of the $L_2$ norm of the error is given by
@@ -521,15 +527,15 @@ $$
 \begin{aligned}
 \|e^{(h)}\|_{L_2(\widehat{K})}^2 &= \int_{\widehat{K}} \left(u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\right)^2\;dx\\
 &\approx 
-\sum_q ^{N_q-1} w_q \left(u_{\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(\zeta^{(q)})\right)^2 \\
-&= \sum_q ^{N_q-1} w_q e_q^2\quad\text{with}\;\; e_q := u^{(\text{exact})}_q - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell T_{q\ell},\;u^{(\text{exact})}_q := u_{\text{exact}}(\zeta^{(q)}).
+\sum_{q=0} ^{N_q-1} w_q \left(u_{\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(\zeta^{(q)})\right)^2 \\
+&= \sum_{q=0} ^{N_q-1} w_q e_q^2\quad\text{with}\;\; e_q := u^{(\text{exact})}_q - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell T_{q\ell},\;u^{(\text{exact})}_q := u_{\text{exact}}(\zeta^{(q)}).
 \end{aligned}\qquad(\dagger)
 $$
 
 where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$.
 
 ### Numerical experiment
-To test this, we use the method of manufactured solutions. For this, we pick a right-hand side $f(x)$ and boundary condition $g(x)$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
+To test this procedure, we use the method of manufactured solutions. For this, we pick a right-hand side $f(x)$ and boundary condition $g(x)$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
 
 $$
 u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]
@@ -551,8 +557,10 @@ n &= \begin{cases}
 \end{aligned}
 $$
 
+After assembling $A^{(h)}$ and $\boldsymbol{b}^{(h)}$ based on the $f(x)$, $g(x)$ given above, we solve $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$. In the next section we will look at how the $L_2$ norm of the error depends on the polynomial degree.
+
 # Error analysis
-We discuss different sources of error that can arise in a numerical calculation.
+We now discuss different sources of error that can arise in a numerical calculation.
 
 ## Sources of error
 When solving a problem in Scientific Computing, there are several sources of error:
@@ -961,7 +969,7 @@ $$
 To finish the proof, divide both sides of this inequality by $\|\boldsymbol{u}\|_\infty$.
 
 # Unstructured meshes
-In general, we might want to solve PDEs on a $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ that is embedded in $D$ dimensional space. For example, we might want to solve the Navier-Stokes equations on the surface of a sphere. The manifold is then approximated by a mesh, which can be described as a collection of topological entities. For example, if $d=2$, the mesh will consist of zero-dimensional vertices, one-dimensional edges and two-dimensional triangular cells (although it is also possible to use more general polygonal cells we do not consider this here). In general, the co-dimension $c$ of a $d'$-dimensional mesh entity is given by $c=d-d'$. In the following we will only consider the case $d=D=2$. In this case we have:
+So far, we have only solved our model PDE on a single reference triangle. We now discuss how to extend the finite element approach to arbirtrary domains. Assume that we want to solve the PDE on a $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ that is embedded in $D$ dimensional space. For example, we might want to solve it in a rectangular domain or on the surface of a sphere. The manifold is then approximated by a *mesh*, which can be described as a collection of topological entities. For example, if $d=2$, the mesh will consist of zero-dimensional vertices, one-dimensional edges and two-dimensional triangular cells (although it is also possible to use more general polygonal cells we do not consider this here). In general, the co-dimension $c$ of a $d'$-dimensional mesh entity is given by $c=d-d'$. In the following we will only consider the case $d=D=2$, but the central ideas that are developed in the following also apply to more complicated setups. For $d=D=2$ we have:
 
 | topological entity  | dimension $d'$ | co-dimension $c$ |
 | ------------------- | -------------- | ---------------- |
@@ -969,57 +977,57 @@ In general, we might want to solve PDEs on a $d$-dimensional manifold $\Omega\su
 | facet (edge) $F$    | $1$            | $1$              |
 | vertex $v$          | $0$            | $2$              |
 
-The following figure shows a two-dimensional mesh with $n_{\text{vertex}}=6$ vertices, $n_{\text{facet}}=10$ facets and $n_{\text{cell}}=5$ cells in which all topological entities are labelled by their co-dimension and a unique number.
+The following figure shows a two-dimensional mesh with $n_{\text{vertex}}=6$ vertices, $n_{\text{facet}}=10$ facets and $n_{\text{cell}}=5$ cells in which all topological entities are labelled by their co-dimension and a unique number that can later be used to identify the entity.
 
 ![simple triangular mesh](figures/simple_mesh.svg)
 
 ## Topology
-The mesh topology is defined by which entities are connected to which other entities. For example, each cell has exactly three facets and each facet is defined by exactly two vertices.
+The mesh topology describes which entities are connected to which other entities. For example, each cell has exactly three facets and each facet is defined by exactly two vertices, and the topology tells us which specific facets/vertices these are: in the example above, cell $(0,1)$ has the facets $(1,3), (1,2), (1,5)$ and facet $(1,2)$ has the endpoints $(2,1), (2,2)$.
 
-This information can be encoded in two matricies: An $n_{\text{cell}}\times 3$ matrix $I^{F\gets K}$ with
-
-$$
-I^{F\gets K}_{ij} = \text{index of $j$-th facet of cell $i$}
-$$
-
-and an $n_{\text{facet}}\times 2$ matrix $I^{v\gets F}$ with
+More generally, this information can be encoded in two matrices: An $n_{\text{cell}}\times 3$ matrix $I^{K\rightarrow F}$ which describes which facets bound each cell
 
 $$
-I^{v\gets F}_{jk} = \text{index of $k$-th vertex of facet $j$}.
+I^{K\rightarrow F}_{\alpha\beta} = \text{index of $\beta$-th facet of cell $\alpha$}
 $$
 
-Note that there is some freedom as to how we number the facets associated each cell; the numbering we adopt here is one in which for each cell $i$ the facets with indices $I^{F\gets K}_{i0}$, $I^{F\gets K}_{i1}$ and $I^{F\gets K}_{i2}$ are arranged in a counter-clockwise fashion (note that there are three possible orderings that satisfy this condition). Similarly, we adapt an ordering of the vertices associated with each facet such that for each facet $j$ we have that $I^{v\gets F}_{j0} < I^{v\gets F}_{j1}$.
-
-For convenience, we can also use $I^{F\gets K}$ and $I^{v\gets F}$ to construct the $n_{\text{cell}}\times 3$ matrix $I^{v\gets K}$ with
+and an $n_{\text{facet}}\times 2$ matrix $I^{F\rightarrow v}$ which describes what the endpoints of each facet are
 
 $$
-I^{v\gets K}_{ik} = \text{index of $k$-th vertex of cell $i$}
+I^{F\rightarrow v}_{\beta\gamma} = \text{index of $\gamma$-th vertex of facet $\beta$}.
 $$
 
-In each cell $i$, we number the vertices in a counter-clockwise fashion such that the $k$-th vertex lies opposite the $k$-the edge of the cell:
+Note that there is some freedom as to how we number the facets associated each cell; the numbering we adopt here is one in which for each cell $\alpha$ the facets with indices $I^{K\rightarrow F}_{\alpha0}$, $I^{K\rightarrow F}_{\alpha1}$ and $I^{K\rightarrow F}_{\alpha2}$ are arranged in a counter-clockwise fashion (note that there are three possible orderings that satisfy this condition). Similarly, we adapt an ordering of the vertices associated with each facet such that for each facet $\beta$ we have that $I^{F\rightarrow v}_{\beta0} < I^{F\rightarrow v}_{\beta1}$.
+
+For convenience, we can also use $I^{K\rightarrow F}$ and $I^{F\rightarrow v}$ to construct the $n_{\text{cell}}\times 3$ matrix $I^{K\rightarrow v}$ which describes the vertices of a given cell
 
 $$
-\begin{aligned}
-I^{v\gets K}_{ik} \not\in \{I^{v\gets F}_{j0},I^{v\gets F}_{j1}\}\quad\text{for $j =I^{F\gets K}_{ik}$}
-\end{aligned}
+I^{K\rightarrow v}_{\alpha\gamma} = \text{index of $\gamma$-th vertex of cell $\alpha$}
 $$
 
-Note that the counter-clockwise numbering of the facets and vertices in each cell is consistent with the numbering of unknown on the reference triangle.
-
-For example, the matrices $I^{F\gets K}$, $I^{v\gets F}$ and $I^{v\gets K}$ for the simple mesh shown above are given by
+In each cell $\alpha$, we number the vertices in a counter-clockwise fashion such that the $\gamma$-th vertex lies opposite the $\gamma$-the facet of the cell. Mathematically, this can be expressed as
 
 $$
 \begin{aligned}
-I^{F\gets K} &= \begin{pmatrix}
+I^{K\rightarrow v}_{\alpha\gamma} \not\in \{I^{F\rightarrow v}_{\beta0},I^{F\rightarrow v}_{\beta1}\}\quad\text{for $\beta =I^{K\rightarrow F}_{\alpha\gamma}$}
+\end{aligned}.
+$$
+
+Note that the counter-clockwise numbering of the facets and vertices in each cell is consistent with the numbering of unknowns on the reference triangle.
+
+For example, the matrices $I^{K\rightarrow F}$, $I^{F\rightarrow v}$ and $I^{K\rightarrow v}$ for the simple mesh shown above are given by
+
+$$
+\begin{aligned}
+I^{K\rightarrow F} &= \begin{pmatrix}
 0 & 3 & 1 & 0 & 3 \\
 1 & 2 & 2 & 9 & 6 \\
 8 & 5 & 7 & 5 & 4
 \end{pmatrix}^{\top}\\
-I^{v\gets F} &= \begin{pmatrix}
+I^{F\rightarrow v} &= \begin{pmatrix}
 0 & 1 & 1 & 2 & 2 & 1 & 3 & 2 & 0 & 0 \\
 1 & 4 & 2 & 5 & 3 & 5 & 5 & 4 & 4 & 5
 \end{pmatrix}^{\top}\\
-I^{v\gets K} &= \begin{pmatrix}
+I^{K\rightarrow v} &= \begin{pmatrix}
 4 & 1 & 2 & 5 & 3 \\
 0 & 5 & 4 & 1 & 2 \\
 1 & 2 & 1 & 0 & 5
@@ -1027,15 +1035,13 @@ I^{v\gets K} &= \begin{pmatrix}
 \end{aligned}
 $$
 
-In addition, we store a $n_{\text{vertices}}\times 2$ matrix $v$ such that the $k$-th column of $v$ contains the coordinates of the $k$-th vertex in the mesh.
-
 ### Implementation
-The abstract class `Mesh` encodes the mesh. It has the following members
+The abstract class `Mesh` encodes the mesh topology. It has the following members:
 
 * properties `ncells`, `nfacets` and `nvertices` which give the total number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$) and vertices ($=n_{\text{vertex}}$) respectively
-* `cell2facet`: a list such that `cell2facet[i][j]` $= I^{F\gets K}_{ij}$
-* `facet2vertex`: a list such that `facet2vertex[j][k]` $= I^{v\gets F}_{jk}$
-* `cell2vertex`: a list such that `cell2vertex[i][k]` $= I^{v\gets K}_{ik}$. Since $I^{v\gets K}_{ik}$ can be derived from $I^{F\gets K}_{ij}$ and $I^{v\gets F}_{jk}$, `cell2vertex` is implemented as a `@cached_property`.
+* `cell2facet`: a list such that `cell2facet[alpha][beta]` $= I^{K\rightarrow F}_{\alpha\beta}$
+* `facet2vertex`: a list such that `facet2vertex[beta][gamma]` $= I^{F\rightarrow v}_{\beta\gamma}$
+* `cell2vertex`: a list such that `cell2vertex[alpha][gamma]` $= I^{K\rightarrow v}_{\alpha\gamma}$. Since $I^{K\rightarrow v}_{ik}$ can be derived from $I^{K\rightarrow F}_{\alpha\beta}$ and $I^{F\rightarrow v}_{\beta\gamma}$, `cell2vertex` is implemented as a [`@functools.cached_property`](https://docs.python.org/3/library/functools.html#functools.cached_property).
 * an array `coordinates` of shape $(n_{\text{vertex}},2)$ whose columns contain the two-dimensional coordinates of the mesh vertices
 
 The class also contains a method `refine(nref)` which can be used to construct a refined mesh from given mesh.
@@ -1047,14 +1053,35 @@ Two concrete classes are derived from this class:
 
 # Function spaces
 ## Grid cells and reference elements
-We can now construct a function space $V_h\subset H^1(\Omega_h)$ on the domain $\Omega_h$ defined by the mesh as follows. First, we assume that each cell $K$ of the mesh is the image of the reference cell $\widehat{K}$ under a map $X_K$. Next, assume that the function $u|_K$ in each cell is defined such that its pullback under the map $X_K$ is a polynomial. More specifically we set
+We can now construct a function space $V_h\subset H^1(\Omega_h)$ on the domain $\Omega_h$ defined by the mesh as follows. First, we assume that each cell $K$ of the mesh is the image of the reference cell $\widehat{K}$ under a map $X_K:\widehat{K}\rightarrow \Omega\subset \mathbb{R}^2$. For an arbitrary real-valued function $f:K\rightarrow \mathbb{R}$ we define the *pullback* $\widehat{f}:\widehat{K}\rightarrow \mathbb{R}$ under $X_K$ as
+
 $$
-V_h := \{u\in H^1(\Omega_h): u|_K(x) = \widehat{u}_K(\widehat{x})\quad \text{for some $\widehat{u}_K\in\mathcal{P}_p(\widehat{K})$ with $x=X_K(\widehat{x})$ for all cells $K\in\Omega_h$}\}
+\widehat{f} = f\circ X_K
+$$
+
+i.e.
+
+$$
+\widehat{f}(\widehat{x}) = f(X_K(\widehat{x}))\qquad\text{for all $\widehat{x}\in\widehat{K}$}.
+$$
+
+
+Next, assume that in each grid cell $K$ the pullback of the function $u|_K$ under the map $X_K$ is a polynomial. More specifically we define
+$$
+\mathcal{V}_h := \{u\in H^1(\Omega_h): u|_K(x) = \widehat{u}_K(\widehat{x})\quad \text{for some $\widehat{u}_K\in\mathcal{P}_p(\widehat{K})$ with $x=X_K(\widehat{x})$ for all cells $K\in\Omega_h$}\}
 $$
 
 ![pullback to reference element](figures/reference_mapping.svg)
 
-We can now use the basis for $\mathcal{P}_p(\widehat{K})$ that we constructed in one of the previous lectures to represent the functions $\widehat{u}_K$. However, care has to be taken to ensure that the function is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
+We can now use the basis for $\mathcal{P}_p(\widehat{K})$ that we constructed in one of the previous lectures to represent the functions $\widehat{u}_K$. However, care has to be taken to ensure that the function $u\in\mathcal{V}_h$ defined on the entire domain is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
+
+For this, recall that any function $u_h(x)$ in the function space $\mathcal{V}_h$ can be written as
+
+$$
+u(x) = \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
+$$
+
+where the $\Phi^{(h)}_{\ell_{\text{global}}}$ are the *global* basis functions and $u^{(h)}_{\ell_{\text{global}}}$ are entries of the *global* dof-vector $\boldsymbol{u}^{(h)}$. He need to think about how the indices $\ell_{\text{global}}$ are associated with the mesh entities.
 
 ### Arrangement of unknowns
 Assume that we have a finite element with $\nu_{\text{vertex}}$ unknowns per vertex, $\nu_{\text{facet}}$ unknowns per facet and $\nu_{\text{interior}}$ unknowns per cell. 
@@ -1062,9 +1089,9 @@ Let $N_{\text{vertex}} = n_{\text{vertex}}\cdot \nu_{\text{vertex}}$, $N_{\text{
 
 We number the unknowns by using the first $N_{\text{vertex}}$ indices for unknowns associated with vertices, the next $N_{\text{facet}}$ indices for unknowns associated with cells and the remaining $N_{\text{interior}}$ indices for unknowns associated with cell interiors. More specifically:
 
-* unknowns with indices $k\cdot \nu_{\text{vertex}},\dots,(k+1)\cdot \nu_{\text{vertex}}-1$ are associated with the $k$-th vertex
-* unknowns with indices $N_{\text{vertex}}+j\cdot \nu_{\text{facet}},\dots,N_{\text{vertex}}+(j+1)\cdot \nu_{\text{facet}}-1$ are associated with the $j$-th facet
-* unknowns with indices $N_{\text{vertex}}+N_{\text{facet}}+i\cdot \nu_{\text{interior}},\dots,N_{\text{vertex}}+N_{\text{facet}}+(i+1)\cdot \nu_{\text{interior}}-1$ are associated with the $i$-th cell
+* unknowns with indices $\gamma\cdot \nu_{\text{vertex}},\dots,(\gamma+1)\cdot \nu_{\text{vertex}}-1$ are associated with the $\gamma$-th vertex
+* unknowns with indices $N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}},\dots,N_{\text{vertex}}+(\beta+1)\cdot \nu_{\text{facet}}-1$ are associated with the $\beta$-th facet
+* unknowns with indices $N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}},\dots,N_{\text{vertex}}+N_{\text{facet}}+(\alpha+1)\cdot \nu_{\text{interior}}-1$ are associated with the $\alpha$-th cell
 
 The facet-unknowns are ordered along the orientation of each edge.
 
@@ -1073,49 +1100,51 @@ The following figure shows an example for the $p=3$ Lagrange element. For this m
 ![simple triangular mesh with unknowns](figures/simple_mesh_with_dof_numbers.svg)
 
 ### Local-to-global map
-On each cell with index $i$ we need to map the $\ell$-th local dof-index to the global dof-index $\ell_{\text{global}}$. Note that this map is surjective but not injective since the unknowns associated with the facets and vertices are shared.
+When we introduced the concept of a finite element, we only considered *local* basis functions $\phi_\ell$. Since the functions in $\mathcal{V}_h$ are continuous, the global basis functions $\Phi^{(h)}_{\ell_{\text{global}}}$ are a combination of local basis functions: for example, global functions associated with a vertex are a combination of local basis functions on the cells that touch this vertex. Hence, in general the dof-index $\ell_{\text{global}}$ is related to several pairs $(\alpha,\ell)$ of cell indices $\alpha$ and local dof-indices $\ell$.
 
-The map $(i,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
+Conversely, on each cell with index $\alpha$ we need to map the $\ell$-th local dof-index to the global dof-index $\ell_{\text{global}}$. Note that this map is surjective but not injective since the unknowns associated with the facets and vertices are shared.
 
-1. For the given $\ell$, we first work out the entity-type $E$ (cell, facet or vertex) it is associated with, as well as the index $j$ of this entity on the reference triangle and the index $k$ of the dof on that reference entity. Recall that for the finite element we have the dof-map $\mu_{\text{dof}}$ that $\ell = \mu_{\text{dof}}(E,j,k)$, so we can obtain $E$, $j$ and $k$ from the inverse of this map.
+The map $(\alpha,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
+
+1. For the given $\ell$, we first work out the entity-type $E$ (cell, facet or vertex) it is associated with, as well as the index $\rho$ of this entity on the reference triangle and the index $j$ of the dof on that reference entity. Recall that for the finite element we have the dof-map $\mu_{\text{dof}}$ that $\ell = \mu_{\text{dof}}(E,\rho,j)$, so we can obtain $E$, $\rho$ and $j$ from the inverse of this map.
 2. Next, we map this to the global index taking into account the arrangement of unknowns described above:
-   1. If $E=\text{vertex}$: $\ell_{\text{global}} = v\cdot \nu_{\text{vertex}}+k$ where $v=I^{v\gets K}_{ij}$ is the global index of the vertex with local index $j$.
-   2. If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+f\cdot \nu_{\text{facet}}+\widetilde{k}$ where $f=I^{F\gets K}_{ij}$ is the global index of the facet with local index $j$. Note that the orientation of the facet does not necessarily match the orientation on the reference element $\widehat{K}$. To take this into account, set $\widetilde{k}=k$ if the orientations agree and set $\widetilde{k} = \nu_{\text{facet}}-1-k$ otherwise.
-   3. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+i\cdot \nu_{\text{interior}}+k$
+   1. If $E=\text{vertex}$: $\ell_{\text{global}} = \gamma\cdot \nu_{\text{vertex}}+j$ where $\gamma=I^{K\rightarrow v}_{\alpha\rho}$ is the global index of the vertex with local index $\rho$.
+   2. If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}}+\widetilde{j}$ where $\beta=I^{K\rightarrow F}_{\alpha\rho}$ is the global index of the facet with local index $\rho$. Note that the orientation of the facet does not necessarily match the orientation on the reference element $\widehat{K}$. To take this into account, set $\widetilde{j}=j$ if the orientations agree and set $\widetilde{j} = \nu_{\text{facet}}-1-j$ otherwise.
+   3. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+j$
 
 ## Encoding geometry information
-The geometry of the mesh is encoded in the functions $X_K$. We can combine the $X_K$ in each cell into a function $X$ which is defined on the entire mesh. The crucial observation is now that each component of $X_K$ can be represented by a function in a finite element space $W_h$ which is defined in the same way as $V_h$ (but possibly with a different polynomial degree). Hence, we can define a coordinate function 
+The geometry of the mesh is encoded in the functions $X_K$. We can combine the $X_K$ in each cell into a function $X$ which is defined on the entire mesh. The crucial observation is now that each component of $X_K$ can be represented by a function in a finite element space $\mathcal{W}_h$ which is defined in the same way as $\mathcal{V}_h$ (but possibly with a different polynomial degree). Hence, we can define a coordinate function 
 
 $$
-X \in W_h^{\times} = W_h \times W_h
+X \in \mathcal{W}_h^{\times} = \mathcal{W}_h \times \mathcal{W}_h
 $$
 
-The space $W_h^{\times}$ is a vector function space. Let $w=(w_0,w_1):\widehat{K}\rightarrow \mathbb{R}^2$ be a vector-valued function. Then the degrees of freedom $\ell^\times$ of $W^\times_h$ are given by:
+The space $\mathcal{W}_h^{\times}$ is a vector function space. Let $w=(w_0,w_1):\widehat{K}\rightarrow \mathbb{R}^2$ be a vector-valued function. Then the degrees of freedom $\lambda^\times$ of $\mathcal{W}^\times_h$ are given by:
 
 $$
-\ell^\times_j(w) = \begin{cases} 
-\ell_{j/2}(w_0) & \text{for $j$ even}\\
-\ell_{(j-1)/2}(w_1) & \text{for $j$ odd}\\
+\lambda^\times_\ell(w) = \begin{cases} 
+\lambda_{\ell/2}(w_0) & \text{for $\ell$ even}\\
+\lambda_{(\ell-1)/2}(w_1) & \text{for $\ell$ odd}\\
 \end{cases}
 $$
 
-The vector-valued basis functions $\phi^\times_j$ are
+The corresponding vector-valued basis functions $\phi^\times_\ell$ are
 $$
-\phi^\times_j(x) = 
+\phi^\times_\ell(x) = 
 \begin{cases}
-\begin{pmatrix}\phi_{j/2}(x)\\0\end{pmatrix} & \text{for $j$ even}\\[2ex]
-\begin{pmatrix}0 \\\phi_{(j-1)/2}(x)\end{pmatrix} & \text{for $j$ odd}
+\begin{pmatrix}\phi_{\ell/2}(x)\\0\end{pmatrix} & \text{for $\ell$ even}\\[2ex]
+\begin{pmatrix}0 \\\phi_{(\ell-1)/2}(x)\end{pmatrix} & \text{for $\ell$ odd}
 \end{cases}
 $$
 
 ### Tabulation of basis functions
-As for scalar-valued function spaces we can *tabulate* the basis functions. For a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(i)}\}_{i=0}^{n-1}$, we obtain the $n \times \nu^\times \times 2$ matrix $T^\times$ with
+As for scalar-valued function spaces we can *tabulate* the basis functions. For a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, we obtain the $n \times \nu^\times \times 2$ matrix $T^\times$ with
 
 $$
-T^\times_{ij\ell}(\boldsymbol{\zeta}) := (\phi^\times_j(\zeta^{(i)}))_\ell = 
+T^\times_{r\ell a}(\boldsymbol{\zeta}) := (\phi^\times_\ell(\zeta^{(r)}))_a = 
 \begin{cases}
-\phi_{j/2}(\zeta^{(i)}) = T_{i,j/2}& \text{if $j$ even and $\ell=0$} \\
-\phi_{(j-1)/2}(\zeta^{(i)}) = T_{i,(j-1)/2} & \text{if $j$ odd and $\ell=1$} \\
+\phi_{\ell/2}(\zeta^{(r)}) = T_{r,\ell/2}& \text{if $\ell$ even and $a=0$} \\
+\phi_{(\ell-1)/2}(\zeta^{(r)}) = T_{r,(\ell-1)/2} & \text{if $\ell$ odd and $a=1$} \\
 0 & \text{otherwise}
 \end{cases}
 $$
@@ -1123,9 +1152,9 @@ $$
 Furthermore, the derivatives are collected in the $n \times \nu^\times \times 2\times 2$ matrix $T^{\times\partial}$ matrix with
 
 $$
-T^{\times\partial}_{ij\ell k}(\boldsymbol{\zeta}) := \frac{(\partial \phi^\times_j)_\ell}{\partial x_k}(\zeta^{(i)})  = \begin{cases}
-\frac{\phi_{j/2}}{\partial x_k}(\zeta^{(i)}) = T_{i,j/2,k}& \text{if $j$ even and $\ell=0$} \\
-\frac{\partial\phi_{(j-1)/2}}{\partial x_k}(\zeta^{(i)}) = T_{i,(j-1)/2,k} & \text{if $j$ odd and $\ell=1$} \\
+T^{\times\partial}_{r\ell ab}(\boldsymbol{\zeta}) := \frac{(\partial \phi^\times_\ell)_a}{\partial x_b}(\zeta^{(r)})  = \begin{cases}
+\frac{\phi_{\ell/2}}{\partial x_b}(\zeta^{(r)}) = T_{r,\ell/2,b}& \text{if $\ell$ even and $a=0$} \\[2ex]
+\frac{\partial\phi_{(\ell-1)/2}}{\partial x_b}(\zeta^{(r)}) = T_{r,(\ell-1)/2,b} & \text{if $\ell$ odd and $a=1$} \\[2ex]
 0 & \text{otherwise}
 \end{cases}
 $$
@@ -1133,24 +1162,28 @@ $$
 We can now write 
 
 $$
-X_K(\xi^{(i)}) = \sum_j X_j \phi_j^\times(\xi^{(i)}) = \sum_j T^\times_{ij} X_j
+(X_K(\zeta^{(r)}))_a = \sum_{\ell^\times} X_{\ell^\times_{\text{global}}} \phi_{\ell^\times}^\times(\zeta^{(r)}) = \sum_j T^\times_{r\ell^\times a} X_{\ell^\times_{\text{global}}}
 $$
+
+where $\ell^\times_{\text{global}}$ is the global dof-index that corresponds to the local dof-index $\ell^\times$ in the cell with index $\alpha$.
 
 and the Jacobian is
 
 $$
-J_{ab}(\xi^{(i)}) = \frac{\partial (X_K)_a }{\partial x_b}(\xi^{(i)})
-= \sum_j X_j \frac{\partial (\phi^\times_j)_a }{\partial x_b}(\xi^{(i)})
-= \sum_j X_j T^{\times\partial}_{ijab}
+J_{ab}(\zeta^{(r)}) = \frac{\partial (X_K)_a }{\partial x_b}(\xi^{(r)})
+= \sum_{\ell^\times} X_{\ell^\times_{\text{global}}} \frac{\partial (\phi^\times_{\ell^\times})_a }{\partial x_b}(\xi^{(i)})
+= \sum_{\ell^\times} X_{\ell^\times_{\text{global}}} T^{\times\partial}_{r\ell^\times ab}
 $$
 
 
-## Implementation in Python# Global assembly
+## Implementation in Python
+
+# Global assembly
 We are now ready to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$ which define the linear system
 $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
 $$
-With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution $u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_\ell \Phi^{(h)}_\ell(x)$. Recall that the entries of the right hand side vector and stiffness matrix are given by $b^{(h)}_\ell:=b(\Phi^{(h)}_\ell)$ and $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_\ell,\Phi^{(h)}_k\right)$. 
+With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution $u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)$. Recall that the entries of the right hand side vector and stiffness matrix are given by $b^{(h)}_{\ell_{\text{global}}}:=b(\Phi^{(h)}_{\ell_{\text{global}}})$ and $A^{(h)}_{{\ell_{\text{global}}}{k_{\text{global}}}}:= a\left(\Phi^{(h)}_{\ell_{\text{global}}},\Phi^{(h)}_{k_{\text{global}}}\right)$. 
 
 ## Assembly of RHS vector
 Since $b(v) = \int_\Omega f(x)v(x)\;dx$ we compute the entries of the vector $b^{(h)}$ by splitting the integral over the domain $\Omega$ into the sum of integrals over the cells $K$:
@@ -1196,7 +1229,7 @@ Putting everything together, we arrive at the following procedure:
 ### Algorithm: assembly of right-hand-side vector $\boldsymbol{b}^{(h)}$
 1. Initialise $\boldsymbol{b}^{(h)} \gets \boldsymbol{0}$
 1. For all cells $K$ **do**:
-1. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(i,{\ell^\times})}$ where $i$ is the index of cell $K$
+1. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
 1. $~~~~$ For all quadrature points $q$ **do**:
 1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
 1. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = f(x_K^{(q)})$
@@ -1204,7 +1237,7 @@ Putting everything together, we arrive at the following procedure:
 2. $~~~~$ Construct the local dof-vector $\boldsymbol{b}^{(h),\text{local}}$ with
 $$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$$
 3. $~~~~$ For all local dof-indices $\ell$ **do**:
-4. $~~~~~~~~$ Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$ with $\ell_{\text{global}} = \ell_{\text{global}}(i,\ell)$
+4. $~~~~~~~~$ Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$
 5. $~~~~$ **end do**
 6. **end do**
 
@@ -1274,7 +1307,7 @@ Putting everything together we arrive at the following procedure:
 $$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{q\ell a}(J^{(-2)}_q)_{ab} T^\partial_{qkb} D_q + \omega \sum_{q} w_q  T_{q\ell}T_{qk} D_q$$
 9. $~~~~$ For all local dof-indices $\ell$ **do**:
 10. $~~~~~~~~$ For all local dof-indices $k$ **do**:
-11. $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(i,\ell)$ and $k_{\text{global}} = k_{\text{global}}(i,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $i$
+11. $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$ and $k_{\text{global}} = k_{\text{global}}(\alpha,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $\alpha$
 12. $~~~~~~~~$ **end do**
 13. $~~~~$ **end do**
 14. **end do**

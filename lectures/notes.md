@@ -1,5 +1,5 @@
 <div align="center">
-  <p style="font-size:50px;">MA32070 lecture notes</p>
+  <p style="font-size:32px;">MA32070 lecture notes</p>
 </div>
 
 ----

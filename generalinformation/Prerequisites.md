@@ -1,5 +1,5 @@
 <div align="center">
-  <p style="font-size:50px;">MA32070 Prerequisites and background reading</p>
+  <p style="font-size:32px;">MA32070 Prerequisites and background reading</p>
 </div>
 
 In the following we list some prior knowledge that is expected for this course together with some links to further information.

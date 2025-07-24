@@ -1752,6 +1752,7 @@ and it is up to us to recognise that the computed solution does not solve $Au=b$
 9. $~~~~$ Compute $\beta_k = \frac{\boldsymbol{z}^{(k)\top}\boldsymbol{r}^{(k)}}{\boldsymbol{z}^{(k-1)\top}\boldsymbol{r}^{(k-1)}}$
 10. $~~~~$ Set $\boldsymbol{p}^{(k)} \gets \boldsymbol{z}^{(k)} + \beta_k \boldsymbol{p}^{(k-1)}$
 11. **end do**
+    
 # Assembly of stiffness matrix
 
 ### Algorithm: create sparsity structure
@@ -1769,4 +1770,6 @@ and it is up to us to recognise that the computed solution does not solve $Au=b$
 12. $~~~~$ Set $R_{\ell_{\text{global}}+1} = R_{\ell_{\text{global}}} +\left|\mathcal{J}_{\ell_{\text{global}}}\right|$ 
 13. **end do**
 
-    
+# Parallel computing
+
+# Performance analysis

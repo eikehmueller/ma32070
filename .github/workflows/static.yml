@@ -42,6 +42,7 @@ jobs:
                     --output=notes.html
                     --resource-path lectures
                     --metadata-file metadata.yml
+                    --data-dir=~/.pandoc
                     --template=uikit.html
                     lectures/notes.md
             - name: Convert setup instructions markdown to html with pandoc
@@ -55,6 +56,7 @@ jobs:
                   --template=uikit.html
                   --resource-path generalinformation
                   --metadata-file metadata.yml
+                  --data-dir=~/.pandoc
                   generalinformation/Setup.md
             - name: Unzip deployment folder
               run: |

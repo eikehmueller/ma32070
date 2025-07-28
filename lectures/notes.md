@@ -123,7 +123,7 @@ In the rest of this course we will discuss how each of these steps can be implem
 # Finite Elements
 We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
 
-## Triangular reference element
+## Reference triangle
 Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the unit triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$, shown in red in the following figure. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$:
 
 ![reference triangle](figures/reference_triangle.svg)

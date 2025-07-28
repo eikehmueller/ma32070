@@ -55,6 +55,7 @@ $$
 * Your class should contain a method `vandermonde_matrix(zeta,grad=False)` which accepts as an argument a $n\times 2$ matrix of $n$ two-dimensional points. The method should compute the $n\times \nu$ matrix $V(\boldsymbol{\zeta})$ if `grad=False` and the $n\times \nu\times 2$ tensor $V^\partial(\boldsymbol{\zeta})$ if `grad=True`. If only a single point is passed to the method, it should return a vector of length $\nu$ for `grad=False` and a $\nu\times 2$ matrix for `grad=True`.
 * Use the `vandermonde_matrix()` method together with `_nodal_points` to construct the coefficient matrix `C`
 * Use the coefficient matrix `C` and the `vandermonde_matrix()` method to tabulate the basis functions and their gradients by using the expressions above. You might find the [`numpy.einsum()`](https://numpy.org/doc/2.2/reference/generated/numpy.einsum.html) method useful to compute $T^\partial(\boldsymbol{\zeta})$
+* Verify that the methods `dofmap()` and `inverse_dofmap()`, which are inherited from the abstract base class behave as expected. For this, inspect the output of `inverse_dofmap(ell)` for $\ell=0,1,2,\dots,9$
 * Your code should pass the tests below, which verify correctness for special cases. Use [pytest](https://docs.pytest.org/) to add further tests to verify that your implementation is correct. In particular, you should check that
   - `tabulate()` correctly computes $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points.
   - `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$

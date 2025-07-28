@@ -7,7 +7,7 @@
    viewBox="0 0 314.25833 60.81395"
    version="1.1"
    id="svg5"
-   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   inkscape:version="1.3 (0e150ed, 2023-07-21)"
    sodipodi:docname="lagrange_nodes.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,20 +24,24 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="3.3638608"
-     inkscape:cx="1079.5631"
-     inkscape:cy="145.66595"
-     inkscape:window-width="1614"
-     inkscape:window-height="981"
-     inkscape:window-x="1666"
-     inkscape:window-y="32"
-     inkscape:window-maximized="1"
+     inkscape:zoom="1.3724185"
+     inkscape:cx="1003.3383"
+     inkscape:cy="117.31116"
+     inkscape:window-width="1312"
+     inkscape:window-height="713"
+     inkscape:window-x="54"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
      inkscape:current-layer="layer1">
     <inkscape:grid
        type="xygrid"
        id="grid686"
        originx="95.933685"
-       originy="-14.06313" />
+       originy="-14.06313"
+       spacingy="1"
+       spacingx="1"
+       units="mm"
+       visible="true" />
   </sodipodi:namedview>
   <defs
      id="defs2" />
@@ -763,7 +767,7 @@
          x="106.88108"
          y="45.26947">ν<tspan
    style="font-size:65%;baseline-shift:sub"
-   id="tspan2801">interior</tspan> = 0</tspan></text>
+   id="tspan2801">interior</tspan> = 1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8.46667px;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"

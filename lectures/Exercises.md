@@ -2,8 +2,6 @@
   <p style="font-size:32px;">MA32070 Exercises</p>
 </div>
 
-In the following we list some prior knowledge that is expected for this course together with some links to further information.
-
 ----
 
 *&#169; Eike Mueller, University of Bath 2025. These notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited. html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
@@ -11,7 +9,7 @@ In the following we list some prior knowledge that is expected for this course t
 ----
 
 # Exercise: Cubic Lagrange element
-Implement the cubic Lagrange element ($p=3$) in the class `CubicElement` by subclassing the abstract base class `FiniteElement`. The $\nu=10$ Lagrange points are in this order (see also figure above):
+Implement the cubic Lagrange element ($p=3$) in the class `CubicElement` by subclassing the abstract base class `FiniteElement`. The $\nu=10$ Lagrange points are in this order (see also figure below):
 
 $$
 \{\xi^{(j)}\}_{j=0}^{9}=
@@ -29,6 +27,24 @@ $$
 \underbrace{\begin{pmatrix}\frac{1}{3}\\[1ex]\frac{1}{3}\end{pmatrix}}_{\text{interior}}\right\}
 $$
 
+![Lagrange points for cubic element](figures/lagrange_nodes_cubic.svg)
+
+The corresponding basis functions are
+$$
+\begin{aligned}
+\phi_0(x) &= 1 - \frac{11}{2} (x_0 + x_1) + 9 (x_0 + x_1)^2 - \frac{9}{2} (x_0 + x_1)^3,\\
+\phi_1(x) &= x_0\left(1 - \frac{9}{2} x_0 + \frac{9}{2} x_0^2 \right),\\
+\phi_2(x) &= x_1\left(1 - \frac{9}{2} x_1 + \frac{9}{2} x_1^2\right),\\
+\phi_3(x) &= -\frac{9}{2} x_0 x_1 (1 - 3 x_0),\\
+\phi_4(x) &= -\frac{9}{2} x_0 x_1  (1 - 3 x_1),\\
+\phi_5(x) &= -\frac{9}{2} x_1 (1 - x_0 - 4 x_1 + 3 x_1 * (x_0 + x_1)),\\
+\phi_6(x) &= \frac{9}{2} x_1 (2 - 5 (x_0 + x_1) + 3 (x_0 + x_1)^2),\\
+\phi_7(x) &= \frac{9}{2} x_0 (2 - 5 (x_0 + x_1) + 3 (x_0 + x_1)^2),\\
+\phi_8(x) &= -\frac{9}{2} x_0 (1 - x_1 - 4 x_0 + 3 x_0 (x_0 + x_1)),\\
+\phi_9(x) &= 27 x_0 x_1 (1 - x_0 - x_1)
+\end{aligned}
+$$
+
 You can use the following 10 monomials:
 
 $$
@@ -39,10 +55,171 @@ $$
 * Your class should contain a method `vandermonde_matrix(zeta,grad=False)` which accepts as an argument a $n\times 2$ matrix of $n$ two-dimensional points. The method should compute the $n\times \nu$ matrix $V(\boldsymbol{\zeta})$ if `grad=False` and the $n\times \nu\times 2$ tensor $V^\partial(\boldsymbol{\zeta})$ if `grad=True`. If only a single point is passed to the method, it should return a vector of length $\nu$ for `grad=False` and a $\nu\times 2$ matrix for `grad=True`.
 * Use the `vandermonde_matrix()` method together with `_nodal_points` to construct the coefficient matrix `C`
 * Use the coefficient matrix `C` and the `vandermonde_matrix()` method to tabulate the basis functions and their gradients by using the expressions above. You might find the [`numpy.einsum()`](https://numpy.org/doc/2.2/reference/generated/numpy.einsum.html) method useful to compute $T^\partial(\boldsymbol{\zeta})$
+* Your code should pass the tests below, which verify correctness for special cases. Use [pytest](https://docs.pytest.org/) to add further tests to verify that your implementation is correct. In particular, you should check that
+  - `tabulate()` correctly computes $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points.
+  - `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$
+  
+```python
+def test_ndof_per_vertex():
+    """Check that the number of unknowns per vertex is set correctly"""
+    element = CubicElement()
+    assert element.ndof_per_vertex == 1
+
+
+def test_ndof_per_facet():
+    """Check that the number of unknowns per facet is set correctly"""
+    element = CubicElement()
+    assert element.ndof_per_facet == 2
+
+
+def test_ndof_per_interior():
+    """Check that the number of unknowns in the interior is set correctly"""
+    element = CubicElement()
+    assert element.ndof_per_interior == 1
+
+
+def test_tabulate_dofs():
+    """Check that dof-tabulation of exp(-x)*(2+sin(x)) is correct"""
+    element = CubicElement()
+    expected = [
+        2.00000000, 0.73575888, 2.84147098, 1.19482160, 1.87614395,
+        2.61836980, 2.32719470, 1.43306262, 1.02683424, 1.66750787,
+    ]
+    tabulated = element.tabulate_dofs(
+        lambda x: np.exp(-x[..., 0]) * (2 + np.sin(x[..., 1]))
+    )
+    assert np.allclose(expected, tabulated, rtol=1.0e-8)
+
+
+def test_tabulate_single_point():
+    """Check that tabulation of all dofs at a single point is correct"""
+    element = CubicElement()
+    zeta = [0.18, 0.43]
+    expected = [
+        -0.0275145, 0.060444, -0.0442685, -0.160218, 0.101007,
+        0.2188485, 0.1282905, 0.053703, -0.145314, 0.815022,
+    ]
+    tabulated = element.tabulate(zeta)
+    assert np.allclose(tabulated, expected, rtol=1.0e-12)
+
+
+def test_tabulate_multiple_points():
+    """Check that tabulation of all dofs at multiple points is correct"""
+    element = CubicElement()
+    zeta = [[0.18, 0.43], [0.72, 0.21], [0.4, 0.31]]
+    tabulated = element.tabulate(zeta)
+    expected = [
+        [
+            -0.0275145, 0.060444, -0.0442685, -0.160218, 0.101007,
+            0.2188485, 0.1282905, 0.053703, -0.145314, 0.815022,
+        ],
+        [
+            0.0494935, 0.066816, 0.0532245, 0.789264, -0.251748,
+            -0.0244755, -0.0522585, -0.179172, 0.263088, 0.285768,
+        ],
+        [
+            0.0213005, -0.032, 0.0116095, 0.1116, -0.03906,
+            -0.0283185, -0.0525915, -0.06786, 0.1044, 0.97092,
+        ],
+    ]
+    assert np.allclose(tabulated, expected, rtol=1.0e-12)
+
+
+def test_tabulate_gradient_single_point():
+    """Check that tabulation of gradient of all dofs at a single point is correct"""
+    element = CubicElement()
+    zeta = [0.18, 0.43]
+    tabulated = element.tabulate_gradient(zeta)
+    expected = [
+        [0.45665, 0.45665], [-0.1826, 0.0],
+        [0.0, -0.37385], [0.1548, -0.3726],
+        [0.56115, 1.2798], [-0.56115, 2.21175],
+        [-2.5929, -2.29455], [-0.78705, -1.0854],
+        [0.513, 0.3726], [2.4381, -0.1944],
+    ]
+    assert np.allclose(tabulated, expected, rtol=1.0e-12)
+
+
+def test_tabulate_gradient_multiple_points():
+    """Check that tabulation of gradient of all dofs at multiple points is correct"""
+    element = CubicElement()
+    zeta = [[0.18, 0.43], [0.72, 0.21], [0.4, 0.31]]
+    tabulated = element.tabulate_gradient(zeta)
+    expected = [
+        [
+            [0.45665, 0.45665], [-0.1826, 0.0],
+            [0.0, -0.37385], [0.1548, -0.3726],
+            [0.56115, 1.2798], [-0.56115, 2.21175],
+            [-2.5929, -2.29455], [-0.78705, -1.0854],
+            [0.513, 0.3726], [2.4381, -0.1944],
+        ],
+        [
+            [-0.43615, -0.43615], [1.5184, 0.0],
+            [-0.0, -0.29465], [3.1374, 3.7584],
+            [-0.34965, 0.8424], [0.34965, 0.43155],
+            [0.5481, 0.29925], [1.63035, 1.8792],
+            [-2.7126, -3.7584], [-3.6855, -2.7216],
+        ],
+        [
+            [0.47465, 0.47465], [-0.44, 0.0],
+            [0.0, -0.49265], [1.953, 0.36],
+            [-0.09765, 1.548], [0.09765, 1.21995],
+            [-1.0323, -1.20195], [-1.50165, -1.332],
+            [1.467, -0.36], [-0.9207, -0.216],
+        ],
+    ]
+    assert np.allclose(tabulated, expected, rtol=1.0e-12)
+```
 
 ## Practicalities
-* Save your implementation in the file `cubicelement.py`
-* Use [pytest](https://docs.pytest.org/) to develop a suite of suitable tests to check that your implementation is correct. For this, create a file `test_cubicelement.py` in the same directory
+* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory
+
+# Exercise: Three point quadrature
+Consider the following three-point quadrature on the reference triangle $\widehat{K}$:
+
+$$
+\begin{aligned}
+w_0 &= \frac{1}{6}, & w_1 &= \frac{1}{6}, & w_2 &= \frac{1}{6}\\
+\xi^{(0)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
+\xi^{(1)} &= \begin{pmatrix}\frac{2}{3} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
+\xi^{(2)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{2}{3}\end{pmatrix}
+\end{aligned}
+$$
+
+The degree of precision of this rule is $2$, i.e. it is exact for polynomials of the form
+$$
+p(x_0,x_1) = \sum_{\substack{s_0,s_1\\s_0+s_1\le 2}} a_{s_0,s_1} x_0^{s_0} x_1^{s_1}
+$$
+Implement this quadrature rule in the class `ThreePointQuadratureReferenceTriangle`, which should be a subclass of the abstract base class `Quadrature`. Write a suitable test which verifies that the implemention is correct. For this, observe that
+
+$$
+\int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1 = \frac{s_0!s_1!}{(s_0+s_1+2)!}
+$$
+
+Use the [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html) decorator to write a suitable, parametrised test which verifies this:
+
+```python
+import pytest
+
+@pytest.mark.parametrize(
+    "s, expected",
+    [
+        [[0, 0], 1 / 2],
+        # Add more cases here
+    ],
+)
+def test_threepoint_quadrature_monomial(s, expected):
+    """Check that three point quadrature is exact for monomial x_0^{s_0} x_1^{s_1}
+    
+    :arg s: (s_0,s_1) = powers of x_0,x_1
+    :arg expected: exact result s_0! s_1! / (s_0+s_1+2)!
+    """
+    # Add your own test code here
+```
+
+## Practicalities
+* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py`
+* Implement the test in `test_threepointquadrature.py`
 
 # Exercise: Local assembly on the reference triangle
 * Implement a method `assemble_lhs(element, n_q)` which assembles the stiffness matrix $A^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
@@ -53,7 +230,7 @@ $$
   - The function `g` which describes the Neumann boundary function $g(x)$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Implement a method `error_nrm(u, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e^{(h)}\|_{L_2(\widehat{K})}$ by using the approximation in $(\dagger). The method should be passed:
+* Implement a method `error_nrm(u, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e^{(h)}\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
   - The vector $\boldsymbol{u}^{(h)}$ that defines the function $u^{(h)}(x)$ 
   - A function $u_{\text{exact}}$ which represents the exact solution and which can be evaluated at arbirtrary points $\zeta\in \widehat{K}$
   - An instance `element` of a subclass of `FiniteElement`

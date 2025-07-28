@@ -518,7 +518,7 @@ with $f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$ and $g_{q}(\boldsymbol{\zeta}_{F_
 The error $e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)$ is the difference between the exact and numerical solution. Expanding $u^{(h)}$ in terms of the basis functions $\phi_\ell(x)$, can write $e^{(h)}$ as
 
 $$
-e^{(h)}(x) = u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x).
+e^{(h)}(x) = u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x).
 $$
 
 The square of the $L_2$ norm of the error is given by
@@ -1035,6 +1035,33 @@ I^{K\rightarrow v} &= \begin{pmatrix}
 \end{aligned}
 $$
 
+The following figure shows another example (created with `RectangleMesh(Lx=1.0, Ly=1.0, nref=1)`, see below). The global indices of vertices, facets and cells are plotted separatedly.
+
+![Rectangle mesh](figures/rectangle_mesh.svg)
+
+Referring to the local numbering of facets and vertices in the lower right plot we read off:
+
+$$
+\begin{aligned}
+I^{K\rightarrow F} &= \begin{pmatrix}
+5 & 1 & 2 & 10 & 8 & 0 & 7 & 13\\
+0 & 3 & 4 & 11 & 1 & 6 & 9 & 14\\
+11 & 12 & 10 & 12 & 14 & 15 & 13 & 15
+\end{pmatrix}^{\top}
+\\
+I^{F\rightarrow v} &= \begin{pmatrix}
+1 & 2 & 0 & 2 & 0 & 1 & 1 & 3 & 2 & 3 & 5 & 4 & 4 & 7 & 4 & 4\\
+4 & 4 & 5 & 5 & 6 & 6 & 7 & 7 & 8 & 8 & 6 & 6 & 5 & 8 & 8 & 7
+\end{pmatrix}^{\top}
+\\
+I^{K\rightarrow v} &= \begin{pmatrix}
+4 & 5 & 6 & 4 & 4 & 7 & 8 & 4\\
+6 & 4 & 5 & 5 & 8 & 4 & 7 & 7\\
+1 & 2 & 0 & 6 & 2 & 1 & 3 & 8
+\end{pmatrix}^{\top}
+\end{aligned}
+$$
+
 ### Implementation
 The abstract class `Mesh` encodes the mesh topology. It has the following members:
 
@@ -1044,9 +1071,9 @@ The abstract class `Mesh` encodes the mesh topology. It has the following member
 * `cell2vertex`: a list such that `cell2vertex[alpha][gamma]` $= I^{K\rightarrow v}_{\alpha\gamma}$. Since $I^{K\rightarrow v}_{ik}$ can be derived from $I^{K\rightarrow F}_{\alpha\beta}$ and $I^{F\rightarrow v}_{\beta\gamma}$, `cell2vertex` is implemented as a [`@functools.cached_property`](https://docs.python.org/3/library/functools.html#functools.cached_property).
 * an array `coordinates` of shape $(n_{\text{vertex}},2)$ whose columns contain the two-dimensional coordinates of the mesh vertices
 
-The class also contains a method `refine(nref)` which can be used to construct a refined mesh from given mesh.
+The class also contains a method `refine(nref)` which can be used to construct a refined mesh from a given mesh by sub-dividing each triangle into four smaller triangles.
 
-Two concrete classes are derived from this class:
+Two concrete classes are derived from this abstract base class:
 
 * `RectangleMesh(Lx=1.0, Ly=1.0, nref=0)` is a triangulation of the domain $[0,L_x]\times[0,L_y]$ with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}+1}$
 * `TriangleMesh(corners=None, nref=0)` is a triangulation of the domain triangle defined by the array `corners` (if this is `None`, the reference triangle us used) with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}}$
@@ -1073,7 +1100,7 @@ $$
 
 ![pullback to reference element](figures/reference_mapping.svg)
 
-We can now use the basis for $\mathcal{P}_p(\widehat{K})$ that we constructed in one of the previous lectures to represent the functions $\widehat{u}_K$. However, care has to be taken to ensure that the function $u\in\mathcal{V}_h$ defined on the entire domain is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
+We can now use the basis of $\mathcal{P}_p(\widehat{K})$ that we constructed in one of the previous lectures to represent the functions $\widehat{u}_K$. However, care has to be taken to ensure that the function $u\in\mathcal{V}_h$ defined on the entire domain is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
 
 For this, recall that any function $u_h(x)$ in the function space $\mathcal{V}_h$ can be written as
 
@@ -1081,13 +1108,13 @@ $$
 u(x) = \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
 $$
 
-where the $\Phi^{(h)}_{\ell_{\text{global}}}$ are the *global* basis functions and $u^{(h)}_{\ell_{\text{global}}}$ are entries of the *global* dof-vector $\boldsymbol{u}^{(h)}$. He need to think about how the indices $\ell_{\text{global}}$ are associated with the mesh entities.
+where the $\Phi^{(h)}_{\ell_{\text{global}}}$ are the *global* basis functions and $u^{(h)}_{\ell_{\text{global}}}$ are entries of the *global* dof-vector $\boldsymbol{u}^{(h)}$. We need to think about how the indices $\ell_{\text{global}}$ are associated with the mesh entities.
 
 ### Arrangement of unknowns
 Assume that we have a finite element with $\nu_{\text{vertex}}$ unknowns per vertex, $\nu_{\text{facet}}$ unknowns per facet and $\nu_{\text{interior}}$ unknowns per cell. 
 Let $N_{\text{vertex}} = n_{\text{vertex}}\cdot \nu_{\text{vertex}}$, $N_{\text{facet}} = n_{\text{facet}}\cdot \nu_{\text{facet}}$ and $N_{\text{interior}} = n_{\text{cell}}\cdot \nu_{\text{interior}}$ be the total number of unknowns associated with vertices, facets and cell interiors respectively.
 
-We number the unknowns by using the first $N_{\text{vertex}}$ indices for unknowns associated with vertices, the next $N_{\text{facet}}$ indices for unknowns associated with cells and the remaining $N_{\text{interior}}$ indices for unknowns associated with cell interiors. More specifically:
+We number the unknowns by using the first $N_{\text{vertex}}$ indices for unknowns associated with vertices, the next $N_{\text{facet}}$ indices for unknowns associated with facets and the remaining $N_{\text{interior}}$ indices for unknowns associated with cell interiors. More specifically:
 
 * unknowns with indices $\gamma\cdot \nu_{\text{vertex}},\dots,(\gamma+1)\cdot \nu_{\text{vertex}}-1$ are associated with the $\gamma$-th vertex
 * unknowns with indices $N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}},\dots,N_{\text{vertex}}+(\beta+1)\cdot \nu_{\text{facet}}-1$ are associated with the $\beta$-th facet
@@ -1106,11 +1133,17 @@ Conversely, on each cell with index $\alpha$ we need to map the $\ell$-th local 
 
 The map $(\alpha,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
 
-1. For the given $\ell$, we first work out the entity-type $E$ (cell, facet or vertex) it is associated with, as well as the index $\rho$ of this entity on the reference triangle and the index $j$ of the dof on that reference entity. Recall that for the finite element we have the dof-map $\mu_{\text{dof}}$ that $\ell = \mu_{\text{dof}}(E,\rho,j)$, so we can obtain $E$, $\rho$ and $j$ from the inverse of this map.
-2. Next, we map this to the global index taking into account the arrangement of unknowns described above:
+1. For the given $\ell$, we first work out the entity-type $E$ (cell, facet or vertex) it is associated with, as well as the index $\rho$ of this entity on the reference triangle and the index $j$ of the dof on that reference entity. Recall that for the finite element we have the dof-map $\mu_{\text{dof}}$ that $\ell = \mu_{\text{dof}}(E,\rho,j)$, so we can obtain $E$, $\rho$ and $j$ from the inverse of this map, which is implemented as the `inverse_dofmap()` method in the `FiniteElement` base class in [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py).
+2. Next, we map the tuple $(E,\rho,j)$ to the global dof index $\ell_{\text{global}}$ taking into account the arrangement of unknowns described above:
    1. If $E=\text{vertex}$: $\ell_{\text{global}} = \gamma\cdot \nu_{\text{vertex}}+j$ where $\gamma=I^{K\rightarrow v}_{\alpha\rho}$ is the global index of the vertex with local index $\rho$.
    2. If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}}+\widetilde{j}$ where $\beta=I^{K\rightarrow F}_{\alpha\rho}$ is the global index of the facet with local index $\rho$. Note that the orientation of the facet does not necessarily match the orientation on the reference element $\widehat{K}$. To take this into account, set $\widetilde{j}=j$ if the orientations agree and set $\widetilde{j} = \nu_{\text{facet}}-1-j$ otherwise.
    3. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+j$
+
+## Implementation in Python
+The necessary functionality is implemented in the `FunctionSpace` class in [`fem/functionspace.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/functionspace.py). The initialiser is passed a `mesh` and a `finiteelement` and the class provides the following functionality:
+
+* The property `ndof` contains the total number of unknowns in the function space
+* The method `local2global(self, alpha, ell)` implements the map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ described above. If the parameter `ell` is a single integer index in the range $0,1,\dots,\nu-1$, the method returns a single number $\ell_{\text{global}}$. If `ell` is an iterable (such as a list `[0,3,4]` or `range(1,6,2)`) the global index will be computed for each local index and the method returns a list.
 
 ## Encoding geometry information
 The geometry of the mesh is encoded in the functions $X_K$. We can combine the $X_K$ in each cell into a function $X$ which is defined on the entire mesh. The crucial observation is now that each component of $X_K$ can be represented by a function in a finite element space $\mathcal{W}_h$ which is defined in the same way as $\mathcal{V}_h$ (but possibly with a different polynomial degree). Hence, we can define a coordinate function 
@@ -1176,6 +1209,9 @@ in this expression $\ell^\times_{\text{global}}(\alpha,\ell^\times)$ is the glob
 
 ## Implementation in Python
 
+## Functions
+Discuss `Function` class in `fem/function.py`.
+
 # Global assembly
 We are now ready to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$ which define the linear system
 $$
@@ -1191,13 +1227,13 @@ b^{(h)}_{\ell_{\text{global}}} &= \int_\Omega f(x) \Phi_{\ell_{\text{global}}}(x
 &= \sum_{K\in \Omega_h} \int_K f(x) \Phi_{\ell_{\text{global}}}(x) \; dx\\
 \end{aligned}
 $$
-If $i$ is the index of cell $K$, we can identify the *global* index $\ell_{\text{global}}$ with the corresponding cell-*local* index $\ell$, transform variables to integrate over the reference cell $\widehat{K}$ and write 
+If $\alpha$ is the index of cell $K$, we can identify the *global* index $\ell_{\text{global}}$ with the corresponding cell-*local* index $\ell$, transform variables to integrate over the reference cell $\widehat{K}$ and write 
 $$
 \begin{aligned}
 b^{(h)}_{\ell_{\text{global}}} &= \sum_{K\in \Omega_h}\int_{\widehat{K}} \widehat{f}_K(\widehat{x}) \phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}
 \end{aligned}
 $$
-where $\widehat{f}_K(\widehat{x}) := f(x)$. Note that for degrees of freedom which are shared between neighbouring cells, there can be contributions different cells since several $(i,\ell)$ can correspond to the same $\ell_{\text{global}}$.
+where $\widehat{f}_K(\widehat{x}) := f(x)$. Note that for degrees of freedom which are shared between neighbouring cells, there can be contributions from different cells since several $(\alpha,\ell)$ can correspond to the same $\ell_{\text{global}}$.
 
 Next, replace the integration by numerical quadrature and use the tabulated basis functions $T_{q\ell}=\phi_\ell(\xi^{(q)})$ to obtain
 $$
@@ -1210,7 +1246,7 @@ To evaluate the cell-local function $\widehat{f}_K$ at the quadrature point we n
 $$
 \widehat{f}_K(\xi^{(q)}) = f(x_K^{(q)})
 $$
-Next, we use the fact that in each cell $x_K$ can be expanded in terms of vector-valued basis functions as
+To implement the function $\widehat{f}_K = f\circ X_K$ which can be tabulated at the quadrature point $\{\xi^{(q)}\}_{q=0^{N_q-1}}$, we use the fact that in each cell $x_K$ can be expanded in terms of vector-valued basis functions as
 $$
 (x_K^{(q)})_a = (X_K(\xi^{(q)}))_a = \sum_{\ell^\times} (\phi^\times_{\ell^\times}(\xi^{(q)}))_a X_{\ell^\times_{\text{global}}} = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}
 $$
@@ -1230,7 +1266,7 @@ Putting everything together, we arrive at the following procedure:
 1. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
 1. $~~~~$ For all quadrature points $q$ **do**:
 1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
-1. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = f(x_K^{(q)})$
+1. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = \widehat{f}_K(\xi^{(q)})$
 1. $~~~~$ **end do**
 2. $~~~~$ Construct the local dof-vector $\boldsymbol{b}^{(h),\text{local}}$ with
 $$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$$
@@ -1321,6 +1357,75 @@ To insert the entries of the local stiffness matrix $A^{(h),\text{local}}$ into 
 ```
 A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 ```
+
+## Error
+As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)$ is the difference between the exact and numerical solution. Expanding $u^{(h)}$ in terms of the basis functions $\phi_\ell(x)$, can write $e^{(h)}$ as
+
+$$
+e^{(h)}(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
+$$
+
+The square of the $L_2$ norm of the error can be computed by summing over all triangles in the mesh
+
+$$
+\begin{aligned}
+\|e^{(h)}\|_{L_2(\Omega)}^2 &= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell_{\text{global}}}(x)\right)^2\;dx\\
+&= \sum_{K\in\Omega_h} \int_{K} \left(u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)\right)^2\;dx\\
+&= \sum_{K\in\Omega_h} \int_{\widehat{K}} \left(\widehat{u}_{K,\text{exact}}(\widehat{x}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell}(\widehat{x})\right)^2\left|\det{J(\widehat{x})}\right|\;dx\qquad\text{with $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$}\\
+&\approx 
+\sum_{K\in\Omega_h}\sum_{q=0} ^{N_q-1} w_q \left(\widehat{u}_{K,\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_\ell(\zeta^{(q)})\right)^2 \left|\det{J(\zeta^{(q)})}\right|.
+\end{aligned}
+$$
+
+where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$ and, as before $\widehat{u}_{K,\text{exact}} = u_{\text{exact}}\circ X_K$.
+
+### Algorithm: Computation of $\|u^{(h)}-u_{\text{exact}}\|_{L_2(\Omega)}$
+1. Initialise $S \gets 0$
+1. For all cells $K$ **do**:
+1. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
+1. $~~~~$ Extract the local dof-vector $\overline{\boldsymbol{u}}$ with $\overline{u}_{\ell} = u^{(h)}_{\ell_\text{global}(\alpha,\ell)}$
+1. $~~~~$ For all quadrature points $q$ **do**:
+1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
+1. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $u^{\text{(exact)}}_q = \widehat{u}_{K,\text{exact}}(\xi^{(q)}) = u_{\text{exact}}(x_K^{(q)})$
+1. $~~~~~~~~$ Compute $e_q = u^{\text{(exact)}}_q - \sum_{\ell=0}^{\nu-1}T_{q\ell} \overline{u}_\ell$
+2. $~~~~~~~~$ Update $S \gets S + w_q e_q^2 D_q$
+3. $~~~~$ **end do**
+4.  **end do**
+
+## Numerical experiments
+We consider the following manufactured solution
+
+$$
+u(x) = \cos(\pi s_0 x_0) \cos(\pi s_1 x_1) \qquad\text{for $s_0, s_1\in \mathbb{N}$}
+$$
+
+in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation if $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$.
+
+We choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `RectangleMesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
+
+We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$. The function `save_to_vtk(u,filename)` vcan be used to save the dof-vector of a piecewise linear function to a `.vtk` file which can be visualised with [paraview](https://www.paraview.org/).
+
+We also visualise the spatial variation of the error. For this, we first project the exact solution $u_{\text{exact}}(x)$ into the finite element space $\mathcal{V}_h$:
+
+$$
+u_{\text{exact}}^{(h)} = \argmin_{v^{(h)}\in\mathcal{V}_h} \|v^{(h)} - u_{\text{exact}}\|_{L_2(\Omega)}
+$$
+
+It can be shown that is achieved by solving
+
+$$
+m(u_{\text{exact}}^{(h)},v^{(h)}) = m(u_{\text{exact}},v^{(h)})\qquad\text{for all $v^{(h)}$ in $\mathcal{V}_h$}
+$$
+
+where 
+
+$$
+\begin{aligned}
+m(u,v) = \int_\Omega u(x) v(x)\;dx
+\end{aligned}
+$$
+
+The left-hand side can be computed by using $a(\cdot,\cdot)$ with $\omega=1$, $\kappa=0$. The right-hand side can be computed by taking $b(\cdot)$ for $u_{\text{exact}}$.
 
 # Sparse matrix representations
 The stiffness matrices we obtain from out finite element discretisation contain a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid:

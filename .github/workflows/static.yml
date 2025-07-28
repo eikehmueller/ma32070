@@ -50,7 +50,7 @@ jobs:
                     --resource-path lectures
                     --metadata-file metadata.yml
                     --template uikit.html
-                    lectures/notes.md
+                    lectures/Notes.md
             - name: Convert Exercises markdown to html with pandoc
               uses: docker://pandoc/latex:3.5                
               with:

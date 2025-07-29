@@ -314,6 +314,60 @@ x = np.asarray([0.4,0.7])
 f_prime(x)
 ```
 
+# Exercise: Computation of global $L_2$-error
+As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)$ is the difference between the exact solution and numerical solution $u^{(h)}(x)$. Expanding $u^{(h)}(x)$ in terms of the basis functions $\phi_\ell(x)$, we can write the error $e^{(h)}$ as
+
+$$
+e^{(h)}(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
+$$
+
+The square of the $L_2$ norm of the error can be computed by summing over all triangles in the mesh
+
+$$
+\begin{aligned}
+\|e^{(h)}\|_{L_2(\Omega)}^2 &= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell_{\text{global}}}(x)\right)^2\;dx\\
+&= \sum_{K\in\Omega_h} \int_{K} \left(u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)\right)^2\;dx\\
+\end{aligned}
+$$
+
+Changing variables to integrate over the reference cell $\widehat{K}$ this leads to
+
+$$
+\begin{aligned}
+\|e^{(h)}\|_{L_2(\Omega)}^2 &= \sum_{K\in\Omega_h} \int_{\widehat{K}} \left(\widehat{u}_{K,\text{exact}}(\widehat{x}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell}(\widehat{x})\right)^2\left|\det{J(\widehat{x})}\right|\;dx
+\end{aligned}
+$$
+
+with $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ the global index corresponding to the local dof-index $\ell$ in the cell with index $\alpha$ and $\widehat{u}_{K,\text{exact}} = u_{\text{exact}}\circ X_K$ the pullback of the exact solution to the cell $K$. 
+
+Finally, we approximate integration by numerical quadrature to obtain
+
+$$
+\begin{aligned}
+\|e^{(h)}\|_{L_2(\Omega)}^2 &\approx 
+\sum_{K\in\Omega_h}\sum_{q=0} ^{N_q-1} w_q \left(\widehat{u}_{K,\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_\ell(\zeta^{(q)})\right)^2 \left|\det{J(\zeta^{(q)})}\right|.
+\end{aligned}
+$$
+
+where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$.
+
+This leads to the following procedure:
+
+### Algorithm: Computation of global $L_2$ error
+1. Initialise $S \gets 0$
+1. For all cells $K$ **do**:
+1. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
+1. $~~~~$ Extract the local dof-vector $\overline{\boldsymbol{u}}$ with $\overline{u}_{\ell} = u^{(h)}_{\ell_\text{global}(\alpha,\ell)}$
+1. $~~~~$ For all quadrature points $q$ **do**:
+1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
+1. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $u^{\text{(exact)}}_q = \widehat{u}_{K,\text{exact}}(\xi^{(q)}) = u_{\text{exact}}(x_K^{(q)})$
+1. $~~~~~~~~$ Compute $e_q = u^{\text{(exact)}}_q - \sum_{\ell=0}^{\nu-1}T_{q\ell} \overline{u}_\ell$
+2. $~~~~~~~~$ Update $S \gets S + w_q e_q^2 D_q$
+3. $~~~~$ **end do**
+4.  **end do**
+
+Implement the above algorithm.
+   
 # Exercise: PETSc sparse matrices
 Create two $3\times 3$ sparse PETSc matrices $A$, $B$.
 

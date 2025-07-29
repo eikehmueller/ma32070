@@ -158,7 +158,7 @@ We order these points (and the associated basis functions $\phi_\ell(x)$) as fol
 
 This is illustrated in the following figure, which shows the ordering of the points for $p=1,2,3,4$:
 
-![Nodes of Lagrane elements](figures/lagrange_nodes.svg)
+![Nodes of Lagrange elements](figures/lagrange_nodes.svg)
 
 The associated finite elements are known as **Lagrange elements**.
 

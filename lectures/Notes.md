@@ -1825,21 +1825,24 @@ The (preconditioned) Richardson iteration is not very efficient. A better altern
     
 Crucially, the fundamental operations that are required are very similar to those in the Richardson iteration
 
-* multiplication of a vector $\boldsymbol{x}$ with the matrix $A$ to compute $\bolsymbol{y}=A\boldsymbol{x}$
+* multiplication of a vector $\boldsymbol{x}$ with the matrix $A$ to compute $\boldsymbol{y}=A\boldsymbol{x}$
 * addition and scaling of vectors: $\boldsymbol{z} = \alpha \boldsymbol{x}+\beta \boldsymbol{y}$ for $\alpha,\beta\in\mathbb{R}$
 * dot-products of vectors: $\boldsymbol{x}^\top\boldsymbol{y}$
-* Preconditioner applications: solve $P\boldsymbol{P}\boldsymbol{z}=\boldsymbol{r}$ for $\boldsymbol{z}$
+* Preconditioner applications: solve $P\boldsymbol{z}=\boldsymbol{r}$ for $\boldsymbol{z}$
 
 In PETSc, the Conjugate Gradient method can be invoked with `-ksp_type cg`. This is an example of a so-called Krylov subspace method. While Conjugate Gradient iteration only works for SPD matrices, there are other Krylov subspace methods that work for more general matrices. The most important one is the Generalised Minimal Residual (GMRES) method, which can be invoked with `-ksp_type gmres`.
 
 # Assembly of stiffness matrix
+To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work out the sparsity structure: for each row $\ell_{\text{global}}$ of $A^{(h)}$ we want to know the set of indices $\mathcal{J}_{\ell_{\text{global}}}$ such that $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $k_{\text{global}}\in \mathcal{J}_{\ell_{\text{global}}}$. To achieve this, observe that all unknowns associated with a given cell with index $\alpha$ couple to each other, i.e. $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$ the set of global unknowns associated with cell $K$. We can therefore construct the sets $\mathcal{J}_{\ell_{\text{global}}}$ by iterating over all cells of the mesh.
 
-### Algorithm: create sparsity structure
+Finally, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to construct the column index array $J$ and the row-pointer array $R$ as shown in the following procedure:
+
+**Algorithm: create sparsity structure**
 1. Set $\mathcal{J}_{\ell_{\text{global}}} = \emptyset$ for all $\ell_{\text{global}}=0,1,\dots,n_{\text{dof,global}}-1$
-2. **for all** cells $K$ with index $i$
-3. $~~~~$ Set $\mathcal{L}^{(i)} = \{\ell_{\text{global}}(i,\ell)\;\text{for}\;\ell=0,1,\dots,n_{\text{dof,local}}-1\}$, the set of global indices of dofs associated with cell $K$
-4. $~~~~$ **for all** $\ell_{\text{global}}\in \mathcal{L}^{(i)}_{\text{global}}$ **do** 
-5. $~~~~~~~~$ Update $\mathcal{J}_{\ell_{\text{global}}} \gets \mathcal{J}_{\ell_{\text{global}}} \cup \mathcal{L}_{\text{global}}^{(i)}$
+2. **for all** cells $K$ with index $\alpha$
+3. $~~~~$ Set $\mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$, the set of global indices of dofs associated with cell $K$
+4. $~~~~$ **for all** $\ell_{\text{global}}\in \mathcal{L}^{(K)}$ **do** 
+5. $~~~~~~~~$ Update $\mathcal{J}_{\ell_{\text{global}}} \gets \mathcal{J}_{\ell_{\text{global}}} \cup \mathcal{L}^{(K)}$
 6. $~~~~$ **end do** 
 7. **end do** 
 8. Initialise $R = [0,0,\dots,0]\in \mathbb{R}^{n+1}$
@@ -1849,6 +1852,30 @@ In PETSc, the Conjugate Gradient method can be invoked with `-ksp_type cg`. This
 12. $~~~~$ Set $R_{\ell_{\text{global}}+1} = R_{\ell_{\text{global}}} +\left|\mathcal{J}_{\ell_{\text{global}}}\right|$ 
 13. **end do**
 
+When using PETSc, the stiffness matrix can be assembled as follows. First, before iterating over the mesh, we need to work out the sparsity structure and construct the row-pointers `row_start` and column indices `col_indices` with the above algorithm. Assuming that the function space object is `fs`, this can be done with the method `sparsity_lhs(fs)`. We also need to construct the `stiffness_matrix` as a `PETSc.Mat()` object is CSR format which is initialised with the `row_start` and `col_indices` arrays:
+```python
+row_start, col_indices = sparsity_lhs(fs)
+stiffness_matrix = PETSc.Mat()
+stiffness_matrix.createAIJ((fs.ndof, fs.ndof), csr=(row_start, col_indices))    
+```
+
+Recall that we inserted the cell-local matrix `local_matrix` into the correct position in the global `stiffness_matrix` with
+```python
+stiffness_matrix[np.ix_(j_g, j_g)] += local_matrix
+```
+where `stiffness_matrix` is a dense `numpy` array and `j_g` is the list of global dof-indices associated with a particular cell $K$. When using PETSc this needs to be replaced by 
+
+```python
+stiffness_matrix.setValues(j_g, j_g, local_matrix, addv=True)
+```
+
+where the `addv=True` parameter ensures that the matrix elements are incremented (compare to the `+=` in the native assembly).
+
+Finally, after iterating over the mesh, we need to instruct PETSc to assemble the matrix with
+
+```python
+stiffness_matrix.assemble()
+```
 # Parallel computing
 
 # Performance analysis

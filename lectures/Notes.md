@@ -51,6 +51,7 @@ $$
 
 #### Exercise
 Convince yourself that $a(\cdot,\cdot)$ and $b(\cdot)$ are indeed (bi-) linear:
+
 * $a(c_1 u^{(1)} + c_2 u^{(2)}_2,v) = c_1 a(u^{(1)},v) + c_2 a(u^{(2)},v)$ for all $c_1,c_2\in \mathbb{R}$, $u^{(1)}, u^{(2)},v \in \mathcal{V}$
 * $a(u,c_1 v^{(1)} + c_2 v^{(2)}_2) = c_1 a(u,v^{(1)}) + c_2 a(u,v^{(2)})$ for all $c_1,c_2\in \mathbb{R}$, $u,v^{(1)}, v^{(2)} \in \mathcal{V}$
 * $b(c_1 v^{(1)} + c_2 v^{(2)}_2)=c_1b( v^{(1)}) + c_2 b(v^{(2)}_2)$ for all $c_1,c_2\in \mathbb{R}$, $v^{(1)}, v^{(2)} \in \mathcal{V}$

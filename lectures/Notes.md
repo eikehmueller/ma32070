@@ -57,6 +57,7 @@ Convince yourself that $a(\cdot,\cdot)$ and $b(\cdot)$ are indeed (bi-) linear:
 * $b(c_1 v^{(1)} + c_2 v^{(2)})=c_1b( v^{(1)}) + c_2 b(v^{(2)})$ for all $c_1,c_2\in \mathbb{R}$, $v^{(1)}, v^{(2)} \in \mathcal{V}$
   
 and that $a(\cdot,\cdot)$ is symmetric:
+
 * $a(v,u) = a(u,v)$ for all $u,v\in \mathcal{V}$
   
 With these (bi-)linear forms, we can formulate the weak problem as follows: Find $u(x)\in \mathcal{V}$ such that

@@ -1838,6 +1838,7 @@ To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work 
 Finally, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to construct the column index array $J$ and the row-pointer array $R$ as shown in the following procedure:
 
 **Algorithm: create sparsity structure**
+
 1. Set $\mathcal{J}_{\ell_{\text{global}}} = \emptyset$ for all $\ell_{\text{global}}=0,1,\dots,n_{\text{dof,global}}-1$
 2. **for all** cells $K$ with index $\alpha$
 3. $~~~~$ Set $\mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$, the set of global indices of dofs associated with cell $K$

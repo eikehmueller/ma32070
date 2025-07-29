@@ -1418,6 +1418,8 @@ $$
 
 The left-hand side can be computed by using $a(\cdot,\cdot)$ with $\omega=1$, $\kappa=0$. The right-hand side can be computed by taking $b(\cdot)$ for $u_{\text{exact}}$.
 
+![Runtime (left) and $L_2$ error (right)](figures/runtime.svg)
+
 # Sparse matrix representations
 The stiffness matrices we obtain from out finite element discretisation contain a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid:
 

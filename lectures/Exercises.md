@@ -369,8 +369,53 @@ This leads to the following procedure:
 Implement the above algorithm.
    
 # Exercise: Computational cost of backsubstitution
-Show that cost of backsubstitition in an upper triangular system is $\mathcal{O}(n^2)$.
+## Solution of upper triangular systems
+Consider a $n\times n$ upper triangular system, such as in the following example ($n=5$):
+$$
+\begin{aligned}
+A &=  \begin{pmatrix}
+1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
+\textcolor{lightgray}{0} & 1.197 & 0.06495 & 0.3045 & 0.01172\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.127 & 0.0008768 & 0.1785\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.263 & 0.3005\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.047
+\end{pmatrix} &
+    b &=  \begin{pmatrix}
+0.23\\
+0.4326\\
+0.1808\\
+0.7749\\
+0.7747
+\end{pmatrix}
+\end{aligned}
+$$
 
+More generally, an upper triangular matrix satisfies $A_{ij} = 0$ for all $i>j$; we also assume that $A_{ii}\neq 0$. To compute the solution $\boldsymbol{u}$ of the linear system $A\boldsymbol{u} = \boldsymbol{b}$ for a given right hand side $\boldsymbol{b}$, we can proceed as follows:
+
+1. Use the final row to compute $u_{n-1} = b_{n-1}/A_{n-1,n-1}$
+2. With the knowledge of $u_{n-1}$, compute $u_{n-2} = \left(b_{n-2} - A_{n-2,n-1}u_{n-1}\right)/A_{n-2,n-2}$
+3. With the knowledge of $u_{n-1}$ and $u_{n-2}$, compute $u_{n-3} = \left(b_{n-3} - A_{n-3,n-2}u_{n-2} A_{n-3,n-1}u_{n-1}\right)/A_{n-3,n-3}$
+4. Continue in the same way to compute $u_{n-4}, u_{n-5}, \dots, u_0$.
+
+## Exercise
+Show that the solution of an $n\times n$ upper triangular system requires $n^2$ arithmetic operations.
+
+## Solution
+At the $i$-step of the algorithm we compute
+
+$$
+u_i = \left(b_i-\sum_{j=i+1}^{n-1} A_{ij} u_j \right)/A_{ii}
+$$
+
+This requires $n-1-i$ multiplications $A_{ij} u_j$, $n-1-i$ subtractions/additions and one division. We need to do this for $i=n-1,n-2,\dots,0$, hence the total number of operations is
+
+$$
+\begin{aligned}
+C_{\text{backsub}}(n) &= \sum_{i=0}^{n-1} (2(n-1-i)+1) \\
+&= \sum_{j=0}^{n-1} (2j+1)\\
+&= n(n-1)+n = n^2
+\end{aligned}
+$$
 # Exercise: PETSc sparse matrices
 Create two $3\times 3$ sparse PETSc matrices $A$, $B$.
 

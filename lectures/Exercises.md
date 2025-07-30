@@ -368,6 +368,9 @@ This leads to the following procedure:
 
 Implement the above algorithm.
    
+# Exercise: Computational cost of backsubstitution
+Show that cost of backsubstitition in an upper triangular system is $\mathcal{O}(n^2)$.
+
 # Exercise: PETSc sparse matrices
 Create two $3\times 3$ sparse PETSc matrices $A$, $B$.
 

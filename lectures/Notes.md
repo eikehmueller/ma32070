@@ -1418,7 +1418,166 @@ $$
 
 The left-hand side can be computed by using $a(\cdot,\cdot)$ with $\omega=1$, $\kappa=0$. The right-hand side can be computed by taking $b(\cdot)$ for $u_{\text{exact}}$.
 
+## Performance
+The following figure shows the time spent in different parts of the code (left) and the reduction of the $L_2$ error with increasing resolution. In both cases the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
+
 ![Runtime (left) and $L_2$ error (right)](figures/runtime.svg)
+
+The $L_2$ error decreases in proportion to $h^2$. For larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. However, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
+
+In the next section we will discuss methods for overcoming this difficulty. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
+
+## Complexity analysis
+Let us assume that we want to solve a linear system $A\boldsymbol{u}=\boldsymbol{b}$ where $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$ and $A$ is a $n\times n$ matrix. The [`numpy.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html) method uses Gaussian elimination for this. To illustrate this method, consider the following $5\times 5$ system:
+
+$$
+    \underbrace{\begin{pmatrix}
+1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
+0.3687 & 1.311 & 0.0862 & 0.3232 & 0.0849\\
+0.2743 & 0.2277 & 1.15 & 0.0511 & 0.2343\\
+0.1019 & 0.0976 & 0.0082 & 1.285 & 0.3212\\
+0.3629 & 0.2885 & 0.012 & 0.1747 & 1.145
+\end{pmatrix}}_{=A}
+\underbrace{\begin{pmatrix}
+u_0 \\ u_1 \\ u_2 \\ u_3 \\ u_4
+\end{pmatrix}}_{=\boldsymbol{u}}
+=
+\underbrace{\begin{pmatrix}
+0.23\\
+0.51\\
+0.29\\
+0.82\\
+0.98
+\end{pmatrix}}_{=\boldsymbol{b}}
+$$
+
+First, the system is slowly transformed into an equivalent upper triangular system as follows:
+
+In the first step, we eliminate all entries below the diagonal in the first row (as before, we start counting at zero to be consistent with Python's numbering convention): for this, we go through all matrix rows $i=1,2,\dots,n-1$ and add the multiple $-A_{i0}/A_{00}$ of the first matrix row to row $i$, i.e. $A_{ij} \gets A_{ij} - A_{i0}/A_{00}\cdot A_{0j}$ for $j=0,1,2,\dots,n-1$ (observe that we do not actually have to do this calculation for the first column size the result will be zero by construction). At the same time, we need to modify the right hand side vector $\boldsymbol{b}$: all entries $b_i$ with $i=1,2,\dots,n-1$ get replaced by $b_i \mapsto b_i - A_{i0}/A_{00}\cdot b_0$. The following two equations show the matrix and right hand side vector before and after this transformation (the so-called pivot is shown in red and the rows that are modified are highlighted in blue):
+
+$$
+\begin{aligned}
+    A &=  \begin{pmatrix}
+\textcolor{red}{1.096} & \textcolor{green}{0.3391} & \textcolor{green}{0.0632} & \textcolor{green}{0.0555} & \textcolor{green}{0.2176}\\
+\textcolor{blue}{0.3687} & \textcolor{blue}{1.311} & \textcolor{blue}{0.0862} & \textcolor{blue}{0.3232} & \textcolor{blue}{0.0849}\\
+\textcolor{blue}{0.2743} & \textcolor{blue}{0.2277} & \textcolor{blue}{1.15} & \textcolor{blue}{0.0511} & \textcolor{blue}{0.2343}\\
+\textcolor{blue}{0.1019} & \textcolor{blue}{0.0976} & \textcolor{blue}{0.0082} & \textcolor{blue}{1.285} & \textcolor{blue}{0.3212}\\
+\textcolor{blue}{0.3629} & \textcolor{blue}{0.2885} & \textcolor{blue}{0.012} & \textcolor{blue}{0.1747} & \textcolor{blue}{1.145}
+\end{pmatrix} &
+    b &=  \begin{pmatrix}
+\textcolor{red}{0.23}\\
+\textcolor{blue}{0.51}\\
+\textcolor{blue}{0.29}\\
+\textcolor{blue}{0.82}\\
+\textcolor{blue}{0.98}
+\end{pmatrix}
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+    A &=  \begin{pmatrix}
+1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
+\textcolor{lightgray}{0} & \textcolor{red}{1.197} & \textcolor{green}{0.06495} & \textcolor{green}{0.3045} & \textcolor{green}{0.01172}\\
+\textcolor{lightgray}{0} & \textcolor{blue}{0.1429} & \textcolor{blue}{1.134} & \textcolor{blue}{0.03721} & \textcolor{blue}{0.1799}\\
+\textcolor{lightgray}{0} & \textcolor{blue}{0.06608} & \textcolor{blue}{0.002326} & \textcolor{blue}{1.28} & \textcolor{blue}{0.301}\\
+\textcolor{lightgray}{0} & \textcolor{blue}{0.1763} & \textcolor{blue}{-0.008921} & \textcolor{blue}{0.1563} & \textcolor{blue}{1.073}
+\end{pmatrix} &
+    b &=  \begin{pmatrix}
+0.23\\
+0.4326\\
+0.2325\\
+0.7986\\
+0.9039
+\end{pmatrix}
+\end{aligned}
+$$
+
+Note that the first row remains unchanged. For this transformation we need to do the following operations for each of the $n-1$ rows $i=1,2,\dots,n-1$
+
+* compute $\rho_i = -A_{0i}/A_{00}$ $\Rightarrow$ **$\boldsymbol{1}$ division**
+* scale the first row by the factor $\rho_i$ and add the scaled first row to row $i$ $\Rightarrow$ **$\boldsymbol{n-1}$ multiplications** and **$\boldsymbol{n-1}$ additions**, since we can ignore the first entry which will be set to zero by construction
+* update $b_i \gets b_i - \rho_i b_0$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ subtraction**
+
+Hence, the total number of operations for processing all $n-1$ rows is $(3+2(n-1))(n-1)$.
+
+Next, we repeat the same procecure for the $(n-1)\times (n-1)$ matrix in the lower right corner to zero-out all entries below the diagonal in the second column:
+
+$$
+\begin{aligned}
+    A &=  \begin{pmatrix}
+1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
+\textcolor{lightgray}{0} & 1.197 & 0.06495 & 0.3045 & 0.01172\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{red}{1.127} & \textcolor{green}{0.0008768} & \textcolor{green}{0.1785}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{blue}{-0.001259} & \textcolor{blue}{1.263} & \textcolor{blue}{0.3003}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{blue}{-0.01848} & \textcolor{blue}{0.1115} & \textcolor{blue}{1.071}
+\end{pmatrix}&
+    b &=  \begin{pmatrix}
+0.23\\
+0.4326\\
+0.1808\\
+0.7747\\
+0.8402
+\end{pmatrix}
+\end{aligned}
+$$
+
+Observe that the first two rows are not modified. Iterating, we get in the same fashion:
+
+$$
+\begin{aligned}
+    A &=  \begin{pmatrix}
+1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
+\textcolor{lightgray}{0} & 1.197 & 0.06495 & 0.3045 & 0.01172\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.127 & 0.0008768 & 0.1785\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{red}{1.263} & \textcolor{green}{0.3005}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{blue}{0.1115} & \textcolor{blue}{1.074}
+\end{pmatrix} &
+    b &=  \begin{pmatrix}
+0.23\\
+0.4326\\
+0.1808\\
+0.7749\\
+0.8431
+\end{pmatrix}
+\end{aligned}
+$$
+
+and finally
+
+$$
+\begin{aligned}
+A &=  \begin{pmatrix}
+1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
+\textcolor{lightgray}{0} & 1.197 & 0.06495 & 0.3045 & 0.01172\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.127 & 0.0008768 & 0.1785\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.263 & 0.3005\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{red}{1.047}
+\end{pmatrix} &
+    b &=  \begin{pmatrix}
+0.23\\
+0.4326\\
+0.1808\\
+0.7749\\
+0.7747
+\end{pmatrix}
+\end{aligned}
+$$
+
+The total cost of this procedure is:
+
+$$
+\begin{aligned}
+C_{\text{solve}}(n) &= (3+2(n-1))(n-1) + (3+2(n-2))(n-2) + \dots +(3+2\cdot 1)\cdot 1\\
+&= \sum_{k=1}^{n-1} (3+2k)k\\
+&= \frac{3}{2} n(n-1) + \frac{1}{3} n(n-1)(2n-1)\\
+&= \frac{2}{3} n^3 + \mathcal{O}(n^2)
+\end{aligned}
+$$
+
+Finally, we need to solve the upper triangular system that is obtained by following this algorithm. As can be shown (see exercise), the cost of this is $\mathcal{O}(n^2)$.
+
+We conclude that the cost of the linear solve is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$: for very large values of $n$ the cost will grow with the third power of the problem size.
 
 # Sparse matrix representations
 The stiffness matrices we obtain from out finite element discretisation contain a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid:

@@ -1428,7 +1428,7 @@ The $L_2$ error decreases in proportion to $h^2$. For larger problems, the time 
 In the next section we will discuss methods for overcoming this difficulty. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
 
 ## Complexity analysis
-Let us assume that we want to solve a linear system $A\boldsymbol{u}=\boldsymbol{b}$ where $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$ and $A$ is a $n\times n$ matrix. The [`numpy.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html) method uses Gaussian elimination for this. To illustrate this method, consider the following $5\times 5$ system:
+Let us assume that we want to solve a linear system $A\boldsymbol{u}=\boldsymbol{b}$ where $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$ and $A$ is a $n\times n$ matrix. The [`numpy.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html) method uses Gaussian elimination for this (in fact, it uses a slightly different method called $LU$ factorisation, but the central idea is the same). To illustrate this method, consider the following $5\times 5$ system:
 
 $$
     \underbrace{\begin{pmatrix}

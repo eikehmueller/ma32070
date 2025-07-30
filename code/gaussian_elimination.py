@@ -14,14 +14,24 @@ def to_latex(matrix, color_row=np.inf):
             for x in _matrix[i, :]
         ]
         if i >= color_row:
-            for j in range(color_row, ncol):
-                if i == j and i == color_row:
-                    color = "red"
-                elif i == color_row:
-                    color = "green"
-                else:
+            if _matrix.shape[0] == _matrix.shape[1]:
+                for j in range(color_row, ncol):
+                    if i == j and i == color_row:
+                        color = "red"
+                    elif i > color_row:
+                        color = "blue"
+                    else:
+                        color = "black"
+                    if j == color_row and i > j:
+                        color = "green"
+                    row[j] = f"\\textcolor{{{color}}}{{{row[j]}}}"
+            else:
+                if i > color_row:
                     color = "blue"
-                row[j] = f"\\textcolor{{{color}}}{{{row[j]}}}"
+                else:
+                    color = "black"
+                row[0] = f"\\textcolor{{{color}}}{{{row[0]}}}"
+
         s += " & ".join(row)
         if i < nrow - 1:
             s += r"\\"

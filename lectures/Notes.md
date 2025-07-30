@@ -1429,67 +1429,51 @@ The $L_2$ error decreases in proportion to $h^2$. For larger problems, the time 
 In the next section we will discuss methods for overcoming this difficulty. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
 
 ## Complexity analysis
-Let us assume that we want to solve a linear system $A\boldsymbol{u}=\boldsymbol{b}$ where $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$ and $A$ is a $n\times n$ matrix. The [`numpy.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html) method uses Gaussian elimination for this (in fact, it uses a slightly different method called $LU$ factorisation, but the central idea is the same). To illustrate this method, consider the following $5\times 5$ system:
+Let us assume that we want to solve a linear system $A\boldsymbol{u}=\boldsymbol{b}$ where $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$ and $A$ is a $n\times n$ matrix. The [`numpy.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html) method uses Gaussian elimination for this (in fact, it uses a slightly different method called $LU$ factorisation, but the central idea is the same). To illustrate this method, consider the following $5\times 5$ system (the rationale behind the colouring will become evident below):
 
 $$
-    \underbrace{\begin{pmatrix}
-1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
-0.3687 & 1.311 & 0.0862 & 0.3232 & 0.0849\\
-0.2743 & 0.2277 & 1.15 & 0.0511 & 0.2343\\
-0.1019 & 0.0976 & 0.0082 & 1.285 & 0.3212\\
-0.3629 & 0.2885 & 0.012 & 0.1747 & 1.145
+    \underbrace{
+      \begin{pmatrix}
+\textcolor{red}{1.096} & \textcolor{black}{0.3391} & \textcolor{black}{0.0632} & \textcolor{black}{0.0555} & \textcolor{black}{0.2176}\\
+\textcolor{green}{0.3687} & \textcolor{blue}{1.311} & \textcolor{blue}{0.0862} & \textcolor{blue}{0.3232} & \textcolor{blue}{0.0849}\\
+\textcolor{green}{0.2743} & \textcolor{blue}{0.2277} & \textcolor{blue}{1.15} & \textcolor{blue}{0.0511} & \textcolor{blue}{0.2343}\\
+\textcolor{green}{0.1019} & \textcolor{blue}{0.0976} & \textcolor{blue}{0.0082} & \textcolor{blue}{1.285} & \textcolor{blue}{0.3212}\\
+\textcolor{green}{0.3629} & \textcolor{blue}{0.2885} & \textcolor{blue}{0.012} & \textcolor{blue}{0.1747} & \textcolor{blue}{1.145}
 \end{pmatrix}}_{=A}
 \underbrace{\begin{pmatrix}
 u_0 \\ u_1 \\ u_2 \\ u_3 \\ u_4
 \end{pmatrix}}_{=\boldsymbol{u}}
 =
-\underbrace{\begin{pmatrix}
-0.23\\
-0.51\\
-0.29\\
-0.82\\
-0.98
+\underbrace{
+  \begin{pmatrix}
+\textcolor{black}{0.23}\\
+\textcolor{blue}{0.51}\\
+\textcolor{blue}{0.29}\\
+\textcolor{blue}{0.82}\\
+\textcolor{blue}{0.98}
 \end{pmatrix}}_{=\boldsymbol{b}}
 $$
 
 First, the system is slowly transformed into an equivalent upper triangular system as follows:
 
-In the first step, we eliminate all entries below the diagonal in the first row (as before, we start counting at zero to be consistent with Python's numbering convention): for this, we go through all matrix rows $i=1,2,\dots,n-1$ and add the multiple $-A_{i0}/A_{00}$ of the first matrix row to row $i$, i.e. $A_{ij} \gets A_{ij} - A_{i0}/A_{00}\cdot A_{0j}$ for $j=0,1,2,\dots,n-1$ (observe that we do not actually have to do this calculation for the first column size the result will be zero by construction). At the same time, we need to modify the right hand side vector $\boldsymbol{b}$: all entries $b_i$ with $i=1,2,\dots,n-1$ get replaced by $b_i \mapsto b_i - A_{i0}/A_{00}\cdot b_0$. The following two equations show the matrix and right hand side vector before and after this transformation (the so-called pivot is shown in red and the rows that are modified are highlighted in blue):
-
-$$
-\begin{aligned}
-    A &=  \begin{pmatrix}
-\textcolor{red}{1.096} & \textcolor{green}{0.3391} & \textcolor{green}{0.0632} & \textcolor{green}{0.0555} & \textcolor{green}{0.2176}\\
-\textcolor{blue}{0.3687} & \textcolor{blue}{1.311} & \textcolor{blue}{0.0862} & \textcolor{blue}{0.3232} & \textcolor{blue}{0.0849}\\
-\textcolor{blue}{0.2743} & \textcolor{blue}{0.2277} & \textcolor{blue}{1.15} & \textcolor{blue}{0.0511} & \textcolor{blue}{0.2343}\\
-\textcolor{blue}{0.1019} & \textcolor{blue}{0.0976} & \textcolor{blue}{0.0082} & \textcolor{blue}{1.285} & \textcolor{blue}{0.3212}\\
-\textcolor{blue}{0.3629} & \textcolor{blue}{0.2885} & \textcolor{blue}{0.012} & \textcolor{blue}{0.1747} & \textcolor{blue}{1.145}
-\end{pmatrix} &
-    b &=  \begin{pmatrix}
-\textcolor{red}{0.23}\\
-\textcolor{blue}{0.51}\\
-\textcolor{blue}{0.29}\\
-\textcolor{blue}{0.82}\\
-\textcolor{blue}{0.98}
-\end{pmatrix}
-\end{aligned}
-$$
+### Reduction to upper triangular system
+In the first step, we eliminate all entries below the diagonal in the first row (as before, we start counting at zero to be consistent with Python's numbering convention), i.e. the entries shown in green in the equation above. For this, we go through all matrix rows $i=1,2,\dots,n-1$ and add the multiple $-\textcolor{green}{A_{i0}}/\textcolor{red}{A_{00}}$ of the first matrix row to row $i$, i.e. $\textcolor{blue}{A_{ij}} \mapsto \textcolor{blue}{A_{ij}} - \textcolor{green}A_{i0}/\textcolor{red}{A_{00}}\cdot A_{0j}$ for $j=0,1,2,\dots,n-1$. Here $\textcolor{red}{A_{00}}$, shown in red in the equation above, is known as the *pivot*. Observe that we do not have to do this calculation for the first column size the result will be zero by construction. At the same time, we need to modify the right hand side vector $\boldsymbol{b}$: all entries $b_i$ with $i=1,2,\dots,n-1$ get replaced by $b_i \mapsto b_i - \textcolor{green}{A_{i0}}/\textcolor{red}{A_{00}}\cdot b_0$. The following equation shows the matrix and right hand side vector after this transformation:
 
 $$
 \begin{aligned}
     A &=  \begin{pmatrix}
 1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
-\textcolor{lightgray}{0} & \textcolor{red}{1.197} & \textcolor{green}{0.06495} & \textcolor{green}{0.3045} & \textcolor{green}{0.01172}\\
-\textcolor{lightgray}{0} & \textcolor{blue}{0.1429} & \textcolor{blue}{1.134} & \textcolor{blue}{0.03721} & \textcolor{blue}{0.1799}\\
-\textcolor{lightgray}{0} & \textcolor{blue}{0.06608} & \textcolor{blue}{0.002326} & \textcolor{blue}{1.28} & \textcolor{blue}{0.301}\\
-\textcolor{lightgray}{0} & \textcolor{blue}{0.1763} & \textcolor{blue}{-0.008921} & \textcolor{blue}{0.1563} & \textcolor{blue}{1.073}
+\textcolor{lightgray}{0} & \textcolor{red}{1.197} & \textcolor{black}{0.06495} & \textcolor{black}{0.3045} & \textcolor{black}{0.01172}\\
+\textcolor{lightgray}{0} & \textcolor{green}{0.1429} & \textcolor{blue}{1.134} & \textcolor{blue}{0.03721} & \textcolor{blue}{0.1799}\\
+\textcolor{lightgray}{0} & \textcolor{green}{0.06608} & \textcolor{blue}{0.002326} & \textcolor{blue}{1.28} & \textcolor{blue}{0.301}\\
+\textcolor{lightgray}{0} & \textcolor{green}{0.1763} & \textcolor{blue}{-0.008921} & \textcolor{blue}{0.1563} & \textcolor{blue}{1.073}
 \end{pmatrix} &
     b &=  \begin{pmatrix}
 0.23\\
-0.4326\\
-0.2325\\
-0.7986\\
-0.9039
+\textcolor{black}{0.4326}\\
+\textcolor{blue}{0.2325}\\
+\textcolor{blue}{0.7986}\\
+\textcolor{blue}{0.9039}
 \end{pmatrix}
 \end{aligned}
 $$
@@ -1509,16 +1493,16 @@ $$
     A &=  \begin{pmatrix}
 1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
 \textcolor{lightgray}{0} & 1.197 & 0.06495 & 0.3045 & 0.01172\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{red}{1.127} & \textcolor{green}{0.0008768} & \textcolor{green}{0.1785}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{blue}{-0.001259} & \textcolor{blue}{1.263} & \textcolor{blue}{0.3003}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{blue}{-0.01848} & \textcolor{blue}{0.1115} & \textcolor{blue}{1.071}
-\end{pmatrix}&
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{red}{1.127} & \textcolor{black}{0.0008768} & \textcolor{black}{0.1785}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{green}{-0.001259} & \textcolor{blue}{1.263} & \textcolor{blue}{0.3003}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{green}{-0.01848} & \textcolor{blue}{0.1115} & \textcolor{blue}{1.071}
+\end{pmatrix} &
     b &=  \begin{pmatrix}
 0.23\\
 0.4326\\
-0.1808\\
-0.7747\\
-0.8402
+\textcolor{black}{0.1808}\\
+\textcolor{blue}{0.7747}\\
+\textcolor{blue}{0.8402}
 \end{pmatrix}
 \end{aligned}
 $$
@@ -1527,19 +1511,19 @@ Observe that the first two rows are not modified. Iterating, we get in the same 
 
 $$
 \begin{aligned}
-    A &=  \begin{pmatrix}
+    A &= \begin{pmatrix}
 1.096 & 0.3391 & 0.0632 & 0.0555 & 0.2176\\
 \textcolor{lightgray}{0} & 1.197 & 0.06495 & 0.3045 & 0.01172\\
 \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.127 & 0.0008768 & 0.1785\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{red}{1.263} & \textcolor{green}{0.3005}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{blue}{0.1115} & \textcolor{blue}{1.074}
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{red}{1.263} & \textcolor{black}{0.3005}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{green}{0.1115} & \textcolor{blue}{1.074}
 \end{pmatrix} &
-    b &=  \begin{pmatrix}
+    b &= \begin{pmatrix}
 0.23\\
 0.4326\\
 0.1808\\
-0.7749\\
-0.8431
+\textcolor{black}{0.7749}\\
+\textcolor{blue}{0.8431}
 \end{pmatrix}
 \end{aligned}
 $$
@@ -1553,7 +1537,7 @@ A &=  \begin{pmatrix}
 \textcolor{lightgray}{0} & 1.197 & 0.06495 & 0.3045 & 0.01172\\
 \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.127 & 0.0008768 & 0.1785\\
 \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.263 & 0.3005\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{red}{1.047}
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.047
 \end{pmatrix} &
     b &=  \begin{pmatrix}
 0.23\\
@@ -1565,6 +1549,7 @@ A &=  \begin{pmatrix}
 \end{aligned}
 $$
 
+### Total computational cost
 The total cost of this procedure is:
 
 $$

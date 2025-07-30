@@ -87,7 +87,7 @@ ax_error.plot(
     linewidth=2,
     linestyle="--",
     color="black",
-    label=r"$\propto n_{\text{dof}}\propto h^2$",
+    label=r"$\propto n_{\text{dof}}^{-1}\propto h^2$",
 )
 ax_error.legend(loc="upper right")
 plt.savefig("runtime.svg", bbox_inches="tight")

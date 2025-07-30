@@ -345,7 +345,7 @@ $$
 ## Implementation
 
 ### Abstract base class
-Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class, which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. Furthermore, any code that later uses a concrete finite element implementation will "know" which functionality it is allowed to use.
+Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class `FiniteElement` in in [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py), which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. Furthermore, any code that later uses a concrete finite element implementation will "know" which functionality it is allowed to use.
 
 More specifically, each finite element should provide the following functionality:
 
@@ -358,7 +358,7 @@ More specifically, each finite element should provide the following functionalit
 It is crucial to observe that we carefully avoided including specific functionality (such as assuming that the basis functions are Lagrange polynomials and the degrees of freedom are point-evaluations): the base class is consistent with Ciarlet's abstract definition of the finite element, i.e. the code should mirror the mathematical structure.
 
 ### Concrete implementations
-Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class in [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py). These concrete classes have to provide concrete implementations of the following methods/properties:
+Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class. These concrete classes have to provide concrete implementations of the following methods/properties:
 * `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior`
 * `tabulate_dofs(fhat)` to evaluate the degrees of freedom for a given function
 * `tabulate(zeta)` to tabulate the values of the basis functions at a given set of points
@@ -474,13 +474,13 @@ $$
 ## Implementation in Python
 
 ### Abstract base class
-All quadrature rules are characterised by the weights and points. We therefore implement them as subclasses of an abstract base class `Quadrature` (in `fem/quadrature.py`) which has the following abstract properties:
+All quadrature rules are characterised by the weights and points. We therefore implement them as subclasses of an abstract base class `Quadrature` (in [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py)) which has the following abstract properties: 
 * `nodes` the quadrature nodes $\{\zeta^{(q)}\}_{q=0}^{n_q-1}$, represented by an array of shape $n_q\times 2$
 * `weights` the quadrature weights $\{w_q\}_{q=0}^{n_q-1}$, represented by an array of length $n_q$
 * `degree_of_precision` tegree of precision, i.e. the highest polynomial degree that can be integrated exactly
 
 ### Concrete implementations
-The file `fem/quadrature.py` also contains specific subclasses
+The file [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py) also contains specific subclasses
 
 * A quadrature rule $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}$ over line segments based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureLineSegment(v_a, v_b, npoints)`. The following parameters are passed to the constructor:
     - `v_a` the start point $a$ of the line segment

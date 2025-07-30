@@ -475,7 +475,7 @@ $$
 
 ### Abstract base class
 All quadrature rules are characterised by the weights and points. We therefore implement them as subclasses of an abstract base class `Quadrature` (in `fem/quadrature.py`) which has the following abstract properties:
-* `nodes` the quadrature nodes $\{\xi^{(q)}\}_{q=0}^{n_q-1}$, represented by an array of shape $n_q\times 2$
+* `nodes` the quadrature nodes $\{\zeta^{(q)}\}_{q=0}^{n_q-1}$, represented by an array of shape $n_q\times 2$
 * `weights` the quadrature weights $\{w_q\}_{q=0}^{n_q-1}$, represented by an array of length $n_q$
 * `degree_of_precision` tegree of precision, i.e. the highest polynomial degree that can be integrated exactly
 
@@ -1083,7 +1083,7 @@ Two concrete classes are derived from this abstract base class:
 
 # Function spaces
 ## Grid cells and reference elements
-We can now construct a function space $V_h\subset H^1(\Omega_h)$ on the domain $\Omega_h$ defined by the mesh as follows. First, we assume that each cell $K$ of the mesh is the image of the reference cell $\widehat{K}$ under a map $X_K:\widehat{K}\rightarrow \Omega\subset \mathbb{R}^2$. For an arbitrary real-valued function $f:K\rightarrow \mathbb{R}$ we define the *pullback* $\widehat{f}:\widehat{K}\rightarrow \mathbb{R}$ under $X_K$ as
+We can now construct a function space $\mathcal{V}_h\subset H^1(\Omega_h)$ on the domain $\Omega_h$ defined by the mesh as follows. First, we assume that each cell $K$ of the mesh is the image of the reference cell $\widehat{K}$ under a map $X_K:\widehat{K}\rightarrow \Omega\subset \mathbb{R}^2$. For an arbitrary real-valued function $f:K\rightarrow \mathbb{R}$ we define the *pullback* $\widehat{f}:\widehat{K}\rightarrow \mathbb{R}$ under $X_K$ as
 
 $$
 \widehat{f} = f\circ X_K

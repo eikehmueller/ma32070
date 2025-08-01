@@ -1560,11 +1560,11 @@ A &=  \begin{pmatrix}
 $$
 
 ### Total computational cost
-The total cost of this procedure is:
+The numbe of operations to carry out this procedure is:
 
 $$
 \begin{aligned}
-C_{\text{solve}}(n) &= (3+2(n-1))(n-1) + (3+2(n-2))(n-2) + \dots +(3+2\cdot 1)\cdot 1\\
+n_{\text{solve}}(n) &= (3+2(n-1))(n-1) + (3+2(n-2))(n-2) + \dots +(3+2\cdot 1)\cdot 1\\
 &= \sum_{k=1}^{n-1} (3+2k)k\\
 &= \frac{3}{2} n(n-1) + \frac{1}{3} n(n-1)(2n-1)\\
 &= \frac{2}{3} n^3 + \mathcal{O}(n^2)
@@ -1574,6 +1574,32 @@ $$
 Finally, we need to solve the upper triangular system that is obtained by following this algorithm. As can be shown (see exercise), the cost of this is $\mathcal{O}(n^2)$.
 
 We conclude that the cost of the linear solve is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$: for very large values of $n$ the cost will grow with the third power of the problem size.
+
+## Cost of floating point operations
+Based on the discussion in the previous section we can also work out the time  $t_{\text{flop}}$ it takes to carry out a single floating point operation (FLOP). This is a useful exercise, since knowing this number will allow us to predict the runtime of a given algorithm: if this algorithm requires $n_{\text{flop}}$ FLOPs, then the predicted runtime is simply
+
+$$
+T = n_{\text{flop}}\cdot t_{\text{flop}}
+$$
+
+Note in particular that the time in the product of two factors:
+
+* the number of FLOPs $n_{\text{flop}}$ which depends on the algorithm, but is independent of the computer the code is run on and
+* the machine dependent time $t_{\text{flop}}$
+
+Looking at the measured data, we observed that we measured $T_{\text{solve}}= 48.4\text{s}$ for $n=16641\gg 1$, and therefore:
+
+$$
+t_{\text{flop}} = \frac{T_{\text{solve}}}{n_{\text{solve}}} \approx \frac{48.4\text{s}}{\frac{2}{3}\cdot 16641^3} \approx 1.6\cdot 10^{-11}\text{s}
+$$
+
+In other words, on the specific machine we can carry out
+
+$$
+R = t_{\text{flop}}^{-1} = 6.3\cdot 10^{10}
+$$
+
+floating point operations per second. Obviously, this number will be machine dependent, but on modern computers it is usually in the same ballpark.
 
 # Sparse matrix representations
 The stiffness matrices we obtain from out finite element discretisation contain a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid:

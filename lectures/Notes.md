@@ -1582,7 +1582,7 @@ $$
 T = n_{\text{flop}}\cdot t_{\text{flop}}
 $$
 
-Note in particular that the time in the product of two factors:
+Note in particular that the total time can be separated into the product of two factors:
 
 * the number of FLOPs $n_{\text{flop}}$ which depends on the algorithm, but is independent of the computer the code is run on and
 * the machine dependent time $t_{\text{flop}}$

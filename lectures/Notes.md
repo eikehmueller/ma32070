@@ -2079,7 +2079,7 @@ stiffness_matrix.assemble()
 | 4225 | 33888 | 187 | 6 |
 | 16641 | 37030 | 232 | 6 |
 | 66049 | 129815 | 450 | 6 |
-| 263169 | --- | 876 | 6 |
+| 263169 | 447667 | 876 | 6 |
 
 * Count number of FLOPs in Richardson solve + Jacobi PC
 * Predict runtime based on $t_{\text{flop}}$ derived above

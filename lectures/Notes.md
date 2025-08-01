@@ -1432,7 +1432,7 @@ The left-hand side can be computed by using $a(\cdot,\cdot)$ with $\omega=1$, $\
 ## Performance
 The following figure shows the time spent in different parts of the code (left) and the reduction of the $L_2$ error with increasing resolution. In both cases the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
 
-![Runtime (left) and $L_2$ error (right)](figures/runtime.svg)
+![Runtime (left) and $L_2$ error (right)](figures/runtime_dense.svg)
 
 The $L_2$ error decreases in proportion to $h^2$. For larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. However, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
 
@@ -2065,6 +2065,19 @@ stiffness_matrix.assemble()
 ```
 
 # Performance analysis
+
+![Runtime for solver](figures/runtime_sparse.svg)
+
+| $\boldsymbol{n_{\text{dof}}}$ | richardson + jacobi |cg + jacobi |cg + hypre |
+| :----: | :----: | :----: | :----: |
+| 25 | 3101 | 11 | 3 |
+| 81 | 7959 | 23 | 5 |
+| 289 | 14914 | 49 | 5 |
+| 1089 | 32137 | 97 | 6 |
+| 4225 | 33888 | 187 | 6 |
+| 16641 | 37030 | 232 | 6 |
+| 66049 | 129815 | 450 | 6 |
+| 263169 | --- | 876 | 6 |
 
 * Count number of FLOPs in Richardson solve + Jacobi PC
 * Predict runtime based on $t_{\text{flop}}$ derived above

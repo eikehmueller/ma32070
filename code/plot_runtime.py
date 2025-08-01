@@ -106,11 +106,27 @@ def plot_runtime_sparse(timing_sparse, timing_dense, ndof, extension=".pdf"):
     Y = np.asarray(list(t_dense.values()))
     X = np.asarray(list(ndof.values())[: len(Y)])
     plt.plot(X, Y, linewidth=2, markersize=6, marker="o", label="Gaussian elimination")
+    plt.plot(
+        [0.5e4, 8e4],
+        [2.0e-3, 16 * 2.0e-3],
+        linewidth=2,
+        linestyle="--",
+        color="black",
+        label=r"$\propto n_{\text{dof}}$",
+    )
+    plt.plot(
+        [2e3, 16e3],
+        [1.0e-2, 8**3 * 1.0e-2],
+        linewidth=2,
+        linestyle=":",
+        color="black",
+        label=r"$\propto n_{\text{dof}}^3$",
+    )
     ax.set_yscale("log")
     ax.set_xscale("log")
     ax.set_xlabel(r"problem size $n_{\text{dof}}$")
     ax.set_ylabel("time [s]")
-    ax.legend(loc="lower right")
+    ax.legend(loc="upper left")
 
     plt.savefig("runtime_sparse" + extension, bbox_inches="tight")
 

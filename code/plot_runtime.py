@@ -131,6 +131,42 @@ def plot_runtime_sparse(timing_sparse, timing_dense, ndof, extension=".pdf"):
     plt.savefig("runtime_sparse" + extension, bbox_inches="tight")
 
 
+def plot_time_per_iteration(timing_sparse, niter, ndof, extension=".pdf"):
+    """Plot the runtime and error for sparse matrices
+
+    :arg timing_sparse: Dictionary with timing data for sparse matrices
+    :arg niter: Dictionary with number of iterations
+    :arg error: Dictionary with error values for each problem size
+    """
+    plt.clf()
+    ax = plt.gca()
+    ax.set_aspect(0.75)
+    for solver_label, t_dict in timing_sparse.items():
+        ksp, pc = solver_label.split("_")
+        label = f"{ksp} + {pc}"
+        t_sparse = t_dict["solve()"]
+        Y = np.asarray(list(t_sparse.values())) / np.asarray(
+            list(niter[solver_label].values())
+        )
+        X = np.asarray(list(ndof.values())[: len(Y)])
+        plt.plot(X, Y, linewidth=2, markersize=6, marker="o", label=label)
+    plt.plot(
+        [0.5e4, 8e4],
+        [2.0e-4, 16 * 2.0e-4],
+        linewidth=2,
+        linestyle="--",
+        color="black",
+        label=r"$\propto n_{\text{dof}}$",
+    )
+    ax.set_yscale("log")
+    ax.set_xscale("log")
+    ax.set_xlabel(r"problem size $n_{\text{dof}}$")
+    ax.set_ylabel("time per iteration [s]")
+    ax.legend(loc="upper left")
+
+    plt.savefig("time_per_iteration_sparse" + extension, bbox_inches="tight")
+
+
 # dense numpy matrices, solve with np.linalg.solve()
 timing_dense = {
     "assemble_rhs()": {
@@ -315,3 +351,4 @@ if __name__ == "__main__":
     plot_runtime_error_dense(timing_dense, ndof, error, extension=extension)
     plot_niter(niter, ndof, extension=extension)
     plot_runtime_sparse(timing_sparse, timing_dense, ndof, extension=extension)
+    plot_time_per_iteration(timing_sparse, niter, ndof, extension=extension)

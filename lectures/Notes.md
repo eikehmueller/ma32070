@@ -2068,6 +2068,8 @@ stiffness_matrix.assemble()
 
 ![Runtime for solver](figures/runtime_sparse.svg)
 
+![Time per iteration](figures/time_per_iteration_sparse.svg)
+
 | $\boldsymbol{n_{\text{dof}}}$ | richardson + jacobi |cg + jacobi |cg + hypre |
 | :----: | :----: | :----: | :----: |
 | 25 | 3101 | 11 | 3 |

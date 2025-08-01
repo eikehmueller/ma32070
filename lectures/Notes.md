@@ -2063,6 +2063,24 @@ Finally, after iterating over the mesh, we need to instruct PETSc to assemble th
 ```python
 stiffness_matrix.assemble()
 ```
-# Parallel computing
 
 # Performance analysis
+
+* Count number of FLOPs in Richardson solve + Jacobi PC
+* Predict runtime based on $t_{\text{flop}}$ derived above
+* Discuss discrepancy of numbers
+* Count number of memory references
+
+## Roofline model
+Performance model *with* memory references
+
+
+# Parallel computing
+
+* Idea behind parallel computing: split problem into different parts
+* Distributed memory and message passing model
+* Simple example algorithm
+* Parallel performance indicators
+  - speedup
+  - parallel efficiency
+  - weak and strong scaling

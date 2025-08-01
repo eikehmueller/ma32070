@@ -178,17 +178,17 @@ $$
 For $p=2$ there are six basis functions, three associated with vertices
 $$
 \begin{aligned}
-\phi_0(x,y) &= (1-x-y)(1-2x-2y),\\
-\phi_1(x,y) &= x(2x-1),\\
-\phi_2(x,y) &= y(2y-1),
+\phi_0(x) &= (1-x_0-x_1)(1-2x_0-2x_1),\\
+\phi_1(x) &= x_0(2x_0-1),\\
+\phi_2(x) &= x_1(2x_1-1),
 \end{aligned}
 $$
 and three associated with facets
 $$
 \begin{aligned}
-\phi_3(x,y) &= 4xy,\\
-\phi_4(x,y) &= 4y(1-x-y),\\
-\phi_5(x,y) &= 4x(1-x-y).
+\phi_3(x) &= 4x_0x_1,\\
+\phi_4(x) &= 4x_1(1-x_0-x_1),\\
+\phi_5(x) &= 4x_0(1-x_0-x_1).
 \end{aligned}
 $$
 These functions are visualised in the following figure (red arrows indicate gradients):

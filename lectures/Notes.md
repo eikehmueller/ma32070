@@ -79,8 +79,8 @@ $$a(u,v) \le C_+ \|u\|_{\mathcal{V}} \|v\|_{\mathcal{V}} \qquad\text{and}$$
 $$b(v) \le C_+ \|v\|_{\mathcal{V}} \qquad\text{for all $u,v\in \mathcal{V}$}.$$
 * **Coercivity**: there exists some positive constant $C_- > 0$ such that
 $$ 
-a(u,u) \ge C_- \|u\|_{\mathcal{V}}^2 \qquad\text{for all $u\in \mathcal{V}$}.
-$$
+a(u,u) \ge C_- \|u\|_{\mathcal{V}}^2 \qquad\text{for all $u\in \mathcal{V}$}.$$
+
 It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cdot)$ defined above. Furthermore, the solutions satisfy $\|u\|_{\mathcal{V}},\|u_h\|_{\mathcal{V}}\le C:=C_+/C_-$ and the difference between the solution $u_h(x)$ of $(\ddagger_h)$ and the solution $u(x)$ of $(\ddagger)$ can be bounded as follows:
 $$
 \|u_h - u\|_{\mathcal{V}} \le C \min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}.
@@ -209,12 +209,14 @@ The space of all linear functionals on $\mathcal{V}$ is called the **dual space*
 
 #### Examples
 Let $K\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(K)$ be the space of functions with a square integrable first derivative. Then the following $\lambda$ are linear functionals:
+
 * point evaluation: $\lambda(w) := w(\xi)$ for some point $\xi\in K$
 * differentiation: $\lambda(w) := \frac{\partial w}{\partial x_0}$
 * integration: $\lambda(w) := \int_K f(x)w(x)$ for some function $f(x)\in L_2(K)$
 
 ### Ciarlet's definition of the finite element
 This now leads to the following definition, originally due to Ciarlet (see [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) for the version used here): a finite element is a triple $(\widehat{K},\mathcal{V},\mathcal{L})$ which consists of
+
 * the **domain** $\widehat{K}$
 * the **function space** $\mathcal{V}=\mathcal{V}(\widehat{K})$ of real-valued functions on $\widehat{K}$,
 * the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda\}_{\ell=0}^{\nu-1}$, which is a basis for $\mathcal{V}^*$, the dual of $\mathcal{V}$
@@ -227,6 +229,7 @@ In the following we will assume that $\widehat{K}$ is the reference triangle int
 
 #### Examples
 The **polynomial Lagrange element** we described above is a special case of this with 
+
 * $\mathcal{V} = \mathcal{P}_p(\widehat{K})$, the space of bi-variate polynomials of degree $p$
 * $\lambda: \lambda_\ell(w) = w(\xi^{(\ell)})$ the point evaluation at the nodal points $\xi^{(\ell)}$
 
@@ -236,6 +239,7 @@ $$
 $$
 
 The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
+
 * $\mathcal{V} = \mathcal{P}_5(\widehat{K})$, the space of quintic bi-variate polynomials
 * the 21 nodes (with $\nu_{\text{vertex}}=6$, $\nu_{\text{facet}}=1$, $\nu_{\text{interior}}=0$) defined as follows:
   - $\lambda_\rho(w) = w(v_\rho)$ (evaluation at each vertex $v_\rho$ $\Rightarrow$ 3 nodes)
@@ -247,9 +251,11 @@ Note that the Argyris element and the quintic Lagrange element only differ in th
 
 ### Node numbering
 As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom. For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$. These entities are
+
 * the vertices $v_0$, $v_1$, $v_2$ in this order
 * the facets $F_0$, $F_1$, $F_2$ in this order
 * the interior $K^0$ of $\widehat{K}$
+  
 We further assume that $0\le \nu_{\text{vertex}}$ nodes are associated with each vertex, $0\le \nu_{\text{facet}}$ nodes are associated with each facet and $0\le \nu_{\text{interior}}$ nodes are associated with the interior $K^0$. Then obviously
 $$
 \nu = 3( \nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}.
@@ -359,12 +365,14 @@ It is crucial to observe that we carefully avoided including specific functional
 
 ### Concrete implementations
 Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class. These concrete classes have to provide concrete implementations of the following methods/properties:
+
 * `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior`
 * `tabulate_dofs(fhat)` to evaluate the degrees of freedom for a given function
 * `tabulate(zeta)` to tabulate the values of the basis functions at a given set of points
 * `tabulate_gradient(zeta)` to tabulate the gradients of the basis functions for a given set of points
 
 The [`finiteelements`](https://github.com/eikehmueller/finiteelements) library provides the following implementations:
+
 * The bi-linear element is implemented as the class `LinearElement` in [`fem/linearelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py)
 * The general polynomial element is implemented as the class `PolynomialElement` in [`fem/polynomialelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/polynomialelement.py)
 
@@ -475,6 +483,7 @@ $$
 
 ### Abstract base class
 All quadrature rules are characterised by the weights and points. We therefore implement them as subclasses of an abstract base class `Quadrature` (in [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py)) which has the following abstract properties: 
+
 * `nodes` the quadrature nodes $\{\zeta^{(q)}\}_{q=0}^{n_q-1}$, represented by an array of shape $n_q\times 2$
 * `weights` the quadrature weights $\{w_q\}_{q=0}^{n_q-1}$, represented by an array of length $n_q$
 * `degree_of_precision` tegree of precision, i.e. the highest polynomial degree that can be integrated exactly
@@ -588,6 +597,7 @@ Results are shown both for single precision and double precision arithmetic. We 
 
 ## Floating point numbers
 A general **floating point number system** $\mathbb{F}$ is specified by four integer numbers:
+
 * a base $1<\beta\in\mathbb{N}$
 * a precision $0<p\in\mathbb{N}$
 * a range of exponents defined by $L,U\in\mathbb{Z}$ with $L<0\le U$
@@ -1768,6 +1778,7 @@ A=\begin{pmatrix}
  \end{pmatrix}
 $$
 which, in CSR format, corresponds to 
+
 * row pointers $R = [0, 2, 4, 5, 8, 9]$
 * column indices $J = [0, 1, 0, 1, 2, 0, 2, 3, 4]$
 * values $V = [10.2, 4.2, 0.8, 6.7, 6.4, 2.1, 3.1, 7.2, 9.8]$

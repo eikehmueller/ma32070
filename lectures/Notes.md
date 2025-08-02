@@ -2065,6 +2065,110 @@ stiffness_matrix.assemble()
 ```
 
 # Performance analysis
+Let us try to analyse the performance of the iterative solver algorithm. We start with the simplest version, namely the Richardson iteration with Jacobi preconditioner. Recall that this requires the following operations:
+
+1. Computation of the residual $\boldsymbol{r} = \boldsymbol{b} - A\boldsymbol{u}$
+2. Application of the diagonal preconditioner $\boldsymbol{z} = D^{-1} \boldsymbol{r}$
+3. Update of the solution $\boldsymbol{u}\mapsto \boldsymbol{u} + \boldsymbol{z}$
+
+We can count the number of operations as follows: firstly, when computing the residual we need to apply one subtraction and one multiplication for each non-zero matrix element $A_{ij}$ when computing $r_i \mapsto r_i - A_{ij} u_j$. Applying the matrix, i.e. computing $\boldsymbol{v} = A\boldsymbol{u}$ requires the same number of operations. The application of the preconditioner requires one division per vector element and finally the update of the solution requires one addition for each vector element. Hence, the total number of floating point operations for a single Richardson update with Jacobi preconditioner requires
+
+$$
+N_{\text{Ric+Jac}} = 2n_{\text{nz}} + 2n
+$$
+
+floating point operations. Assume, for example, that $n=16641$ and $n_{\text{nz}}=115457$ (piecewise linear elements, rectange mesh with `nref=7`), then $N_{\text{Ric+Jac}} = 264196$. Recall that $t_{\text{flop}} = 1.6\cdot 10^{-11}\text{s}$, so we would expect that a single Richardson+Jacobi iteration takes around
+
+$$
+\begin{aligned}
+T_{\text{Ric+Jac}} &= (2n_{\text{nz}} + 2n)t_{\text{flop}}\\
+&= 264196 \cdot 1.6\cdot 10^{-11}\text{s}\\
+&= 4.2\cdot 10^{-6}\text{s}
+\end{aligned}
+$$
+
+However, in fact we measure $T_{\text{Ric+Jac}} = 85.6\text{s}$, i.e. a number which is more than an order of magnitude larger than expected! Alternatively, we could also pass the option `-log_view` to PETSc to get more information on the matrix-vector product `MatMult`: this is executed $37049$ times, and in total $2.734\text{s}$ are spent in this part of the code. This implied $73.7\text{s}$ per matrix-vector product, compares to the theoretical prediction $T_{\text{MatMult}} = 2n_{\text{nz}}t_{\text{flop}}=2\cdot 115457\cdot 1.6\cdot 10^{-11}\text{s} = 3.7\text{s}$. Again, we are off by more than order of magnitude.
+
+### Memory references
+The reason is that reading data from memory and writing it back is not free: To compute the matrix-vector product $\boldsymbol{v} = A\boldsymbol{u}$ we need to read the vector $\boldsymbol{u}$, write back the vector $\boldsymbol{v}$ and read the arrays $I$, $R$ and $V$ which represent the matrix $A$ is CSR format. The total amount of data transferred between the CPU and main memory is:
+
+* Read $\boldsymbol{u}$: $n$ double precision (64 bit) floating point numbers
+* Write $\boldsymbol{v}$: $n$ double precision floating point numbers
+* Read value array $V$: $n_{\text{nz}}$ double precision numbers
+* Read row pointer array $I$: $n+1$ integer number (32 bit each)
+* Read column index array $J$: $n_{\text{nz}}$ integer number (32 bit each)
+
+The total amount of transferred memory is therefore
+
+$$
+M_{\text{MatMult}} = \frac{3}{2} n_{\text{nz} + }\frac{5}{2} n + \frac{1}{2}
+$$
+
+double precision numbers. Assuming that it takes $t_{\text{mem}}$ to transfer a single double precision number, this implies that the total time to execute the matrix-vector product is:
+
+$$
+\begin{aligned}
+T_{\text{MatMult}} &= M_{\text{MatMult}} t_{\text{mem}} + N_{\text{MatMult}} t_{\text{flop}}\\
+&= \left(\frac{3}{2} n_{\text{nz} + }\frac{5}{2} n + \frac{1}{2}\right) t_{\text{mem}} + 2(n_{\text{nz}}+n)t_{\text{flop}}
+\end{aligned}
+$$
+
+Plugging in the measured value of $T_{\text{MatMult}}=73.7\text{s}$ we find
+
+$$
+t_{\text{mem}} = 3.2\cdot 10^{-10} \text{s}= 20\times t_{\text{flop}}
+$$
+
+From this we conclude that it is about an order of magnitude more expensive to transfer a double precision variable from memory than doing the actual computation.
+
+We can also define the **memory bandwidth**, i.e. the number of double precision numbers of bytes that can be transferred per second as
+
+$$
+BW = t_{\text{mem}}^{-1} = 3.12 \cdot 10^9 \text{double}/\text{s} = 2.5\cdot 10^{10} \text{byte}/\text{s}
+$$
+
+Why did this not matter for the Gaussian elimination solver? The reason is simply that the number of floating point operations is much larger than the number of memory references: recall the that number of operations is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$, where we can neglect the $\mathcal{O}(n^2)$ correction for $n\gg 1$. In addition we need to read the matrix ($n^2$ double precision numbers), read the vector $\boldsymbol{u}$ ($n$ double precision numbers) and write $\boldsymbol{v}$ (also $n$ double precision numbers). Including this we find:
+
+$$
+\begin{aligned}
+T_{\text{Gauss}} &= \left(n^2 + 2n\right)t_{\text{mem}} + \frac{2}{3}n^3 t_{\text{flop}}\\
+&= \frac{2}{3}n^3 t_{\text{flop}}\left(1 + \frac{n^2 + 2n}{\frac{2}{3}n^3}\frac{t_{\text{mem}}}{t_{\text{flop}}} \right)\\
+&\approx \frac{2}{3}n^3 t_{\text{flop}}\left(1 + \frac{2}{3n}\frac{t_{\text{mem}}}{t_{\text{flop}}} \right)
+\end{aligned}
+$$
+
+For $n\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}\approx 2$ we can safely ignore the second term in the bracket.
+
+We also say that the Gaussian elemination if *FLOP-bound* whereas the CSR matrix-vector product and hence the iterative solve with the Richardson+Jacobi iteration is *memory bandwidth-bound*.
+
+### Roofline model
+More generally, consider an algorithm with $N$ FLOPs and $M$ memory references and define the **arithmetic intensity**
+
+$$
+q = \frac{N}{M},
+$$
+
+i.e. the number of floating point operations carried out for each double precision number read from memory. Then the runtime is
+
+$$
+\begin{aligned}
+T &= N\cdot t_{\text{flop}} + M\cdot t_{\text{mem}} \\
+&= N\cdot t_{\text{flop}} \left(1 + \frac{1}{q} \frac{t_{\text{mem}}}{t_{\text{flop}}}\right)
+\end{aligned}
+$$
+
+We can also define the effective performance, i.e. the number of floating point operations carried out per second as
+
+$$
+R = \frac{N}{T} = R_{\text{flop}} \frac{1}{1 + \frac{1}{q} \frac{t_{\text{mem}}}{t_{\text{flop}}}} \approx \begin{cases}
+R_{\text{flop}} & \text{for $q\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (flop-bound)}\\
+q\cdot BW & \text{for $q\ll \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (bandwidth-bound)}
+\end{cases}
+$$
+
+![Roofline model](figures/roofline.svg)
+
+## Comparison of different solvers
 
 ![Runtime for solver](figures/runtime_sparse.svg)
 

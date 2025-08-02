@@ -1413,7 +1413,7 @@ We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h
 We also visualise the spatial variation of the error. For this, we first project the exact solution $u_{\text{exact}}(x)$ into the finite element space $\mathcal{V}_h$:
 
 $$
-u_{\text{exact}}^{(h)} = \argmin_{v^{(h)}\in\mathcal{V}_h} \|v^{(h)} - u_{\text{exact}}\|_{L_2(\Omega)}
+u_{\text{exact}}^{(h)} = \operatorname{argmin}_{v^{(h)}\in\mathcal{V}_h} \|v^{(h)} - u_{\text{exact}}\|_{L_2(\Omega)}
 $$
 
 It can be shown that is achieved by solving

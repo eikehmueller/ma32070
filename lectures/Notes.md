@@ -1563,7 +1563,7 @@ A &=  \begin{pmatrix}
 $$
 
 ### Total computational cost
-The numbe of operations to carry out this procedure is:
+The number of operations to carry out this procedure is:
 
 $$
 \begin{aligned}

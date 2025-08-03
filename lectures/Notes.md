@@ -2068,29 +2068,29 @@ stiffness_matrix.assemble()
 ```
 
 # Performance analysis
-Let us try to analyse the performance of the iterative solver algorithm. We start with the simplest version, namely the Richardson iteration with Jacobi preconditioner. Recall that this requires the following operations:
+Let us try to understand the performance of the iterative solver algorithm. We start with the simplest version, namely the Richardson iteration with Jacobi preconditioner. Recall that this requires the following operations:
 
 1. Computation of the residual $\boldsymbol{r} = \boldsymbol{b} - A\boldsymbol{u}$
 2. Application of the diagonal preconditioner $\boldsymbol{z} = D^{-1} \boldsymbol{r}$
-3. Update of the solution $\boldsymbol{u}\mapsto \boldsymbol{u} + \boldsymbol{z}$
+3. Update of the solution vector $\boldsymbol{u}\mapsto \boldsymbol{u} + \boldsymbol{z}$
 
-We can count the number of operations as follows: firstly, when computing the residual we need to apply one subtraction and one multiplication for each non-zero matrix element $A_{ij}$ when computing $r_i \mapsto r_i - A_{ij} u_j$. Applying the matrix, i.e. computing $\boldsymbol{v} = A\boldsymbol{u}$ requires the same number of operations. The application of the preconditioner requires one division per vector element and finally the update of the solution requires one addition for each vector element. Hence, the total number of floating point operations for a single Richardson update with Jacobi preconditioner requires
+We count the number of operations as follows: firstly, when computing the residual $\boldsymbol{r} = \boldsymbol{b} - A\boldsymbol{u}$ we need to apply one subtraction and one multiplication for each non-zero matrix element $A_{ij}$ when computing $r_i \mapsto r_i - A_{ij} u_j$. Applying the matrix, i.e. computing $\boldsymbol{v} = A\boldsymbol{u}$ requires the same number of operations. The application of the preconditioner requires one division per vector element and finally the update of the solution requires one addition for each vector element. Hence, the total number of floating point operations for a single Richardson update with Jacobi preconditioner requires
 
 $$
 N_{\text{Ric+Jac}} = 2n_{\text{nz}} + 2n
 $$
 
-floating point operations. Assume, for example, that $n=16641$ and $n_{\text{nz}}=115457$ (piecewise linear elements, rectange mesh with `nref=7`), then $N_{\text{Ric+Jac}} = 264196$. Recall that $t_{\text{flop}} = 1.6\cdot 10^{-11}\text{s}$, so we would expect that a single Richardson+Jacobi iteration takes around
+floating point operations (FLOPs). Assume, for example, that $n=16641$ and $n_{\text{nz}}=115457$ (piecewise linear elements, rectange mesh with `nref=7`), then $N_{\text{Ric+Jac}} = 264196$. Recall that $t_{\text{flop}} = 1.6\cdot 10^{-11}\text{s}$, so we would expect that a single Richardson+Jacobi iteration takes around
 
 $$
 \begin{aligned}
 T_{\text{Ric+Jac}} &= (2n_{\text{nz}} + 2n)t_{\text{flop}}\\
 &= 264196 \cdot 1.6\cdot 10^{-11}\text{s}\\
-&= 4.2\cdot 10^{-6}\text{s}
+&= 4.2\mu\text{s}
 \end{aligned}
 $$
 
-However, in fact we measure $T_{\text{Ric+Jac}} = 85.6\text{s}$, i.e. a number which is more than an order of magnitude larger than expected! Alternatively, we could also pass the option `-log_view` to PETSc to get more information on the matrix-vector product `MatMult`: this is executed $37049$ times, and in total $2.734\text{s}$ are spent in this part of the code. This implied $73.7\text{s}$ per matrix-vector product, compares to the theoretical prediction $T_{\text{MatMult}} = 2n_{\text{nz}}t_{\text{flop}}=2\cdot 115457\cdot 1.6\cdot 10^{-11}\text{s} = 3.7\text{s}$. Again, we are off by more than order of magnitude.
+However, in fact we measure $T_{\text{Ric+Jac}} = 85.6\mu\text{s}$, i.e. a number which is more than an order of magnitude larger than expected! Alternatively, we could also pass the option `-log_view` to PETSc to get more information on the performance of the matrix-vector product `MatMult`: this is executed $37049$ times, and in total $2.734\text{s}$ are spent in this part of the code. This implies $73.7\mu\text{s}$ per matrix-vector product, compared to the theoretical prediction $T_{\text{MatMult}} = 2n_{\text{nz}}t_{\text{flop}}=2\cdot 115457\cdot 1.6\cdot 10^{-11}\text{s} = 3.7\mu\text{s}$. Again, we are off by more than order of magnitude.
 
 ### Memory references
 The reason is that reading data from memory and writing it back is not free: To compute the matrix-vector product $\boldsymbol{v} = A\boldsymbol{u}$ we need to read the vector $\boldsymbol{u}$, write back the vector $\boldsymbol{v}$ and read the arrays $I$, $R$ and $V$ which represent the matrix $A$ is CSR format. The total amount of data transferred between the CPU and main memory is:
@@ -2098,8 +2098,8 @@ The reason is that reading data from memory and writing it back is not free: To 
 * Read $\boldsymbol{u}$: $n$ double precision (64 bit) floating point numbers
 * Write $\boldsymbol{v}$: $n$ double precision floating point numbers
 * Read value array $V$: $n_{\text{nz}}$ double precision numbers
-* Read row pointer array $I$: $n+1$ integer number (32 bit each)
-* Read column index array $J$: $n_{\text{nz}}$ integer number (32 bit each)
+* Read row pointer array $I$: $n+1$ integer numbers (32 bit each)
+* Read column index array $J$: $n_{\text{nz}}$ integer numbers (32 bit each)
 
 The total amount of transferred memory is therefore
 

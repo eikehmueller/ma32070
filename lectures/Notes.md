@@ -18,16 +18,15 @@ $$
 $$
 with boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial \Omega$. We assume that $\omega, \kappa>0$ are positive constants and $f(x)$, $g(x)$ are given functions. Using zero-based indexing (as is used in Python) we will write $x=(x_0,x_1)\in\mathbb{R}^2$ such that $\nabla=(\frac{\partial}{\partial x_0},\frac{\partial}{\partial x_1})^\top$ is the nabla-operator.
 
-> [!WARNING]
-> Note that in the case $\kappa=1$, $\omega=0$ the problem would reduce to the Poisson equation $-\Delta u(x)=f(x)$. Unfortunately, for the given boundary condition the solution of the Poisson equation is not unique (if $u(x)$ is a solution then so is $u(x)+C$ for an arbitrary constant $C$), which is why we do not consider this case here. However, the methods developed in this course can be readily applied to this setup, provided we extend them to treat Dirichlet boundary conditions of the form $u(x)=\widetilde{g}(x)$ for $x\in\partial \Omega$ and some given function $\widetilde{g}(x)$.
+Note that in the case $\kappa=1$, $\omega=0$ the problem would reduce to the Poisson equation $-\Delta u(x)=f(x)$. Unfortunately, for the given boundary condition the solution of the Poisson equation is not unique (if $u(x)$ is a solution then so is $u(x)+C$ for an arbitrary constant $C$), which is why we do not consider this case here. However, the methods developed in this course can be readily applied to this setup, provided we extend them to treat Dirichlet boundary conditions of the form $u(x)=\widetilde{g}(x)$ for $x\in\partial \Omega$ and some given function $\widetilde{g}(x)$.
 
 ## Weak solutions
 To solve $(\dagger)$, we seek solutions $u(x)$ in some function space $\mathcal{V}$; we will discuss suitable choices for $\mathcal{V}$ below. In a finite element setting we usually only aim to determine the solution in the **weak sense**: Find $u(x)\in \mathcal{V}$ such that
 $$
 \int_\Omega \left(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\right)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v(x)\in \mathcal{V}$}.
 $$
-> [!IMPORTANT]
-> Observe that in contrast to $(\dagger)$ we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of $(\dagger)$ (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course.
+
+Observe that in contrast to $(\dagger)$ we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of $(\dagger)$ (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course.
  
 After integrating the first term under the integral on the left-hand side by parts, the weak form becomes
 $$
@@ -114,13 +113,13 @@ where we used the symmetry and bi-linearity of $a(\cdot,\cdot)$. Defining the ve
 $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
 $$
-> [!IMPORTANT]
-> Although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $\mathbb{R}^n$, they are constructed in a fundamentally different way:
->
-> * The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_\ell^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in $(\star)$.
-> * In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_\ell^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
->
-> The reason for this is that $b(\cdot)$ is an element of the dual space $\mathcal{V}^*$, which consists of all linear functionals defined on the space $\mathcal{V}$.
+
+Although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $\mathbb{R}^n$, they are constructed in a fundamentally different way:
+
+* The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_\ell^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in $(\star)$.
+* In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_\ell^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
+
+The reason for this is that $b(\cdot)$ is an element of the dual space $\mathcal{V}^*$, which consists of all linear functionals defined on the space $\mathcal{V}$.
 
 ### Solution procedure
 In summary, the solution procedure for $(\ddagger_h)$ is this:
@@ -371,8 +370,7 @@ More specifically, each finite element should provide the following functionalit
 * Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$  which are stored as a $n\times 2$ array. This computes the rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{r\ell a}=\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(r)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta\in\mathbb{R}^2$ is passed to the subroutine it should return a matrix of shape $d\times 2$.
 * Implement the element dof-map $\mu_{\text{dof}}(E,\rho,j)$ and its inverse. This is done with the method `dofmap(entity_type,rho,j)` and its inverse `inverse_dofmap(ell)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously computed values.
 
-> [!IMPORTANT]
-> It is crucial to observe that we carefully avoided including specific functionality (such as assuming that the basis functions are Lagrange polynomials and the degrees of freedom are point-evaluations): the base class is consistent with Ciarlet's abstract definition of the finite element, i.e. the code should mirror the mathematical structure.
+It is crucial to observe that we carefully avoided including specific functionality (such as assuming that the basis functions are Lagrange polynomials and the degrees of freedom are point-evaluations): the base class is consistent with Ciarlet's abstract definition of the finite element, i.e. the code should mirror the mathematical structure.
 
 ### Concrete implementations
 Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class. These concrete classes have to provide concrete implementations of the following methods/properties:

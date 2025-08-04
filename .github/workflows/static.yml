@@ -46,7 +46,6 @@ jobs:
                     --toc
                     --mathjax
                     --to html
-                    --from commonmark_x+alerts
                     --output notes.html
                     --resource-path lectures
                     --metadata-file metadata.yml

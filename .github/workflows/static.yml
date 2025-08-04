@@ -29,7 +29,7 @@ jobs:
             - run: |
                 cp ~/uikit.html .
             - name: Convert index markdown to html with pandoc
-              uses: docker://pandoc/latex:3.5
+              uses: docker://pandoc/latex:3.7.0.2
               with:
                 args: >- 
                     --standalone
@@ -39,7 +39,7 @@ jobs:
                     --metadata-file metadata.yml
                     index.md
             - name: Convert lecture markdown to html with pandoc
-              uses: docker://pandoc/latex:3.5
+              uses: docker://pandoc/latex:3.7.0.2
               with:
                 args: >- 
                     --standalone
@@ -52,7 +52,7 @@ jobs:
                     --template uikit.html
                     lectures/Notes.md
             - name: Convert Exercises markdown to html with pandoc
-              uses: docker://pandoc/latex:3.5                
+              uses: docker://pandoc/latex:3.7.0.2               
               with:
                 args: >- 
                   --standalone
@@ -65,7 +65,7 @@ jobs:
                   --metadata-file metadata.yml
                   lectures/Exercises.md
             - name: Convert prerequisites markdown to html with pandoc
-              uses: docker://pandoc/latex:3.5                
+              uses: docker://pandoc/latex:3.7.0.2              
               with:
                 args: >- 
                   --standalone
@@ -78,7 +78,7 @@ jobs:
                   --metadata-file metadata.yml
                   generalinformation/Prerequisites.md
             - name: Convert setup instructions markdown to html with pandoc
-              uses: docker://pandoc/latex:3.5                
+              uses: docker://pandoc/latex:3.7.0.2                
               with:
                 args: >- 
                   --standalone

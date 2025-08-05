@@ -2122,7 +2122,7 @@ T_{\text{MatMult}} &= M_{\text{MatMult}} t_{\text{mem}} + N_{\text{MatMult}} t_{
 \end{aligned}
 $$
 
-Plugging in the measured value of $T_{\text{MatMult}}=73.7\text{s}$ we find
+Plugging in the measured value of $T_{\text{MatMult}}=73.7\mu\text{s}$ we find
 
 $$
 t_{\text{mem}} = 3.2\cdot 10^{-10} \text{s}= 20\times t_{\text{flop}}

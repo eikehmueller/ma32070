@@ -2052,7 +2052,7 @@ we get the following output:
   2 KSP Residual norm 2.631059255681e-02
   3 KSP Residual norm 2.056954907970e-17
 ```
-i.e. the solver converges in substantially fewer iterations that for the Richardson solver.
+i.e. the solver converges in substantially fewer iterations that for the Richardson iteration.
 
 ## Other Krylov subspace methods
 This is an example of a so-called Krylov subspace method. While the Conjugate Gradient iteration only works for SPD matrices, there are other Krylov subspace methods that can be used for more general matrices. The most important one is the [Generalised Minimal Residual (GMRES) method](https://mathworld.wolfram.com/GeneralizedMinimalResidualMethod.html), which can be invoked with `-ksp_type gmres`. The details are not relevant for this course, but it should be pointed out that GMRES only requires the same fundamental linear algebra operations as CG and the Richardson iteration.

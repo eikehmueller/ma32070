@@ -1410,16 +1410,16 @@ $$
 u(x) = \cos(\pi s_0 x_0) \cos(\pi s_1 x_1) \qquad\text{for $s_0, s_1\in \mathbb{N}$}
 $$
 
-in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation if $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$.
+in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation if the right hand side is chosen to be $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$.
 
-We choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `RectangleMesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
+For the numerical experiments we choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `RectangleMesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
 
-We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$. The function `save_to_vtk(u,filename)` can be used to save the dof-vector of a piecewise linear function to a `.vtk` file which can be visualised with [paraview](https://www.paraview.org/).
+We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$. The function `save_to_vtk(u,filename)` in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) can be used to save the dof-vector of a piecewise linear function to a `.vtk` file which can be visualised with [paraview](https://www.paraview.org/).
 
 We also visualise the spatial variation of the error. For this, we first project the exact solution $u_{\text{exact}}(x)$ into the finite element space $\mathcal{V}_h$:
 
 $$
-u_{\text{exact}}^{(h)} = \operatorname{argmin}_{v^{(h)}\in\mathcal{V}_h} \|v^{(h)} - u_{\text{exact}}\|_{L_2(\Omega)}
+u_{\text{exact}}^{(h)} = \underset{v^{(h)}\in\mathcal{V}_h}{\operatorname{argmin}} \|v^{(h)} - u_{\text{exact}}\|_{L_2(\Omega)}
 $$
 
 It can be shown that is achieved by solving
@@ -1436,14 +1436,21 @@ m(u,v) = \int_\Omega u(x) v(x)\;dx
 \end{aligned}
 $$
 
-The left-hand side can be computed by using $a(\cdot,\cdot)$ with $\omega=1$, $\kappa=0$. The right-hand side can be computed by taking $b(\cdot)$ for $u_{\text{exact}}$.
+The left-hand side can be computed by using $a(\cdot,\cdot)$ with $\omega=1$, $\kappa=0$; the resulting matrix is also known as the "mass matrix". The right-hand side can be computed by taking passing $u_{\text{exact}}$ to `assemble_rhs()`, which assembles $b(\cdot)$ for a given function.
 
 ## Performance
+To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows
+
+```Python
+with measure_time("some_code"):
+    # Code to measure
+```
+
 The following figure shows the time spent in different parts of the code (left) and the reduction of the $L_2$ error with increasing resolution. In both cases the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
 
 ![Runtime (left) and $L_2$ error (right)](figures/runtime_dense.svg)
 
-The $L_2$ error decreases in proportion to $h^2$. For larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. However, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
+The right plot demonstrates that the $L_2$ error decreases in proportion to $h^2\propto n_{\text{dof}}^{-1}$. As can be seen from the left plot, for larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. However, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
 
 In the next section we will discuss methods for overcoming this difficulty. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
 
@@ -1617,13 +1624,13 @@ The stiffness matrices we obtain from out finite element discretisation contain 
 
 Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or $7.6\%$ are nonzero, which corresponds to an average number of around $\overline{n}_{\text{nz}} = 6.14$ nonzeros per row. For large $n$, the number of non-zeros per row will remain roughly the same, leading to an even poorer fill-ratio.
 
-Clearly, it is very inefficient to store all these zero entries if only $\mathcal{O}(n)$ entries are in fact required to encode the data stored in the matrix.
+Clearly, it is very inefficient to store all these zero entries if only $\mathcal{O}(n)$ entries are in fact required to encode the data stored in the matrix. We therefore introduce a storage format which is more suitable for matrices like this.
 
 ## Compressed Sparse Row storage
 A matrix $A$ with $n_{\text{nz}}\ll n$ nonzero entries is often called *sparse*. To store sparse matrices, we can proceed as follows:
 
 1. Store all non-zero entries in a long array $V$ of length $n_{\text{nz}}$, going throw the matrix row by row
-2. For each non-zero entry also store the column index in an array $J$ of the same length
+2. For each non-zero entry also store the corresponding column index in an array $J$ of the same length
  
 We could now also store the corresponding row-indices in an array $I$ of the same length. With this, it would then be possible to reconstruct all non-zero entries of $A$:
 
@@ -1684,7 +1691,7 @@ Note that one of the rows contains only zero entries.
 # Solving linear systems in PETSc
 
 ## PETSc implementation
-To implement matrices in the CSR storage format, we use the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org) (pronounced "pet-see"). More specifically, we will work with the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After [installation](https://petsc.org/release/petsc4py/install.html), this can be imported as follows:
+To implement matrices in the CSR storage format, we use the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org) (pronounced "pet-see"). Since PETSc itself is written in the [C-programming language](https://www.c-language.org/), we will work with the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After [installation](https://petsc.org/release/petsc4py/install.html), this can be imported as follows:
 ```python
 from petsc4py import PETSc
 ```
@@ -1694,7 +1701,7 @@ We can now create an (empty) matrix with
 A = PETSc.Mat()
 ```
 
-To create the $5\times 5$ matrix above we first need to set up the sparsity structure, i.e. the arrays $J$ (`col_indices`) and $R$ (`row_start`):
+To create the $5\times 5$ matrix above we first need to set up the sparsity structure, i.e. the arrays $J$ (called `col_indices`) and $R$ (called `row_start`). This is done with the `createAIJ()` method, which gets passed the number of rows and columns and the keyword argument `csr` which is a tuple of the form $(R,J)$:
 ```python
 n_row = 5
 n_col = 5
@@ -1722,9 +1729,9 @@ col = 3
 value = 8.7
 A.setValue(row, col, value)
 ```
-Note that this method has an optional parameter `addv`, for `addv=True` the value will be added to an already existing value.
+Trying to set an element which is not part of the sparsity structure (such as `row=4`, `col=2`) will result in an error. Note that the `setValue()` method has an optional parameter `addv`. For `addv=True` the value will be added to an already existing value and for `addv=False` already existing entries will be overwritten.
 
-We can also set blocks of value. For example, we might want to set the $2\times 2$ block in the upper left corner, as highlighhted in red here:
+We can also set blocks of several values. For example, we might want to set the $2\times 2$ block in the upper left corner, as highlighhted in red here:
 $$
 \begin{pmatrix}
 \textcolor{red}{1.3} & \textcolor{red}{2.4} & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
@@ -1734,14 +1741,14 @@ $$
 \textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
 \end{pmatrix}
 $$
-For this, we need to specify the rows and columns in the target matrix as follows:
+For this, we need to specify the rows and columns in the target matrix and use the `setValues()` (plural) method as follows:
 ```python
 rows = [0, 1]
 cols = [0, 1]
 local_matrix = np.asarray([1.3, 2.4, 4.5, 6.1])
 A.setValues(rows, cols, local_matrix)
 ```
-Blocks do not have to be contiguous. We could, for example, set the 6 non-zero values highlighted in red here:
+Blocks do not have to be contiguous but they have to have a tensor-product index structure defined by `rows x cols`. We could, for example, to set the 6 non-zero values highlighted in red here:
 $$
 \begin{pmatrix}
 1.3 & 2.4 & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
@@ -1758,7 +1765,7 @@ cols = [1, 2, 4]
 A_local = np.asarray([2.1, 8.3, 9.4, 3.7, 1.1, 7.7])
 A.setValues(rows, cols, A_local)
 ```
-Finally, before we can use the matrix, we need to assemble it:
+Finally, before we can use the matrix for any computations, we need to assemble it:
 ```python
 A.assemble()
 ```
@@ -1769,6 +1776,7 @@ A_dense = PETSc.Mat()
 A_dense = A.convert("dense")
 A_numpy = A_dense.getDenseArray()
 ```
+Obviously, this only makes sense for relatively small matrices.
 
 ### Matrix-vector multiplication
 PETSc also provides a vector class. For example, to create the vector
@@ -1782,14 +1790,14 @@ we can do this:
 v = PETSc.Vec()
 v.createWithArray([8.1, 0, 9.3, -4.3, 5.2])
 ```
-We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$:
+We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$. For this, we first need to create an empty five-dimensional vector $\boldsymbol{v}$, which can be done with the `createSeq()` method.
 ```python
 w = PETSc.Vec()
 n = 5
 w.createSeq(n)
 A.mult(v, w)
 ```
-Alternatively, we can just use the `@` operator:
+Instead of the `mult()` methid we can also just use the `@` operator, as for `numpy` matrices/vectors:
 ```python
 w = A @ v
 ```
@@ -1800,7 +1808,7 @@ print(w_numpy)
 ```
 
 ## Solving linear systems
-The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $A\boldsymbol{u}=\boldsymbol{b}$. We will discuss this is more detail in the next lecture, but for now let us just look at a simple example:
+The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $A\boldsymbol{u}=\boldsymbol{b}$. We will discuss this in more detail in the next lecture, but for now let us just look at a simple example:
 
 Consider the following $5\times 5$ matrix
 $$
@@ -1835,7 +1843,7 @@ A = PETSc.Mat().createAIJWithArrays(
 A.assemble()
 ```
 
-We can then solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ for given $\boldsymbol{b} = (8.1, 0, 9.3, -4.3, 5.2)^\top$ as follows:
+Observe that we created the matrix in one go by using `createAIJWithArrays()`, which gets passed the number of rows and columns and a tuple $(R,J,V)$. We can then solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ for given $\boldsymbol{b} = (8.1, 0, 9.3, -4.3, 5.2)^\top$ as follows by creating a `KSP` object, associating the matrix `A` with it and then calling the `KSP`'s solve method.
 
 ```python
 b = PETSc.Vec().createWithArray([8.1, 0, 9.3, -4.3, 5.2])
@@ -1845,37 +1853,36 @@ ksp = PETSc.KSP().create()
 ksp.setOperators(A)
 ksp.solve(b, u)
 ```
-
-Note that we create a `KSP` object, associate the matrix `A` with it and then call the `KSP`'s solve method.
-
-We will discuss `KSP`s and how to configure them to use efficient solver in more detail in the next lecture.
+We will discuss `KSP`s and how to configure them to use efficient solver in more detail in the next section.
 
 # Solvers and Preconditioners
-We now consider methods for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ with PETSc. Although PETSc also supports direct solvers such as Gaussian elimination, the design philosophy of the library assumes that all solvers are iterative methods. This means that, starting from a starting guess, $\boldsymbol{u}^{(0)}$, the solution is updated iteratively as $\boldsymbol{u}^{(k+1)}\gets \boldsymbol{u}^{(k)}$ such that (hopefully) $\boldsymbol{u}^{(k)}$ converges to the true solution $u$. Direct solvers can be considered as a special case in which this iteration converges in a single step.
+We now consider methods for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ with PETSc. Although PETSc also supports direct solvers such as Gaussian elimination (which we used above), the design philosophy of the library assumes that all solvers are *iterative methods*. This means that, starting from an initial guess, $\boldsymbol{u}^{(0)}$, the solution is updated iteratively as $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$ such that (hopefully) $\boldsymbol{u}^{(k)}$ converges to the true solution $\boldsymbol{u}$. Direct solvers can be considered as a special case in which this iteration converges in a single step.
 
 ## PETSc solver architecture
 PETSc solvers are separated into two components:
 
-1. an *iterative solver* or `KSP` object which describes how to perform the update $\boldsymbol{u}^{(k+1)}\gets \boldsymbol{u}^{(k)}$; we have already seen this in the previous lecture.
-2. a *preconditioner* or `PC` object which accelerates the iteration.
+1. an *iterative solver* or [`KSP` object](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.KSP.html) which describes how to perform the update $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$; we have already seen this in the previous lecture.
+2. a *preconditioner* or [`PC` object](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.PC.html) which accelerates the iteration.
 
-To motivate this architecture and explain what a preconditioner is, let us consider a very simple iterative method. For this, we multiply the linear equation by a matrix $P^{-1}$ to obtain the equivalent system
+To motivate this architecture and explain what a preconditioner is, let us consider a very simple iterative method. For this, we multiply the linear equation $A\boldsymbol{u}=\boldsymbol{b}$ by a matrix $P^{-1}$ to obtain the equivalent system
 
 $$
 P^{-1} A \boldsymbol{u} = P^{-1} \boldsymbol{b}
 $$
 
-The matrix $P$, which we assume to be full rank and invertible, is the preconditioner. More precisely, in PETSc a `PC` object provides a way of inverting $P$, i.e. solving $P\boldsymbol{z}=\boldsymbol{r}$ for a given vector $\boldsymbol{r}$. In principle, we could choose any matrix such as $P=\mathbb{I}$ the identity matrix or the $P=D$ the diagonal of $A$. A good preconditioner has two properties:
+The matrix $P$, which we assume to be full rank and invertible, is the preconditioner. More precisely, in PETSc a `PC` object provides a way of inverting $P$, i.e. solving $P\boldsymbol{z}=\boldsymbol{r}$ for a given vector $\boldsymbol{r}$. In principle, we could choose any matrix such as $P=\mathbb{I}$ the identity matrix or $P=D$ the diagonal of $A$. A good preconditioner has two properties:
 
-1. It should be "close" to $A$, i.e. $P\approx A$ (in some sense)
+1. It should be "close" to $A$, i.e. $P\approx A$ (in some sense which can be made mathematically more rigorous)
 2. Multiplication by $P^{-1}$ should be inexpensive, i.e. solving the linear system $P\boldsymbol{z}=\boldsymbol{r}$ for a given vector $\boldsymbol{r}$ should be cheap.
 
+Naturally, these requirements often contradict each other and a compromise has to be found. The construction of a good preconditioner is an art in itself and we will not discuss it further in this unit.
+
 ## Richardson iteration with Jacobi preconditioner
-As an example, we now construct a very simple iterative procedure. Assume that we know the approximate solution $\boldsymbol{u}^{(k)}$. If we knew the error $\boldsymbol{e}^{(k)} := \boldsymbol{u}-\boldsymbol{u}^{(k)}$, it would be possible to compute the solution by simply adding $\boldsymbol{e}^{(k)}$ to $\boldsymbol{u}^{(k)}$. Unfortunately, this is not possible since knowledge of $\boldsymbol{e}^{(k)}$ would require knowledge of the exact solution! Instead, let's try to construct an approximation $\boldsymbol{z}^{(k)}$ to the true error, namely
+As an example, we now construct a very simple iterative procedure. Assume that we know the approximate solution $\boldsymbol{u}^{(k)}$. If we knew the error $\boldsymbol{e}^{(k)} := \boldsymbol{u}-\boldsymbol{u}^{(k)}$, it would be possible to compute the solution by simply adding $\boldsymbol{e}^{(k)}$ to $\boldsymbol{u}^{(k)}$ since $\boldsymbol{u}^{(k)} + \boldsymbol{e}^{(k)} = \boldsymbol{u}$. Unfortunately, this is not possible since knowledge of $\boldsymbol{e}^{(k)}$ would require knowledge of the exact solution! Instead, let's try to construct an approximation $\boldsymbol{z}^{(k)}$ to the true error, namely
 $$
 \boldsymbol{z}^{(k)} = P^{-1} A \boldsymbol{e}^{(k)}
 $$
-If $P\approx A$, this will be a good approximation. Interestingly we can compute $\boldsymbol{z}^{(k)}$ since
+If $P\approx A$, this will be a good approximation. Interestingly we can compute $\boldsymbol{z}^{(k)}$ without knowledge of $\boldsymbol{u}$ since
 $$
 \begin{aligned}
 \boldsymbol{z}^{(k)} &= P^{-1} A (\boldsymbol{u}-\boldsymbol{u}^{(k)})\\
@@ -1883,7 +1890,7 @@ $$
 &= P^{-1}(\boldsymbol{b}-A\boldsymbol{u}^{(k)})
 \end{aligned}
 $$
-The quantity $\boldsymbol{z}^{(k)}$ is also known as the preconditioned residual, since $\boldsymbol{b}-A\boldsymbol{u}^{(k)}$ measures by how much the approximate solution violates the equation $A\boldsymbol{u}=\boldsymbol{b}$.
+The quantity $\boldsymbol{z}^{(k)}$ is also known as the *preconditioned residual*, since the *residual* $\boldsymbol{b}-A\boldsymbol{u}^{(k)}$ itself measures by how much the approximate solution violates the equation $A\boldsymbol{u}=\boldsymbol{b}$.
 
 This leads to the preconditioned Richardson iteration:
 $$
@@ -1917,7 +1924,7 @@ A_{ii} & \text{if $i=j$}\\
 0 & \text{otherwise}
 \end{cases}
 $$
-This matrix is very simple to invert: to solve $P\boldsymbol{z}=\boldsymbol{r}$ we can compute $z_i = r_i/A_{ii}$. The choice $P=D$ is also known as the *Jacobi* preconditioner.
+This matrix is very simple to invert: to solve $P\boldsymbol{z}=\boldsymbol{r}$ we can compute $z_i = r_i/A_{ii}$ for all $i=0,1,2,\dots,n-1$. The choice $P=D$ is also known as the *Jacobi* preconditioner.
 
 ### PETSc options
 To use a particular solver/preconditioner combination in PETSc, we need to specify solver options via the command line. For this, we need to add the following at the beginning of our Python script:
@@ -1937,7 +1944,9 @@ For example, to use the Richardson iteration with Jacobi preconditioner, we call
 ```bash
 python script.py -ksp_type richardson -pc_type jacobi
 ```
-To monitor convergence, we can add the option `-ksp_monitor`, which will print out the norm $\|\boldsymbol{z}^{(k)}\|$ of the (preconditioned) residual at each iteration. The iteration will stop once the residual norm has been reduced by a factor of at least $\epsilon$, i.e. $\|\boldsymbol{z}^{(k)}\|/\|\boldsymbol{z}^{(0)}|\|<\epsilon$. This tolerance can be controlled by `-ksp_rtol epsilon` (it is also possible to set an absolute convergence criterion $\|\boldsymbol{z}^{(k)}\|<\epsilon_{\text{abs}}$ with `-ksp_atol`). Furthermore, we can tell PETSc to print information on the solver to some file `ksp_view.txt` with `-ksp_view :ksp_view.txt`. So, in summary to solve to a relative tolerance of $\epsilon=10^{-9}$ with the Jacobi-preconditioned Richardson iteration we would call:
+To monitor convergence, we can add the option `-ksp_monitor`, which will print out the norm $\|\boldsymbol{z}^{(k)}\|$ of the (preconditioned) residual at each iteration. The iteration will stop once the residual norm has been reduced by a factor of at least $\epsilon$, i.e. $\|\boldsymbol{z}^{(k)}\|/\|\boldsymbol{z}^{(0)}\|<\epsilon$. This tolerance can be controlled by `-ksp_rtol epsilon`. It is also possible to set an absolute convergence criterion $\|\boldsymbol{z}^{(k)}\|<\epsilon_{\text{abs}}$ with `-ksp_atol epsilon_abs`; in fact the iteration will stop once $\|\boldsymbol{z}^{(k)}\|<\operatorname{max}\{\epsilon\cdot \|\boldsymbol{z}^{(0)}\|,\epsilon_{\operatorname{abs}}\}$. The default values are $\epsilon=10^{-5}$, $\epsilon_{\text{abs}}=10^{-50}$.
+
+Furthermore, we can tell PETSc to print information on the solver to some file `ksp_view.txt` with `-ksp_view :ksp_view.txt`. So, in summary to solve to a relative tolerance of $\epsilon=10^{-9}$ with the Jacobi-preconditioned Richardson iteration we would call:
 
 ```bash
 python script.py -ksp_type richardson -pc_type jacobi -ksp_monitor -ksp_rtol 1.0E-9 -ksp_view :ksp_view.txt
@@ -1964,7 +1973,7 @@ The output looks like this:
 
 and we can inspect the file `ksp_view.txt` to double check that the solver options have been set correctly:
 
-At the beginning, it lists details on the `KSP Object`, which describes the iterative solver:
+At the beginning, the file `ksp_view.txt` lists details on the `KSP Object`, which describes the iterative solver, including the used tolerances $\epsilon$, $\epsilon_{\text{abs}}$:
 
 ```
 KSP Object: 1 MPI process
@@ -1988,19 +1997,20 @@ PC Object: 1 MPI process
     total: nonzeros=25, allocated nonzeros=25
     total number of mallocs used during MatSetValues calls=0
 ```
+It is a good idea to double check the `log_view` output since it is very easy to inadvertedly use incorrect solver settings.
 
 ### Direct solvers
-PETSc also supports direct solvers, which are implemented as preconditioners. For example, to use Gaussian elimination, we would set `-pc_type lu`. In this case, PETSc computes the factorisation $P=A=LU$, where $L$ and $U$ and lower- and upper-triangular matrices. Knowing $L$ and $U$ we can solve $A\boldsymbol{z}=LU\boldsymbol{z}=\boldsymbol{r}$ by solving $L\boldsymbol{z}'=\boldsymbol{r}$ and then $U\boldsymbol{z}=\boldsymbol{z}'$. In this case, iterative solver will converge in a single iteration:
+PETSc also supports direct solvers, which are implemented as preconditioners. For example, to use Gaussian elimination, we would set `-pc_type lu`. In this case, PETSc computes the factorisation $P=A=LU$, where $L$ and $U$ and lower- and upper-triangular matrices. Knowing $L$ and $U$ we can solve $A\boldsymbol{z}=LU\boldsymbol{z}=\boldsymbol{r}$ by solving $L\boldsymbol{z}'=\boldsymbol{r}$ and then $U\boldsymbol{z}=\boldsymbol{z}'$. In this case, the iterative solver will converge in a single iteration:
 ```
   0 KSP Residual norm 2.291531974978e+00
   1 KSP Residual norm 2.640425190731e-16
 ```
-In this case, we can request that PETSc only applies the preconditioner, i.e. computes $\boldsymbol{u}^{(1)} = P^{-1}\boldsymbol{b}$ directly. Be careful with using `-ksp_type preonly`: if the preconditioner is not a direct solver, the iteration will simply stop after one iteration and return an incorrect result. For example, `-ksp_type preonly -pc_type richardson` will print out
+We can request that PETSc only applies the preconditioner, i.e. computes $\boldsymbol{u}^{(1)} = P^{-1}\boldsymbol{b}$ directly. Be careful with using `-ksp_type preonly`: if the preconditioner is not a direct solver, the iteration will simply stop after one iteration and return an incorrect result. For example, `-ksp_type preonly -pc_type richardson` will print out
 ```
   0 KSP Residual norm 1.405809375413e+01
   1 KSP Residual norm 6.204942588128e+00
 ```
-and it is up to us to recognise that the computed solution does not solve $Au=b$.
+and it is up to us to recognise that the computed solution does not solve $A\boldsymbol{u}=\boldsymbol{b}$.
 
 ## Conjugate Gradient method
 The (preconditioned) Richardson iteration is not very efficient. A better alternative for symmetric positive definite (SPD) $A$ is the Conjugate Gradient algorithm, which is given as follows:
@@ -2010,31 +2020,33 @@ The (preconditioned) Richardson iteration is not very efficient. A better altern
 2. Solve $P\boldsymbol{z}^{(0)} = \boldsymbol{r}^{(0)}$
 3. Set $\boldsymbol{p}^{(0)}\gets \boldsymbol{z}^{(0)}$
 4. **for** $k=1,2,\dots,k_{\text{max}}$ **do**
-5. $~~~~$ Compute $\alpha_{k-1} = \boldsymbol{z}^{(k-1)^\top} \boldsymbol{r}^{(k-1)}/\boldsymbol{p}^{(k-1)\top} A\boldsymbol{p}^{(k-1)}$
+5. $~~~~$ Compute $\alpha_{k-1} = \boldsymbol{z}^{(k-1)\top} \boldsymbol{r}^{(k-1)}/\boldsymbol{p}^{(k-1)\top} A\boldsymbol{p}^{(k-1)}$
 6. $~~~~$ Set $\boldsymbol{u}^{(k)} \gets \boldsymbol{u}^{(k-1)} + \alpha_{k-1} \boldsymbol{p}^{(k-1)}$
 7. $~~~~$ Set $\boldsymbol{r}^{(k)} \gets \boldsymbol{r}^{(k-1)} - \alpha_k A \boldsymbol{p}^{(k-1)}$
-8. $~~~~$ Solve $P\boldsymbol{z}^{(k)}=\boldsymbol{r}^{(k)}$ for $\boldsymbol{z}^{(k)}$
-9. $~~~~$ Compute $\beta_k = \boldsymbol{z}^{(k)\top}\boldsymbol{r}^{(k)}/\boldsymbol{z}^{(k-1)\top}\boldsymbol{r}^{(k-1)}$
-10. $~~~~$ Set $\boldsymbol{p}^{(k)} \gets \boldsymbol{z}^{(k)} + \beta_k \boldsymbol{p}^{(k-1)}$
-11. **end do**
+8. $~~~~$ Check convergence
+9. $~~~~$ Solve $P\boldsymbol{z}^{(k)}=\boldsymbol{r}^{(k)}$ for $\boldsymbol{z}^{(k)}$
+10. $~~~~$ Compute $\beta_k = \boldsymbol{z}^{(k)\top}\boldsymbol{r}^{(k)}/\boldsymbol{z}^{(k-1)\top}\boldsymbol{r}^{(k-1)}$
+11. $~~~~$ Set $\boldsymbol{p}^{(k)} \gets \boldsymbol{z}^{(k)} + \beta_k \boldsymbol{p}^{(k-1)}$
+12. **end do**
     
 Crucially, the fundamental operations that are required are very similar to those in the Richardson iteration
 
 * multiplication of a vector $\boldsymbol{x}$ with the matrix $A$ to compute $\boldsymbol{y}=A\boldsymbol{x}$
 * addition and scaling of vectors: $\boldsymbol{z} = \alpha \boldsymbol{x}+\beta \boldsymbol{y}$ for $\alpha,\beta\in\mathbb{R}$
-* dot-products of vectors: $\boldsymbol{x}^\top\boldsymbol{y}$
+* dot-products of vectors: $\boldsymbol{x}^\top\boldsymbol{y}=\sum_{i=0}^{n-1} x_i y_i$
 * Preconditioner applications: solve $P\boldsymbol{z}=\boldsymbol{r}$ for $\boldsymbol{z}$
 
-In PETSc, the Conjugate Gradient method can be invoked with `-ksp_type cg`. This is an example of a so-called Krylov subspace method. While Conjugate Gradient iteration only works for SPD matrices, there are other Krylov subspace methods that work for more general matrices. The most important one is the Generalised Minimal Residual (GMRES) method, which can be invoked with `-ksp_type gmres`.
+In PETSc, the Conjugate Gradient method can be invoked with `-ksp_type cg`. This is an example of a so-called Krylov subspace method. While the Conjugate Gradient iteration only works for SPD matrices, there are other Krylov subspace methods that can be used for more general matrices. The most important one is the [Generalised Minimal Residual (GMRES) method](https://mathworld.wolfram.com/GeneralizedMinimalResidualMethod.html), which can be invoked with `-ksp_type gmres`. The details are not relevant for this course, but it should be pointed out that GMRES only requires the same fundamental linear algebra operations as CG and the Richardson iteration.
 
 # Assembly of stiffness matrix
-To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work out the sparsity structure: for each row $\ell_{\text{global}}$ of $A^{(h)}$ we want to know the set of indices $\mathcal{J}_{\ell_{\text{global}}}$ such that $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $k_{\text{global}}\in \mathcal{J}_{\ell_{\text{global}}}$. To achieve this, observe that all unknowns associated with a given cell with index $\alpha$ couple to each other, i.e. $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$ the set of global unknowns associated with cell $K$. We can therefore construct the sets $\mathcal{J}_{\ell_{\text{global}}}$ by iterating over all cells of the mesh.
+To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work out the sparsity structure, i.e. build the lists containing the column indices $J$ and row-pointers $R$.
 
-Finally, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to construct the column index array $J$ and the row-pointer array $R$ as shown in the following procedure:
+## Sparsity structure
+For this observe that for each row $\ell_{\text{global}}$ of $A^{(h)}$ we need to find the set of indices $\mathcal{J}_{\ell_{\text{global}}}$ such that $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $k_{\text{global}}\in \mathcal{J}_{\ell_{\text{global}}}$. To achieve this, observe that all unknowns associated with a given cell with index $\alpha$ couple to each other, i.e. $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$ the set of global unknowns associated with cell $K$. We can therefore construct the sets $\mathcal{J}_{\ell_{\text{global}}}$ by iterating over all cells of the mesh. Once we have done this, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to construct the column index array $J$ and the row-pointer array $R$ as shown in the following procedure:
 
 **Algorithm: create sparsity structure**
 
-1. Set $\mathcal{J}_{\ell_{\text{global}}} = \emptyset$ for all $\ell_{\text{global}}=0,1,\dots,n_{\text{dof,global}}-1$
+1. Set $\mathcal{J}_{\ell_{\text{global}}} = \emptyset$ for all $\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$
 2. **for all** cells $K$ with index $\alpha$
 3. $~~~~$ Set $\mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$, the set of global indices of dofs associated with cell $K$
 4. $~~~~$ **for all** $\ell_{\text{global}}\in \mathcal{L}^{(K)}$ **do** 
@@ -2043,19 +2055,20 @@ Finally, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to const
 7. **end do** 
 8. Initialise $R = [0,0,\dots,0]\in \mathbb{R}^{n+1}$
 9. Initialise $J = []$
-10. **for** $\ell_{\text{global}}=0,1,\dots,n_{\text{dof,global}}-1$ **do**
+10. **for** $\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$ **do**
 11. $~~~~$ Append $\mathcal{J}_{\ell_{\text{global}}}$ to $J$
 12. $~~~~$ Set $R_{\ell_{\text{global}}+1} = R_{\ell_{\text{global}}} +\left|\mathcal{J}_{\ell_{\text{global}}}\right|$ 
 13. **end do**
 
-When using PETSc, the stiffness matrix can be assembled as follows. First, before iterating over the mesh, we need to work out the sparsity structure and construct the row-pointers `row_start` and column indices `col_indices` with the above algorithm. Assuming that the function space object is `fs`, this can be done with the method `sparsity_lhs(fs)`. We also need to construct the `stiffness_matrix` as a `PETSc.Mat()` object is CSR format which is initialised with the `row_start` and `col_indices` arrays:
+## CSR matrix assembly in PETSc
+When using PETSc, the stiffness matrix $A^{(h)}$ can be assembled as follows. First, before iterating over the mesh, we need to work out the sparsity structure and construct the row-pointers `row_start` and column indices `col_indices` with the above algorithm. Assuming that the function space object is `fs`, this can be done with the method `sparsity_lhs(fs)`. We also need to construct the `stiffness_matrix` as a `PETSc.Mat()` object in CSR format which is initialised with the `row_start` and `col_indices` arrays returned by `sparsity_lhs(fs)`:
 ```python
 row_start, col_indices = sparsity_lhs(fs)
 stiffness_matrix = PETSc.Mat()
 stiffness_matrix.createAIJ((fs.ndof, fs.ndof), csr=(row_start, col_indices))    
 ```
 
-Recall that we inserted the cell-local matrix `local_matrix` into the correct position in the global `stiffness_matrix` with
+Recall that previous we inserted the cell-local matrix `local_matrix` into the correct position in the global `stiffness_matrix` with
 ```python
 stiffness_matrix[np.ix_(j_g, j_g)] += local_matrix
 ```

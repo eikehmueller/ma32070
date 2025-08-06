@@ -30,7 +30,7 @@ ax.set_yscale("log")
 ax.set_ylim(1e8, 5e12)
 ax.set_xlim(np.exp(np.min(logQ)), np.exp(np.max(logQ)))
 plt.text(
-    0.1,
+    0.04,
     1.5 / t_flop,
     r"$R_{\text{flop}} = t_{\text{flop}}^{-1}$",
     fontsize=12,

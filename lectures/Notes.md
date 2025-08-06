@@ -1813,24 +1813,24 @@ The big advantage of using PETSc matrices and arrays is that this will give us a
 Consider the following $5\times 5$ matrix
 $$
 A=\begin{pmatrix}
-10.2 & 4.2 & \textcolor{lightgray}{0} &  \textcolor{lightgray}{0} &  \textcolor{lightgray}{0} \\
+10.2 & 0.8 & \textcolor{lightgray}{0}  &  -2.1 &  \textcolor{lightgray}{0}\\
 0.8 & 6.7 & \textcolor{lightgray}{0} &  \textcolor{lightgray}{0} &  \textcolor{lightgray}{0} \\
 \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 6.4 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-2.1 & \textcolor{lightgray}{0} & 3.1 & 7.2 & \textcolor{lightgray}{0} \\
+-2.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 7.2 & \textcolor{lightgray}{0} \\
 \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 9.8
  \end{pmatrix}
 $$
 which, in CSR format, corresponds to 
 
-* row pointers $R = [0, 2, 4, 5, 8, 9]$
-* column indices $J = [0, 1, 0, 1, 2, 0, 2, 3, 4]$
-* values $V = [10.2, 4.2, 0.8, 6.7, 6.4, 2.1, 3.1, 7.2, 9.8]$
+* row pointers $R = [0, 3, 5, 6, 8, 9]$
+* column indices $J = [0, 1, 3, 0, 1, 2, 0, 3, 4]$
+* values $V = [10.2, 0.8, -2.1, 0.8, 6.7, 6.4, -2.1, 7.2, 9.8]$
 
 To create this matrix, we can proceed as follows:
 ```python
-row_start = [0, 2, 4, 5, 8, 9]
-col_indices = [0, 1, 0, 1, 2, 0, 2, 3, 4]
-values = [10.2, 4.2, 0.8, 6.7, 6.4, 2.1, 3.1, 7.2, 9.8]
+row_start = [0, 3, 5, 6, 8, 9]
+col_indices = [0, 1, 3, 0, 1, 2, 0, 3, 4]
+values = [10.2, 0.8, -2.1, 0.8, 6.7, 6.4, -2.1, 7.2, 9.8]
 
 A = PETSc.Mat().createAIJWithArrays(
     (5, 5),
@@ -1955,20 +1955,22 @@ python script.py -ksp_type richardson -pc_type jacobi -ksp_monitor -ksp_rtol 1.0
 The output looks like this:
 ```
   0 KSP Residual norm 1.838591537060e+00
-  1 KSP Residual norm 8.624966321088e-01
-  2 KSP Residual norm 3.904353664205e-02
-  3 KSP Residual norm 1.230500385292e-02
-  4 KSP Residual norm 1.919611985913e-03
-  5 KSP Residual norm 6.049870199858e-04
-  6 KSP Residual norm 9.437951818362e-05
-  7 KSP Residual norm 2.974475251910e-05
-  8 KSP Residual norm 4.640257259221e-06
-  9 KSP Residual norm 1.462428569925e-06
- 10 KSP Residual norm 2.281425870008e-07
- 11 KSP Residual norm 7.190166811597e-08
- 12 KSP Residual norm 1.121684357597e-08
- 13 KSP Residual norm 3.535112890997e-09
- 14 KSP Residual norm 5.514865252918e-10
+  1 KSP Residual norm 2.788478455780e-01
+  2 KSP Residual norm 6.738101826929e-02
+  3 KSP Residual norm 1.935593309132e-02
+  4 KSP Residual norm 4.677183280874e-03
+  5 KSP Residual norm 1.343571957886e-03
+  6 KSP Residual norm 3.246618113646e-04
+  7 KSP Residual norm 9.326264962292e-05
+  8 KSP Residual norm 2.253606186213e-05
+  9 KSP Residual norm 6.473729794262e-06
+ 10 KSP Residual norm 1.564317287780e-06
+ 11 KSP Residual norm 4.493672185454e-07
+ 12 KSP Residual norm 1.085854572401e-07
+ 13 KSP Residual norm 3.119235806950e-08
+ 14 KSP Residual norm 7.537346563530e-09
+ 15 KSP Residual norm 2.165184982094e-09
+ 16 KSP Residual norm 5.231969233880e-10
 ```
 
 and we can inspect the file `ksp_view.txt` to double check that the solver options have been set correctly:
@@ -2002,13 +2004,13 @@ It is a good idea to double check the `log_view` output since it is very easy to
 ### Direct solvers
 PETSc also supports direct solvers, which are implemented as preconditioners. For example, to use Gaussian elimination, we would set `-pc_type lu`. In this case, PETSc computes the factorisation $P=A=LU$, where $L$ and $U$ and lower- and upper-triangular matrices. Knowing $L$ and $U$ we can solve $A\boldsymbol{z}=LU\boldsymbol{z}=\boldsymbol{r}$ by solving $L\boldsymbol{z}'=\boldsymbol{r}$ and then $U\boldsymbol{z}=\boldsymbol{z}'$. In this case, the iterative solver will converge in a single iteration:
 ```
-  0 KSP Residual norm 2.291531974978e+00
-  1 KSP Residual norm 2.640425190731e-16
+  0 KSP Residual norm 1.752245775437e+00
+  1 KSP Residual norm 9.063045098981e-17
 ```
 We can request that PETSc only applies the preconditioner, i.e. computes $\boldsymbol{u}^{(1)} = P^{-1}\boldsymbol{b}$ directly. Be careful with using `-ksp_type preonly`: if the preconditioner is not a direct solver, the iteration will simply stop after one iteration and return an incorrect result. For example, `-ksp_type preonly -pc_type richardson` will print out
 ```
   0 KSP Residual norm 1.405809375413e+01
-  1 KSP Residual norm 6.204942588128e+00
+  1 KSP Residual norm 2.181187602316e+00
 ```
 and it is up to us to recognise that the computed solution does not solve $A\boldsymbol{u}=\boldsymbol{b}$.
 
@@ -2036,7 +2038,24 @@ Crucially, the fundamental operations that are required are very similar to thos
 * dot-products of vectors: $\boldsymbol{x}^\top\boldsymbol{y}=\sum_{i=0}^{n-1} x_i y_i$
 * Preconditioner applications: solve $P\boldsymbol{z}=\boldsymbol{r}$ for $\boldsymbol{z}$
 
-In PETSc, the Conjugate Gradient method can be invoked with `-ksp_type cg`. This is an example of a so-called Krylov subspace method. While the Conjugate Gradient iteration only works for SPD matrices, there are other Krylov subspace methods that can be used for more general matrices. The most important one is the [Generalised Minimal Residual (GMRES) method](https://mathworld.wolfram.com/GeneralizedMinimalResidualMethod.html), which can be invoked with `-ksp_type gmres`. The details are not relevant for this course, but it should be pointed out that GMRES only requires the same fundamental linear algebra operations as CG and the Richardson iteration.
+In PETSc, the Conjugate Gradient method can be invoked with `-ksp_type cg`. If we repeat the numerical experiment above with
+
+```bash
+python script.py -ksp_type cg -pc_type jacobi -ksp_monitor -ksp_rtol 1.0E-9 -ksp_view :ksp_view.txt
+```
+
+we get the following output:
+
+```
+  0 KSP Residual norm 1.838591537060e+00
+  1 KSP Residual norm 2.299841486091e-01
+  2 KSP Residual norm 2.631059255681e-02
+  3 KSP Residual norm 2.056954907970e-17
+```
+i.e. the solver converges in substantially fewer iterations that for the Richardson solver.
+
+## Other Krylov subspace methods
+This is an example of a so-called Krylov subspace method. While the Conjugate Gradient iteration only works for SPD matrices, there are other Krylov subspace methods that can be used for more general matrices. The most important one is the [Generalised Minimal Residual (GMRES) method](https://mathworld.wolfram.com/GeneralizedMinimalResidualMethod.html), which can be invoked with `-ksp_type gmres`. The details are not relevant for this course, but it should be pointed out that GMRES only requires the same fundamental linear algebra operations as CG and the Richardson iteration.
 
 # Assembly of stiffness matrix
 To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work out the sparsity structure, i.e. build the lists containing the column indices $J$ and row-pointers $R$.

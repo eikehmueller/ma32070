@@ -2178,7 +2178,7 @@ T_{\text{Gauss}} &= \left(n^2 + 2n\right)t_{\text{mem}} + \frac{2}{3}n^3 t_{\tex
 \end{aligned}
 $$
 
-For $n\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}\approx 2$ we can safely ignore the second term in the bracket.
+For $n\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}\approx 20$ we can safely ignore the second term in the bracket.
 
 We also say that the Gaussian elemination if *FLOP-bound* whereas the CSR matrix-vector product and hence the iterative solve with the Richardson+Jacobi iteration is *memory bandwidth-bound*.
 

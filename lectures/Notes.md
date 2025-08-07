@@ -2204,7 +2204,7 @@ $$
 R = \frac{N}{T} = R_{\text{flop}} \frac{1}{1 + \frac{1}{q} \frac{t_{\text{mem}}}{t_{\text{flop}}}} \approx \begin{cases}
 R_{\text{flop}} & \text{for $q\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (compute-bound)}\\
 q\cdot BW & \text{for $q\ll \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (bandwidth-bound)}
-\end{cases}
+\end{cases}\qquad:eqn:roofline_model
 $$
 
 This shows that for compute-bound algorithms with high algorithmic intensity $q\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}$ the performance is simply given by the floating point performance $R_{\text{flop}}$. However, for algorithms with low algorithm intensity $q\ll \frac{t_{\text{mem}}}{t_{\text{flop}}}$ the effective performance is limited by the memory bandwith and given by $q\cdot BW$. This is visualised in the following plot (note the logarithmic scale on both axes):
@@ -2213,7 +2213,7 @@ This shows that for compute-bound algorithms with high algorithmic intensity $q\
 
 Since the curve looks like the roof of a build, @fig:roofline_model is also called a *"roofline plot"*.
 
-In reality, the true number of memory references will be larger than what we get from a naive count. This is because only limited amount of data can be held in small hard "caches" close to the compute unit. When operating on larger objects, data needs to be moved back and forth between these caches and the main memory. In addition, our code will contain other instructions on top of the floating point operations. Because of this, the measured performance will in fact lie below the roofline curve, as indicated by the coloured points in @fig:roofline_model. Good, efficient code (show in green) will be close to the roofline whereas poor, inefficient code (shown in red) will be well below the roofline. 
+In reality, the true number of memory references will be larger than what we get from a naive count. This is because only limited amount of data can be held in small hard "caches" close to the compute unit. When operating on larger objects, data needs to be moved back and forth between these caches and the main memory. In addition, our code will contain other instructions on top of the floating point operations. Because of this, the measured performance will in fact lie below the roofline curve defined by @eqn:roofline_model, as indicated by the coloured points in @fig:roofline_model. Good, efficient code (show in green) will be close to the roofline whereas poor, inefficient code (shown in red) will be well below the roofline. 
 
 The roofline model is an important graphical tool to assess the optimisation potential of a given piece of computer code.
 ## Comparison of different solvers

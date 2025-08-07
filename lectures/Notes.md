@@ -2216,13 +2216,31 @@ Since the curve looks like the roof of a build, @fig:roofline_model is also call
 In reality, the true number of memory references will be larger than what we get from a naive count. This is because only limited amount of data can be held in small hard "caches" close to the compute unit. When operating on larger objects, data needs to be moved back and forth between these caches and the main memory. In addition, our code will contain other instructions on top of the floating point operations. Because of this, the measured performance will in fact lie below the roofline curve defined by @eqn:roofline_model, as indicated by the coloured points in @fig:roofline_model. Good, efficient code (show in green) will be close to the roofline whereas poor, inefficient code (shown in red) will be well below the roofline. 
 
 The roofline model is an important graphical tool to assess the optimisation potential of a given piece of computer code.
+
 ## Comparison of different solvers
+In addition to optimising the code, it is equally important to pick the most efficient algorithm. In @fig:runtime_solver we compare the time spent in the linear solve for four different solver configurations:
+
+* **Gaussian elimination**
+* **Richardson + Jacobi** (`-ksp_type richardson -pc_type jacobi`)
+* **CG + Jacobi** (`-ksp_type cg -pc_type jacobi`)
+* **CG + AMG** (`-ksp_type cg -pc_type hypre`)
+
+The last setup uses a so-called algebraic multigrid method, which a particularly efficient preconditioner for elliptic problem such as the one in @eqn:pde_continuum. As @fig:runtime_solver shows, the performance differs significantly between the different setups:
 
 ![:fig:runtime_solver: Runtime for solver](figures/runtime_sparse.svg)
 
-![:fig:time_per_iteration: Time per iteration](figures/time_per_iteration_sparse.svg)
+While it is efficient for very small problems, Gaussian elimination incurs a cost that grows in proportion to $n_{\text{dof}}^3$, so the method in not competitive for very large problems. Using the Richardson iteration or CG with the Jacobi preconditioner leads to much better performance, but the runtime increases slightly faster than linear in the problem size. CG is much more efficient than the Richardson iteration. The optimal preconditioner for large problem sizes is AMG: here the cost grows in proportion to $n_{\text{dof}}$.
 
-| $\boldsymbol{n_{\text{dof}}}$ | richardson + jacobi |cg + jacobi |cg + hypre |
+### Number of solver iterations
+The total time is given the product of the number of iterations and the time per iteration,
+
+$$
+T_{\text{solve}} = n_{\text{iter}}\cdot t_{\text{iter}}
+$$
+
+To understand the growth in runtime shown in @fig:runtime_solver, let us look at the number $n_{\text{iter}}$ of solver iterations, as shown in the following table:
+
+| $n_{\text{dof}}$ | richardson + jacobi |cg + jacobi |cg + hypre |
 | :----: | :----: | :----: | :----: |
 | 25 | 3101 | 11 | 3 |
 | 81 | 7959 | 23 | 5 |
@@ -2233,13 +2251,17 @@ The roofline model is an important graphical tool to assess the optimisation pot
 | 66049 | 129815 | 450 | 6 |
 | 263169 | 447667 | 876 | 6 |
 
-* Count number of FLOPs in Richardson solve + Jacobi PC
-* Predict runtime based on $t_{\text{flop}}$ derived above
-* Discuss discrepancy of numbers
-* Count number of memory references
+For the Richardson method, the number of iterations grows extremely rapidly, approximately in proportion to the problem size. This growth is much weaker for the CG iteration with the same Jacobi preconditioner.
 
-## Roofline model
-Performance model *with* memory references
+### Time per iteration
+The time per iteration $t_{\text{iter}}$ is shown in the following figure:
+
+![:fig:time_per_iteration: Time per iteration](figures/time_per_iteration_sparse.svg)
+
+In all cases $t_{\text{iter}}$ is proportional to the problem size. Although one iteration with the AMG preconditioner is more than one magnitude larger that for the Jacobi preconditioner, this is more than compensated by the fact that CG with the AMG preconditioner requires substantially fewer iterations to converge.
+
+For the Richardson iteration and CG with Jacobi preconditioner it is also very easy to understand why $t_{\text{iter}}\propto n_{\text{dof}}$: the fundamental operations required in these algorithms are sparse matrix-vector products, scaling and addition of vectors and dot-product; the Jacobi preconditioner also requires one FLOP per vector entry. The cost of each of these operations is proportional to the problem size $n_{\text{dof}}$.
+
 
 
 # Parallel computing

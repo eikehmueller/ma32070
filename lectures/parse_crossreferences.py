@@ -13,10 +13,14 @@ with open(filename, "r", encoding="utf8") as f:
     matches = re.findall(":(fig:[a-zA-Z0-9_]+):", content)
     r = {f"{figure}": f"Figure {j+1}" for j, figure in enumerate(matches)}
     for reference, replacement in r.items():
-        content = re.sub(f"[:@]{reference}", replacement, content)
+        content = re.sub(
+            f":{reference}", f'<a name="reference">{replacement}</a>', content
+        )
+        content = re.sub(
+            f"@{reference}", f'<a href="#reference">{replacement}</a>', content
+        )
 
-with open(filename, "w", encoding="utf8") as f:
-    f.write(content)
+print(content)
 
 """
 Take me to <a href="#pookie">pookie</a>

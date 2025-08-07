@@ -39,7 +39,7 @@ jobs:
                     --metadata-file metadata.yml
                     index.md
             - run: |
-                python3 lectures/parse_crossreferences.py lectures/Notes.md > lectures/Notes.md
+                python3 lectures/parse_crossreferences.py lectures/Notes.md > lectures/_Notes.md
             - name: Convert lecture markdown to html with pandoc
               uses: docker://pandoc/latex:3.7.0.2
               with:
@@ -52,7 +52,7 @@ jobs:
                     --resource-path lectures
                     --metadata-file metadata.yml
                     --template uikit.html
-                    lectures/Notes.md
+                    lectures/_Notes.md
             - name: Convert Exercises markdown to html with pandoc
               uses: docker://pandoc/latex:3.7.0.2               
               with:

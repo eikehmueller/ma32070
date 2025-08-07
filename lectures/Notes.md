@@ -7,10 +7,6 @@
 *&#169; Eike Mueller, University of Bath 2025. These notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited. html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
 
 ----
-Take me to [foo](#foo) <a href="#foo">foo</a>
-
-... 
-
 
 # Mathematical background
 In the following we will give a first overview of the finite element method and review some of the fundamental ideas as to why it works. The details will be discuss in later lectures.
@@ -18,20 +14,19 @@ In the following we will give a first overview of the finite element method and 
 ## Model problem
 In this course we will focus on the following partial differential equation (PDE) of the diffusion-reaction type in some bounded domain $\Omega\subset \mathbb{R}^2$:
 $$
--\nabla \cdot (\kappa \nabla  u(x)) + \omega\; u(x) = f(x) \qquad \text{for $x\in \Omega$}\qquad(\dagger)
+-\nabla \cdot (\kappa \nabla  u(x)) + \omega\; u(x) = f(x) \qquad \text{for $x\in \Omega$}\qquad:eqn:pde_continuum
 $$
 with boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial \Omega$. We assume that $\omega, \kappa>0$ are positive constants and $f(x)$, $g(x)$ are given functions. Using zero-based indexing (as is used in Python) we will write $x=(x_0,x_1)\in\mathbb{R}^2$ such that $\nabla=(\frac{\partial}{\partial x_0},\frac{\partial}{\partial x_1})^\top$ is the nabla-operator.
 
 Note that in the case $\kappa=1$, $\omega=0$ the problem would reduce to the Poisson equation $-\Delta u(x)=f(x)$. Unfortunately, for the given boundary condition the solution of the Poisson equation is not unique (if $u(x)$ is a solution then so is $u(x)+C$ for an arbitrary constant $C$), which is why we do not consider this case here. However, the methods developed in this course can be readily applied to this setup, provided we extend them to treat Dirichlet boundary conditions of the form $u(x)=\widetilde{g}(x)$ for $x\in\partial \Omega$ and some given function $\widetilde{g}(x)$.
-<a name="foo">this is foo</a>
 
 ## Weak solutions
-To solve $(\dagger)$, we seek solutions $u(x)$ in some function space $\mathcal{V}$; we will discuss suitable choices for $\mathcal{V}$ below. In a finite element setting we usually only aim to determine the solution in the **weak sense**: Find $u(x)\in \mathcal{V}$ such that
+To solve @eqn:pde_continuum, we seek solutions $u(x)$ in some function space $\mathcal{V}$; we will discuss suitable choices for $\mathcal{V}$ below. In a finite element setting we usually only aim to determine the solution in the **weak sense**: Find $u(x)\in \mathcal{V}$ such that
 $$
 \int_\Omega \left(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\right)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v(x)\in \mathcal{V}$}.
 $$
 
-Observe that in contrast to $(\dagger)$ we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of $(\dagger)$ (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course.
+Observe that in contrast to @eqn:pde_continuum we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of @eqn:pde_continuum (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course.
  
 After integrating the first term under the integral on the left-hand side by parts, the weak form becomes
 $$
@@ -65,7 +60,7 @@ and that $a(\cdot,\cdot)$ is symmetric:
   
 With these (bi-)linear forms, we can formulate the weak problem as follows: Find $u(x)\in \mathcal{V}$ such that
 $$
-a(u,v) = b(v) \qquad \text{for all $v(x)\in \mathcal{V}$}.\qquad(\ddagger)
+a(u,v) = b(v) \qquad \text{for all $v(x)\in \mathcal{V}$}.\qquad:eqn:weak_problem_continuum
 $$
 
 ### Choice of function space $\mathcal{V}$
@@ -79,13 +74,13 @@ $$
 and then set $L_2(\Omega) = \left\{u(x) : ||u||_{L_2(\Omega)}<\infty\right\}$ (the space of square-integrable real functions) and $H^1(\Omega) = \left\{u(x) : ||u||_{H_1(\Omega)}<\infty\right\}$ (the space of square-integrable functions with square-integrable first derivative).
 
 ## Finite element solutions
-Now, obviously it is not possible to solve $(\ddagger)$ on a computer since $\mathcal{V}$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $\mathcal{V}_h\subset \mathcal{V}$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. In this case the problem becomes: find $u_h\in \mathcal{V}_h$ such that 
+Now, obviously it is not possible to solve @eqn:weak_problem_continuum on a computer since $\mathcal{V}$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $\mathcal{V}_h\subset \mathcal{V}$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. In this case the problem becomes: find $u_h\in \mathcal{V}_h$ such that 
 $$
-a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h(x)\in \mathcal{V}_h$ }.\qquad(\ddagger_h)
+a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h(x)\in \mathcal{V}_h$ }.\qquad:eqn:weak_problem_discretised
 $$
 
 ### Existence and convergence of the solution
-It can be shown that $(\ddagger)$ and $(\ddagger_h)$ have unique solutions provided the linear form $b(\cdot)$ and the bilinear form $a(\cdot,\cdot)$ satisfy the following two conditions:
+It can be shown that @eqn:weak_problem_continuum and @eqn:weak_problem_discretised have unique solutions provided the linear form $b(\cdot)$ and the bilinear form $a(\cdot,\cdot)$ satisfy the following two conditions:
 
 * **Boundedness**: there exists some positive constant $C_+ > 0$ such that 
 $$a(u,v) \le C_+ \|u\|_{\mathcal{V}} \|v\|_{\mathcal{V}} \qquad\text{and}$$
@@ -94,7 +89,7 @@ $$b(v) \le C_+ \|v\|_{\mathcal{V}} \qquad\text{for all $u,v\in \mathcal{V}$}.$$
 $$ 
 a(u,u) \ge C_- \|u\|_{\mathcal{V}}^2 \qquad\text{for all $u\in \mathcal{V}$}.$$
 
-It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cdot)$ defined above. Furthermore, the solutions satisfy $\|u\|_{\mathcal{V}},\|u_h\|_{\mathcal{V}}\le C:=C_+/C_-$ and the difference between the solution $u_h(x)$ of $(\ddagger_h)$ and the solution $u(x)$ of $(\ddagger)$ can be bounded as follows:
+It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cdot)$ defined above. Furthermore, the solutions satisfy $\|u\|_{\mathcal{V}},\|u_h\|_{\mathcal{V}}\le C:=C_+/C_-$ and the difference between the solution $u_h(x)$ of @eqn:weak_problem_discretised and the solution $u(x)$ of @eqn:weak_problem_continuum can be bounded as follows:
 $$
 \|u_h - u\|_{\mathcal{V}} \le C \min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}.
 $$
@@ -107,9 +102,9 @@ This is why the finite element works: it can be used to systematically approxima
 ## Reduction to linear algebra problem
 We now discuss how $u_h$ can be found in practice. Since $\mathcal{V}_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_k(x)\}_{k=0}^{n-1}$ such that every function $u_h(x)\in \mathcal{V}_h$ can be written as
 $$
-u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$.}\qquad(\star)
+u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$.}\qquad:eqn:linear_algebra_problem
 $$
-The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h(x)$. Picking $v_h(x)=\Phi^{(h)}_\ell(x)$ and inserting the expansion of $u_h(x)$ in $(\star)$ into $(\ddagger_h)$ we obtain
+The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h(x)$. Picking $v_h(x)=\Phi^{(h)}_\ell(x)$ and inserting the expansion of $u_h(x)$ in @eqn:linear_algebra_problem into @eqn:weak_problem_discretised we obtain
 $$
 b^{(h)}_i:=b(\Phi^{(h)}_\ell) = a\left(\sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k,\Phi^{(h)}_\ell\right) = 
 \sum_{k=0}^{n-1} u^{(h)}_k a\left( \Phi^{(h)}_\ell,\Phi^{(h)}_k\right),
@@ -121,18 +116,18 @@ $$
 
 Although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $\mathbb{R}^n$, they are constructed in a fundamentally different way:
 
-* The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_\ell^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in $(\star)$.
+* The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_\ell^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in @eqn:linear_algebra_problem.
 * In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_\ell^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
 
 The reason for this is that $b(\cdot)$ is an element of the dual space $\mathcal{V}^*$, which consists of all linear functionals defined on the space $\mathcal{V}$.
 
 ### Solution procedure
-In summary, the solution procedure for $(\ddagger_h)$ is this:
+In summary, the solution procedure for @eqn:weak_problem_discretised is this:
 
 1. Assemble the matrix $A^{(h)}$.
 2. Assemble the right-hand-side vector $\boldsymbol{b}^{(h)}$.
 3. Solve the linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ for $\boldsymbol{u}^{(h)}$.
-4. Reconstruct the solution $u_h(x)$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in $(\star)$.
+4. Reconstruct the solution $u_h(x)$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in @eqn:linear_algebra_problem.
 
 In the rest of this course we will discuss how each of these steps can be implemented in Python. For the solution of the linear algebra system we will use the [PETSc](https://petsc.org/) library.
 
@@ -555,7 +550,7 @@ $$
 &\approx 
 \sum_{q=0} ^{N_q-1} w_q \left(u_{\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(\zeta^{(q)})\right)^2 \\
 &= \sum_{q=0} ^{N_q-1} w_q e_q^2\quad\text{with}\;\; e_q := u^{(\text{exact})}_q - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell T_{q\ell},\;u^{(\text{exact})}_q := u_{\text{exact}}(\zeta^{(q)}).
-\end{aligned}\qquad(\dagger)
+\end{aligned}\qquad:eqn:error_norm
 $$
 
 where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$.
@@ -619,10 +614,10 @@ A general **floating point number system** $\mathbb{F}$ is specified by four int
 The set $\mathbb{F}$ consists of all numbers $x$ of the form
 
 $$
-x = \pm \underbrace{\left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} + \dots+d_{p-1}\beta^{1-p}\right)}_{\text{mantissa}}\cdot\beta^E\qquad(\dagger)
+x = \pm \underbrace{\left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} + \dots+d_{p-1}\beta^{1-p}\right)}_{\text{mantissa}}\cdot\beta^E\qquad:eqn:floating_point_representation
 $$
 
-where the coefficients $d_i\in \{0,1,2,\dots,\beta-1\}$ and the **exponent** $E$ with $L\le E\le U$ are natural numbers. The expression in brackets is called the **mantissa**. Note that although $\beta,p,L,U$ as well as $E,d_i$ are integers, they represent real numbers through $(\dagger)$.
+where the coefficients $d_i\in \{0,1,2,\dots,\beta-1\}$ and the **exponent** $E$ with $L\le E\le U$ are natural numbers. The expression in brackets is called the **mantissa**. Note that although $\beta,p,L,U$ as well as $E,d_i$ are integers, they represent real numbers through @eqn:floating_point_representation.
   
 The floating point number system $\mathbb{F}$ is called *normalised* if $d_0>0$; this makes each number in $\mathbb{F}$ unique.
 
@@ -634,7 +629,7 @@ $$
 
 in precision 4, base 10 arithmetic. It cannot be represented exactly in precision 3, base 10 arithmetic (and would have to be approximated as $\left(2+3\cdot 10^{-1}+5\cdot 10^{-2}\right)\cdot 10^2 = 235$ in this case).
 
-The smallest positive normalised number of the from $(\dagger)$ is obtained by setting $d_0=1$, $d_i=0$ for $i>0$ and $E=L$. This results in $1\cdot \beta^L$ which is also is called the **underflow threshold**.
+The smallest positive normalised number of the from @eqn:floating_point_representation is obtained by setting $d_0=1$, $d_i=0$ for $i>0$ and $E=L$. This results in $1\cdot \beta^L$ which is also is called the **underflow threshold**.
 
 The largest positive normalised number in $\mathbb{F}$ is obtained by setting $d_i=\beta-1$, for $i\le 0$ and $E=U$. This results in
 
@@ -682,7 +677,7 @@ Since $d_0=1$ it appears that we can not store the number zero. To represent thi
 * Infinity ($\pm\infty$) is stored as `s111 1111 1000 0000 0000 0000 0000 0000` where again $s$ denotes the sign. This result can arise from division by zero.
 
 ### Machine epsilon
-From $(\dagger)$ it can be seen that gaps between numbers in $\mathbb{F}$ increase for larger numbers. For each exponent $E$ the interval $[2^E,2^{E+1}]$ is discretised into $2^{p-1}$ equal pieces of size $2^{1-p}\cdot 2^E$, as shown in the following figure:
+From @eqn:floating_point_representation it can be seen that gaps between numbers in $\mathbb{F}$ increase for larger numbers. For each exponent $E$ the interval $[2^E,2^{E+1}]$ is discretised into $2^{p-1}$ equal pieces of size $2^{1-p}\cdot 2^E$, as shown in the following figure:
 
 ![:fig:floating_point_spacing: floating point number spacing](figures/floating_point_spacing.svg)
 
@@ -957,7 +952,7 @@ $$
 and
 
 $$
-\|(I-X)^{-1}\|_\infty \le \sum_{j=0}^{\infty} \|X^j\|_\infty \le \sum_{j=0}^{\infty} \|X\|_\infty^j = (1-\|X\|_\infty)^{-1} \qquad(\star)
+\|(I-X)^{-1}\|_\infty \le \sum_{j=0}^{\infty} \|X^j\|_\infty \le \sum_{j=0}^{\infty} \|X\|_\infty^j = (1-\|X\|_\infty)^{-1} \qquad:eqn:X_bound
 $$
 
 Now write
@@ -966,7 +961,7 @@ $$
 A + \delta A = (I+\delta A\;A^{-1})A
 $$
 
-and set $X=-\delta A\;A$. By the assumption $\|X\|_\infty\le \frac{1}{2}<1$ and we can apply $(\star)$ to show that $I+\delta A\;A^{-1}$ is non-singular and that
+and set $X=-\delta A\;A$. By the assumption $\|X\|_\infty\le \frac{1}{2}<1$ and we can apply @eqn:X_bound to show that $I+\delta A\;A^{-1}$ is non-singular and that
 
 $$
 \|(I+\delta A\;A)^{-1}\|_\infty\le (1-\|\delta A\;A^{-1}\|_\infty)^{-1} \le 2.

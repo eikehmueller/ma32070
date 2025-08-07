@@ -202,7 +202,7 @@ $$
 $$
 These functions are visualised in the following figure (red arrows indicate gradients):
 
-![Basis functions for quadratic finite element](figures/quadratic_element.png)
+![:fig:basis_functions_quadratic: Basis functions for quadratic finite element](figures/quadratic_element.png)
 
 ## Formal definition of finite elements
 It turns out that it is advantageous to define finite elements in a more general sense. Mirroring this more abstract mathematical definition in the Python code will help us to structure the code in a sensible way that will allow its easy adaptation to specific cases. For this we first need to introduce the notion of the dual $\mathcal{V}^*$ of a given function space $\mathcal{V}$.
@@ -481,7 +481,7 @@ $$
 
 The following figure shows the quadrature points on $S$ and $\widehat{K}$ for $n_q=2$.
 
-![Quadrature points on $S$ and $\widehat{K}$](figures/quadrature.png)
+![:fig:quadrature_points: Quadrature points on $S$ and $\widehat{K}$](figures/quadrature.png)
 
 Based on this construction we find that
 $$
@@ -600,7 +600,7 @@ Obviously, it is crucial to minimise the total error, which is made up of the th
 ## Results from numerical experiment
 As a motivation, consider the solution of our model equation $-\kappa \Delta u + \omega u = f$ on the reference triangle for $\kappa = 0.9$, $\omega = 0.4$. The boundary conditions and right-hand side were chosen such that the exact solution is given by $u_{\text{exact}}(x) = \exp[-\frac{1}{2\sigma^2}(x-x_0)^2]$ with $\sigma = 0.5$, $x_0 = (0.6, 0.25)$. The following figure shows the squared error $\|u_{\text{exact}}-u\|^2_{L_2(\widehat{K})}$ as a function of the polynomial degree $p$:
 
-![Relative error](figures/error_reference_triangle.png)
+![:fig:relative_error: Relative error](figures/error_reference_triangle.png)
 
 Results are shown both for single precision and double precision arithmetic. We would expect that the error decreases for higher values of $p$ since the solution can be approximated better by higher degree polynomials. Although initially this is indeed the case, it appears that the error can not be reduced below a certain value and it in fact increases for larger values of $p$. To understand this behaviour, we need to discuss how (real) numbers are represented on a computer.
 
@@ -651,7 +651,7 @@ The most commonly used floating point systems on modern computers are single- an
 #### Single precision
 `np.float32`: One binary digit (=bit) is used to store the sign, 8 for the exponent and 23 for the mantissa $\Rightarrow$ 32 bits (4 bytes) in total.
 
-![bits single precision](figures/bits_single_precision.svg)
+![:fig:bit_single_precision: bits single precision](figures/bits_single_precision.svg)
 
 * $p=24$
 * $L=-126$, $U=127$
@@ -662,7 +662,7 @@ The most commonly used floating point systems on modern computers are single- an
 #### Double precision
 `np.float64`: One binary digit is used to store the sign, 11 for the exponent and 52 for the mantissa $\Rightarrow$ 64 bits (8 bytes) in total.
 
-![bits double precision](figures/bits_double_precision.svg)
+![:fig:bit_double_precision: bits double precision](figures/bits_double_precision.svg)
 
 * $p=53$
 * $L=-1022$, $U=1023$.
@@ -679,7 +679,7 @@ Since $d_0=1$ it appears that we can not store the number zero. To represent thi
 ### Machine epsilon
 From $(\dagger)$ it can be seen that gaps between numbers in $\mathbb{F}$ increase for larger numbers. For each exponent $E$ the interval $[2^E,2^{E+1}]$ is discretised into $2^{p-1}$ equal pieces of size $2^{1-p}\cdot 2^E$, as shown in the following figure:
 
-![floating point number spacing](figures/floating_point_spacing.svg)
+![:fig:floating_point_spacing: floating point number spacing](figures/floating_point_spacing.svg)
 
 Setting $E=0$, we see that the size of gap of numbers in $\mathbb{F}$ around $1$ is
 
@@ -1001,7 +1001,7 @@ So far, we have only solved our model PDE on a single reference triangle. We now
 
 The following figure shows a two-dimensional mesh with $n_{\text{vertex}}=6$ vertices, $n_{\text{facet}}=10$ facets and $n_{\text{cell}}=5$ cells in which all topological entities are labelled by their co-dimension and a unique number that can later be used to identify the entity.
 
-![simple triangular mesh](figures/simple_mesh.svg)
+![:fig:triangular_mesh: simple triangular mesh](figures/simple_mesh.svg)
 
 ## Topology
 The mesh topology describes which entities are connected to which other entities. For example, each cell has exactly three facets and each facet is defined by exactly two vertices, and the topology tells us which specific facets/vertices these are: in the example above, cell $(0,1)$ has the facets $(1,3), (1,2), (1,5)$ and facet $(1,2)$ has the endpoints $(2,1), (2,2)$.
@@ -1059,7 +1059,7 @@ $$
 
 The following figure shows another example (created with `RectangleMesh(Lx=1.0, Ly=1.0, nref=1)`, see below). The global indices of vertices, facets and cells are plotted separatedly.
 
-![Rectangle mesh](figures/rectangle_mesh.svg)
+![:fig:rectangle_mesh: Rectangle mesh](figures/rectangle_mesh.svg)
 
 Referring to the local numbering of facets and vertices in the lower right plot we read off:
 
@@ -1120,7 +1120,7 @@ $$
 \mathcal{V}_h := \{u\in H^1(\Omega_h): u|_K(x) = \widehat{u}_K(\widehat{x})\quad \text{for some $\widehat{u}_K\in\mathcal{P}_p(\widehat{K})$ with $x=X_K(\widehat{x})$ for all cells $K\in\Omega_h$}\}
 $$
 
-![pullback to reference element](figures/reference_mapping.svg)
+![:fig:pullback: pullback to reference element](figures/reference_mapping.svg)
 
 We can now use the basis of $\mathcal{P}_p(\widehat{K})$ that we constructed in one of the previous lectures to represent the functions $\widehat{u}_K$. However, care has to be taken to ensure that the function $u\in\mathcal{V}_h$ defined on the entire domain is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
 
@@ -1146,7 +1146,7 @@ The facet-unknowns are ordered along the orientation of each edge.
 
 The following figure shows an example for the $p=3$ Lagrange element. For this mesh there are $N_{\text{vertex}}=6$ unknowns associated with the vertices, $N_{\text{facet}}=10\cdot 2=20$ unknowns associated with the facets and $N_{\text{interior}} = 5$ unknowns associated with the cell interiors.
 
-![simple triangular mesh with unknowns](figures/simple_mesh_with_dof_numbers.svg)
+![:fig:triangular_mesh_with_unknowns: simple triangular mesh with unknowns](figures/simple_mesh_with_dof_numbers.svg)
 
 ### Local-to-global map
 When we introduced the concept of a finite element, we only considered *local* basis functions $\phi_\ell$. Since the functions in $\mathcal{V}_h$ are continuous, the global basis functions $\Phi^{(h)}_{\ell_{\text{global}}}$ are a combination of local basis functions: for example, global functions associated with a vertex are a combination of local basis functions on the cells that touch this vertex. Hence, in general the dof-index $\ell_{\text{global}}$ is related to several pairs $(\alpha,\ell)$ of cell indices $\alpha$ and local dof-indices $\ell$.
@@ -1322,7 +1322,7 @@ $$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$$
 
 #### Illustration
 The following figure visualises the assembly of the global vector $\boldsymbol{b}^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global vector entry $b^{(h)}_8$.
-![Global assembly of right hand side vector](figures/global_assembly_rhs.svg)
+![:fig:global_assembly_rhs: Global assembly of right hand side vector](figures/global_assembly_rhs.svg)
 
 #### Implementation
 The summation $\sum_q w_q F_q T_{q\ell} D_q$ of the local vector entries can be realised with numpy's [`einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) method.
@@ -1393,7 +1393,7 @@ $$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{q\ell a}(J^{
 
 #### Illustration
 The following figure visualises the assembly of the stiffness matrix $A^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global matrix entry $A^{(h)}_{8,8}$.
-![Global assembly of stiffness matrix](figures/global_assembly_stiffness_matrix.svg)
+![:fig:global_assembly_stiffness: Global assembly of stiffness matrix](figures/global_assembly_stiffness_matrix.svg)
 
 #### Implementation
 Again, the summation $\sum_{c} J_{qca}J_{qcb}$ to compute the matrix entries of $J^{(2)}_q$ and the sums $\sum_{qab}w_q  T^\partial_{q\ell a}(J^{(2)}_q)_{ab} T^\partial_{qkb} D_q$, $\sum_{q}w_q  T_{q\ell}T_{qk} D_q$ required for the construction of the local matrix entries can be realised with numpy's [`einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) method.
@@ -1448,7 +1448,7 @@ with measure_time("some_code"):
 
 The following figure shows the time spent in different parts of the code (left) and the reduction of the $L_2$ error with increasing resolution. In both cases the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
 
-![Runtime (left) and $L_2$ error (right)](figures/runtime_dense.svg)
+![:fig:runtime_and_error: Runtime (left) and $L_2$ error (right)](figures/runtime_dense.svg)
 
 The right plot demonstrates that the $L_2$ error decreases in proportion to $h^2\propto n_{\text{dof}}^{-1}$. As can be seen from the left plot, for larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. However, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
 
@@ -1620,7 +1620,7 @@ floating point operations per second. Obviously, this number will be machine dep
 # Sparse matrix representations
 The stiffness matrices we obtain from out finite element discretisation contain a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid:
 
-![Stiffness matrix](figures/stiffness_matrix.png)
+![:fig:stiffness_matrix: Stiffness matrix](figures/stiffness_matrix.png)
 
 Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or $7.6\%$ are nonzero, which corresponds to an average number of around $\overline{n}_{\text{nz}} = 6.14$ nonzeros per row. For large $n$, the number of non-zeros per row will remain roughly the same, leading to an even poorer fill-ratio.
 
@@ -2207,13 +2207,13 @@ q\cdot BW & \text{for $q\ll \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (bandwidth-b
 \end{cases}
 $$
 
-![Roofline model](figures/roofline.svg)
+![:fig:roofline_model: Roofline model](figures/roofline.svg)
 
 ## Comparison of different solvers
 
-![Runtime for solver](figures/runtime_sparse.svg)
+![:fig:runtime_solver: Runtime for solver](figures/runtime_sparse.svg)
 
-![Time per iteration](figures/time_per_iteration_sparse.svg)
+![:fig:time_per_iteration: Time per iteration](figures/time_per_iteration_sparse.svg)
 
 | $\boldsymbol{n_{\text{dof}}}$ | richardson + jacobi |cg + jacobi |cg + hypre |
 | :----: | :----: | :----: | :----: |

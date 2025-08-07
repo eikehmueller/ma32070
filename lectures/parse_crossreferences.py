@@ -1,3 +1,16 @@
+"""Script for inserting html cross-references into markdown
+
+The script searches for all occurences of :fig:xxx and replaces them
+with "Figure n", where n is the consecutive number of the figure, and
+it inserts a html anchor at the same position. In addition, it
+replaces all occurances of @fig:xxx by a html link to the anchor.
+
+It also searches for all occurances of :eqn:xxx and replaces them
+with "(n)", where n is the consecutive number of the equation, and it
+inserts a html anchor just before the equation. In addition, it
+replaces all occurances of @eqn:xxx by a html link to the anchor.
+"""
+
 import sys
 import re
 

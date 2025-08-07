@@ -38,6 +38,8 @@ jobs:
                     --output index.html
                     --metadata-file metadata.yml
                     index.md
+            - run: |
+                python3 parse_crossreferences.py Notes.md
             - name: Convert lecture markdown to html with pandoc
               uses: docker://pandoc/latex:3.7.0.2
               with:

@@ -137,7 +137,7 @@ We start by solving the weak form of the PDE for a special case, namely a domain
 ## Reference triangle
 Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the unit triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$, shown in red in the following figure. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$:
 
-![reference triangle](figures/reference_triangle.svg)
+![:fig:reference_triangle: reference triangle](figures/reference_triangle.svg)
 
 In the following we will also refer to this as the *reference triangle*.
 
@@ -165,9 +165,9 @@ We order these points (and the associated basis functions $\phi_\ell(x)$) as fol
 * points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in the figure above and finally
 * points associated with the interior $K^0$ of the cell $\widehat{K}$; there are $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$ points of this type.
 
-This is illustrated in the following figure, which shows the ordering of the points for $p=1,2,3,4$:
+This is illustrated in @fig:lagrange_nodes, which shows the ordering of the points for $p=1,2,3,4$:
 
-![Nodes of Lagrange elements](figures/lagrange_nodes.svg)
+![:fig:lagrange_nodes: Nodes of Lagrange elements](figures/lagrange_nodes.svg)
 
 The associated finite elements are known as **Lagrange elements**.
 

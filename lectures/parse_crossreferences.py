@@ -17,3 +17,11 @@ with open(filename, "r", encoding="utf8") as f:
 
 with open(filename, "w", encoding="utf8") as f:
     f.write(content)
+
+"""
+Take me to <a href="#pookie">pookie</a>
+
+... 
+
+<a name="pookie">this is pookie</a>
+"""

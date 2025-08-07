@@ -27,7 +27,7 @@ with open(filename, "r", encoding="utf8") as f:
     r = {f"{figure}": f"Figure {j+1}" for j, figure in enumerate(matches)}
     for reference, replacement in r.items():
         pos = content.rfind("![", 0, content.find(f":{reference}"))
-        content = content[:pos] + f'<a name="{reference}"></a>' + content[pos:]
+        content = content[:pos] + f'<a name="{reference}"></a>' + "\n" + content[pos:]
         content = re.sub(f":{reference}", f"{replacement}", content)
         content = re.sub(
             f"@{reference}", f'<a href="#{reference}">{replacement}</a>', content

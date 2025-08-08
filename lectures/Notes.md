@@ -135,7 +135,7 @@ In the rest of this course we will discuss how each of these steps can be implem
 We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
 
 ## Reference triangle
-Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the unit triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$, shown in red in the following figure. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$:
+Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the unit triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$:
 
 ![:fig:reference_triangle: reference triangle](figures/reference_triangle.svg)
 
@@ -154,7 +154,7 @@ $$
     0 & \text{otherwise}.
 \end{cases}
 $$
-A possible choice of points is given by (see figure below for some examples)
+A possible choice of points is given by (see @fig:lagrange_nodes below for some examples)
 $$
 \{\xi^{(\ell)}\}_{\ell=0}^{\nu-1} = \left\{\left(\frac{\ell_0}{p},\frac{\ell_1}{p}\right) \quad \text{for $\ell_0,\ell_1\in\mathbb{N}$ with $0\le \ell_0\le \ell_1 \le p$}\right\}.
 $$
@@ -162,7 +162,7 @@ $$
 We order these points (and the associated basis functions $\phi_\ell(x)$) as follows:
 
 * Points associated with the three vertices $v_0$, $v_1$, $v_2$ (in this order); there is $\nu_{\text{vertex}}=1$ point per vertex,
-* points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in the figure above and finally
+* points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in @fig:reference_triangle and finally
 * points associated with the interior $K^0$ of the cell $\widehat{K}$; there are $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$ points of this type.
 
 This is illustrated in @fig:lagrange_nodes, which shows the ordering of the points for $p=1,2,3,4$:
@@ -297,7 +297,7 @@ $$
 3(\nu_{\text{vertex}} + \nu_{\text{facet}}) + j & \text{if $E$ is the interior}
 \end{cases}
 $$
-This is illustrated for the polynomial Lagrange element in the figure above.
+This is illustrated for the polynomial Lagrange element in @fig:lagrange_nodes.
 
 ## Vandermonde matrix
 Having picked the nodes, how can we construct the nodal basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$ for a given set of nodes $\{\lambda_\ell\}_{\ell=0}^{\nu-1}$? For this, assume that we know some set of basis functions $\{\theta_m(x)\}_{m=0}^{\nu-1}$ of $\mathcal{V}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_m(x)\}_{m=0}^{\nu-1}$ is a basis of $\mathcal{V}$, we can write for each $k=0,1,\dots,\nu-1$
@@ -999,7 +999,7 @@ So far, we have only solved our model PDE on a single reference triangle. We now
 | facet (edge) $F$    | $1$            | $1$              |
 | vertex $v$          | $0$            | $2$              |
 
-The following figure shows a two-dimensional mesh with $n_{\text{vertex}}=6$ vertices, $n_{\text{facet}}=10$ facets and $n_{\text{cell}}=5$ cells in which all topological entities are labelled by their co-dimension and a unique number that can later be used to identify the entity.
+ @fig:triangular_mesh shows a two-dimensional mesh with $n_{\text{vertex}}=6$ vertices, $n_{\text{facet}}=10$ facets and $n_{\text{cell}}=5$ cells in which all topological entities are labelled by their co-dimension and a unique number that can later be used to identify the entity.
 
 ![:fig:triangular_mesh: simple triangular mesh](figures/simple_mesh.svg)
 
@@ -1057,7 +1057,7 @@ I^{K\rightarrow v} &= \begin{pmatrix}
 \end{aligned}
 $$
 
-The following figure shows another example (created with `RectangleMesh(Lx=1.0, Ly=1.0, nref=1)`, see below). The global indices of vertices, facets and cells are plotted separatedly.
+ @fig:rectangle_mesh shows another example (created with `RectangleMesh(Lx=1.0, Ly=1.0, nref=1)`, see below). The global indices of vertices, facets and cells are plotted separatedly.
 
 ![:fig:rectangle_mesh: Rectangle mesh](figures/rectangle_mesh.svg)
 
@@ -1144,7 +1144,7 @@ We number the unknowns by using the first $N_{\text{vertex}}$ indices for unknow
 
 The facet-unknowns are ordered along the orientation of each edge.
 
-The following figure shows an example for the $p=3$ Lagrange element. For this mesh there are $N_{\text{vertex}}=6$ unknowns associated with the vertices, $N_{\text{facet}}=10\cdot 2=20$ unknowns associated with the facets and $N_{\text{interior}} = 5$ unknowns associated with the cell interiors.
+@fig:triangular_mesh_with_unknowns shows an example for the $p=3$ Lagrange element. For this mesh there are $N_{\text{vertex}}=6$ unknowns associated with the vertices, $N_{\text{facet}}=10\cdot 2=20$ unknowns associated with the facets and $N_{\text{interior}} = 5$ unknowns associated with the cell interiors.
 
 ![:fig:triangular_mesh_with_unknowns: simple triangular mesh with unknowns](figures/simple_mesh_with_dof_numbers.svg)
 
@@ -1321,7 +1321,7 @@ $$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$$
 6. **end do**
 
 #### Illustration
-The following figure visualises the assembly of the global vector $\boldsymbol{b}^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global vector entry $b^{(h)}_8$.
+@fig:global_assembly_rhs visualises the assembly of the global vector $\boldsymbol{b}^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global vector entry $b^{(h)}_8$.
 ![:fig:global_assembly_rhs: Global assembly of right hand side vector](figures/global_assembly_rhs.svg)
 
 #### Implementation
@@ -1392,7 +1392,7 @@ $$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{q\ell a}(J^{
 14. **end do**
 
 #### Illustration
-The following figure visualises the assembly of the stiffness matrix $A^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global matrix entry $A^{(h)}_{8,8}$.
+@fig:global_assembly_stiffness visualises the assembly of the stiffness matrix $A^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global matrix entry $A^{(h)}_{8,8}$.
 ![:fig:global_assembly_stiffness: Global assembly of stiffness matrix](figures/global_assembly_stiffness_matrix.svg)
 
 #### Implementation
@@ -1446,7 +1446,7 @@ with measure_time("some_code"):
     # Code to measure
 ```
 
-The following figure shows the time spent in different parts of the code (left) and the reduction of the $L_2$ error with increasing resolution. In both cases the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
+@fig:runtime_and_error shows the time spent in different parts of the code (left) and the reduction of the $L_2$ error with increasing resolution. In both cases the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
 
 ![:fig:runtime_and_error: Runtime (left) and $L_2$ error (right)](figures/runtime_dense.svg)
 

@@ -34,13 +34,13 @@ $$
 $$
 Crucially, only first derivatives of the solution $u(x)$ and test function $v(x)$ are required now. Using the boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial\Omega$, we can rewrite this as
 $$
-\int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx  = \int_\Omega f(x) v(x)\;dx + \int_{\partial \Omega} g(x) v(x)\;ds.
+\int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx  = \int_\Omega f(x) v(x)\;dx + \int_{\partial \Omega} g(x) v(x)\;ds.\qquad:eqn:weak_form_explicit
 $$
 where now only the left hand side depends on the unknown function $u(x)$.
 
-Let us define the symmetric *bilinear form* $a(\cdot,\cdot): \mathcal{V}\times \mathcal{V} \rightarrow \mathbb{R}$  with
+Let us define the symmetric *bilinear form* $a(\cdot,\cdot): \mathcal{V}\times \mathcal{V} \rightarrow \mathbb{R}$ with
 $$
-a(u,v) := \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx
+a(u,v) := \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx\qquad:eqn:definition_bilinear_a
 $$
 and the linear form $b(\cdot):\mathcal{V}\rightarrow \mathbb{R}$ with
 $$
@@ -58,7 +58,7 @@ and that $a(\cdot,\cdot)$ is symmetric:
 
 * $a(v,u) = a(u,v)$ for all $u,v\in \mathcal{V}$
   
-With these (bi-)linear forms, we can formulate the weak problem as follows: Find $u(x)\in \mathcal{V}$ such that
+With these (bi-)linear forms, we can formulate the weak problem in @eqn:weak_form_explicit as follows: Find $u(x)\in \mathcal{V}$ such that
 $$
 a(u,v) = b(v) \qquad \text{for all $v(x)\in \mathcal{V}$}.\qquad:eqn:weak_problem_continuum
 $$
@@ -111,7 +111,7 @@ b^{(h)}_i:=b(\Phi^{(h)}_\ell) = a\left(\sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k,\
 $$
 where we used the symmetry and bi-linearity of $a(\cdot,\cdot)$. Defining the vector $\boldsymbol{b}^{(h)} := (b(\Phi^{(h)}_0),b(\Phi^{(h)}_1,\dots,b(\Phi^{(h)}_{n-1})))$ and the $n\times n$ matrix $A^{(h)}$ with $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_\ell,\Phi^{(h)}_k\right)$ we arrive at the following linear system for the dof-vector $\boldsymbol{u}^{(h)}$:
 $$
-A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
+A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.\qquad:eqn:linear_system_Aub
 $$
 
 Although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $\mathbb{R}^n$, they are constructed in a fundamentally different way:
@@ -126,7 +126,7 @@ In summary, the solution procedure for @eqn:weak_problem_discretised is this:
 
 1. Assemble the matrix $A^{(h)}$.
 2. Assemble the right-hand-side vector $\boldsymbol{b}^{(h)}$.
-3. Solve the linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ for $\boldsymbol{u}^{(h)}$.
+3. Solve the linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ in @eqn:linear_system_Aub for $\boldsymbol{u}^{(h)}$.
 4. Reconstruct the solution $u_h(x)$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in @eqn:linear_algebra_problem.
 
 In the rest of this course we will discuss how each of these steps can be implemented in Python. For the solution of the linear algebra system we will use the [PETSc](https://petsc.org/) library.
@@ -259,7 +259,7 @@ The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.
 Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative.
 
 ### Node numbering
-As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom. For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$. These entities are
+As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom. For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$ in @fig:reference_triangle. These entities are
 
 * the vertices $v_0$, $v_1$, $v_2$ in this order
 * the facets $F_0$, $F_1$, $F_2$ in this order
@@ -309,10 +309,10 @@ $$
 for some coefficients $c_m^{(k)}$. Further, since per definition $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ is a *nodal* basis of $\mathcal{V}$ and $\lambda_\ell$ are linear functionals we know that
 
 $$
-\delta_{\ell k} = \lambda_\ell(\phi_k) = \sum_{m=0}^{\nu-1} \underbrace{c_m^{(k)}}_{C_{mk}} \underbrace{\lambda_\ell(\theta_m)}_{V_{\ell m}}.
+\delta_{\ell k} = \lambda_\ell(\phi_k) = \sum_{m=0}^{\nu-1} \underbrace{c_m^{(k)}}_{C_{mk}} \underbrace{\lambda_\ell(\theta_m)}_{V_{\ell m}}.\qquad:eqn:nodal_property
 $$
 
-If we define the $\nu\times\nu$ matrices $V$, $C$ with $V_{\ell m} := \lambda_\ell(\theta_m)$ and $C_{mk}:=c_m^{(k)}$, then this equation can be written in matrix form as
+If we define the $\nu\times\nu$ matrices $V$, $C$ with $V_{\ell m} := \lambda_\ell(\theta_m)$ and $C_{mk}:=c_m^{(k)}$, then equation @eqn:nodal_property can be written in matrix form as
 $$
 VC = \mathbb{I}\quad \Leftrightarrow \quad C = V^{-1}
 $$
@@ -336,7 +336,7 @@ $$
 This allows us to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, we have that
 
 $$
-T_{r\ell}(\boldsymbol{\zeta}) := \phi_\ell(\zeta^{(r)}) = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \theta_m(\zeta^{(r)}) = \sum_{m=0}^{\nu-1}V_{rm}(\boldsymbol{\zeta})C_{m\ell}
+T_{r\ell}(\boldsymbol{\zeta}) := \phi_\ell(\zeta^{(r)}) = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \theta_m(\zeta^{(r)}) = \sum_{m=0}^{\nu-1}V_{rm}(\boldsymbol{\zeta})C_{m\ell}\qquad:eqn:tabulation_basis 
 $$
 
 or, more compactly:
@@ -354,7 +354,7 @@ $$
 T^\partial_{r\ell a}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_\ell}{\partial x_a}(\zeta^{(r)}) 
  = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \frac{\partial \theta_m}{\partial x_a}(\zeta^{(r)}) \\
  &= V^\partial_{rma}(\boldsymbol{\zeta})C_{m\ell}.
- \end{aligned}
+ \end{aligned}\qquad:eqn:tabulation_basis_gradients
 $$
 
 ## Implementation
@@ -416,7 +416,7 @@ We also call the degree of the highest polynomial that can be integrated exactly
 $$
 \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1
 $$
-While so far we have only considered inetgration over the interval $[-1,+1]$, it turns out that integration over more general domains and higher-dimensional can be reduced to this case.
+While so far we have only considered integration over the interval $[-1,+1]$, it turns out that integration over more general domains and higher-dimensional can be reduced to this case.
 
 ## Integration along a line
 Next, imagine that we want to integrate a function along a straight line $\mathcal{C}\subset \mathbb{R}^2$ connecting two points $a,b\in \mathbb{R}^2$. To achieve this, pick a parametrisation $\gamma: [-1,1] \rightarrow \mathbb{R}^2$ of this line with $\gamma(-1)=a$, $\gamma(1)=b$
@@ -457,7 +457,7 @@ $$
 \end{aligned}
 $$
 
-(see figure below)
+(see fig:quadrature_points)
 
 ### Integration over $\boldsymbol{S}$
 Since $S=[-1,+1]\times[-1,+1]$ is the product of two intervals, we can integrate functions over $S$ by picking quadrature points and weights $\mathcal{Q}_{n_q}^{(\text{GL},S)}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{N_q-1}$ with $N_q = n_q(n_q+1)$ and
@@ -520,7 +520,7 @@ A^{(h)}_{\ell k} = a(\phi_\ell,\phi_k) &= \int_{\widehat{K}} \left(\kappa \sum_{
 +\omega \sum_{q=0}^{N_q-1} w_qT_{q\ell}(\boldsymbol{\zeta})T_{qk}(\boldsymbol{\zeta})
 \end{aligned}
 $$
-Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. We used the tabulation matrix $T$ of the basis function and the corresponding matrix $T^\partial$ for the partial derivatives.
+Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. We used the tabulation matrix $T$ of the basis function given in @eqn:tabulation_basis and the corresponding matrix $T^\partial$ given in @eqn:tabulation_basis_gradients for the partial derivatives.
 
 If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$.
 
@@ -746,11 +746,11 @@ x_0 \\ x_1
 =
 \begin{pmatrix}
 1 \\ 0
-\end{pmatrix}
+\end{pmatrix}\qquad:eqn:perturbed_system
 $$
 It is easy to see that the solution of the perturbed problem is $x_0=-\frac{1}{1+10^{-20}}$, $x_1=+\frac{1}{1+10^{-20}}$, which is very close to the solution of the unperturbed system.
 
-Let us solve the perturbed system numerically. For this, we write it as
+Let us solve the perturbed system in @eqn:perturbed_system numerically. For this, we write it as
 
 $$
 \begin{aligned}
@@ -795,7 +795,7 @@ A &= \begin{pmatrix}
 1.7071067811865475 + 0.8535533905932737 \cdot\epsilon & 0.7071067811865475 - 0.3535533905932738 \cdot\epsilon \\
 0.7071067811865475 - 0.3535533905932738 \cdot\epsilon & 0.2928932188134525 + 0.1464466094067262\cdot\epsilon
 \end{pmatrix}
-\end{aligned}
+\end{aligned}\qquad:eqn:contructed_A
 $$
 
 and vector
@@ -808,10 +808,10 @@ $$
 \approx
 \begin{pmatrix}
 1.3065629648763766\\0.5411961001461970
-\end{pmatrix}
+\end{pmatrix}\qquad:eqn:contructed_b
 $$
 
-It can be shown that independent of $\epsilon$ the exact solution of the linear system $A\boldsymbol{u}=\boldsymbol{b}$ is given by
+It can be shown that independent of $\epsilon$ the exact solution of the linear system $A\boldsymbol{u}=\boldsymbol{b}$ with $A$ in @eqn:constructed_A and $\boldsymbol{b}$ in @eqn:contructed_b is given by
 
 $$
 \boldsymbol{u}_{\text{exact}} = 
@@ -1127,7 +1127,7 @@ We can now use the basis of $\mathcal{P}_p(\widehat{K})$ that we constructed in 
 For this, recall that any function $u_h(x)$ in the function space $\mathcal{V}_h$ can be written as
 
 $$
-u(x) = \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
+u_h(x) = \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
 $$
 
 where the $\Phi^{(h)}_{\ell_{\text{global}}}$ are the *global* basis functions and $u^{(h)}_{\ell_{\text{global}}}$ are entries of the *global* dof-vector $\boldsymbol{u}^{(h)}$. We need to think about how the indices $\ell_{\text{global}}$ are associated with the mesh entities.
@@ -1168,10 +1168,10 @@ The necessary functionality is implemented in the `FunctionSpace` class in [`fem
 * The method `local2global(self, alpha, ell)` implements the map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ described above. If the parameter `ell` is a single integer index in the range $0,1,\dots,\nu-1$, the method returns a single number $\ell_{\text{global}}$. If `ell` is an iterable (such as a list `[0,3,4]` or `range(1,6,2)`) the global index will be computed for each local index and the method returns a list.
 
 ### Functions
-To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a `numpy` array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u^{(h)}(x)\in \mathcal{V}_h$ given by
+To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a `numpy` array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h(x)\in \mathcal{V}_h$ given by
 
 $$
-u^{(h)}(x) = \sum_{\ell_{\text{global}}=0}^{N-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
+u_h(x) = \sum_{\ell_{\text{global}}=0}^{N-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
 $$
 
 To store *co-functions* such as $b(\cdot)\in\mathcal{V}_h^*$ with (for example)
@@ -1436,7 +1436,7 @@ m(u,v) = \int_\Omega u(x) v(x)\;dx
 \end{aligned}
 $$
 
-The left-hand side can be computed by using $a(\cdot,\cdot)$ with $\omega=1$, $\kappa=0$; the resulting matrix is also known as the "mass matrix". The right-hand side can be computed by taking passing $u_{\text{exact}}$ to `assemble_rhs()`, which assembles $b(\cdot)$ for a given function.
+The left-hand side can be computed by using $a(\cdot,\cdot)$ in @eqn:definition_bilinear_a with $\omega=1$, $\kappa=0$; the resulting matrix is also known as the "mass matrix". The right-hand side can be computed by taking passing $u_{\text{exact}}$ to `assemble_rhs()`, which assembles $b(\cdot)$ for a given function.
 
 ## Performance
 To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows

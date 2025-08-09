@@ -14,6 +14,14 @@ replaces all occura
 import sys
 import re
 
+
+def sort_dict(d):
+    """Sort dictionary by length of keys in descending order."""
+    keys = list(r.keys())
+    keys.sort(key=lambda item: len(item), reverse=True)
+    return {key: r[key] for key in keys}
+
+
 if len(sys.argv) < 2:
     print("Usage: python parse_crossreferences.py <filename>")
     sys.exit(1)
@@ -25,6 +33,7 @@ with open(filename, "r", encoding="utf8") as f:
     # figures
     matches = re.findall(":(fig:[a-zA-Z0-9_]+)", content)
     r = {f"{figure}": f"Figure {j+1}" for j, figure in enumerate(matches)}
+    r = sort_dict(r)
     for reference, replacement in r.items():
         pos = content.rfind("![", 0, content.find(f":{reference}"))
         content = content[:pos] + f'<a name="{reference}"></a>' + "\n\n" + content[pos:]
@@ -35,6 +44,7 @@ with open(filename, "r", encoding="utf8") as f:
     # equations
     matches = re.findall(":(eqn:[a-zA-Z0-9_]+)", content)
     r = {f"{equation}": f"({j+1})" for j, equation in enumerate(matches)}
+    r = sort_dict(r)
     for reference, replacement in r.items():
         pos = content.rfind("$$", 0, content.find(f":{reference}"))
         content = content[:pos] + f'<a name="{reference}"></a>' + content[pos:]

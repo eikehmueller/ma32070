@@ -231,8 +231,8 @@ def test_threepoint_quadrature_monomial(s, expected):
   - The function `g` which describes the Neumann boundary function $g(x)$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Implement a method `error_nrm(u, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e^{(h)}\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
-  - The vector $\boldsymbol{u}^{(h)}$ that defines the function $u^{(h)}(x)$ 
+* Implement a method `error_nrm(u, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e_h\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
+  - The vector $\boldsymbol{u}^{(h)}$ that defines the function $u_h_(x)$ 
   - A function $u_{\text{exact}}$ which represents the exact solution and which can be evaluated at arbirtrary points $\zeta\in \widehat{K}$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
@@ -244,8 +244,8 @@ def test_threepoint_quadrature_monomial(s, expected):
   - location of peak $x_0 = (0.6, 0.25)^\top$
   - Coefficient of diffusion term $\kappa = 0.9$
   - Coefficient of zero order term $\omega = 0.4$
-* Compute the error norm $\|e^{(h)}\|_{L_2(\widehat{K})}$.
-* How does $\|e^{(h)}\|_{L_2(\widehat{K})}$ depend on the polynomial degree $p$ of the Lagrange element?
+* Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$.
+* How does $\|e_h\|_{L_2(\widehat{K})}$ depend on the polynomial degree $p$ of the Lagrange element?
 * What happens for large values of $p$?
 
 ## Practicalities
@@ -315,17 +315,17 @@ f_prime(x)
 ```
 
 # Exercise: Computation of global $L_2$-error
-As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e^{(h)}(x)=u^{(h)}_{\text{exact}}(x)-u^{(h)}(x)$ is the difference between the exact solution and numerical solution $u^{(h)}(x)$. Expanding $u^{(h)}(x)$ in terms of the basis functions $\phi_\ell(x)$, we can write the error $e^{(h)}$ as
+As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e_h_(x)=u_{\text{exact}}(x)-u_h_(x)$ is the difference between the exact solution and numerical solution $u_h(x)$. Expanding $u_h_(x)$ in terms of the basis functions $\Phi_{\ell_{\text{globa;}}}(x)$, we can write the error $e_h_$ as
 
 $$
-e^{(h)}(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
+e_h_(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
 $$
 
 The square of the $L_2$ norm of the error can be computed by summing over all triangles in the mesh
 
 $$
 \begin{aligned}
-\|e^{(h)}\|_{L_2(\Omega)}^2 &= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell_{\text{global}}}(x)\right)^2\;dx\\
+\|e_h\|_{L_2(\Omega)}^2 &= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell_{\text{global}}}(x)\right)^2\;dx\\
 &= \sum_{K\in\Omega_h} \int_{K} \left(u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)\right)^2\;dx\\
 \end{aligned}
 $$
@@ -334,7 +334,7 @@ Changing variables to integrate over the reference cell $\widehat{K}$ this leads
 
 $$
 \begin{aligned}
-\|e^{(h)}\|_{L_2(\Omega)}^2 &= \sum_{K\in\Omega_h} \int_{\widehat{K}} \left(\widehat{u}_{K,\text{exact}}(\widehat{x}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell}(\widehat{x})\right)^2\left|\det{J(\widehat{x})}\right|\;dx
+\|e_h\|_{L_2(\Omega)}^2 &= \sum_{K\in\Omega_h} \int_{\widehat{K}} \left(\widehat{u}_{K,\text{exact}}(\widehat{x}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell}(\widehat{x})\right)^2\left|\det{J(\widehat{x})}\right|\;dx
 \end{aligned}
 $$
 
@@ -344,7 +344,7 @@ Finally, we approximate integration by numerical quadrature to obtain
 
 $$
 \begin{aligned}
-\|e^{(h)}\|_{L_2(\Omega)}^2 &\approx 
+\|e_h\|_{L_2(\Omega)}^2 &\approx 
 \sum_{K\in\Omega_h}\sum_{q=0} ^{N_q-1} w_q \left(\widehat{u}_{K,\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_\ell(\zeta^{(q)})\right)^2 \left|\det{J(\zeta^{(q)})}\right|.
 \end{aligned}
 $$

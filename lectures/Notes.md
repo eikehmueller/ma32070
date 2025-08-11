@@ -536,17 +536,17 @@ $$
 with $f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$ and $g_{q}(\boldsymbol{\zeta}_{F_m}) := g(\zeta_{F_m}^{(q)})$. We choose the quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},F_m)} = \{w_{F_m,q},\zeta^{(q)}_{F_m}\}_{q=0}^{n_q-1}$ with $n_q=p+1$ on the facets $F_m$.
 
 ### Error
-The error $e_h_(x)=u_{\text{exact}}(x)-u_h_(x)$ is the difference between the exact and numerical solution. Expanding $u_h_$ in terms of the basis functions $\phi_\ell(x)$, can write $e_h_$ as
+The error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact and numerical solution. Expanding $u_h$ in terms of the basis functions $\phi_\ell(x)$, can write $e_h$ as
 
 $$
-e_h_(x) = u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x).
+e_h(x) = u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x).
 $$
 
 The square of the $L_2$ norm of the error is given by
 
 $$
 \begin{aligned}
-\|e_h_\|_{L_2(\widehat{K})}^2 &= \int_{\widehat{K}} \left(u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\right)^2\;dx\\
+\|e_h\|_{L_2(\widehat{K})}^2 &= \int_{\widehat{K}} \left(u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\right)^2\;dx\\
 &\approx 
 \sum_{q=0} ^{N_q-1} w_q \left(u_{\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(\zeta^{(q)})\right)^2 \\
 &= \sum_{q=0} ^{N_q-1} w_q e_q^2\quad\text{with}\;\; e_q := u^{(\text{exact})}_q - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell T_{q\ell},\;u^{(\text{exact})}_q := u_{\text{exact}}(\zeta^{(q)}).

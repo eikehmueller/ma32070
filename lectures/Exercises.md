@@ -424,7 +424,7 @@ By using suitable functions (see [`petsc4py.Mat` documentation](https://petsc.or
 * $AB^\top$
 * $A+B$
 
-# Exercise: PETSc solver options
+# Exercise: Gauss Seidel iteration
 Instead of $P=D$, we could also use the lower triangular part of $A$ and set $P=D+L$ where
 $$
 L = \begin{cases}
@@ -433,3 +433,62 @@ A_{ij} & \text{if $i<j$} \\
 \end{cases}
 $$
 Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)z=r$ can be solved row-by-row, i.e. by computing first $\boldsymbol{z}_0 = \boldsymbol{r}_0/A_{00}$, then computing $\boldsymbol{z}_1 = (\boldsymbol{r}_1 - A_{10}\boldsymbol{z}_0)/A_{11}$, $\boldsymbol{z}_2=(\boldsymbol{r}_2 - A_{20}\boldsymbol{z}_0 - A_{21}\boldsymbol{z}_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`. Run the code with this preconditioner - how does the number of iterations change?
+
+# Exercise: PETSc solver options
+For this exercise we consider the $n\times n$ matrix $A$ which is of the following form
+
+$$
+A_{ij} = \begin{cases}
+2 + h^2 & \text{if $i=j$}\\
+-1 & \text{if $j=i\pm 1$ } \\
+-1 & \text{if ($i=0$ and $j=n-1$) or ($i=n-1$ and $j=0$)}
+\end{cases}
+$$
+
+where $h=1/n$. In other words, the entries on the main diagonal are $2+h^2$ while the entries on the first two sub-diagonals and in the upper right and lower right corner are $-1$.
+
+An example for $n=8$ is shown here:
+$$
+A = \begin{pmatrix}
+  2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1\\
+ -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1\\
+ -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2
+\end{pmatrix}
+$$
+
+In this exercise we will use different PETSc solvers and preconditioners to solve the linear system
+
+$$
+A \boldsymbol{u} = \boldsymbol{b}
+$$
+
+for a given right hand side $\boldsymbol{b}$.
+
+1. Use `PETSc.Mat().createAIJWithArrays()` to create the matrix $A$ in PETSc CSR format
+2. Use `PETSc.Vec().createWithArray()` to create a right-hand side vector $\boldsymbol{b}$ which contains random values. You can use the following code to create a numpy array of length $n$ with normally distributed random values:
+```Python
+rng = np.random.default_rng(seed=1241773)
+array = rng.normal(size=n)
+```
+3. Create a PETSc `KSP` object, which can be configured with PETSc options passed from the command line.
+4. Solve the system for different problem sizes $n=32,64,128,256,512$ to a (relative) tolerance of $10^{-9}$ on the preconditioned residual. Investigate the number of iterations and runtime.
+
+Use the following solvers
+
+* Conjugate Gradient (CG)
+* Generalised minimal residual (GMRES)
+* Richardson iteration
+
+and preconditioners
+
+* Jacobi
+* Successive overrelaxation (SOR)
+* Algebraic multigrid (`hypre`)
+* Incomplete LU factorisation (ILU)
+
+Do all solver/preconditioner combinations work as expected?

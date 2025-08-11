@@ -232,7 +232,7 @@ def test_threepoint_quadrature_monomial(s, expected):
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
 * Implement a method `error_nrm(u, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e_h\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
-  - The vector $\boldsymbol{u}^{(h)}$ that defines the function $u_h_(x)$ 
+  - The vector $\boldsymbol{u}^{(h)}$ that defines the function $u_h(x)$ 
   - A function $u_{\text{exact}}$ which represents the exact solution and which can be evaluated at arbirtrary points $\zeta\in \widehat{K}$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
@@ -315,10 +315,10 @@ f_prime(x)
 ```
 
 # Exercise: Computation of global $L_2$-error
-As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e_h_(x)=u_{\text{exact}}(x)-u_h_(x)$ is the difference between the exact solution and numerical solution $u_h(x)$. Expanding $u_h_(x)$ in terms of the basis functions $\Phi_{\ell_{\text{globa;}}}(x)$, we can write the error $e_h_$ as
+As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{globa;}}}(x)$, we can write the error $e_h$ as
 
 $$
-e_h_(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
+e_h(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
 $$
 
 The square of the $L_2$ norm of the error can be computed by summing over all triangles in the mesh

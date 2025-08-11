@@ -417,6 +417,7 @@ C_{\text{backsub}}(n) &= \sum_{i=0}^{n-1} (2(n-1-i)+1) \\
 &= n(n-1)+n = n^2
 \end{aligned}
 $$
+
 # Exercise: PETSc sparse matrices
 Create two $3\times 3$ sparse PETSc matrices $A$, $B$.
 

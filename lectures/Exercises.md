@@ -491,7 +491,21 @@ and preconditioners
 
 * Jacobi
 * Successive overrelaxation (SOR)
-* Algebraic multigrid (`hypre`)
+* Algebraic multigrid (`gamg`)
 * Incomplete LU factorisation (ILU)
 
 Do all solver/preconditioner combinations work as expected?
+
+Visualise the results.
+
+### Practicalities
+* You can extract the number of solver iterations with `ksp.getIterationNumber()`
+* If you pass `-ksp_converged_reason `, PETSc will inform you whether the solver has converged.
+* You can measure the time spent in the solve by using the `meausure_time` decorator from `fem.utilities`:
+```Python
+from fem.utilities import measure_time
+
+with measure_time("solve"):
+    # call solver here
+
+```

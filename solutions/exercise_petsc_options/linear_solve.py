@@ -1,13 +1,21 @@
 import sys
 import petsc4py
+import argparse
+from fem.utilities import measure_time
 
 petsc4py.init(sys.argv)
 
 from petsc4py import PETSc
 import numpy as np
 
-n = 512
-h_sq = 1 / n**2
+# Read problem size from command line
+parser = argparse.ArgumentParser()
+parser.add_argument("n", type=int, action="store", help="problem size")
+args, _ = parser.parse_known_args()
+print(" n = ", args.n)
+n = args.n
+
+h_sq = 1 / n
 
 col_indices = list(
     np.asarray(
@@ -25,20 +33,7 @@ ksp.setFromOptions()
 rng = np.random.default_rng(seed=1241773)
 b = PETSc.Vec().createWithArray(rng.normal(size=n))
 u = PETSc.Vec().createWithArray(np.zeros(n))
-ksp.solve(b, u)
-
-A.convert("dense")
-mat = A.getDenseArray()
-nrow, ncol = mat.shape
-
-epsilon = 1e-12
-for i in range(nrow):
-
-    s = " & ".join(
-        [
-            f"{x:3.0f}" if abs(x) > epsilon else r"\textcolor{lightgray}{0}"
-            for x in A[i, :]
-        ]
-    )
-    s += r"\\"
-    # print(s)
+with measure_time("solve"):
+    ksp.solve(b, u)
+niter = ksp.getIterationNumber()
+print("number of iterations = ", niter)

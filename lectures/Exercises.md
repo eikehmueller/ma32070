@@ -369,6 +369,7 @@ This leads to the following procedure:
 Implement the above algorithm.
    
 # Exercise: Computational cost of backsubstitution
+
 ## Solution of upper triangular systems
 Consider a $n\times n$ upper triangular system, such as in the following example ($n=5$):
 $$
@@ -420,6 +421,7 @@ $$
 Create two $3\times 3$ sparse PETSc matrices $A$, $B$.
 
 By using suitable functions (see [`petsc4py.Mat` documentation](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html)), compute
+
 * $AB$ 
 * $AB^\top$
 * $A+B$

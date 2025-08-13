@@ -388,10 +388,10 @@ More specifically, each finite element should provide the following functionalit
 * Return the number of nodes associated with each topological entity. For this, we define abstract properties `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior` for $\nu_{\text{vertex}}$, $\nu_{\text{facet}}$ and $\nu_{\text{interior}}$ respectively. The base class also contains a property `ndof` which returns $\nu =3(\nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}$.
 * Tabulate the evaluation of all dofs for a given function $\hat{f}$, i.e. compute the vector $(\lambda_0(\hat{f}),\lambda_1(\hat{f}),\dots,\lambda_{\nu-1}(\hat{f}))^\top\in\mathbb{R}^\nu$. This is done with the abstract method `tabulate_dofs(fhat)` which gets passed a Python function `fhat`.
 * Tabulate the basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$ which are stored as a $n\times 2$ array. This computes the $n\times\nu$ matrix $T$ with $T_{r\ell}=\phi_\ell(\zeta^{(r)})$ with the abstract method `tabulate(zeta)`. If only a single point $\zeta\in\mathbb{R}^2$ is passed to the subroutine it should return a vector of length $\nu$.
-* Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$  which are stored as a $n\times 2$ array. This computes the rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{r\ell a}=\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(r)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta\in\mathbb{R}^2$ is passed to the subroutine it should return a matrix of shape $d\times 2$.
+* Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$  which are stored as a $n\times 2$ array. This computes the rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{r\ell a}=\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(r)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta\in\mathbb{R}^2$ is passed to the subroutine it should return a matrix of shape $\nu\times 2$.
 * Implement the element dof-map $\mu_{\text{dof}}(E,\rho,j)$ and its inverse. This is done with the method `dofmap(entity_type,rho,j)` and its inverse `inverse_dofmap(ell)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously computed values.
 
-It is crucial to observe that we carefully avoided including specific functionality (such as assuming that the basis functions are Lagrange polynomials and the degrees of freedom are point-evaluations): the base class is consistent with Ciarlet's abstract definition of the finite element, i.e. the code should mirror the mathematical structure.
+It is crucial to observe that we carefully avoided including specific functionality (such as assuming that the basis functions are Lagrange polynomials and the degrees of freedom are point-evaluations): the base class is consistent with Ciarlet's abstract definition of the finite element and the code mirrors the mathematical structure.
 
 ### Concrete implementations
 Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class. These concrete classes have to provide concrete implementations of the following methods/properties:
@@ -406,7 +406,7 @@ The [`finiteelements`](https://github.com/eikehmueller/finiteelements) library p
 * The bi-linear element is implemented as the class `LinearElement` in [`fem/linearelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py)
 * The general polynomial element is implemented as the class `PolynomialElement` in [`fem/polynomialelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/polynomialelement.py)
 
-These elements can be used as follows:
+If the [`finiteelements`](https://github.com/eikehmueller/finiteelements) library has been installed, these elements can be imported as follows:
 ```python
 from fem.linearelement import LinearElement
 from fem.polynomialelement import PolynomialElement
@@ -422,7 +422,7 @@ $$
 \int_{-1}^{+1} f(z)\;dz \approx \sum_{q=0}^{n_q-1} \widetilde{w}_q f(\widetilde{\zeta}^{(q)})
 $$
 
-A particular quadrature rule $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ is defined by the sets of points $\widetilde{\zeta}^{(q)}$ and corresponding weights $w_q$. Here we will consider Gauss-Legendre quadrature $\mathcal{Q}^{(\text{GL})}_{n_q}$, for which the points are the roots of the [Legendre polynomial](https://mathworld.wolfram.com/LegendrePolynomial.html) $P_{n_q}(\zeta)$ and the weights are given by $\widetilde{w}_q = \frac{2}{(1-(\widetilde{\zeta}^{(q)})^2)(P_{n_q}'(\widetilde{\zeta}^{(q)}))^2}$. The points and weights can be constructed with [numpy.polynomial.legendre.leggauss](https://numpy.org/doc/stable/reference/generated/numpy.polynomial.legendre.leggauss.html):
+A particular quadrature rule $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ is defined by the sets of points $\widetilde{\zeta}^{(q)}$ and corresponding weights $\widetilde{w}_q$. Here we will consider Gauss-Legendre quadrature $\mathcal{Q}^{(\text{GL})}_{n_q}$, for which the points are the roots of the [Legendre polynomial](https://mathworld.wolfram.com/LegendrePolynomial.html) $P_{n_q}(\zeta)$ and the weights are given by $\widetilde{w}_q = \frac{2}{(1-(\widetilde{\zeta}^{(q)})^2)(P_{n_q}'(\widetilde{\zeta}^{(q)}))^2}$. The points and weights can be constructed with [numpy.polynomial.legendre.leggauss](https://numpy.org/doc/stable/reference/generated/numpy.polynomial.legendre.leggauss.html):
 
 ```
 points, weights = numpy.polynomial.legendre.leggauss(n)
@@ -451,6 +451,8 @@ then
 $$
 \int_{\mathcal{C}} f(x)\;ds = \frac{\|b-a\|}{2} \int_{-1}^{+1} f(\gamma(z))\;dz
 $$
+where $\|\cdot\|$ is the Euclidean norm with $\|x\| = \sqrt{x_0^2+x_1^2}$ for $x\in\mathbb{R}^2$.
+
 Let $\mathcal{Q}_{n_q}^{(\text{GL})}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ be the Gauss-Legendre quadrature rule for the interval $[-1,+1]$. Then we obtain
 
 $$
@@ -474,7 +476,7 @@ To numerically integrate functions over the reference triangle $\widehat{K}$, fi
 
 $$
 \begin{aligned}
-\tau(\widetilde{x}) = \left(\frac{1}{2}(1+\widetilde{x}_0),\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\right)^\top \in \widehat{K}
+\tau(\widetilde{x}) = \left(\frac{1}{2}(1+\widetilde{x}_0),\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\right)^\top \in \widehat{K}\qquad:eqn:duffy_transform
 \end{aligned}
 $$
 
@@ -487,10 +489,10 @@ $$
 \widetilde{\zeta}^{(q)} = \left(\widetilde{\zeta}^{(q_0)}_0,\widetilde{\zeta}^{(q_1)}_1\right)^\top\in\mathbb{R}^2,\quad \widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1} \qquad \text{where $q=n_q q_0+q_1$}.
 $$
 
-Here $\mathcal{Q}_{n_q+1}^{(\text{GL})} = \{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}$ and $\mathcal{Q}_{n_q}^{(\text{GL})} =\{(\widetilde{\zeta}^{(q_1)}_0,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}$ are Gauss-Legendre quadrature rules with $n_q+1$ and $n_q$ points respectively (we need to integrate more accurately in the $0$-direction since an additional factor of $\widetilde{x}_0$ is introduced by the Duffy-transform). 
+Here $\mathcal{Q}_{n_q+1}^{(\text{GL})} = \{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}$ and $\mathcal{Q}_{n_q}^{(\text{GL})} =\{(\widetilde{\zeta}^{(q_1)}_1,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}$ are Gauss-Legendre quadrature rules with $n_q+1$ and $n_q$ points respectively (we need to integrate more accurately in the $0$-direction since an additional factor of $\widetilde{x}_0$ will be introduced by the Duffy-transform). 
 
 ### Integration over $\boldsymbol{\widehat{K}}$
-The quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},\widehat{K})} = \{(\zeta^{(q)},w_q)\}_{q=0}^{N_q-1} = \tau(\mathcal{Q}^{(S)}_{n_q})$ over $\widehat{K}$ is then obtained as
+Using the Duffy transform in @eqn:duffy_transform, the quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},\widehat{K})} = \{(\zeta^{(q)},w_q)\}_{q=0}^{N_q-1} = \tau(\mathcal{Q}^{(S)}_{n_q})$ over $\widehat{K}$ is then obtained as
 
 $$
 \begin{aligned}

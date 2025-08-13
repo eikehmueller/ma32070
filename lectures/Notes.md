@@ -518,7 +518,7 @@ All quadrature rules are characterised by the weights and points. We therefore i
 
 * `nodes` the quadrature nodes $\{\zeta^{(q)}\}_{q=0}^{n_q-1}$, represented by an array of shape $n_q\times 2$
 * `weights` the quadrature weights $\{w_q\}_{q=0}^{n_q-1}$, represented by an array of length $n_q$
-* `degree_of_precision` tegree of precision, i.e. the highest polynomial degree that can be integrated exactly
+* `degree_of_precision` degree of precision, i.e. the highest polynomial degree that can be integrated exactly
 
 ### Concrete implementations
 The file [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py) also contains specific subclasses

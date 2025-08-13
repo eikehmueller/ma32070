@@ -25,8 +25,7 @@ To solve @eqn:pde_continuum, we seek solutions $u(x)$ in some function space $\m
 $$
 \int_\Omega \left(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\right)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v(x)\in \mathcal{V}$}.
 $$
-
-Observe that in contrast to @eqn:pde_continuum we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of @eqn:pde_continuum (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course.
+The function $v(x)$ is often called a *test function*. Observe that in contrast to @eqn:pde_continuum we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of @eqn:pde_continuum (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course.
  
 After integrating the first term under the integral on the left-hand side by parts, the weak form becomes
 $$
@@ -102,11 +101,11 @@ This is why the finite element works: it can be used to systematically approxima
 ## Reduction to linear algebra problem
 We now discuss how $u_h$ can be found in practice. Since $\mathcal{V}_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_k(x)\}_{k=0}^{n-1}$ such that every function $u_h(x)\in \mathcal{V}_h$ can be written as
 $$
-u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_j(x) \qquad\text{for all $x\in\Omega$.}\qquad:eqn:linear_algebra_problem
+u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k(x) \qquad\text{for all $x\in\Omega$.}\qquad:eqn:linear_algebra_problem
 $$
-The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h(x)$. Picking $v_h(x)=\Phi^{(h)}_\ell(x)$ and inserting the expansion of $u_h(x)$ in @eqn:linear_algebra_problem into @eqn:weak_problem_discretised we obtain
+The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h(x)$. Below we will sometimes write $n_{\text{dof}}$ instead of $n$ for the total number of degrees of freedom. Picking $v_h(x)=\Phi^{(h)}_\ell(x)$ and inserting the expansion of $u_h(x)$ in @eqn:linear_algebra_problem into @eqn:weak_problem_discretised we obtain
 $$
-b^{(h)}_i:=b(\Phi^{(h)}_\ell) = a\left(\sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k,\Phi^{(h)}_\ell\right) = 
+b^{(h)}_\ell:=b(\Phi^{(h)}_\ell) = a\left(\sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k,\Phi^{(h)}_\ell\right) = 
 \sum_{k=0}^{n-1} u^{(h)}_k a\left( \Phi^{(h)}_\ell,\Phi^{(h)}_k\right),
 $$
 where we used the symmetry and bi-linearity of $a(\cdot,\cdot)$. Defining the vector $\boldsymbol{b}^{(h)} := (b(\Phi^{(h)}_0),b(\Phi^{(h)}_1,\dots,b(\Phi^{(h)}_{n-1})))$ and the $n\times n$ matrix $A^{(h)}$ with $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_\ell,\Phi^{(h)}_k\right)$ we arrive at the following linear system for the dof-vector $\boldsymbol{u}^{(h)}$:
@@ -119,7 +118,7 @@ Although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $
 * The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_\ell^{(h)}$ are the expansion coefficients of the function $u_h(x)$ in @eqn:linear_algebra_problem.
 * In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_\ell^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
 
-The reason for this is that $b(\cdot)$ is an element of the dual space $\mathcal{V}^*$, which consists of all linear functionals defined on the space $\mathcal{V}$.
+The reason for this is that $b(\cdot)$ is an element of the dual space $\mathcal{V}^*$, which consists of all linear functionals defined on the space $\mathcal{V}$. We will discuss dual spaces in more detail below.
 
 ### Solution procedure
 In summary, the solution procedure for @eqn:weak_problem_discretised is this:
@@ -129,17 +128,17 @@ In summary, the solution procedure for @eqn:weak_problem_discretised is this:
 3. Solve the linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ in @eqn:linear_system_Aub for $\boldsymbol{u}^{(h)}$.
 4. Reconstruct the solution $u_h(x)$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in @eqn:linear_algebra_problem.
 
-In the rest of this course we will discuss how each of these steps can be implemented in Python. For the solution of the linear algebra system we will use the [PETSc](https://petsc.org/) library.
+In the rest of this course we will discuss how each of these steps can be implemented in Python. The focus will be on structuring the code such that the mathematical objects are mapped to the corresponding Python objects in the source code. For the solution of the linear algebra system we will use the [PETSc](https://petsc.org/) library.
 
 # Finite Elements
 We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
 
 ## Reference triangle
-Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the unit triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$:
+Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$. This ordering will later be important.
 
 ![:fig:reference_triangle: reference triangle](figures/reference_triangle.svg)
 
-In the following we will also refer to this as the *reference triangle*.
+In the following we will also refer to this as the *reference triangle* $\widehat{K}$.
 
 Recall that the finite element approach starts with the choice of a suitable function space $\mathcal{V}_h$. For this, consider the space of bi-variate polynomials of degree $p$ on $\widehat{K}$:
 
@@ -147,7 +146,7 @@ $$
 \mathcal{V}_h := \mathcal{P}_p(\widehat{K}) = \{q:q(x) = \sum_{\substack{s_0,s_1\\s_0+s_1\le p}} a_{s_0,s_1} x_0^{s_0}x_1^{s_1}\;\text{for all $x\in K$ with $a_{s_0,s_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
 $$
 
-The space $\mathcal{P}_p(\widehat{K})$  is spanned by $\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
+The space $\mathcal{P}_p(\widehat{K})$ is spanned by $n_{\text{dof}}=\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
 $$
 \phi_\ell(\xi^{(k)}) = \delta_{\ell k} = \begin{cases}
     1 & \text{for $\ell=k$}\\
@@ -161,9 +160,9 @@ $$
 
 We order these points (and the associated basis functions $\phi_\ell(x)$) as follows:
 
-* Points associated with the three vertices $v_0$, $v_1$, $v_2$ (in this order); there is $\nu_{\text{vertex}}=1$ point per vertex,
-* points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in @fig:reference_triangle and finally
-* points associated with the interior $K^0$ of the cell $\widehat{K}$; there are $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$ points of this type.
+1. Points associated with the three vertices $v_0$, $v_1$, $v_2$ (in this order); there is $\nu_{\text{vertex}}=1$ point per vertex,
+2. points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in @fig:reference_triangle and finally
+3. points associated with the interior $K^0$ of the cell $\widehat{K}$; there are $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$ points of this type.
 
 This is illustrated in @fig:lagrange_nodes, which shows the ordering of the points for $p=1,2,3,4$:
 
@@ -208,20 +207,23 @@ These functions are visualised in the following figure (red arrows indicate grad
 It turns out that it is advantageous to define finite elements in a more general sense. Mirroring this more abstract mathematical definition in the Python code will help us to structure the code in a sensible way that will allow its easy adaptation to specific cases. For this we first need to introduce the notion of the dual $\mathcal{V}^*$ of a given function space $\mathcal{V}$.
 
 ### Dual spaces
-Consider a domain $K$ and the space $\mathcal{V}=\mathcal{V}(K)$ of real-valued functions $w:K\rightarrow \mathbb{R}$ on $K$. A linear *functional* $\lambda$ maps a function $w\in \mathcal{V}$ to a real value such that
+Consider a domain $K$ and the space $\mathcal{V}=\mathcal{V}(K)$ of real-valued functions $w:K\rightarrow \mathbb{R}$ on $K$. A linear *functional* $\lambda$ maps a function $w\in \mathcal{V}$ to a real value $\lambda(w)\in\mathbb{R}$ such that
 
 $$
-\lambda(c_1 w^{(1)}+c_2 w^{(2)}) = c_1\lambda(w^{(1)})+c_2 \lambda(w^{(2)}) \qquad\text{for all $c_1,c_2\in\mathbb{R}$, $w^{(1)}, w^{(2)} \in \mathcal{V}$}
+\lambda(c_1 w^{(1)}+c_2 w^{(2)}) = c_1\lambda(w^{(1)})+c_2 \lambda(w^{(2)}) \qquad\text{for all $c_1,c_2\in\mathbb{R}$, $w^{(1)}, w^{(2)} \in \mathcal{V}$}.\qquad:eqn:linear_functional
 $$
 
-The space of all linear functionals on $\mathcal{V}$ is called the **dual space** $\mathcal{V}^*$.
+The space of all linear functionals on $\mathcal{V}$ is called the **dual space** $\mathcal{V}^*$. If $\mathcal{V}$ is finite-dimensional then so is $\mathcal{V}^*$ and both spaces have the same dimension.
 
 #### Examples
-Let $K\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(K)$ be the space of functions with a square integrable first derivative. Then the following $\lambda$ are linear functionals:
+Let $\Omega\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(\Omega)$ be the space of functions on $\Omega$ with a square integrable first derivative. Then the following $\lambda$ are linear functionals:
 
-* point evaluation: $\lambda(w) := w(\xi)$ for some point $\xi\in K$
+* point evaluation: $\lambda(w) := w(\xi)$ for some point $\xi\in \Omega$
 * differentiation: $\lambda(w) := \frac{\partial w}{\partial x_0}$
-* integration: $\lambda(w) := \int_K f(x)w(x)$ for some function $f(x)\in L_2(K)$
+* integration: $\lambda(w) := \int_\Omega f(x)w(x)$ for some function $f(x)\in L_2(\Omega)$
+
+#### Exercise
+Convince yourself that these $\lambda$ indeed satisfy @eqn:linear_functional
 
 ### Ciarlet's definition of the finite element
 This now leads to the following definition, originally due to Ciarlet (see [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) for the version used here): a finite element is a triple $(\widehat{K},\mathcal{V},\mathcal{L})$ which consists of

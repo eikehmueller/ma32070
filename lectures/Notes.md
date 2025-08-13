@@ -504,7 +504,7 @@ $$
 
 The following figure shows the quadrature points on $S$ and $\widehat{K}$ for $n_q=2$.
 
-![:fig:quadrature_points: Quadrature points on $S$ and $\widehat{K}$](figures/quadrature.png)
+![:fig:quadrature_points: Quadrature points on $S$ and $\widehat{K}$](figures/quadrature.svg)
 
 Based on this construction we find that
 $$

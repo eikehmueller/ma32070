@@ -51,7 +51,7 @@ mask = Polygon(
     color="lightgray",
     linewidth=2,
 )
-ax.annotate("Q", (0.3, 0), fontsize=24)
+ax.annotate(r"$S$", (0.3, 0), fontsize=24)
 
 ax = axs[1]
 ax.set_aspect("equal")
@@ -78,5 +78,5 @@ ax.plot(
     markersize=4,
     color="blue",
 )
-ax.annotate("K", (0.6, 0.6), fontsize=24)
-plt.savefig("quadrature.png", bbox_inches="tight")
+ax.annotate(r"$\widehat{K}$", (0.6, 0.6), fontsize=24)
+plt.savefig("quadrature.svg", bbox_inches="tight")

@@ -352,6 +352,7 @@ V^{\partial}_{rma}(\boldsymbol{\zeta}):=\frac{\partial \theta_m}{\partial x_a}(\
 $$
 
 It should be stressed that $V$ and $V^{\partial}$ can be constructed for arbitrary finite elements, not just for Lagrange elements.
+
 ### Tabulation of basis functions
 As we will see below, assembly of the matrix $A^{(h)}$ and right hand side vector $\boldsymbol{b}^{(h)}$ will require the evaluation (or **tabulation**) of the basis functions and their derivatives at a given set of points. The results from the previous section allow us to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, we have that
 

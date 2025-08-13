@@ -155,7 +155,7 @@ $$
 $$
 A possible choice of points is given by (see @fig:lagrange_nodes below for some examples)
 $$
-\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1} = \left\{\left(\frac{\ell_0}{p},\frac{\ell_1}{p}\right) \quad \text{for $\ell_0,\ell_1\in\mathbb{N}$ with $0\le \ell_0\le \ell_1 \le p$}\right\}.
+\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1} = \left\{\left(\frac{\ell_0}{p},\frac{\ell_1}{p}\right) \quad \text{for $\ell_0,\ell_1\in\mathbb{N}$ with $0\le \ell_0\le \ell_1 \le p$}\right\}.\qquad:eqn:nodal_points
 $$
 
 We order these points (and the associated basis functions $\phi_\ell(x)$) as follows:
@@ -230,7 +230,7 @@ This now leads to the following definition, originally due to Ciarlet (see [[Log
 
 * the **domain** $\widehat{K}$ (which we will always chose to be the reference trinagle in this course),
 * a **function space** $\widehat{\mathcal{V}}=\widehat{\mathcal{V}}(\widehat{K})$ of real-valued functions on $\widehat{K}$,
-* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda\}_{\ell=0}^{\nu-1}$, which is a basis for $\widehat{\mathcal{V}}^*$, the dual of $\widehat{\mathcal{V}}$
+* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda_\ell\}_{\ell=0}^{\nu-1}$, which is a basis for $\widehat{\mathcal{V}}^*$, the dual of $\widehat{\mathcal{V}}$
 
 Crucially, we define the finite element by choosing a basis of the *dual* space $\mathcal{V}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$ by requiring that
 $$
@@ -242,11 +242,11 @@ In the following we will assume that $\widehat{K}$ is the reference triangle int
 The **polynomial Lagrange element** we described above is a special case of this with 
 
 * $\widehat{\mathcal{V}} = \mathcal{P}_p(\widehat{K})$, the space of bi-variate polynomials of degree $p$
-* $\lambda: \lambda_\ell(w) = w(\xi^{(\ell)})$ the point evaluation at the nodal points $\xi^{(\ell)}$
+* $\mathcal{L}=\{\lambda_\ell\}_{\ell=0}^{\nu-1}$ with $\lambda_\ell(w) = w(\xi^{(\ell)})$ the point evaluation at the nodal points $\xi^{(\ell)}$ given in @eqn:nodal_points
 
 An alternative choice for the nodes would have been to define for some point $\mathring{\xi}\in \widehat{K}$:
 $$
-\lambda_j (w) = \frac{\partial^{\ell_a}w}{\partial x_0^{\ell_b} \partial x_1^{\ell_a-\ell_b}}(\mathring{\xi}) \qquad\text{for $0\le \ell_b \le \ell_a\le p$ and $\ell=\frac{1}{2}\ell_a(\ell_a-1) + \ell_b$}
+\lambda_\ell (w) = \frac{\partial^{\ell_a}w}{\partial x_0^{\ell_b} \partial x_1^{\ell_a-\ell_b}}(\mathring{\xi}) \qquad\text{for $0\le \ell_b \le \ell_a\le p$ and $\ell=\frac{1}{2}\ell_a(\ell_a-1) + \ell_b$}
 $$
 
 The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by

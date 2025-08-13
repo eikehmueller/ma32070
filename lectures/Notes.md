@@ -241,6 +241,7 @@ In the following we will assume that $\widehat{K}$ is the reference triangle int
 #### Examples
 The **polynomial Lagrange element** we described above is a special case of this with 
 
+* $\widehat{K}$ the reference triangle
 * $\widehat{\mathcal{V}} = \mathcal{P}_p(\widehat{K})$, the space of bi-variate polynomials of degree $p$
 * $\mathcal{L}=\{\lambda_\ell\}_{\ell=0}^{\nu-1}$ with $\lambda_\ell(w) = w(\xi^{(\ell)})$ the point evaluation at the nodal points $\xi^{(\ell)}$ given in @eqn:nodal_points
 
@@ -251,6 +252,7 @@ $$
 
 The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
 
+* $\widehat{K}$ the reference triangle
 * $\widehat{\mathcal{V}} = \mathcal{P}_5(\widehat{K})$, the space of quintic bi-variate polynomials
 * the 21 nodes (with $\nu_{\text{vertex}}=6$, $\nu_{\text{facet}}=1$, $\nu_{\text{interior}}=0$) defined as follows:
   - $\lambda_\rho(w) = w(v_\rho)$ (evaluation at each vertex $v_\rho$ $\Rightarrow$ 3 nodes)

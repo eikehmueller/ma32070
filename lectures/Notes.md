@@ -273,7 +273,7 @@ We further assume that $0\le \nu_{\text{vertex}}$ nodes are associated with each
 $$
 \nu = 3( \nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}.
 $$
-Let $\lambda_j^{(E_\rho)}$ be the $j$-th node associated with topological entity $E_\rho\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the unknowns $\{\lambda_0,\dots,\lambda_{\nu-1}\}$ in the order
+Let $\lambda_j^{(E_\rho)}$ be the $j$-th node associated with topological entity $E_\rho\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the degrees of freedom $\{\lambda_0,\dots,\lambda_{\nu-1}\}$ in the order
 
 $$
 \underbrace{v_0 \rightarrow v_1 \rightarrow v_2}_{\text{(vertices)}}
@@ -296,12 +296,27 @@ In other words, we define the indirection map $\mu_{\text{dof}}$ such that $\lam
 
 $$
 \mu_{\text{dof}}(E,\rho,j) = \begin{cases}
-\rho\cdot \nu_{\text{vertex}} + j & \text{if $E$ is the $\rho$-th vertex}\\
-3\nu_{\text{vertex}} + \rho\cdot \nu_{\text{facet}} + j & \text{if $E$ is the $\rho$-th facet}\\
+\rho\cdot \nu_{\text{vertex}} + j & \text{if $E_\rho$ is the $\rho$-th vertex}\\
+3\nu_{\text{vertex}} + \rho\cdot \nu_{\text{facet}} + j & \text{if $E_\rho$ is the $\rho$-th facet}\\
 3(\nu_{\text{vertex}} + \nu_{\text{facet}}) + j & \text{if $E$ is the interior}
 \end{cases}
 $$
-This is illustrated for the polynomial Lagrange element in @fig:lagrange_nodes.
+
+The inputs of the indirection map $\mu_{\text{dof}}$ are
+
+* The entity type $E$ (vertex, facet or interior)
+* The index $\rho$ of the particular entity; this is ignored if $E$ is the interior
+* The index $j$ of the unknown on the entity
+
+This is illustrated for the polynomial Lagrange element in @fig:lagrange_nodes. For example, for the quartic Lagrange element ($p=4$) we have that
+
+$$
+\begin{aligned}
+\mu_{\text{dof}}(v,1,0) &= 1\\
+\mu_{\text{dof}}(F,0,2) &= 5\\
+\mu_{\text{dof}}(K^0,0,2) &= 14
+\end{aligned}
+$$
 
 ## Vandermonde matrix
 Having picked the nodes, how can we construct the nodal basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$ for a given set of nodes $\{\lambda_\ell\}_{\ell=0}^{\nu-1}$? For this, assume that we know some set of basis functions $\{\theta_m(x)\}_{m=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_m(x)\}_{m=0}^{\nu-1}$ is a basis of $\widehat{\mathcal{V}}$, we can write for each $k=0,1,\dots,\nu-1$

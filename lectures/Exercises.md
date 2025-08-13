@@ -442,25 +442,25 @@ For this exercise we consider the $n\times n$ matrix $A$ which is of the followi
 
 $$
 A_{ij} = \begin{cases}
-2 + h^2 & \text{if $i=j$}\\
+2 + h & \text{if $i=j$}\\
 -1 & \text{if $j=i\pm 1$ } \\
 -1 & \text{if ($i=0$ and $j=n-1$) or ($i=n-1$ and $j=0$)}
 \end{cases}
 $$
 
-where $h=1/n$. In other words, the entries on the main diagonal are $2+h^2$ while the entries on the first two sub-diagonals and in the upper right and lower right corner are $-1$.
+where $h=1/n$. In other words, the entries on the main diagonal are $2+h$ while the entries on the first two sub-diagonals and in the upper right and lower right corner are $-1$.
 
 An example for $n=8$ is shown here:
 $$
 A = \begin{pmatrix}
-  2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1\\
- -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1\\
- -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2
+  2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1\\
+ -1 &   2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} &  -1 &   2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h &  -1 & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h &  -1\\
+ -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h
 \end{pmatrix}
 $$
 

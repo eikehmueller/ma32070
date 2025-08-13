@@ -226,13 +226,13 @@ Let $\Omega\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(\Omega)$ be the space of f
 Convince yourself that these $\lambda$ indeed satisfy @eqn:linear_functional
 
 ### Ciarlet's definition of the finite element
-This now leads to the following definition, originally due to Ciarlet (see [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) for the version used here): a finite element is a triple $(\widehat{K},\mathcal{V},\mathcal{L})$ which consists of
+This now leads to the following definition, originally due to Ciarlet (see [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) for the version used here): a finite element is a triple $(\widehat{K},\widehat{\mathcal{V}},\mathcal{L})$ which consists of
 
-* the **domain** $\widehat{K}$
-* the **function space** $\mathcal{V}=\mathcal{V}(\widehat{K})$ of real-valued functions on $\widehat{K}$,
-* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda\}_{\ell=0}^{\nu-1}$, which is a basis for $\mathcal{V}^*$, the dual of $\mathcal{V}$
+* the **domain** $\widehat{K}$ (which we will always chose to be the reference trinagle in this course),
+* a **function space** $\widehat{\mathcal{V}}=\widehat{\mathcal{V}}(\widehat{K})$ of real-valued functions on $\widehat{K}$,
+* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda\}_{\ell=0}^{\nu-1}$, which is a basis for $\widehat{\mathcal{V}}^*$, the dual of $\widehat{\mathcal{V}}$
 
-Crucially, we define the finite element by choosing a basis of the *dual* space $\mathcal{V}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ of $\mathcal{V}$ by requiring that
+Crucially, we define the finite element by choosing a basis of the *dual* space $\mathcal{V}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$ by requiring that
 $$
 \lambda_\ell (\phi_k) = \delta_{\ell k} \qquad\text{for all $\ell,k=0,1,\dots,\nu-1$}.
 $$
@@ -241,7 +241,7 @@ In the following we will assume that $\widehat{K}$ is the reference triangle int
 #### Examples
 The **polynomial Lagrange element** we described above is a special case of this with 
 
-* $\mathcal{V} = \mathcal{P}_p(\widehat{K})$, the space of bi-variate polynomials of degree $p$
+* $\widehat{\mathcal{V}} = \mathcal{P}_p(\widehat{K})$, the space of bi-variate polynomials of degree $p$
 * $\lambda: \lambda_\ell(w) = w(\xi^{(\ell)})$ the point evaluation at the nodal points $\xi^{(\ell)}$
 
 An alternative choice for the nodes would have been to define for some point $\mathring{\xi}\in \widehat{K}$:
@@ -251,7 +251,7 @@ $$
 
 The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
 
-* $\mathcal{V} = \mathcal{P}_5(\widehat{K})$, the space of quintic bi-variate polynomials
+* $\widehat{\mathcal{V}} = \mathcal{P}_5(\widehat{K})$, the space of quintic bi-variate polynomials
 * the 21 nodes (with $\nu_{\text{vertex}}=6$, $\nu_{\text{facet}}=1$, $\nu_{\text{interior}}=0$) defined as follows:
   - $\lambda_\rho(w) = w(v_\rho)$ (evaluation at each vertex $v_\rho$ $\Rightarrow$ 3 nodes)
   - $\lambda_{3+2\rho+a}(w) = \frac{\partial w}{\partial x_a}(v_\rho)$ (two gradient evaluations at each vertex $v_\rho$ $\Rightarrow$ 6 nodes)
@@ -302,13 +302,13 @@ $$
 This is illustrated for the polynomial Lagrange element in @fig:lagrange_nodes.
 
 ## Vandermonde matrix
-Having picked the nodes, how can we construct the nodal basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$ for a given set of nodes $\{\lambda_\ell\}_{\ell=0}^{\nu-1}$? For this, assume that we know some set of basis functions $\{\theta_m(x)\}_{m=0}^{\nu-1}$ of $\mathcal{V}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_m(x)\}_{m=0}^{\nu-1}$ is a basis of $\mathcal{V}$, we can write for each $k=0,1,\dots,\nu-1$
+Having picked the nodes, how can we construct the nodal basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$ for a given set of nodes $\{\lambda_\ell\}_{\ell=0}^{\nu-1}$? For this, assume that we know some set of basis functions $\{\theta_m(x)\}_{m=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_m(x)\}_{m=0}^{\nu-1}$ is a basis of $\widehat{\mathcal{V}}$, we can write for each $k=0,1,\dots,\nu-1$
 
 $$
 \phi_k(x) = \sum_{m=0}^{\nu-1} c_m^{(k)} \theta_m(x)
 $$
 
-for some coefficients $c_m^{(k)}$. Further, since per definition $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ is a *nodal* basis of $\mathcal{V}$ and $\lambda_\ell$ are linear functionals we know that
+for some coefficients $c_m^{(k)}$. Further, since per definition $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ is a *nodal* basis of $\widehat{\mathcal{V}}$ and $\lambda_\ell$ are linear functionals we know that
 
 $$
 \delta_{\ell k} = \lambda_\ell(\phi_k) = \sum_{m=0}^{\nu-1} \underbrace{c_m^{(k)}}_{C_{mk}} \underbrace{\lambda_\ell(\theta_m)}_{V_{\ell m}}.\qquad:eqn:nodal_property

@@ -2234,7 +2234,7 @@ This shows that for compute-bound algorithms with high algorithmic intensity $q\
 
 ![:fig:roofline_model: Roofline model](figures/roofline.svg)
 
-Since the curve looks like the roof of a build, @fig:roofline_model is also called a *"roofline plot"*.
+Since the curve looks like the roof of a building, @fig:roofline_model is also called a *"roofline plot"*.
 
 In reality, the true number of memory references will be larger than what we get from a naive count. This is because only limited amount of data can be held in small hard "caches" close to the compute unit. When operating on larger objects, data needs to be moved back and forth between these caches and the main memory. In addition, our code will contain other instructions on top of the floating point operations. Because of this, the measured performance will in fact lie below the roofline curve defined by @eqn:roofline_model, as indicated by the coloured points in @fig:roofline_model. Good, efficient code (show in green) will be close to the roofline whereas poor, inefficient code (shown in red) will be well below the roofline. 
 

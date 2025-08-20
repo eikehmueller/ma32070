@@ -24,11 +24,13 @@ Make sure that you organise your code in a sensible way. It is recommended that 
 Open a terminal window and create a new conda environment as follows:
 
 ```
-conda create --prefix ${HOME}/petsc_sandbox -y
+conda create -y --prefix ${HOME}/petsc_sandbox -c conda-forge petsc petsc4py pytest
+```
+
+To use the environment, you need to run 
+
+```
 conda activate ${HOME}/petsc_sandbox
-conda install -c conda-forge petsc -y
-conda install -c conda-forge petsc4py -y
-conda install -c conda-forge pytest -y
 ```
 
 Create a directory in which you want to install the finite elements package, for example `git_workspace`. Change to this directory and then run the following commands:
@@ -40,11 +42,6 @@ python3 -m pip install --editable .
 python -m pytest -v
 ```
 
-To use the environment, you need to run 
-
-```
-conda activate ${HOME}/petsc_sandbox
-```
 
 
 

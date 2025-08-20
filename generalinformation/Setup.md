@@ -24,7 +24,7 @@ Make sure that you organise your code in a sensible way. It is recommended that 
 Open a terminal window and create a new conda environment as follows:
 
 ```
-conda create --name ${HOME}/petsc_sandbox -y
+conda create --path ${HOME}/petsc_sandbox -y
 conda activate ${HOME}/petsc_sandbox
 conda install -c conda-forge petsc -y
 conda install -c conda-forge petsc4py -y

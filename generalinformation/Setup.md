@@ -40,6 +40,14 @@ python3 -m pip install --editable .
 python -m pytest -v
 ```
 
+To use the environment, you need to run 
+
+```
+conda activate ${HOME}/petsc_sandbox
+```
+
+
+
 ## Windows computers
 If you are working on a Windows computer, you should install the [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/) by following the [WSL installation instructions](https://learn.microsoft.com/en-us/windows/wsl/install), see also the [troubleshooting section](https://learn.microsoft.com/en-us/windows/wsl/troubleshooting?source=recommendations) if you run into problems. Use a suitable Linux distribution, such as Ubuntu-24.04. Make sure you activate the WSL after installation (you will need to create a user account and password for this). Inside the WSL Linux system, you might then have to install additional packages, see below.
 

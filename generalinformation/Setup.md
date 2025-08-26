@@ -24,7 +24,7 @@ Make sure that you organise your code in a sensible way. It is recommended that 
 Open a terminal window and create a new conda environment as follows:
 
 ```
-conda create -y --prefix ${HOME}/petsc_sandbox -c conda-forge petsc petsc4py pytest
+conda create -y --prefix ${HOME}/petsc_sandbox -c conda-forge petsc petsc4py mpi4py pytest
 ```
 
 To use the environment, you need to run 

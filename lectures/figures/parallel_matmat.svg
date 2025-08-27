@@ -25,12 +25,12 @@
      inkscape:document-units="mm"
      showgrid="true"
      inkscape:zoom="0.80996707"
-     inkscape:cx="583.97436"
-     inkscape:cy="233.34282"
-     inkscape:window-width="1920"
-     inkscape:window-height="1027"
-     inkscape:window-x="-1"
-     inkscape:window-y="25"
+     inkscape:cx="583.35705"
+     inkscape:cy="232.72551"
+     inkscape:window-width="1584"
+     inkscape:window-height="814"
+     inkscape:window-x="57"
+     inkscape:window-y="78"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1">
     <inkscape:grid
@@ -431,42 +431,47 @@
          y="71.486168">=</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705908;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
-       x="-30.902699"
-       y="47.998116"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46667px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705908;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       x="-30.24938"
+       y="50.284733"
        id="text55"><tspan
          sodipodi:role="line"
          id="tspan55"
-         style="font-size:11.2889px;fill:#ff0000;fill-opacity:1;stroke-width:0.705908"
-         x="-30.902699"
-         y="47.998116">P<tspan
-   style="font-size:65%;baseline-shift:sub"
-   id="tspan60">0</tspan></tspan></text>
+         style="font-size:8.46667px;fill:#ff0000;fill-opacity:1;stroke-width:0.705908"
+         x="-30.24938"
+         y="50.284733">p=0</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.705908;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
-       x="-30.587143"
-       y="68.677292"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46667px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.705908;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       x="-30.260483"
+       y="68.023972"
        id="text56"><tspan
          sodipodi:role="line"
          id="tspan56"
-         style="font-size:11.2889px;fill:#0000ff;fill-opacity:1;stroke-width:0.705908"
-         x="-30.587143"
-         y="68.677292">P<tspan
-   style="font-size:65%;baseline-shift:sub"
-   id="tspan61">1</tspan></tspan></text>
+         style="font-size:8.46667px;fill:#0000ff;fill-opacity:1;stroke-width:0.705908"
+         x="-30.260483"
+         y="68.023972">p=1</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705908;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46667px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:#008000;fill-opacity:1;stroke:none;stroke-width:0.705908;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
        x="-29.933811"
-       y="87.511391"
+       y="84.571457"
        id="text57"><tspan
          sodipodi:role="line"
          id="tspan57"
-         style="font-size:11.2889px;fill:#008000;fill-opacity:1;stroke-width:0.705908"
+         style="font-size:8.46667px;fill:#008000;fill-opacity:1;stroke-width:0.705908"
          x="-29.933811"
-         y="87.511391">P<tspan
-   style="font-size:65%;baseline-shift:sub"
-   id="tspan62">2</tspan></tspan></text>
+         y="84.571457">p=2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.46667px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:none;fill-opacity:1;stroke:none;stroke-width:0.705908;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+       x="-30.557827"
+       y="36.149822"
+       id="text63"><tspan
+         sodipodi:role="line"
+         id="tspan63"
+         style="fill:#000000;fill-opacity:1;stroke-width:0.705908"
+         x="-30.557827"
+         y="36.149822">processor</tspan></text>
   </g>
 </svg>

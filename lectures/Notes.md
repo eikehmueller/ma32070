@@ -2297,10 +2297,41 @@ For the Richardson iteration and CG with Jacobi preconditioner it is also very e
   - parallel efficiency
   - weak and strong scaling
 
+## Parallel matrix-matrix product
+Assume that we want to compute the matrix-matrix product
+
+$$
+C = AB:eqn:matrix_matrix_product
+$$
+
+where $A$ is an $n\times m$ matrix and $B$ is an $m\times r$ matrix; the resulting matrix $C$ has shape $n\times r$. For $r=1$ the matrix $B$ has a single column and can be interpreted as a vector. Hence, in this special case the problem reduces to the matrix-vector product $\boldsymbol{y}=A\boldsymbol{x}$.
+
+To parallelise the problem, we distribute the matrices between the $n_{\text{proc}}$ processors: for a matrix of size $n\times m$ the processor with index $p\in\{0,1,2,\dots,n_{\text{proc}}-1\}$ only stores rows $p\cdot n_{\text{local}}$ to $(p+1)\cdot n_{\text{local}}-1$ where
+
+$$
+n_{\text{local}} = \frac{n}{n_{\text{proc}}}
+$$
+
+is the number of rows stored per processor. For simplicity, we assume that $n$ is an integer multiple of the number of processors $n_{\text{proc}}$. We label the local part of each matrix stored by a processor with its index. Hence, process $p$ will store:
+
+* The $n_{\text{local}}\times m$ matrix $A_p$
+* The $m_{\text{local}}\times r$ matrix $B_p$ where $m_{\text{local}} = m/n_{\text{proc}}$
+* The $n_{\text{local}}\times r$ matrix $C_p$
+
+If we further split the matrix $A_p$ into $n_{\text{proc}}$ matrices $A_{pq}$ of shape $n_{\text{local}}\times m_{\text{local}}$, the matrix-matrix product in @eqn:matrix_matrix_product can be written as
+
+$$
+C_p = \sum_{q=0}^{n_{\text{proc}}-1} A_{pq} B_q \qquad\text{for each processor $p=0,1,\dots,n_{\text{proc}}-1$}
+$$
+
+where each of the terms in the sum corresponds to the product of two matrices of shapes $n_{\text{local}}\times m_{\text{local}}$ and $m_{\text{local}}\times r$. For $n_{\text{proc}}=3$ this is shown schematically in the following figure:
+
 ![:fig:parallel_matmat: Parallel matrix-matrix product](figures/parallel_matmat.svg)
 
+However, we now run into a problem: while each processor has the data to compute the product $A_{pp}B_p$, computing $A_{pq}B_q$ for $q\neq p$ is not possible since $B_q$ is stored on a different processor. To overcome this issue, we need to communicate data between the processors. This is shown in the following algorithm:
+
 #### Parallel matrix-matrix product
-1. For each $p=0,1,\dots,n_{\text{proc}}-1$ **do in parallel**
+1. For each processor $p=0,1,\dots,n_{\text{proc}}-1$ **do in parallel**
 2. $~~~~$ Initialise $C_p \mapsto 0$
 3. $~~~~$ Set $\widehat{B} \gets B_p$
 4. $~~~~$ For $q=0,1,\dots,n_{\text{proc}}-1$ **do**
@@ -2311,3 +2342,45 @@ For the Richardson iteration and CG with Jacobi preconditioner it is also very e
 9. $~~~~~~~~$ **end if**
 10. $~~~~~$ **end do**
 11. **end do**
+
+### Performance analysis
+Each matrix-vector product $A_{pq}B_q$ requires $2n_{\text{local}}m_{\text{local}}r$ floating point operations. We also need to read the $n_{\text{local}} \times m_{\text{local}}$ matrix $A_{pq}$ and the $m_{\text{local}}\times r$ matrix $B_q$ and write to the $n_{\text{local}}\times r$ matrix $C_p$. All this needs to be done $n_{\text{proc}}$ times. The overall cost is therefore
+
+$$
+\begin{aligned}
+T_{\text{compute}} &= \left(2n_{\text{local}}m_{\text{local}}r\cdot t_{\text{flop}} + \left(n_{\text{local}}m_{\text{local}}+m_{\text{local}}r+n_{\text{local}}r\right)t_{\text{mem}}\right)n_{\text{proc}}\\
+&=\frac{2nmr\cdot t_{\text{flop}}+(nm+mr+nr)t_{\text{mem}}}{n_{\text{proc}}}
+\end{aligned}
+$$
+
+Hence, compared to the sequential case, the time is reduced by a factor $n_{\text{proc}}$. Unfortunately, we also need to add the cost of communicating, i.e. exchanging portions of the matrix $B$ between the processors. We send $n_{\text{proc}}-1$ messages of size $m_{\text{local}}\times r$. This results in a cost of
+
+$$
+\begin{aligned}
+T_{\text{comm}} &= (n_{\text{proc}}-1)\left(t_{\text{lat}} + m_{\text{local}}r\cdot t_{\text{word}}\right)\\
+&= (n_{\text{proc}}-1)t_{\text{lat}} + \frac{n_{\text{proc}}-1}{n_{\text{proc}}} mr\cdot t_{\text{word}}
+\end{aligned}
+$$
+
+For $n=m=r$ and $n_{\text{proc}}\gg 1$ the total cost simplifies to
+
+$$
+T = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{n_{\text{proc}}} + n^2 t_{\text{word}} + n_{\text{proc}} t_{\text{lat}}
+$$
+
+#### Parallel matrix-matrix product (overlapping of computation and communication)
+1. For each processor $p=0,1,\dots,n_{\text{proc}}-1$ **do in parallel**
+2. $~~~~$ Initialise $C_p \mapsto 0$
+3. $~~~~$ Set $\widehat{B} \gets B_p$
+4. $~~~~$ For $q=0,1,\dots,n_{\text{proc}}-1$ **do**
+10. $~~~~~~~~$ If $q<n_{\text{proc}}-1$ **then**
+5. $~~~~~~~~~~~~$ Initiate send of $\widehat{B}$ to left neighbour $(p-1)\;\text{mod}\;n_{\text{proc}}$
+6. $~~~~~~~~~~~~$ Initiate receive of $\widehat{B}_{\text{recv}}$ from right neighbour $(p+1)\;\text{mod}\;n_{\text{proc}}$
+11. $~~~~~~~~$ **end if**
+7. $~~~~~~~~$ Update $C_p \gets C_p + \widehat{A}_{p,(p+q)\;\text{mod}\;n_{\text{proc}}} \widehat{B}$
+8.  $~~~~~~~~$ If $q<n_{\text{proc}}-1$ **then**
+9.  $~~~~~~~~~~~~$ Wait for send and receive to complete
+10. $~~~~~~~~~~~~$ Copy $\widehat{B}\gets \widehat{B}_{\text{recv}}$
+11. $~~~~~~~~$ **end if**
+12. $~~~~~$ **end do**
+13. **end do**

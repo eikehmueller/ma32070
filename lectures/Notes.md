@@ -2301,7 +2301,7 @@ For the Richardson iteration and CG with Jacobi preconditioner it is also very e
 Assume that we want to compute the matrix-matrix product
 
 $$
-C = AB:eqn:matrix_matrix_product
+C = AB\qquad:eqn:matrix_matrix_product
 $$
 
 where $A$ is an $n\times m$ matrix and $B$ is an $m\times r$ matrix; the resulting matrix $C$ has shape $n\times r$. For $r=1$ the matrix $B$ has a single column and can be interpreted as a vector. Hence, in this special case the problem reduces to the matrix-vector product $\boldsymbol{y}=A\boldsymbol{x}$.

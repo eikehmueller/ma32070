@@ -2296,3 +2296,18 @@ For the Richardson iteration and CG with Jacobi preconditioner it is also very e
   - speedup
   - parallel efficiency
   - weak and strong scaling
+
+![:fig:parallel_matmat: Parallel matrix-matrix product](figures/parallel_matmat.svg)
+
+#### Parallel matrix-matrix product
+1. For each $p=0,1,\dots,n_{\text{proc}}-1$ **do in parallel**
+2. $~~~~$ Initialise $C_p \mapsto 0$
+3. $~~~~$ Set $\widehat{B} \gets B_p$
+4. $~~~~$ For $q=0,1,\dots,n_{\text{proc}}-1$ **do**
+5. $~~~~~~~~$ Update $C_p \gets C_p + \widehat{A}_{p,(p+q)\;\text{mod}\;n_{\text{proc}}} \widehat{B}$
+6. $~~~~~~~~$ If $q<n_{\text{proc}}-1$ **then**
+7. $~~~~~~~~~~~~$ Send $\widehat{B}$ to left neighbour $(p-1)\;\text{mod}\;n_{\text{proc}}$
+8. $~~~~~~~~~~~~$ Receive new $\widehat{B}$ from right neighbour $(p+1)\;\text{mod}\;n_{\text{proc}}$
+9. $~~~~~~~~$ **end if**
+10. $~~~~~$ **end do**
+11. **end do**

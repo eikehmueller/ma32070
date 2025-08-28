@@ -5,4 +5,4 @@ Running on 32 processors.
  overlap = True
  nocomm  = False
 error norm = 5.8131e-16
-elapsed time = 1.00e-03 s
+elapsed time = 9.86e-04 s

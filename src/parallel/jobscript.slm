@@ -7,7 +7,7 @@
 #SBATCH --ntasks-per-node=64
 #SBATCH --partition=spot-hbv3-120
 #SBATCH --qos=spot-hbv3-120
-#SBATCH --time=01:00:00
+#SBATCH --time=04:00:00
 #SBATCH --chdir=/shared/home/em459/git_workspace/ma32070/src/parallel
 
 source /apps/build/easy_build/scripts/id_instance.sh
@@ -29,8 +29,8 @@ do
     for N in 256 512 1024 2048 4096 8192 16384;
     do
 	OUTFILE=output/runtime_p${P}_n${N}.txt
-	mpiexec -n ${P} python3 parallel_matmat_mult.py --n ${N} > ${OUTFILE}
+	mpiexec -n ${P} python3 driver.py --n ${N} > ${OUTFILE}
 	OUTFILE=output/runtime_overlap_p${P}_n${N}.txt
-	mpiexec -n ${P} python3 parallel_matmat_mult.py --overlap --n ${N} > ${OUTFILE}
+	mpiexec -n ${P} python3 driver.py --overlap --n ${N} > ${OUTFILE}
     done
 done

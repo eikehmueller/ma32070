@@ -1,0 +1,8 @@
+Running on 8 processors.
+ n =     8192
+ m =     8192
+ r =     8192
+ overlap = True
+ nocomm  = False
+error norm = 3.1504e-15
+elapsed time = 3.90e+00 s

@@ -1,0 +1,8 @@
+Running on 2 processors.
+ n =     1024
+ m =     1024
+ r =     1024
+ overlap = True
+ nocomm  = False
+error norm = 1.0147e-15
+elapsed time = 2.46e-02 s

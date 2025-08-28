@@ -100,8 +100,6 @@ while t_elapsed < 10.0:
     comm.Allgather(C_loc, C)
     delta_t = comm.allreduce(t_finish - t_start, MPI.MAX)
     t_elapsed += delta_t
-    print(niter, rank, t_elapsed)
-    print()
     niter += 1
 
 t_elapsed /= niter

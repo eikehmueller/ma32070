@@ -1,8 +1,0 @@
-Running on 16 processors.
- n =     2048
- m =     2048
- r =     2048
- overlap = True
- nocomm  = False
-error norm = 1.5610e-15
-elapsed time = 5.59e-02 s

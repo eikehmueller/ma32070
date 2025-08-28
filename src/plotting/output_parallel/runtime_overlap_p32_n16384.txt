@@ -1,6 +1,0 @@
-Running on 32 processors.
- n =    16384
- m =    16384
- r =    16384
- overlap = True
- nocomm  = False

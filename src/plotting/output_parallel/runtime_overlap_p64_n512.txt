@@ -1,0 +1,8 @@
+Running on 64 processors.
+ n =      512
+ m =      512
+ r =      512
+ overlap = True
+ nocomm  = False
+error norm = 8.0911e-16
+elapsed time = 4.63e-03 s

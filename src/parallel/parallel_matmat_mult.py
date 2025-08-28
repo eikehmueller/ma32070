@@ -102,15 +102,6 @@ parser.add_argument(
 )
 
 
-parser.add_argument(
-    "--niter",
-    action="store",
-    default=10,
-    type=int,
-    help="Number repetitions",
-)
-
-
 args, _ = parser.parse_known_args()
 
 comm = MPI.COMM_WORLD
@@ -142,7 +133,8 @@ B = rng.normal(size=(m, r))
 # Result for testing
 C_true = A @ B
 t_elapsed = 0
-for _ in range(args.niter):
+niter = 0
+while t_elapsed < 10.0:
     A_loc = np.array(A[rank * n_loc : (rank + 1) * n_loc, :])
     B_loc = np.array(B[rank * m_loc : (rank + 1) * m_loc, :])
     C_loc = np.zeros(shape=(n_loc, r))
@@ -153,8 +145,10 @@ for _ in range(args.niter):
     t_finish = MPI.Wtime()
     C = np.zeros(shape=(n, r))
     comm.Allgather(C_loc, C)
-    t_elapsed += (t_finish - t_start) / args.niter
-    # t_elapsed = min(t_finish - t_start, t_elapsed)
+    t_elapsed += t_finish - t_start
+    niter += 1
+
+t_elapsed /= niter
 
 if rank == 0:
     nrm = np.linalg.norm(C - C_true) / np.linalg.norm(C_true)

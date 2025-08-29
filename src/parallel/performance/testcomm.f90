@@ -6,7 +6,7 @@ program test_comm
   ! Minimal message size = 2**imin
   integer, parameter :: imin = 0
   ! Maximal message size = 2**imax
-  integer, parameter :: imax = 14
+  integer, parameter :: imax = 24
   ! Number of sends/recvs
   integer, parameter :: nsend = 1000
 

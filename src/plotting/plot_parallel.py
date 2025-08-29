@@ -12,10 +12,10 @@ def t_matmat(n, p):
     :arg n: matrix size
     :arg p: number of processors
     """
-    t_flop = 1.77e-11
-    t_mem = 2.74e-10
-    t_lat = 1.34e-6
-    t_word = 2.7e-9
+    t_flop = 0.2444e-10
+    t_mem = 0.9241e-10
+    t_lat = 1.1896e-06
+    t_word = 9.9629e-10
     return (2 * n**3 * t_flop + 3 * n**2 * t_mem) / p + n**2 * t_word + p * t_lat
 
 
@@ -124,7 +124,38 @@ def plot_performance(P, results, filename):
     plt.savefig(filename, bbox_inches="tight")
 
 
+def fit_pingpong(data_filename, filename):
+    n = []
+    t = []
+    with open(data_filename, "r", encoding="utf8") as f:
+        for line in f.readlines():
+            m = re.match(
+                r" *Message +size *= *([0-9]+) *t *= *([0-9\.]+) *micro +seconds *",
+                line,
+            )
+            if m:
+                n.append(int(m.group(1)))
+                t.append(1e-6 * float(m.group(2)))
+    n = np.asarray(n)
+    t = np.asarray(t)
+    plt.clf()
+    p_fit = np.polyfit(n[8:], t[8:], deg=1)
+    N = np.arange(n[0], n[-1], 1)
+    plt.plot(n, t, linewidth=2, markersize=6, marker="o")
+    plt.plot(N, p_fit[0] * N + p_fit[1], linewidth=2, color="black", linestyle="--")
+    ax = plt.gca()
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    plt.savefig(filename, bbox_inches="tight")
+    t_lat = p_fit[1]
+    t_mem = p_fit[0]
+    print(f"t_lat = {t_lat:8.4e} s")
+    print(f"t_mem = {t_mem:8.4e} s")
+
+
 extension = "svg"
+
+fit_pingpong("output_parallel/performance.txt", f"pingpong.{extension}")
 P = 2 ** np.arange(10)
 problemsizes = [256, 1024, 4096, 16384]
 results_theory = {n: [P, t_matmat(n, P)] for n in problemsizes}

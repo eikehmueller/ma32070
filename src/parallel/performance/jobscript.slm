@@ -26,3 +26,4 @@ export OMP_NUM_THREADS=1
 make
 
 mpiexec -n 1 ./testblas
+mpiexec -n 2 ./testcomm

@@ -9,12 +9,10 @@ program testblas
   real (kind=8),  dimension(:,:), allocatable :: A, Aorig
   real (kind=8),  dimension(:), allocatable :: b,x_e
 
-  real :: t1, t2
+  real :: t1, t2, t_blas2, t_blas3, t_flop, t_mem
   integer :: bsize
 
-  print*,'Enter matrix size n:'
-  read*, n
-
+  n = 4096
   print *, 'n = ', n
 
   ! allocate storage
@@ -34,7 +32,8 @@ program testblas
   call cpu_time(t1)
   call lublas2(A,n,n)
   call cpu_time(t2)
-  print *, 'lublas2 took ', t2-t1, 'seconds'
+  t_blas2 = t2-t1
+  print *, 'lublas2 took ', t_blas2, 'seconds'
   call check_lu(n,A,b,x_e)
   A = Aorig
     
@@ -45,8 +44,16 @@ program testblas
   call cpu_time(t1)
   call lublas3(A,n,bsize)
   call cpu_time(t2)
-  print *, 'lublas3 took ', t2-t1, 'seconds'
+  t_blas3 = t2-t1
+  print *, 'lublas3 took ', t_blas3, 'seconds'
   call check_lu(n,A,b,x_e)
 
   deallocate(A,Aorig,b,x_e)
+
+  t_flop = t_blas3 / (2./3.*(1.*n)**3)
+  t_mem = t_blas2 / (2./3.*(1.*n)**3) - t_flop
+
+  write(*,'(A16,E10.4,A2)') "t_flop = ",t_flop,"s"
+  write(*,'(A16,E10.4,A2)') "t_mem = ",t_mem,"s"
+
 end program testblas

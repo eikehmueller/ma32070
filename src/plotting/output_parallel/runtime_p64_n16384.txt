@@ -4,4 +4,6 @@ Running on 64 processors.
  r =    16384
  overlap = False
  nocomm  = False
-2 total processes killed (some possibly by mpiexec during cleanup)
+ nocheck = True
+
+elapsed time = 1.26e+01 s

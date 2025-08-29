@@ -1,0 +1,36 @@
+#!/bin/bash
+#SBATCH --account=VB-MA5HPC-011
+#SBATCH --job-name=matmult
+#SBATCH --output=matmult.%j.o
+#SBATCH --error=matmult.%j.e
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=64
+#SBATCH --partition=spot-hbv3-120
+#SBATCH --qos=spot-hbv3-120
+#SBATCH --time=00:30:00
+
+source /apps/build/easy_build/scripts/id_instance.sh
+source /apps/build/easy_build/scripts/setup_modules.sh
+
+module purge
+module load GCC/12.3.0
+module load OpenMPI/4.1.5-GCC-12.3.0
+module load OpenBLAS/0.3.23-GCC-12.3.0  
+module load Anaconda3/2024.02-1
+
+	     
+pip install mpi4py
+
+export OMP_NUM_THREADS=1
+mkdir output
+
+for P in 32 64;
+do
+    for N in 256 512 1024 2048 4096 8192 16384;
+    do
+	OUTFILE=output/runtime_p${P}_n${N}.txt
+	mpiexec -n ${P} python3 driver.py --n ${N} --nocheck > ${OUTFILE}
+	OUTFILE=output/runtime_overlap_p${P}_n${N}.txt
+	mpiexec -n ${P} python3 driver.py --overlap --n ${N} --nocheck > ${OUTFILE}
+    done
+done

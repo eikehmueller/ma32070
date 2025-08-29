@@ -2371,21 +2371,3 @@ $$
 ![:fig:parallel_scaling_theory: Parallel scaling of matrix-matrix product for different problem sizes (theory)](figures/parallel_scaling_theory.svg)
 
 ![:fig:parallel_scaling_measured: Parallel scaling of matrix-matrix product for different problem sizes (measured)](figures/parallel_scaling_measured.svg)
-
-
-#### Parallel matrix-matrix product (overlapping of computation and communication)
-1. For each processor $p=0,1,\dots,n_{\text{proc}}-1$ **do in parallel**
-2. $~~~~$ Initialise $C_p \mapsto 0$
-3. $~~~~$ Set $\widehat{B} \gets B_p$
-4. $~~~~$ For $q=0,1,\dots,n_{\text{proc}}-1$ **do**
-10. $~~~~~~~~$ If $q<n_{\text{proc}}-1$ **then**
-5. $~~~~~~~~~~~~$ Initiate send of $\widehat{B}$ to left neighbour $(p-1)\;\text{mod}\;n_{\text{proc}}$
-6. $~~~~~~~~~~~~$ Initiate receive of $\widehat{B}_{\text{recv}}$ from right neighbour $(p+1)\;\text{mod}\;n_{\text{proc}}$
-11. $~~~~~~~~$ **end if**
-7. $~~~~~~~~$ Update $C_p \gets C_p + \widehat{A}_{p,(p+q)\;\text{mod}\;n_{\text{proc}}} \widehat{B}$
-8.  $~~~~~~~~$ If $q<n_{\text{proc}}-1$ **then**
-9.  $~~~~~~~~~~~~$ Wait for send and receive to complete
-10. $~~~~~~~~~~~~$ Copy $\widehat{B}\gets \widehat{B}_{\text{recv}}$
-11. $~~~~~~~~$ **end if**
-12. $~~~~~$ **end do**
-13. **end do**

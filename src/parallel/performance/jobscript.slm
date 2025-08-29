@@ -14,10 +14,12 @@ source /apps/build/easy_build/scripts/setup_modules.sh
 
 module purge
 export MODULES_RUN_QUARANTINE=LD_PRELOAD
+
 module load GCCcore/12.3.0
 module load GCC/12.3.0
 module load OpenBLAS/0.3.23-GCC-12.3.0 
 module load OpenMPI/4.1.5-GCC-12.3.0
+module load Anaconda3/2024.02-1
 
 export BLASLIB=-lopenblas
 export BLASDIR=${LD_LIBRARY_PATH}
@@ -27,3 +29,4 @@ make
 
 mpiexec -n 1 ./testblas
 mpiexec -n 2 ./testcomm
+mpiexec -n 2 python3 pingpong.py

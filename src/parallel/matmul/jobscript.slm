@@ -29,8 +29,8 @@ do
     for N in 256 512 1024 2048 4096 8192 16384;
     do
 	OUTFILE=output/runtime_p${P}_n${N}.txt
-	mpiexec -n ${P} python3 driver.py --n ${N} > ${OUTFILE}
+	mpiexec -n ${P} python3 driver.py --n ${N} --nocheck > ${OUTFILE}
 	OUTFILE=output/runtime_overlap_p${P}_n${N}.txt
-	mpiexec -n ${P} python3 driver.py --overlap --n ${N} > ${OUTFILE}
+	mpiexec -n ${P} python3 driver.py --overlap --n ${N} --nocheck > ${OUTFILE}
     done
 done

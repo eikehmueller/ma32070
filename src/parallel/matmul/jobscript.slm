@@ -7,7 +7,7 @@
 #SBATCH --ntasks-per-node=64
 #SBATCH --partition=spot-hbv3-120
 #SBATCH --qos=spot-hbv3-120
-#SBATCH --time=04:00:00
+#SBATCH --time=00:30:00
 
 source /apps/build/easy_build/scripts/id_instance.sh
 source /apps/build/easy_build/scripts/setup_modules.sh
@@ -24,7 +24,7 @@ pip install mpi4py
 export OMP_NUM_THREADS=1
 mkdir output
 
-for P in 1 2 4 8 16 32 64;
+for P in 32 64;
 do
     for N in 256 512 1024 2048 4096 8192 16384;
     do

@@ -124,13 +124,16 @@ def plot_performance(P, results, filename):
     plt.savefig(filename, bbox_inches="tight")
 
 
+extension = "svg"
 P = 2 ** np.arange(10)
 problemsizes = [256, 1024, 4096, 16384]
 results_theory = {n: [P, t_matmat(n, P)] for n in problemsizes}
-plot_performance(P, results_theory, "parallel_scaling_theory.pdf")
+plot_performance(P, results_theory, f"parallel_scaling_theory.{extension}")
 results_measured = extract_measured_data("output_parallel", overlap=False)
 results_measured = {n: results_measured[n] for n in problemsizes}
-plot_performance(P, results_measured, "parallel_scaling_measured.pdf")
+plot_performance(P, results_measured, f"parallel_scaling_measured.{extension}")
 results_measured_overlap = extract_measured_data("output_parallel", overlap=True)
 results_measured_overlap = {n: results_measured_overlap[n] for n in problemsizes}
-plot_performance(P, results_measured_overlap, "parallel_scaling_measured_overlap.pdf")
+plot_performance(
+    P, results_measured_overlap, f"parallel_scaling_measured_overlap.{extension}"
+)

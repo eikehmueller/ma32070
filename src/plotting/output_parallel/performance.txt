@@ -1,0 +1,41 @@
+==========================================
+BURSTBUFFER=/burstbuffer/w/1011682
+==========================================
+mpif90   -c -O3 -Wall -fimplicit-none testblas.f90
+mpif90   -c -O3 -Wall -fimplicit-none lublas2.f90
+mpif90   -c -O3 -Wall -fimplicit-none lublas3.f90
+mpif90   -c -O3 -Wall -fimplicit-none rsymm.f90
+mpif90   -c -O3 -Wall -fimplicit-none check_lu.f90
+mpif90   -c -O3 -Wall -fimplicit-none bsblas2.f90
+mpif90   -o testblas testblas.o lublas2.o lublas3.o rsymm.o check_lu.o bsblas2.o -L/apps/hbv3/software/2024a/OpenMPI/4.1.5-GCC-12.3.0/lib:/apps/hbv3/software/2024a/UCC/1.2.0-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/PMIx/4.2.4-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/libfabric/1.18.0-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/UCX/1.14.1-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/libevent/2.1.12-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/OpenSSL/1.1/lib64:/apps/hbv3/software/2024a/hwloc/2.9.1-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/libpciaccess/0.17-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/libxml2/2.11.4-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/XZ/5.4.2-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/numactl/2.0.16-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/OpenBLAS/0.3.23-GCC-12.3.0/lib:/apps/hbv3/software/2024a/binutils/2.40-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/zlib/1.2.13-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/GCCcore/12.3.0/lib64 -lopenblas -lpthread
+mpif90   -c -O3 -Wall -fimplicit-none testcomm.f90
+mpif90   -c -O3 -Wall -fimplicit-none pingpong.f90
+mpif90   -o testcomm testcomm.o pingpong.o -L/apps/hbv3/software/2024a/OpenMPI/4.1.5-GCC-12.3.0/lib:/apps/hbv3/software/2024a/UCC/1.2.0-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/PMIx/4.2.4-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/libfabric/1.18.0-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/UCX/1.14.1-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/libevent/2.1.12-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/OpenSSL/1.1/lib64:/apps/hbv3/software/2024a/hwloc/2.9.1-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/libpciaccess/0.17-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/libxml2/2.11.4-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/XZ/5.4.2-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/numactl/2.0.16-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/OpenBLAS/0.3.23-GCC-12.3.0/lib:/apps/hbv3/software/2024a/binutils/2.40-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/zlib/1.2.13-GCCcore-12.3.0/lib:/apps/hbv3/software/2024a/GCCcore/12.3.0/lib64 -lopenblas -lpthread
+ n =         4096
+ lublas2 started ...
+ lublas2 took    5.35328531     seconds
+ error in solve:    6.9591857390310309E-013
+ 
+ lublas3 started ...
+ number of blocks          32
+ lublas3 took    1.11980581     seconds
+ error in solve:    6.9478722290916532E-013
+ 
+       t_flop = 0.2444E-10 s
+        t_mem = 0.9241E-10 s
+ *** Pingpong test ***
+Message size =          1 t =       0.1677 micro seconds
+Message size =          2 t =       0.1305 micro seconds
+Message size =          4 t =       0.1627 micro seconds
+Message size =          8 t =       0.1575 micro seconds
+Message size =         16 t =       0.3260 micro seconds
+Message size =         32 t =       0.2393 micro seconds
+Message size =         64 t =       0.2686 micro seconds
+Message size =        128 t =       0.7611 micro seconds
+Message size =        256 t =       1.2465 micro seconds
+Message size =        512 t =       1.5920 micro seconds
+Message size =       1024 t =       2.1763 micro seconds
+Message size =       2048 t =       3.4161 micro seconds
+Message size =       4096 t =       5.4745 micro seconds
+Message size =       8192 t =       9.3811 micro seconds
+Message size =      16384 t =      17.4322 micro seconds

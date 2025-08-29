@@ -28,5 +28,5 @@ export OMP_NUM_THREADS=1
 make
 
 mpiexec -n 1 ./testblas
-mpiexec -n 2 ./testcomm
 mpiexec -n 2 python3 pingpong.py
+mpiexec -n 2 ./testcomm

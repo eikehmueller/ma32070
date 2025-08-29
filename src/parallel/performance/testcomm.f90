@@ -7,8 +7,6 @@ program test_comm
   integer, parameter :: imin = 0
   ! Maximal message size = 2**imax
   integer, parameter :: imax = 24
-  ! Number of sends/recvs
-  integer, parameter :: nsend = 1000
 
   integer :: myid, numprocs, ierr
   ! Note these fancy dimension statements that allow a custom index range
@@ -38,7 +36,7 @@ program test_comm
   ! Loop over all message sizes
   do i = imin, imax
      messagesize(i) = 2**i     
-     call pingpong(messagesize(i),nsend,t_elapsed(i))
+     call pingpong(messagesize(i),t_elapsed(i))
      if (myid == 0) then
         write(*,'("Message size = ",I10," t = ",F12.4," micro seconds")') &
              messagesize(i), 1.E6*t_elapsed(i)

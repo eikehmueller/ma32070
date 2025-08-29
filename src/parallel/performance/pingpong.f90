@@ -1,48 +1,56 @@
-subroutine pingpong(messagesize, nsend, t_elapsed)
+subroutine pingpong(messagesize, t_elapsed)
 
   implicit none
   include "mpif.h"
   
   ! Size of message to exchange
   integer, intent(in) :: messagesize 
-  ! Number of sends/recvs
-  integer, intent(in) :: nsend
   ! Elapsed time for one send/recv
   real(kind=8), intent(out) :: t_elapsed
   ! Send and receive buffers
-  real(kind=8), dimension(messagesize,nsend) :: buffer_send, buffer_recv
-  integer :: i, ierr, myid
+  integer, parameter :: nmaxsend = 10000
+  real(kind=8), dimension(messagesize,0:nmaxsend) :: buffer_send, buffer_recv
+  integer :: ierr, myid
   integer :: istat(MPI_STATUS_SIZE)
-  real(kind=8) :: t_start, t_finish
+  integer :: nsend
+  real(kind=8) :: t_start, t_finish, t_delta, t_delta_global
 
   call MPI_Comm_rank(MPI_COMM_WORLD, myid, ierr)
   call random_number(buffer_send)
 
   ! Start the clock
   call MPI_Barrier(MPI_COMM_WORLD,ierr)
-  t_start = MPI_Wtime()
-
+  
+  nsend = 0
+  t_elapsed = 0
   ! Exchange message nsend times
-  do i = 1, nsend
+  do while ((t_elapsed < 0.1) .and. (nsend < nmaxsend))
+     t_start = MPI_Wtime()
      if (myid == 0) then
         ! Process 0 sends first, then receives
-        call MPI_Send(buffer_send(:,i), messagesize, &
+        call MPI_Send(buffer_send(:,nsend), messagesize, &
              MPI_DOUBLE_PRECISION, 1, 0, MPI_COMM_WORLD, ierr)
-        call MPI_Recv(buffer_recv(:,i), messagesize, &
+        call MPI_Recv(buffer_recv(:,nsend), messagesize, &
              MPI_DOUBLE_PRECISION, 1, 1, MPI_COMM_WORLD, istat, ierr)
      else 
         ! Process 1 receives first, then sends
-        call MPI_Recv(buffer_recv(:,i), messagesize, &
+        call MPI_Recv(buffer_recv(:,nsend), messagesize, &
              MPI_DOUBLE_PRECISION, 0, 0, MPI_COMM_WORLD, istat, ierr)
-        call MPI_Send(buffer_send(:,i), messagesize, &
+        call MPI_Send(buffer_send(:,nsend), messagesize, &
              MPI_DOUBLE_PRECISION, 0, 1, MPI_COMM_WORLD, ierr)
      end if
+     t_finish = MPI_Wtime()
+     t_delta = t_finish - t_start
+     call MPI_Allreduce(t_delta,t_delta_global,1, &
+          MPI_DOUBLE_PRECISION, MPI_MAX, &
+          MPI_COMM_WORLD,ierr)
+     t_elapsed = t_elapsed + t_delta_global
+     nsend = nsend + 1
   end do
 
   ! Stop the clock
-  call MPI_Barrier(MPI_COMM_WORLD,ierr)
-  t_finish = MPI_Wtime()
+  call MPI_Barrier(MPI_COMM_WORLD,ierr)  
 
-  t_elapsed = (t_finish-t_start)/(2.0_8*nsend)
+  t_elapsed = t_elapsed/(2.0_8*nsend)
 
 end subroutine pingpong

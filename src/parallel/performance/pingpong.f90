@@ -8,8 +8,7 @@ subroutine pingpong(messagesize, t_elapsed)
   ! Elapsed time for one send/recv
   real(kind=8), intent(out) :: t_elapsed
   ! Send and receive buffers
-  integer, parameter :: nmaxsend = 10000
-  real(kind=8), dimension(messagesize,0:nmaxsend) :: buffer_send, buffer_recv
+  real(kind=8), dimension(messagesize) :: buffer_send, buffer_recv
   integer :: ierr, myid
   integer :: istat(MPI_STATUS_SIZE)
   integer :: nsend
@@ -24,19 +23,19 @@ subroutine pingpong(messagesize, t_elapsed)
   nsend = 0
   t_elapsed = 0
   ! Exchange message nsend times
-  do while ((t_elapsed < 0.1) .and. (nsend < nmaxsend))
+  do while (t_elapsed < 0.1)
      t_start = MPI_Wtime()
      if (myid == 0) then
         ! Process 0 sends first, then receives
-        call MPI_Send(buffer_send(:,nsend), messagesize, &
+        call MPI_Send(buffer_send(:), messagesize, &
              MPI_DOUBLE_PRECISION, 1, 0, MPI_COMM_WORLD, ierr)
-        call MPI_Recv(buffer_recv(:,nsend), messagesize, &
+        call MPI_Recv(buffer_recv(:), messagesize, &
              MPI_DOUBLE_PRECISION, 1, 1, MPI_COMM_WORLD, istat, ierr)
      else 
         ! Process 1 receives first, then sends
-        call MPI_Recv(buffer_recv(:,nsend), messagesize, &
+        call MPI_Recv(buffer_recv(:), messagesize, &
              MPI_DOUBLE_PRECISION, 0, 0, MPI_COMM_WORLD, istat, ierr)
-        call MPI_Send(buffer_send(:,nsend), messagesize, &
+        call MPI_Send(buffer_send(:), messagesize, &
              MPI_DOUBLE_PRECISION, 0, 1, MPI_COMM_WORLD, ierr)
      end if
      t_finish = MPI_Wtime()

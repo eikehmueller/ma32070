@@ -2,7 +2,7 @@
   <p style="font-size:32px;">MA32070 Prerequisites and background reading</p>
 </div>
 
-In the following we list some prior knowledge that is expected for this course together with some links to further information.
+In the following we list some prior knowledge that is expected for this course together with some links to further information. Most of this should be familiar to you, and you will become more confident with writing Python code for solving problems in Scientific Computing throughout this course. However, you might benefit from brushing up on you Python coding skills and mathematical concepts that you have seen in other courses before the start of the semester.
 
 ----
 
@@ -96,7 +96,7 @@ Having a good strategy for debugging code is equally important, and you should a
 # Mathematical background
 
 ## The Finite Element method
-You should be familiar with the fundamental ideas behind the finite element method, as taught in *"MA30366: Numerical solution of elliptic partial differential equations"*. However, we will recapitulate the key concepts at the beginning of this course and the focus is on implementing the finite element method, not on proofs and theory. 
+You should be familiar with the fundamental ideas behind the finite element method, as taught in *"MA30366: Numerical solution of elliptic partial differential equations"*. However, the focus of the present unit is on *implementing* the finite element method, not on proofs and theory. We will recapitulate the key concepts at the beginning of this course, if anything looks unfamiliar please refer back to the lecture notes of MA30366 and/or consult the references below. 
 
 ## Linear Algebra
 I expect you to be familiar with fundamental concepts of linear algebra: for example, you should know how to manipulate matrices and vectors, know what eigenvalues and eigenvectors are and understand under which conditions a matrix is invertible.

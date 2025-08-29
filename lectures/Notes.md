@@ -2368,7 +2368,10 @@ $$
 T = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{n_{\text{proc}}} + n^2 t_{\text{word}} + n_{\text{proc}} t_{\text{lat}}
 $$
 
-![:fig:parallel_scaling: Parallel scaling of matrix-matrix product for different problem sizes](figures/parallel_scaling.svg)
+![:fig:parallel_scaling_theory: Parallel scaling of matrix-matrix product for different problem sizes (theory)](figures/parallel_scaling_theory.svg)
+
+![:fig:parallel_scaling_measured: Parallel scaling of matrix-matrix product for different problem sizes (measured)](figures/parallel_scaling_measured.svg)
+
 
 #### Parallel matrix-matrix product (overlapping of computation and communication)
 1. For each processor $p=0,1,\dots,n_{\text{proc}}-1$ **do in parallel**

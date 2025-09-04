@@ -2289,13 +2289,12 @@ For the Richardson iteration and CG with Jacobi preconditioner it is also very e
 
 # Parallel computing
 
-* Idea behind parallel computing: split problem into different parts
-* Distributed memory and message passing model
-* Simple example algorithm
-* Parallel performance indicators
-  - speedup
-  - parallel efficiency
-  - weak and strong scaling
+## The need for parallel computing
+To solve larger and larger problems in Scientific Computing, we need ever stronger computers. For example, the Met Office routinely solves sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$ unknowns to predict the weather, and thousands of these solves are required for a typical forecast of tomorrow's weather. Extrapolating the results in @fig:runtime_solver, a single solve with $n_{\text{dof}}=10^9$ unknowns will take about 15 minutes, so the total forecast time would exceed $1000\times 15\text{min} = 10.4\text{days}$!
+
+So far, we have implicitly assumed that all calculations are done by a single processor, but we can speed up our code significantly if we can somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $n_{\text{proc}}$ processors could make the code $n_{\text{proc}}$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is usually known as *ExaFLOP* performance), have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/). Even desktop computers and mobile phones now typically have multiple processing units.
+
+Consider, for example, 
 
 ## Parallel matrix-matrix product
 Assume that we want to compute the matrix-matrix product

@@ -2290,23 +2290,33 @@ For the Richardson iteration and CG with Jacobi preconditioner it is also very e
 # Parallel computing
 
 ## The need for parallel computing
-To solve larger and larger problems in Scientific Computing, we need ever stronger computers. For example, the Met Office routinely solves sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$ unknowns to predict the weather, and thousands of these solves are required for a typical forecast of tomorrow's weather. Extrapolating the results in @fig:runtime_solver, a single solve with $n_{\text{dof}}=10^9$ unknowns will take about 15 minutes, so the total forecast time would exceed $1000\times 15\text{min} = 10.4\text{days}$!
+To solve larger and larger problems in Scientific Computing, we need ever stronger computers. For example, the Met Office routinely solves sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$ unknowns to predict the weather, and thousands of these solves are required for a typical forecast of tomorrow's weather. Extrapolating the results in @fig:runtime_solver, a single solve with $n_{\text{dof}}=10^9$ unknowns will take about 15 minutes, so the total time to generate the forecast would exceed $1000\times 15\text{min} = 10.4\text{days}$! Clearly, this is not very useful.
 
-So far, we have implicitly assumed that all calculations are done by a single processor, but we can speed up our code significantly if we can somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $n_{\text{proc}}$ processors could make the code $n_{\text{proc}}$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is usually known as *ExaFLOP* performance), have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/). Even desktop computers and mobile phones now typically have multiple processing units.
+So far, we have implicitly assumed that all calculations are done by a single processor. We can speed up our code significantly if we can somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $n_{\text{proc}}$ processors would then make the code $n_{\text{proc}}$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is usually known as *ExaFLOP* performance). Have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/), which is updated twice a year and ranks the fastest computers across the world.
+
+Even desktop computers and mobile phones now typically have multiple processing units, so it is imperative to exploit this additional computing power with our code.
 
 ### Example: domain decomposition
-To explain one possible approach to parallelising our code across multiple processor, consider a weather forecast for the UK. Assume that we have covered the computational domain with a finite element mesh, as shown schematically in @fig:partitioned_mesh (of course, the real mesh would be much finer). Now, the mesh is distributed between four processors indicated by different colours. Each processor will solve the equations in parallel in its own local domain. Since these subdomains are smaller than the global mesh, we would expect the code to be approximately four times faster.
+To explain one possible approach to parallelising our code across multiple processor, consider a weather forecast for the UK. Assume that we have covered the computational domain with a finite element mesh, as shown schematically in @fig:partitioned_mesh (of course, the real mesh would be much finer). The mesh is distributed between four processors indicated by different colours. Each processor will solve the equations in parallel in its own local domain. Since these subdomains are smaller than the global mesh, we would expect the code to be approximately four times faster.
 
 ![:fig:partitioned_mesh: Partitioned mesh of a rectangular domain covering the UK](figures/partitioned_mesh.svg)
 
-However, there is a problem: the computations in the different subdomains are not independent! For example, the boundary conditions for the "red" domain will depend on the computations in all other three domains. This means that the processors will have to exchange interformation at regular intervals. For example, the "yellow", "blue" and "green" processors can send the information they have computed in the triangles that border the "red" domain. Conceptually, we end up with the following approach to parallelisation:
+However, there is a problem: the computations in the different subdomains are not independent! For example, the boundary conditions for the "red" domain will depend on the computations in all other three domains and vice versa. This means that the processors will have to exchange interformation at regular intervals. For example, the "yellow", "blue" and "green" processors might send the information they have computed in the triangles that border the "red" domain.
+
+### Distributed memory parallelism
+Conceptually, we end up with the following approach to parallelisation:
 
 1. Each processor "owns" a local part of the global problem: it stores local data and performs computations on it
-2. The processors can communicate by exchanging messages
+2. The processors communicate by exchanging messages
 
-This approach is also known as **distributed memory parallelisation**, since the global problem is distributed between the processors. To implement the exchange of messages, we can use the Message Passing Interface (MPI), which is implemented as [mpi4py](https://mpi4py.readthedocs.io/en/stable/) in Python.
+![:fig:message_passing: Message passing model](figures/communication.svg)
 
-Here is a simple Python code, in which processor 0 sends an array to processor 1:
+This approach is also known as **distributed memory parallelisation**, since the global problem is distributed between the processors, each of which stores only its local part of the problem in memory.
+
+### Message passing interface
+To implement the exchange of messages, we can use the Message Passing Interface (MPI), which is implemented as [mpi4py](https://mpi4py.readthedocs.io/en/stable/) in Python. This provides a set of routines that can be used to send and receive messages.
+
+Here is a simple Python code, which shows how to send an array from processor 0 to processor 1:
 
 ```Python
 import numpy as np
@@ -2342,6 +2352,8 @@ BEFORE: rank 1 has data [2 2 2 2]
 AFTER: rank 0 has data [1 1 1 1]
 AFTER: rank 1 has data [1 1 1 1]
 ```
+
+To illustrate the design of a parallel program we consider a very simple mathematical operation which arises in many applications. Recall, in particular, that the iterative solver algorithms we discussed above require the frequent evaluation of matrix-vector products.
 
 ## Parallel matrix-matrix product
 Assume that we want to compute the matrix-matrix product

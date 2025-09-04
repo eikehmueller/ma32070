@@ -2292,7 +2292,7 @@ For the Richardson iteration and CG with Jacobi preconditioner it is also very e
 ## The need for parallel computing
 To solve larger and larger problems in Scientific Computing, we need ever stronger computers. For example, the Met Office routinely solves sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$ unknowns to predict the weather, and thousands of these solves are required for a typical forecast of tomorrow's weather. Extrapolating the results in @fig:runtime_solver, a single solve with $n_{\text{dof}}=10^9$ unknowns will take about 15 minutes, so the total time to generate the forecast would exceed $1000\times 15\text{min} = 10.4\text{days}$! Clearly, this is not very useful.
 
-So far, we have implicitly assumed that all calculations are done by a single processor. We can speed up our code significantly if we can somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $n_{\text{proc}}$ processors would then make the code $n_{\text{proc}}$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is usually known as *ExaFLOP* performance). Have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/), which is updated twice a year and ranks the fastest computers across the world.
+So far, we have implicitly assumed that all calculations are done by a single processor. We can speed up our code significantly if we can somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $P$ processors would then make the code $P$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is usually known as *ExaFLOP* performance). Have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/), which is updated twice a year and ranks the fastest computers across the world.
 
 Even desktop computers and mobile phones now typically have multiple processing units, so it is imperative to exploit this additional computing power with our code.
 
@@ -2364,82 +2364,82 @@ $$
 
 where $A$ is an $n\times m$ matrix and $B$ is an $m\times r$ matrix; the resulting matrix $C$ has shape $n\times r$. For $r=1$ the matrix $B$ has a single column and can be interpreted as a vector. Hence, in this special case the problem reduces to the matrix-vector product $\boldsymbol{y}=A\boldsymbol{x}$.
 
-To parallelise the problem, we distribute the matrices between the $n_{\text{proc}}$ processors: for a matrix of size $n\times m$ the processor with index $p\in\{0,1,2,\dots,n_{\text{proc}}-1\}$ only stores rows $p\cdot n_{\text{local}}$ to $(p+1)\cdot n_{\text{local}}-1$ where
+To parallelise the problem, we distribute the matrices between the $P$ processors: for a matrix of size $n\times m$ the processor with index $p\in\{0,1,2,\dots,P-1\}$ only stores rows $p\cdot n_{\text{local}}$ to $(p+1)\cdot n_{\text{local}}-1$ where
 
 $$
-n_{\text{local}} = \frac{n}{n_{\text{proc}}}
+n_{\text{local}} = \frac{n}{P}
 $$
 
-is the number of rows stored per processor. For simplicity, we assume that $n$ is an integer multiple of the number of processors $n_{\text{proc}}$. We label the local part of each matrix stored by a processor with its index. Hence, process $p$ will store:
+is the number of rows stored per processor. For simplicity, we assume that $n$ is an integer multiple of the number of processors $P$. We label the local part of each matrix stored by a processor with its index. Hence, process $p$ will store:
 
 * The $n_{\text{local}}\times m$ matrix $A_p$
-* The $m_{\text{local}}\times r$ matrix $B_p$ where $m_{\text{local}} = m/n_{\text{proc}}$
+* The $m_{\text{local}}\times r$ matrix $B_p$ where $m_{\text{local}} = m/P$
 * The $n_{\text{local}}\times r$ matrix $C_p$
 
-If we further split the matrix $A_p$ into $n_{\text{proc}}$ matrices $A_{pq}$ of shape $n_{\text{local}}\times m_{\text{local}}$, the matrix-matrix product in @eqn:matrix_matrix_product can be written as
+If we further split the matrix $A_p$ into $P$ matrices $A_{pq}$ of shape $n_{\text{local}}\times m_{\text{local}}$, the matrix-matrix product in @eqn:matrix_matrix_product can be written as
 
 $$
-C_p = \sum_{q=0}^{n_{\text{proc}}-1} A_{pq} B_q \qquad\text{for each processor $p=0,1,\dots,n_{\text{proc}}-1$}
+C_p = \sum_{q=0}^{P-1} A_{pq} B_q \qquad\text{for each processor $p=0,1,\dots,P-1$}
 $$
 
-where each of the terms in the sum corresponds to the product of two matrices of shapes $n_{\text{local}}\times m_{\text{local}}$ and $m_{\text{local}}\times r$. For $n_{\text{proc}}=3$ this is shown schematically in the following figure:
+where each of the terms in the sum corresponds to the product of two matrices of shapes $n_{\text{local}}\times m_{\text{local}}$ and $m_{\text{local}}\times r$. For $P=3$ this is shown schematically in the following figure:
 
 ![:fig:parallel_matmat: Parallel matrix-matrix product](figures/parallel_matmat.svg)
 
 However, we now run into a problem: while each processor has the data to compute the product $A_{pp}B_p$, computing $A_{pq}B_q$ for $q\neq p$ is not possible since $B_q$ is stored on a different processor. To overcome this issue, we need to communicate data between the processors. This is shown in the following algorithm:
 
 #### Parallel matrix-matrix product
-1. For each processor $p=0,1,\dots,n_{\text{proc}}-1$ **do in parallel**
+1. For each processor $p=0,1,\dots,P-1$ **do in parallel**
 2. $~~~~$ Initialise $C_p \mapsto 0$
 3. $~~~~$ Set $\widehat{B} \gets B_p$
-4. $~~~~$ For $q=0,1,\dots,n_{\text{proc}}-1$ **do**
-5. $~~~~~~~~$ Update $C_p \gets C_p + A_{p,(p+q)\;\text{mod}\;n_{\text{proc}}} \widehat{B}$
-6. $~~~~~~~~$ If $q<n_{\text{proc}}-1$ **then**
-7. $~~~~~~~~~~~~$ Send $\widehat{B}$ to left neighbour $(p-1)\;\text{mod}\;n_{\text{proc}}$
-8. $~~~~~~~~~~~~$ Receive new $\widehat{B}$ from right neighbour $(p+1)\;\text{mod}\;n_{\text{proc}}$
+4. $~~~~$ For $q=0,1,\dots,P-1$ **do**
+5. $~~~~~~~~$ Update $C_p \gets C_p + A_{p,(p+q)\;\text{mod}\;P} \widehat{B}$
+6. $~~~~~~~~$ If $q<P-1$ **then**
+7. $~~~~~~~~~~~~$ Send $\widehat{B}$ to left neighbour $(p-1)\;\text{mod}\;P$
+8. $~~~~~~~~~~~~$ Receive new $\widehat{B}$ from right neighbour $(p+1)\;\text{mod}\;P$
 9. $~~~~~~~~$ **end if**
 10. $~~~~~$ **end do**
 11. **end do**
 
 ### Performance analysis
-Each matrix-vector product $A_{pq}B_q$ requires $2n_{\text{local}}m_{\text{local}}r$ floating point operations. We also need to read the $n_{\text{local}} \times m_{\text{local}}$ matrix $A_{pq}$ and the $m_{\text{local}}\times r$ matrix $B_q$ and write to the $n_{\text{local}}\times r$ matrix $C_p$. All this needs to be done $n_{\text{proc}}$ times. The overall cost is therefore
+Each matrix-vector product $A_{pq}B_q$ requires $2n_{\text{local}}m_{\text{local}}r$ floating point operations. We also need to read the $n_{\text{local}} \times m_{\text{local}}$ matrix $A_{pq}$ and the $m_{\text{local}}\times r$ matrix $B_q$ and write to the $n_{\text{local}}\times r$ matrix $C_p$. All this needs to be done $P$ times. The overall cost is therefore
 
 $$
 \begin{aligned}
-T_{\text{compute}} &= \left(2n_{\text{local}}m_{\text{local}}r\cdot t_{\text{flop}} + \left(n_{\text{local}}m_{\text{local}}+m_{\text{local}}r+n_{\text{local}}r\right)t_{\text{mem}}\right)n_{\text{proc}}\\
-&=\frac{2nmr\cdot t_{\text{flop}}+(nm+mr+nr)t_{\text{mem}}}{n_{\text{proc}}}
+T_{\text{compute}} &= \left(2n_{\text{local}}m_{\text{local}}r\cdot t_{\text{flop}} + \left(n_{\text{local}}m_{\text{local}}+m_{\text{local}}r+n_{\text{local}}r\right)t_{\text{mem}}\right)P\\
+&=\frac{2nmr\cdot t_{\text{flop}}+(nm+mr+nr)t_{\text{mem}}}{P}
 \end{aligned}
 $$
 
-Hence, compared to the sequential case, the time is reduced by a factor $n_{\text{proc}}$. Unfortunately, we also need to add the cost of communicating, i.e. exchanging portions of the matrix $B$ between the processors. We send $n_{\text{proc}}-1$ messages of size $m_{\text{local}}\times r$. This results in a cost of
+Hence, compared to the sequential case, the time is reduced by a factor $P$. Unfortunately, we also need to add the cost of communicating, i.e. exchanging portions of the matrix $B$ between the processors. We send $P-1$ messages of size $m_{\text{local}}\times r$. This results in a cost of
 
 $$
 \begin{aligned}
-T_{\text{comm}} &= (n_{\text{proc}}-1)\left(t_{\text{lat}} + m_{\text{local}}r\cdot t_{\text{word}}\right)\\
-&= (n_{\text{proc}}-1)t_{\text{lat}} + \frac{n_{\text{proc}}-1}{n_{\text{proc}}} mr\cdot t_{\text{word}}
+T_{\text{comm}} &= (P-1)\left(t_{\text{lat}} + m_{\text{local}}r\cdot t_{\text{word}}\right)\\
+&= (P-1)t_{\text{lat}} + \frac{P-1}{P} mr\cdot t_{\text{word}}
 \end{aligned}
 $$
 
-For $n=m=r$ and $n_{\text{proc}}\gg 1$ the total cost simplifies to
+For $n=m=r$ and $P\gg 1$ the total cost simplifies to
 
 $$
-T = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{n_{\text{proc}}} + n^2 t_{\text{word}} + n_{\text{proc}} t_{\text{lat}}\qquad\qquad:eqn:parallel_performance_model
+T(P) = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{P} + n^2 t_{\text{word}} + P t_{\text{lat}}\qquad\qquad:eqn:parallel_performance_model
 $$
 
 ### Performance indicators
-How can we assess how well our code parallelised? If $T_p$ is the time it takes to run the code on $p$ processors, then we can plot this time as a function of $p$. In the ideal case, we would expect that $T_p = T_1/p$, i.e. running the code on $p$ processors will make it $p$ times faster. In practice, the **parallel speedup**
+How can we assess how well our code parallelised? If $T(P)$ is the time it takes to run the code on $P$ processors, then we can plot this time as a function of $P$. In the ideal case, we would expect that $T(P) = T(1)/P$, i.e. running the code on $P$ processors will make it $P$ times faster. In practice, the **parallel speedup**
 
 $$
-S_p := \frac{T_1}{T_p}
+S(P) := \frac{T(1)}{T(P)}
 $$
 
-is smaller. Plotting $S_p$ as a function of $p$ and comparing it to the ideal speedup $S_p^{(\text{ideal})} = p$ is helpful to quantify the impact of parallelisation. Another useful number performance indicator is the **parallel efficiency**
+is smaller. Plotting $S(P)$ as a function of $p$ and comparing it to the ideal speedup $S^\star(P) = P$ is helpful to quantify the impact of parallelisation. Another useful number performance indicator is the **parallel efficiency**
 
 $$
-E_p = \frac{S_p}{S_p^{(\text{ideal})}} = \frac{T_1}{p\cdot T_p}.
+E(P) = \frac{S(P)}{S^\star(P)} = \frac{T(1)}{P\cdot T(P)},
 $$
 
-which is a number between 0 and 1 that compares the achieved speedup to the ideal speedup. A code which has a parallel efficiency of $100\%$ parallelises perfectly, while smaller values indicate that the code achieves only a fraction of its potential. The following @fig:parallel_scaling_theory shows the runtime $T_p$ (left), speedup $S_p$ (centre) and parallel efficiency $E_p$ (right) for a Python implementation of the parallel matrix-matrix product for square matrices of different sizes:
+which is a number between 0 and 1 that compares the achieved speedup to the ideal speedup. A code which has a parallel efficiency of $100\%$ parallelises perfectly, while smaller values indicate that the code achieves only a fraction of its potential. The following @fig:parallel_scaling_theory shows the runtime $T(P)$ (left), speedup $S(P)$ (centre) and parallel efficiency $E(P)$ (right) for a Python implementation of the parallel matrix-matrix product for square matrices of different sizes:
 
 ![:fig:parallel_scaling_measured: Parallel scaling of matrix-matrix product for different problem sizes (measured)](figures/parallel_scaling_measured.svg)
 

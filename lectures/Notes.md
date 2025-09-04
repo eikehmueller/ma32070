@@ -2426,6 +2426,15 @@ $$
 T = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{n_{\text{proc}}} + n^2 t_{\text{word}} + n_{\text{proc}} t_{\text{lat}}
 $$
 
+### Performance indicators
+How can we assess how well our code parallelised? If $T_p$ is the time it takes to run the code on $p$ processors, then we can plot this time as a function of $p$. In the ideal case, we would expect that $T_p = T_1/p$, i.e. running the code on $p$ processors will make it $p$ times faster. In practice, the speedup
+
+$$
+S_p := T_1/T_p
+$$
+
+is smaller. Plotting $S_p$ as a function of $p$ and comparing it to the ideal speedup $S_p^{(\text{ideal})} = p$ is helpful to see the impact of parallelisation. 
+
 ![:fig:parallel_scaling_theory: Parallel scaling of matrix-matrix product for different problem sizes (theory)](figures/parallel_scaling_theory.svg)
 
 ![:fig:parallel_scaling_measured: Parallel scaling of matrix-matrix product for different problem sizes (measured)](figures/parallel_scaling_measured.svg)

@@ -2427,13 +2427,13 @@ T(P) = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_
 $$
 
 ### Performance indicators
-How can we assess how well our code parallelised? If $T(P)$ is the time it takes to run the code on $P$ processors, then we can plot this time as a function of $P$. In the ideal case, we would expect that $T(P) = T(1)/P$, i.e. running the code on $P$ processors will make it $P$ times faster. In practice, the **parallel speedup**
+How can we assess how well our code parallelised? If $T(P)$ is the time it takes to run the code on $P$ processors, then we can plot this time as a function of $P$. In the ideal case, we would expect that $T(P) = T(1)/P$, i.e. running the code on $P$ processors will make it $P$ times faster. This is most easily confirmed in a log-log-plot. In practice, the **parallel speedup**
 
 $$
 S(P) := \frac{T(1)}{T(P)}
 $$
 
-is smaller. Plotting $S(P)$ as a function of $p$ and comparing it to the ideal speedup $S^\star(P) = P$ is helpful to quantify the impact of parallelisation. Another useful number performance indicator is the **parallel efficiency**
+is smaller than $p$. Plotting $S(P)$ as a function of $p$ and comparing it to the ideal speedup $S^\star(P) = P$ is helpful to quantify the impact of parallelisation. Another useful number performance indicator is the **parallel efficiency**
 
 $$
 E(P) = \frac{S(P)}{S^\star(P)} = \frac{T(1)}{P\cdot T(P)},

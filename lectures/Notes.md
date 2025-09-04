@@ -2306,6 +2306,43 @@ However, there is a problem: the computations in the different subdomains are no
 
 This approach is also known as **distributed memory parallelisation**, since the global problem is distributed between the processors. To implement the exchange of messages, we can use the Message Passing Interface (MPI), which is implemented as [mpi4py](https://mpi4py.readthedocs.io/en/stable/) in Python.
 
+Here is a simple Python code, in which processor 0 sends an array to processor 1:
+
+```Python
+import numpy as np
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+
+data = np.zeros(4, dtype=int)
+data[:] = rank + 1
+
+print(f"BEFORE: rank {rank} has data", data)
+
+if rank == 0:
+    comm.Send(data, 1)
+else:
+    comm.Recv(data, source=0)
+
+print(f"AFTER: rank {rank} has data", data)
+```
+
+Both processors will execute the same code, but what exactly they do will depend on the value of the variable `rank`, which is different for each processor.
+
+We can run this code with
+
+```
+mpirun -n 2 python message_exchange.py
+```
+and it will produce the output (note that the order of lines might change)
+```
+BEFORE: rank 0 has data [1 1 1 1]
+BEFORE: rank 1 has data [2 2 2 2]
+AFTER: rank 0 has data [1 1 1 1]
+AFTER: rank 1 has data [1 1 1 1]
+```
+
 ## Parallel matrix-matrix product
 Assume that we want to compute the matrix-matrix product
 

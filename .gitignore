@@ -1,1 +1,4 @@
 **/__pycache__
+src/plotting/*svg
+src/plotting/*pdf
+src/plotting/*png

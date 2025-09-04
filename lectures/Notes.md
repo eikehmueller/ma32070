@@ -2423,18 +2423,29 @@ $$
 For $n=m=r$ and $n_{\text{proc}}\gg 1$ the total cost simplifies to
 
 $$
-T = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{n_{\text{proc}}} + n^2 t_{\text{word}} + n_{\text{proc}} t_{\text{lat}}
+T = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{n_{\text{proc}}} + n^2 t_{\text{word}} + n_{\text{proc}} t_{\text{lat}}\qquad\qquad:eqn:parallel_performance_model
 $$
 
 ### Performance indicators
-How can we assess how well our code parallelised? If $T_p$ is the time it takes to run the code on $p$ processors, then we can plot this time as a function of $p$. In the ideal case, we would expect that $T_p = T_1/p$, i.e. running the code on $p$ processors will make it $p$ times faster. In practice, the speedup
+How can we assess how well our code parallelised? If $T_p$ is the time it takes to run the code on $p$ processors, then we can plot this time as a function of $p$. In the ideal case, we would expect that $T_p = T_1/p$, i.e. running the code on $p$ processors will make it $p$ times faster. In practice, the **parallel speedup**
 
 $$
-S_p := T_1/T_p
+S_p := \frac{T_1}{T_p}
 $$
 
-is smaller. Plotting $S_p$ as a function of $p$ and comparing it to the ideal speedup $S_p^{(\text{ideal})} = p$ is helpful to see the impact of parallelisation. 
+is smaller. Plotting $S_p$ as a function of $p$ and comparing it to the ideal speedup $S_p^{(\text{ideal})} = p$ is helpful to quantify the impact of parallelisation. Another useful number performance indicator is the **parallel efficiency**
+
+$$
+E_p = \frac{S_p}{S_p^{(\text{ideal})}} = \frac{T_1}{p\cdot T_p}.
+$$
+
+which is a number between 0 and 1 that compares the achieved speedup to the ideal speedup. A code which has a parallel efficiency of $100\%$ parallelises perfectly, while smaller values indicate that the code achieves only a fraction of its potential. The following @fig:parallel_scaling_theory shows the runtime $T_p$ (left), speedup $S_p$ (centre) and parallel efficiency $E_p$ (right) for a Python implementation of the parallel matrix-matrix product for square matrices of different sizes:
+
+![:fig:parallel_scaling_measured: Parallel scaling of matrix-matrix product for different problem sizes (measured)](figures/parallel_scaling_measured.svg)
+
+While for all problem sizes the runtime initially increases as the problem is solved with more processors, scaling detiorates for the smaller problems. For larger problems, decent speedup can be achieved on more processors, but even there scaling eventually brreaks down.
+
+It is instructive to compare the measured results in @fig:parallel_scaling_measured with the corresponding theoretical values in @fig:parallel_scaling_theory, which were obtained with the performance model in @eqn:parallel_performance_model. While the details differ, we observe good quanitative agreement.
 
 ![:fig:parallel_scaling_theory: Parallel scaling of matrix-matrix product for different problem sizes (theory)](figures/parallel_scaling_theory.svg)
 
-![:fig:parallel_scaling_measured: Parallel scaling of matrix-matrix product for different problem sizes (measured)](figures/parallel_scaling_measured.svg)

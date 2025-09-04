@@ -2401,6 +2401,39 @@ However, we now run into a problem: while each processor has the data to compute
 10. $~~~~~$ **end do**
 11. **end do**
 
+#### Python implementation
+A Python implementation looks like this:
+
+```Python
+def parallel_matmul(A, B, C):
+    """Parallel matrix-vector product
+
+    Compute local part of matrix C = A @ B, where each processor only stores its
+    local part of the matrices A and B.
+
+    :arg A: process-local part of matrix A
+    :arg B: process-local part of matrix B
+    :arg C: process-local part of resulting matrix C
+
+    """
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    nproc = comm.Get_size()
+
+    m_loc, _ = B.shape
+
+    for q in range(nproc):
+        C[:, :] += (
+            q_ = (q + rank) % nproc
+            A[:, q_ * m_loc : (q_ + 1) * m_loc] @ B[:, :]
+        )
+        if q < nproc - 1:
+            comm.Sendrecv_replace(B, (rank - 1) % nproc)
+    return C
+```
+
+Here we have used the [`Sendrecv_replace()` method](https://mpi4py.readthedocs.io/en/4.0.0/reference/mpi4py.MPI.Comm.html#mpi4py.MPI.Comm.Isendrecv_replace) to exchange the content of the local matrix $B$ between processors.
+
 ### Performance analysis
 Each matrix-vector product $A_{pq}B_q$ requires $2n_{\text{local}}m_{\text{local}}r$ floating point operations. We also need to read the $n_{\text{local}} \times m_{\text{local}}$ matrix $A_{pq}$ and the $m_{\text{local}}\times r$ matrix $B_q$ and write to the $n_{\text{local}}\times r$ matrix $C_p$. All this needs to be done $P$ times. The overall cost is therefore
 

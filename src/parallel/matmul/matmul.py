@@ -45,7 +45,7 @@ def parallel_matmul(A, B, C, overlap=False, nocomm=False):
             req_send = comm.Isend(B, dest=(rank - 1) % nproc)
             req_recv = comm.Irecv(B_recv)
         C[:, :] += (
-            A[:, ((q + rank) % nproc) * m_loc : (((q + rank) % nproc + 1)) * m_loc]
+            A[:, ((q + rank) % nproc) * m_loc : ((q + rank) % nproc + 1) * m_loc]
             @ B[:, :]
         )
 

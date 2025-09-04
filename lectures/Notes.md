@@ -2294,7 +2294,17 @@ To solve larger and larger problems in Scientific Computing, we need ever strong
 
 So far, we have implicitly assumed that all calculations are done by a single processor, but we can speed up our code significantly if we can somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $n_{\text{proc}}$ processors could make the code $n_{\text{proc}}$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is usually known as *ExaFLOP* performance), have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/). Even desktop computers and mobile phones now typically have multiple processing units.
 
-Consider, for example, 
+### Example: domain decomposition
+To explain one possible approach to parallelising our code across multiple processor, consider a weather forecast for the UK. Assume that we have covered the computational domain with a finite element mesh, as shown schematically in @fig:partitioned_mesh (of course, the real mesh would be much finer). Now, the mesh is distributed between four processors indicated by different colours. Each processor will solve the equations in parallel in its own local domain. Since these subdomains are smaller than the global mesh, we would expect the code to be approximately four times faster.
+
+![:fig:partitioned_mesh: Partitioned mesh of a rectangular domain covering the UK](figures/partitioned_mesh.svg)
+
+However, there is a problem: the computations in the different subdomains are not independent! For example, the boundary conditions for the "red" domain will depend on the computations in all other three domains. This means that the processors will have to exchange interformation at regular intervals. For example, the "yellow", "blue" and "green" processors can send the information they have computed in the triangles that border the "red" domain. Conceptually, we end up with the following approach to parallelisation:
+
+1. Each processor "owns" a local part of the global problem: it stores local data and performs computations on it
+2. The processors can communicate by exchanging messages
+
+This approach is also known as **distributed memory parallelisation**, since the global problem is distributed between the processors. To implement the exchange of messages, we can use the Message Passing Interface (MPI), which is implemented as [mpi4py](https://mpi4py.readthedocs.io/en/stable/) in Python.
 
 ## Parallel matrix-matrix product
 Assume that we want to compute the matrix-matrix product

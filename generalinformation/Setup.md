@@ -75,25 +75,10 @@ petsc4py                   3.23.4           np2py313hde6fa77_0  conda-forge
 ## Option 2: Using your own computer
 Please note that the following instructions are rough guidelines, and they will likely have to be adapted to your particular computer. Setting up the Python programming environment is more straightforward on Linux and Mac computer which provide access to a command line environment with an up-to-date Python version. On Windows computers, you will first have to install the WSL, see below. 
 
-### VSCode and git
+
 Download and install [VSCode](https://code.visualstudio.com/) (or use your own favourite editor).
 
-To access the command line environment, launch a terminal. Check that the `git` [version control](https://git-scm.com/) tool is available by typing
-
-```
-git --version
-```
-
-This should produce output like this (any reasonably recent version of git will be ok):
-
-```
-eike@eike-linux:~$ git --version
-git version 2.43.0
-```
-
-When writing your own code, you are welcome to use git and graphical interfaces such as [Sourcetree](https://www.sourcetreeapp.com/) or [GitKraken](https://www.gitkraken.com/), but this is not required.
-
-Next, proceed to install the additional required Python packages, as described in the following.
+To access the command line environment, launch a terminal and install the additional required Python packages, as described in the following.
 
 ### Python
 Most computers nowadays come with a working Python (version 3) installation. Double check that you have a recent version (anything from 3.12 upwards should be fine) by running
@@ -167,6 +152,19 @@ If you are working on a Windows computer, you should install the [Windows Subsys
 
 # Step 2: Installing the finite element library
 The finite element library provides some Python code that we will use throughout the semester.
+
+Check that the `git` [version control](https://git-scm.com/) tool is available by typing
+
+```
+git --version
+```
+
+in the command line. This should produce output like this (any reasonably recent version of git will be ok):
+
+```
+eike@eike-linux:~$ git --version
+git version 2.43.0
+```
 
 Change to the `ma32070/` directory and then run the following commands:
 

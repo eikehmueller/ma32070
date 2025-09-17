@@ -202,7 +202,7 @@ git pull
 
 Don't forget to change to the directory with your own code afterwards.
 
-## Directory layout
+# Directory layout
 If you worked through the steps above, your `ma32070/`  directory should contain the following subdirectories:
 
 * `ma32070/finiteelements` for the finite element library

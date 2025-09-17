@@ -45,20 +45,20 @@ To complete this course successfully you need to have a solid command of the Pyt
 * Matrix- and vector manipulation such as [matrix transposition](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.transpose.html) and [matrix multiplication](https://numpy.org/devdocs/reference/generated/numpy.matmul.html)
 * Other basic [numerical linear algebra](https://numpy.org/doc/stable/reference/routines.linalg.html#module-numpy.linalg) operations
 
-## Tensors
+# Tensors
 In the following we will often work with tensors, which are $d$-dimensional arrays. A tensor $T$ of rank  $d$ is an object which can be indexed with $d$ integers $i_0,i_1,\dots,i_{d-1}$ where $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$, i.e. we can write $T_{i_0,i_1,\dots,i_{d-1}}\in \mathbb{R}$ for the tensor elements. The list $(s_0,s_1,\dots,s_{d-1})$ is the **shape** of the tensor. We are already familiar with two special cases:
 
 * rank 1 tensors are vectors $\boldsymbol{v}\in \mathbb{R}^n$ with elements $v_i$ for $0\le i< n$ are vectors. The shape is the single number $(n)$, i.e. the dimension of the vector.
 * rank 2 tensors are $n\times m$ matrices $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $(n,m)$, i.e. the number of rows and columns of the matrix.
 
-### Adding tensors
+## Adding tensors
 Tensors $T$, $T'$ of the same shape can be scaled and added: if $\alpha,\beta\in \mathbb{R}$ are real numbers, then $S=\alpha T+\beta T'$ is a new tensor of the same shape
 
 $$
 S_{i_0,i_1,\dots,i_{d-1}} = \alpha T_{i_0,i_1,\dots,i_{d-1}}+\beta T'_{i_0,i_1,\dots,i_{d-1}}
 $$
 
-### Multiplying tensors
+## Multiplying tensors
 Tensors can be multiplied in different ways by contracting indices. For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
 
 $$
@@ -77,7 +77,7 @@ $$
 v_i = \sum_j A_{ij}w_j
 $$
 
-### Implementation in numpy
+## Implementation in numpy
 In numpy, tensors are represented by multidimensional arrays of type [`np.ndarray`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $(2,3,4)$ with only zero entries like this:
 
 ```Python

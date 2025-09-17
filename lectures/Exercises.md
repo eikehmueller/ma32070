@@ -8,7 +8,10 @@
 
 ----
 
-# Exercise: Cubic Lagrange element
+# Exercise 1: Cubic Lagrange element 
+
+#### Set: week 2
+#### Due: at the end of week 4
 Implement the cubic Lagrange element ($p=3$) in the class `CubicElement` by subclassing the abstract base class `FiniteElement`. The $\nu=10$ Lagrange points are in this order (see also figure below):
 
 $$
@@ -50,7 +53,7 @@ You can use the following 10 monomials:
 $$
 \{\theta_\ell(x)\}_{\ell=0}^{9} = \{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,x_0^3,x_0^2x_1,x_0x_1^2,x_1^3\}
 $$
-
+## Requirements
 * Your class should store the Lagrange points in an attribute `_nodal_points`
 * Your class should contain a method `vandermonde_matrix(zeta,grad=False)` which accepts as an argument a $n\times 2$ matrix of $n$ two-dimensional points. The method should compute the $n\times \nu$ matrix $V(\boldsymbol{\zeta})$ if `grad=False` and the $n\times \nu\times 2$ tensor $V^\partial(\boldsymbol{\zeta})$ if `grad=True`. If only a single point is passed to the method, it should return a vector of length $\nu$ for `grad=False` and a $\nu\times 2$ matrix for `grad=True`.
 * Use the `vandermonde_matrix()` method together with `_nodal_points` to construct the coefficient matrix `C`
@@ -60,6 +63,11 @@ $$
   - `tabulate()` correctly computes $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points.
   - `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$
   
+## Practicalities
+* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory
+* Zip this directory and upload it to the submission point on moodle
+
+## Tests
 ```python
 def test_ndof_per_vertex():
     """Check that the number of unknowns per vertex is set correctly"""
@@ -172,57 +180,12 @@ def test_tabulate_gradient_multiple_points():
     assert np.allclose(tabulated, expected, rtol=1.0e-12)
 ```
 
-## Practicalities
-* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory
+# Exercise 2: Local assembly on the reference triangle
 
-# Exercise: Three point quadrature
-Consider the following three-point quadrature on the reference triangle $\widehat{K}$:
+#### Set: week 3
+#### Due: end of week 5
 
-$$
-\begin{aligned}
-w_0 &= \frac{1}{6}, & w_1 &= \frac{1}{6}, & w_2 &= \frac{1}{6}\\
-\xi^{(0)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
-\xi^{(1)} &= \begin{pmatrix}\frac{2}{3} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
-\xi^{(2)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{2}{3}\end{pmatrix}
-\end{aligned}
-$$
-
-The degree of precision of this rule is $2$, i.e. it is exact for polynomials of the form
-$$
-p(x_0,x_1) = \sum_{\substack{s_0,s_1\\s_0+s_1\le 2}} a_{s_0,s_1} x_0^{s_0} x_1^{s_1}
-$$
-Implement this quadrature rule in the class `ThreePointQuadratureReferenceTriangle`, which should be a subclass of the abstract base class `Quadrature`. Write a suitable test which verifies that the implemention is correct. For this, observe that
-
-$$
-\int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1 = \frac{s_0!s_1!}{(s_0+s_1+2)!}
-$$
-
-Use the [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html) decorator to write a suitable, parametrised test which verifies this:
-
-```python
-import pytest
-
-@pytest.mark.parametrize(
-    "s, expected",
-    [
-        [[0, 0], 1 / 2],
-        # Add more cases here
-    ],
-)
-def test_threepoint_quadrature_monomial(s, expected):
-    """Check that three point quadrature is exact for monomial x_0^{s_0} x_1^{s_1}
-    
-    :arg s: (s_0,s_1) = powers of x_0,x_1
-    :arg expected: exact result s_0! s_1! / (s_0+s_1+2)!
-    """
-    # Add your own test code here
-```
-
-## Practicalities
-* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py`
-* Implement the test in `test_threepointquadrature.py`
-
-# Exercise: Local assembly on the reference triangle
+## Requirements
 * Implement a method `assemble_lhs(element, n_q)` which assembles the stiffness matrix $A^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
@@ -314,7 +277,62 @@ x = np.asarray([0.4,0.7])
 f_prime(x)
 ```
 
-# Exercise: Computation of global $L_2$-error
+# Bonus Exercise: Three point quadrature (not marked)
+
+#### Set: week 3
+Consider the following three-point quadrature on the reference triangle $\widehat{K}$:
+
+$$
+\begin{aligned}
+w_0 &= \frac{1}{6}, & w_1 &= \frac{1}{6}, & w_2 &= \frac{1}{6}\\
+\xi^{(0)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
+\xi^{(1)} &= \begin{pmatrix}\frac{2}{3} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
+\xi^{(2)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{2}{3}\end{pmatrix}
+\end{aligned}
+$$
+
+The degree of precision of this rule is $2$, i.e. it is exact for polynomials of the form
+$$
+p(x_0,x_1) = \sum_{\substack{s_0,s_1\\s_0+s_1\le 2}} a_{s_0,s_1} x_0^{s_0} x_1^{s_1}
+$$
+Implement this quadrature rule in the class `ThreePointQuadratureReferenceTriangle`, which should be a subclass of the abstract base class `Quadrature`. Write a suitable test which verifies that the implemention is correct. For this, observe that
+
+$$
+\int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1 = \frac{s_0!s_1!}{(s_0+s_1+2)!}
+$$
+
+Use the [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html) decorator to write a suitable, parametrised test which verifies this:
+
+```python
+import pytest
+
+@pytest.mark.parametrize(
+    "s, expected",
+    [
+        [[0, 0], 1 / 2],
+        # Add more cases here
+    ],
+)
+def test_threepoint_quadrature_monomial(s, expected):
+    """Check that three point quadrature is exact for monomial x_0^{s_0} x_1^{s_1}
+    
+    :arg s: (s_0,s_1) = powers of x_0,x_1
+    :arg expected: exact result s_0! s_1! / (s_0+s_1+2)!
+    """
+    # Add your own test code here
+```
+
+## Practicalities
+* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py`
+* Implement the test in `test_threepointquadrature.py`
+
+
+
+# Exercise 3: Computation of global $L_2$-error
+
+#### Set: week 6
+#### Due: end of week 7
+
 As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{globa;}}}(x)$, we can write the error $e_h$ as
 
 $$
@@ -368,7 +386,10 @@ This leads to the following procedure:
 
 Implement the above algorithm.
    
-# Exercise: Computational cost of backsubstitution
+# Exercise 4: Computational cost of backsubstitution
+
+#### Set: week 7
+#### Due: end of week 8
 
 ## Solution of upper triangular systems
 Consider a $n\times n$ upper triangular system, such as in the following example ($n=5$):
@@ -418,7 +439,12 @@ C_{\text{backsub}}(n) &= \sum_{i=0}^{n-1} (2(n-1-i)+1) \\
 \end{aligned}
 $$
 
-# Exercise: PETSc sparse matrices
+# Exercise 5: PETSc sparse matrices and linear solvers
+
+#### Set: week 9
+#### Due: end of week 10
+
+## PETSc matrices
 Create two $3\times 3$ sparse PETSc matrices $A$, $B$.
 
 By using suitable functions (see [`petsc4py.Mat` documentation](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html)), compute
@@ -427,7 +453,7 @@ By using suitable functions (see [`petsc4py.Mat` documentation](https://petsc.or
 * $AB^\top$
 * $A+B$
 
-# Exercise: Gauss Seidel iteration
+##  Gauss Seidel iteration
 Instead of $P=D$, we could also use the lower triangular part of $A$ and set $P=D+L$ where
 $$
 L = \begin{cases}
@@ -437,7 +463,7 @@ A_{ij} & \text{if $i<j$} \\
 $$
 Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)z=r$ can be solved row-by-row, i.e. by computing first $\boldsymbol{z}_0 = \boldsymbol{r}_0/A_{00}$, then computing $\boldsymbol{z}_1 = (\boldsymbol{r}_1 - A_{10}\boldsymbol{z}_0)/A_{11}$, $\boldsymbol{z}_2=(\boldsymbol{r}_2 - A_{20}\boldsymbol{z}_0 - A_{21}\boldsymbol{z}_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`. Run the code with this preconditioner - how does the number of iterations change?
 
-# Exercise: PETSc solver options
+## PETSc solver options
 For this exercise we consider the $n\times n$ matrix $A$ which is of the following form
 
 $$

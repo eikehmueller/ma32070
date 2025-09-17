@@ -19,7 +19,7 @@ The crucial ingredients are
 * a modern code **editor** such as [VSCode](https://code.visualstudio.com/)
 * the MA32070 [**finite element library**](https://github.com/eikehmueller/finiteelements)
 
-At the beginning of the course, you need to work through the two steps below to get set up. Once you have done this, review the section on how to choose a suitable directory layout for the course material.
+At the beginning of the course, please work through the two steps below to get set up. Once you have done this, review the section on the directory layout for the course material.
 
 ## Notable
 The default setup is to use the **Notable** environment, which every student on this course has access to. This provides a suitable Python installation with all required packages. You can access Notable through the link on moodle. You should choose the "Standard Python 3 with VS-Code editor" notebook, which allows you to edit files with the built-in VScode editor.

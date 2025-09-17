@@ -9,47 +9,94 @@
 ----
 
 # General setup
+The purpose of this notebook is to describe the setup of the software environment required to develop code for MA32070.
+
+The crucial ingredients are
+
+* a **terminal** to access the command line
+* a working **Python** environment
+* several **Python packages** for numerical computations in particular the [petsc4py](https://petsc.org/release/petsc4py/) numerical linear algebra library
+* a modern code **editor** such as [VSCode](https://code.visualstudio.com/)
+* the MA32070 [**finite element library**](https://github.com/eikehmueller/finiteelements)
+
+At the beginning of the course, you need to work through the two steps below to get set up. Once you have done this, review the section on how to choose a suitable directory layout for the course material.
+
+## Notable
+The default setup is to use the **Notable** environment, which every student on this course has access to. This provides a suitable Python installation with all required packages. You can access Notable through the link on moodle. You should choose the "Standard Python 3 with VS-Code editor" notebook, which allows you to edit files with the built-in VScode editor.
+
+## Working on your own computer
+You are welcome to set up a suitable Python environment on your own computer and work with this if you prefer. This is relatively straightforward on a Linux or Mac computer, but more challenging on Windows. Below are some instructions that might help you with this. **Note that if you choose to use your own computer it is your responsibility to set it up correctly, and we can only provide limited support for this. You are also responsible for backing up any code you write. Problems with your own computer are not a valid reason for requesting a coursework extension.**
 
 ## Using the command line
-Scientific software is usually developed in a command line environment: the user interacts with the system by typing commands at a command line prompt, also known as a "shell". This allows the user to do things like creating files and directories and executing Python scripts. Linux and Mac computers provide a Unix-like environment which you can access by launching a terminal session. On Windows systems, you will have to first install the [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/) (see below), which gives you access to a Linux-like system.
+Scientific software is usually developed in a command line environment: the user interacts with the system by typing commands at a command line prompt, also known as a "shell". This allows the user to do things like creating files and directories and executing Python scripts. Linux and Mac computers provide a Unix-like environment which you can access by launching a terminal session. On Windows systems, you will have to first install the [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/) (see below), which gives you access to a Linux-like system in which you can install the Python packages required for this unit.
 
 If you have never used the command line, familiarise yourself with the basics by working through sections 1 to 3 of the [Software Carpentry tutorial on the Unix shell](https://swcarpentry.github.io/shell-novice/).
 
-## Directory structure
-Make sure that you organise your code in a sensible way. It is recommended that you create a single directory, called `ma32070` for this course. Inside this directory, create a subdirectory `ma32070/workspace` for any code you develop.
+### Accessing a terminal
+On Notable, you can launch a terminal by choosing "File" $\rightarrow$ "New" $\rightarrow$ "Terminal" from the menu bar or by clicking the square "Terminal" button in the "Launcher" tab on the right.
 
-# Required software
+In the VSCode environment (both on Notable and in a standalone installation on your own computer) you can access the command line through a terminal in one of the tabs at the bottom of the window.
 
-## Notable
-Open a terminal window and create a new conda environment as follows:
+## Directory layout
+It is strongly recommended that you carry out all work related to this course in a dedicated directory (or folder), which will be referred to as `ma32070/` in the following. Depending on your setup, this folder will contain additional subdirectories, see below for more details on how to organise your code.
 
-```
-conda create -y --prefix ${HOME}/petsc_sandbox -c conda-forge petsc petsc4py mpi4py pytest
-```
+# Step 1: Setup of the required Python environment
 
-To use the environment, you need to run 
+## Option 1: Notable
+Access Notable through the link on moodle and choose the "Standard Python 3 with VS-Code editor" notebook.
 
-```
-conda activate ${HOME}/petsc_sandbox
-```
-
-Create a directory in which you want to install the finite elements package, for example `git_workspace`. Change to this directory and then run the following commands:
+When you log in for the very first time, open a terminal window and create a new conda environment by typing the following commands (press enter at the end of each line):
 
 ```
-git clone https://github.com/eikehmueller/finiteelements.git
-cd finiteelements
-python3 -m pip install --editable .
-python -m pytest -v
+conda init
+conda create -y --prefix ${HOME}/petsc_sandbox -c conda-forge petsc petsc4py pytest mpi4py
+echo "conda activate ${HOME}/petsc_sandbox" >> ${HOME}/.bashrc
+```
+
+Once you have done this, close the terminal and reopen it for the changes to take effect.
+
+Then, type
+
+```
+conda list petsc4py
+```
+
+If everything is set up correctly you should see the following output:
+
+```
+(/home/jovyan/petsc_sandbox) jovyan@noteable:~$ conda list petsc4py
+# packages in environment at /home/jovyan/petsc_sandbox:
+#
+# Name                     Version          Build               Channel
+petsc4py                   3.23.4           np2py313hde6fa77_0  conda-forge
 ```
 
 
+## Option 2: Using your own computer
+Please note that the following instructions are rough guidelines, and they will likely have to be adapted to your particular computer. Setting up the Python programming environment is more straightforward on Linux and Mac computer which provide access to a command line environment with an up-to-date Python version. On Windows computers, you will first have to install the WSL, see below. 
 
+### VSCode and git
+Download and install [VSCode](https://code.visualstudio.com/) (or use your own favourite editor).
 
-## Windows computers
-If you are working on a Windows computer, you should install the [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/) by following the [WSL installation instructions](https://learn.microsoft.com/en-us/windows/wsl/install), see also the [troubleshooting section](https://learn.microsoft.com/en-us/windows/wsl/troubleshooting?source=recommendations) if you run into problems. Use a suitable Linux distribution, such as Ubuntu-24.04. Make sure you activate the WSL after installation (you will need to create a user account and password for this). Inside the WSL Linux system, you might then have to install additional packages, see below.
+To access the command line environment, launch a terminal. Check that the `git` [version control](https://git-scm.com/) tool is available by typing
 
-## Python
-We will use Python (version 3) for software development. Most computers nowadays come with a working Python3 installation, check that you have a recent version (anything from 3.12 upwards should be fine) by running
+```
+git --version
+```
+
+This should produce output like this (any reasonably recent version of git will be ok):
+
+```
+eike@eike-linux:~$ git --version
+git version 2.43.0
+```
+
+When writing your own code, you are welcome to use git and graphical interfaces such as [Sourcetree](https://www.sourcetreeapp.com/) or [GitKraken](https://www.gitkraken.com/), but this is not required.
+
+Next, proceed to install the additional required Python packages, as described in the following.
+
+### Python
+Most computers nowadays come with a working Python (version 3) installation. Double check that you have a recent version (anything from 3.12 upwards should be fine) by running
 
 ```
 python3 --version
@@ -57,28 +104,25 @@ python3 --version
 
 in the command line prompt.
 
-## Virtual environment
-It is strongly recommended to carry out all work for this course inside a dedicated Python [virtual environment (venv)](https://docs.python.org/3/library/venv.html): this will allow you to install Python packages in a controlled way, without affecting the system-wide Python installation. If you have a working Python installation, you should be able to create a virtual environment with
+To install the additional Python packages it is strongly recommended that you either do this via `pip install` inside a virtual environment (Option 2a) or use [Anaconda](https://www.anaconda.com/) (Option 2b).
+
+### Option 2a: Virtual environment
+Using a dedicated Python [virtual environment (venv)](https://docs.python.org/3/library/venv.html) allows you to install Python packages in a controlled way, without affecting the system-wide Python installation. If you have a working Python installation, you should be able to create a virtual environment with
 
 ```
 python3 -m venv PATH
 ```
 
-where `PATH` is the name of the directory in which to create the venv. You probably want to use a subdirectory of your `ma32070` directory, e.g. `ma32070/venv`. Once created, you can activate the virtual environment with
+where `PATH` is the name of the directory in which to create the venv. You probably want to use a subdirectory of your `ma32070/` directory, e.g. `ma32070/venv`. Once created, you can activate the virtual environment with
 
 ```
 source PATH/bin/activate
 ```
 
-Hence, whenever you work on this course, you should do this at the beginning of each session:
+Hence, whenever you work on this course, you should activate the virtual environment as soon as you have opened a terminal session.
 
-1. Open a terminal to get a command line prompt
-2. If you are using Windows, launch the WSL by typing `wsl` in the prompt
-3. Navigate to the `ma32070` course directory
-4. Activate the virtual environment
-
-## Required Python packages
-We will require several Python packages, which can usually be installed with
+#### Installation of required Python packages
+Inside the virtual environment, the required Python packages can be installed with
 
 ```
 python3 -m pip install PACKAGE
@@ -91,40 +135,49 @@ where `PACKAGE` is the name of the package to be installed:
 * [pytest](https://docs.pytest.org/en/stable/) for testing
 * [petsc4py](https://petsc.org/release/petsc4py/) for linear solvers and preconditioners later in this course.
 
-Install these packages inside the virtual environment you created. If this is not possible (this might be the case if you are using the WSL), you will likely have to pass the additional flag `--break-system-packages` to `python3 -m pip install`.
+Install these packages inside the virtual environment you created (make sure that you activated the environment first).
 
-### Installing petsc4py
-The installation of petsc4py can be tricky since it requires building the PETSc library itself. For this, you might have to install additional (non-Python) packages such as `libblas-dev` and `liblapack-dev`. We will only need petsc4py towards at the end of the course, so you do not have to get it working in the first week.
+#### Installing petsc4py
+The installation of petsc4py can be tricky since it requires building the PETSc library itself. For this, you might have to install additional (non-Python) packages such as `libblas-dev` and `liblapack-dev`.
 
-## Additional software
-We will use the following additional software:
+### Option 2b: Anaconda
+Follow the [instructions](https://www.anaconda.com/docs/getting-started/anaconda/install) to install and set up Anaconda on your computer. 
 
-* [git](https://git-scm.com/) for version control. This is a command line tool which should be installed on most systems. When writing your own code, you are welcome to use graphical interfaces such as [Sourcetree](https://www.sourcetreeapp.com/) or [GitKraken](https://www.gitkraken.com/).
-* [Visual Studio (VS) Code](https://code.visualstudio.com/) for editing source code.
-* [Paraview](https://www.paraview.org/) for visualising results.
+#### Installation of required Python packages
+Launch a terminal and make sure that Anaconda has been activated: you should see `(base)` in the command line prompt.
 
-Installation should be straightforward with the provided download links.
+Use the `conda create` command to set up a dedicated environment for this course. When doing so, make sure that it includes the packages `petsc petsc4py pytest mpi4py` from the `conda-forge` channel, usually this means including `-c conda-forge petsc petsc4py pytest mpi4py` at the end of the command.
 
-# Installing the finite element library
-You should clone the provided finite element library by running
+For example, to create a local environment called `petsc_sandbox` on a Linux machine, run the following command:
 
 ```
-git clone git@github.com:eikehmueller/finiteelements.git
+conda create -y --prefix MA32070_DIR/petsc_sandbox -c conda-forge petsc petsc4py pytest mpi4py
 ```
 
-in your `ma32070` directory. Once you have done this, change to `ma32070/finitelements` and run
+where `MA32070_DIR` needs to be replaced by the name of your `ma32070/` directory. You will need to look at the [documentation of `conda create`]((https://docs.conda.io/projects/conda/en/stable/commands/create.html) to work out the exact command on your computer. To use the created environment, it first needs to be activated with 
 
 ```
+conda activate MA32070_DIR/petsc_sandbox
+```
+
+every time you work on this course (this will happen automatically if you append this line to your `${HOME}/.bashrc` file on Linux and Mac computers). You can check whether the environment has been activated successfully by looking at the command prompt: this should contain the name of the environment, i.e. `petsc_sandbox` in the above example.
+
+## Windows computers
+If you are working on a Windows computer, you should install the [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/) by following the [WSL installation instructions](https://learn.microsoft.com/en-us/windows/wsl/install), see also the [troubleshooting section](https://learn.microsoft.com/en-us/windows/wsl/troubleshooting?source=recommendations) if you run into problems. Use a suitable Linux distribution, such as Ubuntu-24.04. Make sure you activate the WSL after installation (you will need to create a user account and password for this). Inside the WSL Linux system, you will then have to set up git and Python and install the necessary packages, as described above.
+
+# Step 2: Installing the finite element library
+The finite element library provides some Python code that we will use throughout the semester.
+
+Change to the `ma32070/` directory and then run the following commands:
+
+```
+git clone https://github.com/eikehmueller/finiteelements.git
+cd finiteelements
 python3 -m pip install --editable .
+python -m pytest -v
 ```
 
-A good test of verifying that you have correctly installed all required software is to run
-
-```
-pytest -v
-```
-
-inside this directory.
+This will create a subdirectory `ma32070/finitelements`.
 
 If everything worked correctly, you can use functionality from this library in your own code. For example, you could write the following Python script (in any directory):
 
@@ -138,25 +191,27 @@ print (f"number of vertices = {mesh.nvertices}")
 
 to create a rectangle mesh and print out the number of cells and vertices.
 
-# Final directory layout
-If you followed all steps above, your `ma32070` directory should now contain the following subfolders:
+Please **never** edit any code in `ma32070/finiteelements` or add any other code to the directory. If you do this by accident, delete the directory and install the finite element library again as described above.
 
-* `ma32070/venv` for the virtual environment
+### Updating the finite element library
+During the semester, additional functionality and model solutions will be added to the finite element library. To access this code, you will need to change to the `ma32070/finiteelements` directory and run
+
+```
+git pull
+```
+
+Don't forget to change to the directory with your own code afterwards.
+
+## Directory layout
+If you worked through the steps above, your `ma32070/`  directory should contain the following subdirectories:
+
 * `ma32070/finiteelements` for the finite element library
+* a subdirectory with the virtual environment or Anaconda environment:
+  - `ma32070/venv` (if you installed the Python packages in a virtual environment) or 
+  - `ma32070/petsc_sandbox` (if you use Anaconda)
+
+It is suggested that you create an additional directory
 * `ma32070/workspace` for your own work
 
-# Troubleshooting
-If you run into problems, please first try to resolve these yourself: in many cases it helps to google the relevant error messages or suitable keywords that summarise the problem. Searching pages such as [stackoverflow](https://stackoverflow.com/) can also be helpful since it is likely that someone else will have encountered the same problem.
+In summary, the `ma32070/` folder should contain exactly three subdirectories and you should only ever edit or add code in `ma32070/workspace`.
 
-If you do get stuck and need help from your course tutor, please make sure that you provide sufficient information with your request. For this, try to answer the following questions:
-
-* What exactly is the problem? Which code failed? Be as specific as possible.
-* What exactly did you do to trigger the error? Describe any previous steps you might have gone through.
-* What is the exact error message you get? Please copy and paste raw text instead of sending screenshots.
-* What did you expect to happen? What did you actually observe?
-* Under which environment (operating system, used Python version, ...) did the error occur?
-* Which other software have you installed successfully?
-* Which steps have you already taken to resolve the issue?
-* What do you think the problem is? Is this consistent with what you actually observe?
-
-You might want to review the [Appendix 1. Getting Help](https://object-oriented-python.github.io/a1_help.html) from [David Ham's excellent book](https://object-oriented-python.github.io/index.html) on how to ask good questions.

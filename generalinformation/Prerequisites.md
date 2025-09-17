@@ -113,3 +113,6 @@ The following references might be useful for further reading. You are not expect
 * [[CH24]](https://finite-element.github.io/) Lecture notes on *"Finite elements: Analysis and implementation"* by Colin Cotter and David Ham (Imperial College)
 * [[Far21]](https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf) Lecture notes on  *"Finite Element Methods for PDEs"* by Patrick Farrell (Oxford)
 * [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) *"Automated Solution of Differential Equations by the Finite Element Method"* (the FEniCS book) by Anders Logg et al.
+
+## Getting help
+You might want to review the [Appendix 1. Getting Help](https://object-oriented-python.github.io/a1_help.html) from [David Ham's excellent book](https://object-oriented-python.github.io/index.html) on how to ask good questions.

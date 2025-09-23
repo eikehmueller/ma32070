@@ -195,7 +195,7 @@ def test_tabulate_gradient_multiple_points():
 * Implement a method `assemble_lhs(element, n_q)` which assembles the stiffness matrix $A^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Implement a method `assemble_rhs(f, g, element, n_q)` which assembles the right-hand side vector $\boldsymbol{b}^{(h)}$ using the Gauss-Legenre quadrature rule. The method should be passed:
+* Implement a method `assemble_rhs(f, g, element, n_q)` which assembles the right-hand side vector $\boldsymbol{b}^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
   - The function `f` which describes the right-hand side function $f(x)$
   - The function `g` which describes the Neumann boundary function $g(x)$
   - An instance `element` of a subclass of `FiniteElement`
@@ -209,7 +209,7 @@ def test_tabulate_gradient_multiple_points():
 Use the methods `assemble_lhs()`, `assemble_lhs()` and `error_nrm()` in a main program which
 
 * assembles the matrix $A^{(h)}$ and right hand $\boldsymbol{b}^{(h)}$,
-* solves the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ for the vector $\boldsymbol{u}^{(h)}$ by using [numpy.linalg.solve()](https://numpy.org/doc/2.0/reference/generated/numpy.linalg.solve.html)
+* solves the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ for the vector $\boldsymbol{u}^{(h)}$ by using [`numpy.linalg.solve()`](https://numpy.org/doc/2.0/reference/generated/numpy.linalg.solve.html)
 * computes the error norm $\|e_h\|_{L_2(\widehat{K})}$,
 * visualises the solution and error.
 
@@ -221,7 +221,7 @@ u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}\left\|\boldsymbol{x}-\bolds
 $$
 with a peak of width $\sigma = 0.5$ centred at $x_0 = (0.6, 0.25)^\top$.
 
-In the weak form which defines the PDE, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
+In the weak form which defines the PDE $-\kappa \Delta u + \omega u = f$, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
 
 Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution and error for polynomial degrees $p=1$ and $p=3$.
 
@@ -262,7 +262,7 @@ def u_exact(x, sigma, x0):
 
 
 def f(x, kappa, omega, sigma, x0):
-    """function to interpolate
+    """Function f(x) for right hand side
 
     :arg x: point at which the function is evaluated
     :arg kappa: coefficient of diffusion term
@@ -277,7 +277,7 @@ def f(x, kappa, omega, sigma, x0):
 
 
 def g(x, kappa, sigma, x0):
-    """boundary function
+    """Boundary function g(x)
 
     :arg x: point at which the function is evaluated
     :arg kappa: coefficient of diffusion term

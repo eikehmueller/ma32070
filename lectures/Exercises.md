@@ -12,6 +12,8 @@
 
 #### Set: week 2
 #### Due: at the end of week 4
+
+## Task
 Implement the cubic Lagrange element ($p=3$) in the class `CubicElement` by subclassing the abstract base class `FiniteElement`. The $\nu=10$ Lagrange points are in this order (see also figure below):
 
 $$
@@ -32,7 +34,7 @@ $$
 
 ![Lagrange points for cubic element](figures/lagrange_nodes_cubic.svg)
 
-The corresponding basis functions are
+The corresponding nodal basis functions with $\phi_\ell(\xi^{(k)}) = \delta_{jk}$ are
 $$
 \begin{aligned}
 \phi_0(x) &= 1 - \frac{11}{2} (x_0 + x_1) + 9 (x_0 + x_1)^2 - \frac{9}{2} (x_0 + x_1)^3,\\
@@ -48,24 +50,27 @@ $$
 \end{aligned}
 $$
 
-You can use the following 10 monomials:
+You can use the following 10 monomials for the construction of the Vandermonde matrix:
 
 $$
 \{\theta_\ell(x)\}_{\ell=0}^{9} = \{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,x_0^3,x_0^2x_1,x_0x_1^2,x_1^3\}
 $$
 ## Requirements
-* Your class should store the Lagrange points in an attribute `_nodal_points`
-* Your class should contain a method `vandermonde_matrix(zeta,grad=False)` which accepts as an argument a $n\times 2$ matrix of $n$ two-dimensional points. The method should compute the $n\times \nu$ matrix $V(\boldsymbol{\zeta})$ if `grad=False` and the $n\times \nu\times 2$ tensor $V^\partial(\boldsymbol{\zeta})$ if `grad=True`. If only a single point is passed to the method, it should return a vector of length $\nu$ for `grad=False` and a $\nu\times 2$ matrix for `grad=True`.
-* Use the `vandermonde_matrix()` method together with `_nodal_points` to construct the coefficient matrix `C`
-* Use the coefficient matrix `C` and the `vandermonde_matrix()` method to tabulate the basis functions and their gradients by using the expressions above. You might find the [`numpy.einsum()`](https://numpy.org/doc/2.2/reference/generated/numpy.einsum.html) method useful to compute $T^\partial(\boldsymbol{\zeta})$
+* Your class should store the Lagrange points in an attribute `_nodal_points`, this can be done for example in the `__init__()` method.
+* Your class should contain a method `vandermonde_matrix(zeta,grad=False)` which accepts as an argument a $n\times 2$ array of $n$ two-dimensional points. The method should compute the $n\times \nu$ matrix $V(\boldsymbol{\zeta})$ defined in the lectures if `grad=False` and the $n\times \nu\times 2$ tensor $V^\partial(\boldsymbol{\zeta})$ if `grad=True`. If only a single point is passed to the method, it should return a vector of length $\nu$ for `grad=False` and an $\nu\times 2$ array for `grad=True`.
+* In the `__init__()` method, use the `vandermonde_matrix()` method together with `_nodal_points` to construct the coefficient matrix $C$ defined in the lectures. Store this matrix in a class attribute `_coefficients`
+* Use `_coefficients` and the `vandermonde_matrix()` method to tabulate the basis functions and their gradients to implement the `tabulate()` and `tabulate_gradient()` methods. You might find the [`numpy.einsum()`](https://numpy.org/doc/2.2/reference/generated/numpy.einsum.html) method useful to compute $T^\partial(\boldsymbol{\zeta})$
 * Verify that the methods `dofmap()` and `inverse_dofmap()`, which are inherited from the abstract base class behave as expected. For this, inspect the output of `inverse_dofmap(ell)` for $\ell=0,1,2,\dots,9$
-* Your code should pass the tests below, which verify correctness for special cases. Use [pytest](https://docs.pytest.org/) to add further tests to verify that your implementation is correct. In particular, you should check that
-  - `tabulate()` correctly computes $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points.
-  - `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$
+* Make sure you implement all other methods/properties that are marked as abstract in the base class.
+  
+Your code should pass the tests below, which verify correctness for special cases. Use [pytest](https://docs.pytest.org/) to add further tests to verify that your implementation is correct. In particular, you should check that
+* `tabulate()` correctly computes $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points.
+* `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$
   
 ## Practicalities
-* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory
-* Zip this directory and upload it to the submission point on moodle
+* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise1`
+* Zip this directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise1.tgz exercise1`
+* Upload the resulting file `exercise1.tgz` to the submission point on moodle
 
 ## Tests
 ```python
@@ -185,7 +190,8 @@ def test_tabulate_gradient_multiple_points():
 #### Set: week 3
 #### Due: end of week 5
 
-## Requirements
+## Tasks
+### Implementation
 * Implement a method `assemble_lhs(element, n_q)` which assembles the stiffness matrix $A^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
@@ -194,28 +200,54 @@ def test_tabulate_gradient_multiple_points():
   - The function `g` which describes the Neumann boundary function $g(x)$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Implement a method `error_nrm(u, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e_h\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
-  - The vector $\boldsymbol{u}^{(h)}$ that defines the function $u_h(x)$ 
-  - A function $u_{\text{exact}}$ which represents the exact solution and which can be evaluated at arbirtrary points $\zeta\in \widehat{K}$
+* Implement a method `error_nrm(u_numerical, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e_h\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
+  - The vector `u_numerical` which is the dof-vector $\boldsymbol{u}^{(h)}$ that represents the function $u_h(x)$ 
+  - A function `u_exact` which represents the exact solution $u_{\text{exact}}(x)$ and which can be evaluated at arbitrary points $\zeta\in \widehat{K}$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Solve the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ for the vector $\boldsymbol{u}^{(h)}$ by using [numpy.linalg.solve()](https://numpy.org/doc/2.0/reference/generated/numpy.linalg.solve.html)
 
-## Numerical experiments
-* Apply the `tabulate_dofs()` method of the finite element class to the exact solution $u_{\text{exact}}(x)$ to obtain a vector $\boldsymbol{u}_{\text{exact}}^{(h)}$. For this pick the following parameters:
-  - width of peak $\sigma = 0.5$
-  - location of peak $x_0 = (0.6, 0.25)^\top$
-  - Coefficient of diffusion term $\kappa = 0.9$
-  - Coefficient of zero order term $\omega = 0.4$
-* Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$.
-* How does $\|e_h\|_{L_2(\widehat{K})}$ depend on the polynomial degree $p$ of the Lagrange element?
-* What happens for large values of $p$?
+Use the methods `assemble_lhs()`, `assemble_lhs()` and `error_nrm()` in a main program which
+
+* assembles the matrix $A^{(h)}$ and right hand $\boldsymbol{b}^{(h)}$,
+* solves the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ for the vector $\boldsymbol{u}^{(h)}$ by using [numpy.linalg.solve()](https://numpy.org/doc/2.0/reference/generated/numpy.linalg.solve.html)
+* computes the error norm $\|e_h\|_{L_2(\widehat{K})}$,
+* visualises the solution and error.
+
+### Numerical experiments
+
+Study the accuracy of the solution for different polynomial degrees $p$. As the exact solution, pick a Gaussian
+$$
+u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}\left\|\boldsymbol{x}-\boldsymbol{x}_0\right\|_2^2\right]
+$$
+with a peak of width $\sigma = 0.5$ centred at $x_0 = (0.6, 0.25)^\top$.
+
+In the weak form which defines the PDE, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
+
+Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution and error for polynomial degrees $p=1$ and $p=3$.
 
 ## Practicalities
 
-* Implement `assemble_lhs`, `assemble_rhs` and `error_nrm` in the file `algorithms.py`
+* Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise2`
+* Use these methods in the file `driver.py` in the same directory
+* Create a file `solution.pdf` file with the following content in the same directory:
+    - a brief description of how you implemented and tested your code
+    - a table which lists $\|e_h\|_{L_2(\widehat{K})}$ for $p=1$ and $p=3$
+    - plots of the solution and error for $p=1$ and $p=3$
+* Zip the directory which contains `algorithms.py`, `driver.py` and `solution.pdf`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`
+* Upload the resulting file `exercise2.tgz` to the submission point on moodle
 
-You can use the Python functions given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points.
+## Hints
+* You can import the `LinearElement` and quadrature rules provided in the finite element library with 
+ 
+```Python
+from fem.linearelement import LinearElement
+from fem.quadrature import (
+    GaussLegendreQuadratureLineSegment,
+    GaussLegendreQuadratureReferenceTriangle,
+)
+```
+* The method `plot_solution(u_numerical, u_exact, element, filename)` in `fem.utilities` can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
+* You can use the Python functions $u_{\text{exact}}(x)$, $f(x)$ and $g(x)$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points.
 
 ```Python
 def u_exact(x, sigma, x0):
@@ -268,13 +300,13 @@ To pass these functions to a method which expects a function $f(x)$ with a singl
 
 ```Python
 import functools
-f_prime = functools.partial(x, kappa=0.9, omega=0.4, sigma=0.5, x0=[0.6, 0.25])
+f_star = functools.partial(f, kappa=0.9, omega=0.4, sigma=0.5, x0=[0.6, 0.25])
 ```
 
-We can now call the function $f'(x)$ with a single argument $x$:
+We can now call the function $f^*(x)$ with a single argument $x$:
 ```Python
 x = np.asarray([0.4,0.7])
-f_prime(x)
+f_star(x)
 ```
 
 # Bonus Exercise: Three point quadrature (not marked)
@@ -325,8 +357,6 @@ def test_threepoint_quadrature_monomial(s, expected):
 ## Practicalities
 * Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py`
 * Implement the test in `test_threepointquadrature.py`
-
-
 
 # Exercise 3: Computation of global $L_2$-error
 

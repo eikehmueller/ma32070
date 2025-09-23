@@ -5,12 +5,13 @@ import numpy as np
 
 
 from fem.polynomialelement import PolynomialElement
+from fem.utilities import plot_solution
+
 from algorithms import (
     assemble_rhs,
     assemble_lhs,
     error_nrm,
 )
-from utility import plot_solution
 
 
 def u_exact(x, sigma, x0):
@@ -68,7 +69,7 @@ kappa = 0.9
 # Coefficient of zero order term
 omega = 0.4
 # Polynomial degree
-degree = 18
+degree = 1
 # Quadrature parameter
 n_q = degree + 1
 
@@ -93,7 +94,7 @@ nrm = error_nrm(
     u_numerical, functools.partial(u_exact, sigma=sigma, x0=x0), element, n_q
 )
 
-print(f"{degree}: {nrm**2:10.4e},")
+print(f"{degree}: {nrm:10.4e},")
 
 plot_solution(
     u_numerical,

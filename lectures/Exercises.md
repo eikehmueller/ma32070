@@ -359,7 +359,7 @@ def test_threepoint_quadrature_monomial(s, expected):
 ```
 
 ### Theory
-Confirm that the quadrature rule is exact for polynomials of degree less or equal than 2, i.e. that
+Confirm that the quadrature rule is exact for polynomials of degree less than or equal 2, i.e. that
 
 $$
 \sum_{q=0}^{2} w_q (\xi_0^{(q)})^{s_0}(\xi_1^{(q)})^{s_1}= \int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1\qquad \text{for $s_0,s_1\ge 0$ and $s_0+s_1\le 2$}.
@@ -448,9 +448,9 @@ from fem.linearelement import LinearElement
 from fem.utilities import measure_time
 from fem.functionspace import FunctionSpace
 from fem.function import Function, CoFunction
-from fem.algorithms import assemble_rhs, assemble_lhs, error_nrm
+from fem.algorithms import assemble_rhs, assemble_lhs
 from fem.quadrature import GaussLegendreQuadratureReferenceTriangle
-
+from algorithms import error_nrm
 
 def f(x):
     """Right hand side
@@ -529,15 +529,21 @@ as a function of the number of unknowns $n_{\text{dof}}$, which can be obtained 
 How does the time spent in different parts of the code increase as a function of $n_{\text{dof}}$?
 
 #### Convergence
-Visualise the norm $\|e_h\|_{L_2(\Omega)}^2$ of the $L_2$ error as a function of the grid spacing $h=\sqrt{2}\cdot 2^{-n_{\text{ref}}}$ in a log-log plot. 
+Visualise the norm $\|e_h\|_{L_2(\Omega)}$ of the $L_2$ error as a function of the grid spacing $h=\sqrt{2}\cdot 2^{-n_{\text{ref}}}$ in a log-log plot. 
 
-Repeat this experiment for the `CubicElement` (remember to adapt the order of the quadrature appropriately).
+Repeat this experiment for the `CubicElement` and $n_{\text{ref}}=3,4,5,6$; remember to adapt the order of the quadrature appropriately.
 
-Assuming that for $h\ll1$ we have
+Assuming that for $h\ll 1$ we have
 $$
-\|e_h\|_{L_2(\Omega)}^2\approx C h^{\alpha}
+\|e_h\|_{L_2(\Omega)}\approx C h^{\alpha}
 $$
 which empirical rate of convergence $\alpha$ do you observe in the two cases?
+
+## Practicalities
+* Save your implementation of `error_nrm()`in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise3`
+* Write a brief report (no more than 2 pages) which describes your implementation and presents and discusses your numerical results. Include this as a single `.pdf` file called `solution.pdf` in the same directory `ma32070/exercise3`
+* Zip this directory which contains `algorithms.py`, `driver.py` and `solution.pdf`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
+* Upload the resulting file `exercise3.tgz` to the submission point on moodle
    
 # Exercise 4: Computational cost of backsubstitution
 

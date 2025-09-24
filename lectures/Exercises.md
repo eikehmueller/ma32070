@@ -312,6 +312,8 @@ f_star(x)
 # Bonus Exercise: Three point quadrature (not marked)
 
 #### Set: week 3
+
+## Task
 Consider the following three-point quadrature on the reference triangle $\widehat{K}$:
 
 $$
@@ -327,6 +329,8 @@ The degree of precision of this rule is $2$, i.e. it is exact for polynomials of
 $$
 p(x_0,x_1) = \sum_{\substack{s_0,s_1\\s_0+s_1\le 2}} a_{s_0,s_1} x_0^{s_0} x_1^{s_1}
 $$
+
+### Implementation
 Implement this quadrature rule in the class `ThreePointQuadratureReferenceTriangle`, which should be a subclass of the abstract base class `Quadrature`. Write a suitable test which verifies that the implemention is correct. For this, observe that
 
 $$
@@ -354,9 +358,16 @@ def test_threepoint_quadrature_monomial(s, expected):
     # Add your own test code here
 ```
 
+### Theory
+Confirm that the quadrature rule is exact for polynomials of degree less or equal than 2, i.e. that
+
+$$
+\sum_{q=0}^{2} w_q (\xi_0^{(q)})^{s_0}(\xi_1^{(q)})^{s_1}= \int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1\qquad \text{for $s_0,s_1\ge 0$ and $s_0+s_1\le 2$}.
+$$
+
 ## Practicalities
-* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py`
-* Implement the test in `test_threepointquadrature.py`
+* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py` in the directory `ma32070/bonus_exercise`
+* Implement the tests in `test_threepointquadrature.py` in the same directory
 
 # Exercise 3: Computation of global $L_2$-error
 

@@ -374,6 +374,7 @@ $$
 #### Set: week 6
 #### Due: end of week 7
 
+## Task
 As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{globa;}}}(x)$, we can write the error $e_h$ as
 
 $$
@@ -425,7 +426,118 @@ This leads to the following procedure:
 3. $~~~~$ **end do**
 4.  **end do**
 
-Implement the above algorithm.
+### Implementation
+Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algorithm. Your method should take the following parameters:
+* An object `u_h` of class `Function` which represents the numerical solution $u^{(h)}$
+* A Python function `u_hexact` which can represents the exact solution $u_{\text{exact}}(x)$ and which be evaluated at arbitrary points $x\in \Omega$ 
+* A suitable quadrature rule `quad`
+
+You can use the following main program, which solves the PDE $-\kappa\Delta u + \omega u=f$ for $\kappa=0.9$, $\omega=0.4$ with the right hand side $f(x)$ chosen such that the exact solution is
+
+$$
+u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)
+$$
+
+```Python
+"""Solve finite element model problem and compute global L2 error"""
+
+import numpy as np
+
+from fem.utilitymeshes import RectangleMesh
+from fem.linearelement import LinearElement
+from fem.utilities import measure_time
+from fem.functionspace import FunctionSpace
+from fem.function import Function, CoFunction
+from fem.algorithms import assemble_rhs, assemble_lhs, error_nrm
+from fem.quadrature import GaussLegendreQuadratureReferenceTriangle
+
+
+def f(x):
+    """Right hand side
+
+    :arg x: point at which to evaluate the function
+    """
+    return (
+        ((2**2 + 4**2) * np.pi**2 * kappa + omega)
+        * np.cos(2 * np.pi * x[0])
+        * np.cos(4 * np.pi * x[1])
+    )
+
+
+def u_exact(x):
+    """Exact solution
+
+    :arg x: point at which to evaluate the function
+    """
+    return np.cos(2 * np.pi * x[0]) * np.cos(4 * np.pi * x[1])
+
+
+# Number of mesh refinements
+nref = 5
+# Coeffcient of diffusion term
+kappa = 0.9
+# Coefficient of zero order term
+omega = 0.4
+
+# Finite element
+element = LinearElement()
+
+# Mesh
+mesh = RectangleMesh(Lx=1, Ly=1, nref=nref)
+# Function space
+fs = FunctionSpace(mesh, element)
+print(f"nref = {nref}")
+print(f"grid spacing h = {np.sqrt(2)/2**nref}")
+print(f"number of unknowns = {fs.ndof}")
+# Quadrature rule
+quad = GaussLegendreQuadratureReferenceTriangle(2)
+
+# Construct right hand side
+# (s_0^2 + s_1^2)*pi^2*u(x)
+b_h = CoFunction(fs)
+with measure_time("assemble_rhs()"):
+    assemble_rhs(f, b_h, quad)
+
+# Numerical solution
+u_h = Function(fs, "u_numerical")
+
+# Stiffness matrix
+with measure_time("assemble_lhs()"):
+    stiffness_matrix = assemble_lhs(fs, quad, kappa, omega)
+
+# Solve linear system A^{(h)} u^{(h)} = b^{(h)}
+with measure_time("solve()"):
+    u_h.data[:] = np.linalg.solve(stiffness_matrix, b_h.data)
+
+error_norm = error_nrm(u_h, u_exact, quad)
+
+print()
+print(f"error = {error_norm}")
+```
+
+### Numerical experiments
+Run your code for different problem sizes by setting $n_{\text{ref}} = 3,4,5,6,7$.
+
+#### Runtime measurements
+Produce a table which shows the time spent in the following parts of the code
+* Assembly of stiffness matrix $A^{(h)}$ in `assemble_lhs()`
+* Assembly of right-hand side $\boldsymbol{b}^{(h)}$ in `assemble_rhs()`
+* Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$
+  
+as a function of the number of unknowns $n_{\text{dof}}$, which can be obtained as `fs.ndof` if `fs` is an instance of `FunctionSpace`. In the above main program, the `measure_time` decorator is used to time specific components of the code.
+
+How does the time spent in different parts of the code increase as a function of $n_{\text{dof}}$?
+
+#### Convergence
+Visualise the norm $\|e_h\|_{L_2(\Omega)}^2$ of the $L_2$ error as a function of the grid spacing $h=\sqrt{2}\cdot 2^{-n_{\text{ref}}}$ in a log-log plot. 
+
+Repeat this experiment for the `CubicElement` (remember to adapt the order of the quadrature appropriately).
+
+Assuming that for $h\ll1$ we have
+$$
+\|e_h\|_{L_2(\Omega)}^2\approx C h^{\alpha}
+$$
+which empirical rate of convergence $\alpha$ do you observe in the two cases?
    
 # Exercise 4: Computational cost of backsubstitution
 

@@ -578,25 +578,34 @@ More generally, an upper triangular matrix satisfies $A_{ij} = 0$ for all $i>j$;
 3. With the knowledge of $u_{n-1}$ and $u_{n-2}$, compute $u_{n-3} = \left(b_{n-3} - A_{n-3,n-2}u_{n-2} A_{n-3,n-1}u_{n-1}\right)/A_{n-3,n-3}$
 4. Continue in the same way to compute $u_{n-4}, u_{n-5}, \dots, u_0$.
 
-## Exercise
+## Tasks
+### Pseudocode
+Write down the algorithm for solving $A\boldsymbol{u}=\boldsymbol{b}$
+### Computational complexity
 Show that the solution of an $n\times n$ upper triangular system requires $n^2$ arithmetic operations.
-
-## Solution
-At the $i$-step of the algorithm we compute
-
-$$
-u_i = \left(b_i-\sum_{j=i+1}^{n-1} A_{ij} u_j \right)/A_{ii}
-$$
-
-This requires $n-1-i$ multiplications $A_{ij} u_j$, $n-1-i$ subtractions/additions and one division. We need to do this for $i=n-1,n-2,\dots,0$, hence the total number of operations is
-
+### Tridiagonal matrix
+Now let $A$ be a **triangular** matrix with $A_{ij}=0$ for $|i-j|>1$. Here is an example for $n=5$:
 $$
 \begin{aligned}
-C_{\text{backsub}}(n) &= \sum_{i=0}^{n-1} (2(n-1-i)+1) \\
-&= \sum_{j=0}^{n-1} (2j+1)\\
-&= n(n-1)+n = n^2
+A &=  \begin{pmatrix}
+1.096 & 0.3391 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &\textcolor{lightgray}{0} \\
+0.0632 & 1.197 & 0.06495 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & 0.0555 & 1.127 & 0.0008768 & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 0.2176 & 1.263 & 0.3005\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 0.3045 & 1.047
+\end{pmatrix}
 \end{aligned}
 $$
+* How many operations are required to reduce this to an upper triangular system if the procedure in the lecture is followed, but the zeros are taken into account?
+* What is the structure of the resulting upper triangular system?
+* How many operations are required to solve this system?
+* What is the computational complexity for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ is $A$ is a triangular matrix?
+
+## Practicalities
+* Write down your solution and save it as a `.pdf` file. You do not have to typeset your solution and can also submit scans of handwritten workings, provided they are legible.
+* Make sure you explain your thinking.
+* Upload the file to the submission point on moodle
+
 
 # Exercise 5: PETSc sparse matrices and linear solvers
 

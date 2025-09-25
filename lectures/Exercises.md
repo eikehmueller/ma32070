@@ -229,12 +229,14 @@ Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution a
 
 * Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise2`
 * Use these methods in the file `driver.py` in the same directory
-* Create a file `solution.pdf` file with the following content in the same directory:
+* Zip the directory which contains `algorithms.py`, `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`
+* Create a file `solution.pdf` file with the following content:
     - a brief description of how you implemented and tested your code
     - a table which lists $\|e_h\|_{L_2(\widehat{K})}$ for $p=1$ and $p=3$
     - plots of the solution and error for $p=1$ and $p=3$
-* Zip the directory which contains `algorithms.py`, `driver.py` and `solution.pdf`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`
-* Upload the resulting file `exercise2.tgz` to the submission point on moodle
+* Upload the following **two** files to the submission point on moodle:
+    - The zip file `exercise2.tgz` with your code
+    - The `.pdf` file `solution.pdf` with your written solution
 
 ## Hints
 * You can import the `LinearElement` and quadrature rules provided in the finite element library with 
@@ -541,9 +543,12 @@ which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
 * Save your implementation of `error_nrm()`in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise3`
-* Write a brief report (no more than 2 pages) which describes your implementation and presents and discusses your numerical results. Include this as a single `.pdf` file called `solution.pdf` in the same directory `ma32070/exercise3`
-* Zip this directory which contains `algorithms.py`, `driver.py` and `solution.pdf`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
-* Upload the resulting file `exercise3.tgz` to the submission point on moodle
+* Zip this directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
+* Write a brief report (no more than 2 pages) which describes your implementation and presents and discusses your numerical results. Include this as a single `.pdf` file called `solution.pdf`
+* Upload the following **two** files to the submission point on moodle:
+    - The zip file `exercise3.tgz` with your code
+    - The `.pdf` file `solution.pdf` with your written solution
+
    
 # Exercise 4: Computational cost of backsubstitution
 
@@ -602,10 +607,9 @@ $$
 * What is the computational complexity for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ is $A$ is a triangular matrix?
 
 ## Practicalities
-* Write down your solution and save it as a `.pdf` file. You do not have to typeset your solution and can also submit scans of handwritten workings, provided they are legible.
+* Write down your solution and save it as a `.pdf` file `solution.pdf`. You do not have to typeset your solution and can also submit scans of handwritten workings, provided they are legible.
 * Make sure you explain your thinking.
-* Upload the file to the submission point on moodle
-
+* Upload the file `solution.pdf` to the submission point on moodle
 
 # Exercise 5: PETSc sparse matrices and linear solvers
 

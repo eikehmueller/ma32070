@@ -7,6 +7,94 @@
 *&#169; Eike Mueller, University of Bath 2025. These notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited. html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
 
 ----
+# Submission of problem sheets
+Please submit your solution to the problem sheets as per the following instructions. Being able to efficiently share code with others is an important skill for a scientific programmer. The key question you should ask yourself is: *If someone gave this to solution to me, would I be able to understand it?*
+
+The same submission instructions will be used for the coursework, so make sure you are familiar with the procedure.
+
+## Files to submit
+In general, you need to **submit three files** for each exercise:
+
+1. A single file containing a zipped version of your source code
+2. A single file containing the `.pdf` generated from your source code
+3. A single file which contains your solution to the written part of the assignment
+
+For some exercises you might only have to write code or perform a written derivation, in that case you only need to submit a subset of these files.
+
+Details on how to generate these files and what they should contain can be found in the following sections. You might also want to have a look at the step-by-step for an example below.
+
+#### Zipped version of your source code
+Put all source files containing your solution into a single directory, usually a subdirectory of your `ma32070/` directory such as `ma32070/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/` directory and zip the `exercise` directory into a single file called `exercise.tgz` using the command
+```
+tar czvf exercise.tgz exercise
+```
+where `exercise` is the name of the directory. Do not include temorary files such as those ending in `~`. You can double check the content of the zip file with
+```
+tar tzvf exercise.tgz
+```
+It is strongly recommended to do this before uploading the file to moodle.
+#### .pdf version of your code
+Create a single `.pdf` file called `code_exercise.pdf` which contains all your Python source code, i.e. all `.py` files you wrote. Assuming that the `finitelements` library has been installed (for example on the Notable server), you can use the `code2pdf` tool for this. For example, to generate a `.pdf` file from all `.py` files inside the `ma32070/exercise/` directory, change to the `ma32070/` directory and run
+```
+python -m code2pdf --path ./exercise/ --output code_exercise
+```
+You can see all available command line options of the `code2pdf` tool by running
+```
+python -m code2pdf --help
+```
+You are free to use any other tool, such as a word processor, to create this `.pdf` file as long as the output is formatted correctly and legible.
+
+#### Solution to written part of the assignment
+You can upload scans of handwritten solutions or word processed solutions, as long as the text is clearly readable. Please make sure you number your solutions to the individual exercises correctly. Use concise language and sound mathematical arguments and explain your reasoning.
+
+#### Downloading files from Notable
+If you are working on Notable, you can download any files you created to your own computer by right-clicking them in the file browser. 
+
+### Example
+The following step-by-step instructions illustrate how to prepare the solution of Exercise 1 for submission (all shell-commands include the prompt `$` which needs to be removed when entering the command):
+
+#### Step 1: Change to correct directory
+Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise1` to make sure everything is ready for submission:
+```
+$ cd ma32070
+$ ls
+exercise1
+$ ls exercise1
+cubicelement.py  test_cubicelement.py
+```
+
+#### Step 2: Zip the source code
+Create a zip file from the source code with the `tar` command:
+```
+$ tar czvf exercise1.tgz exercise1
+exercise1/
+exercise1/test_cubicelement.py
+exercise1/cubicelement.py
+```
+
+#### Step 3: Create .pdf from code
+Create a `.pdf` file from the source code with
+```
+$ python -m code2pdf --path ./exercise --output code_exercise1
+```
+
+#### Step 4: Checking
+In addition to the subdirectory `exercise1`, the `ma32070` folder now also contains the files `code_exercise1.pdf` and `exercise1.tgz`:
+```
+$ ls
+code_exercise1.pdf  exercise1  exercise1.tgz
+```
+Double check that the zip-file has the right content:
+```
+$ tar tzvf exercise1.tgz
+drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise1/
+-rw-rw-r-- eike/eike      6389 2025-09-28 14:36 exercise1/test_cubicelement.py
+-rw-rw-r-- eike/eike      5779 2025-09-28 14:36 exercise1/cubicelement.py
+```
+
+#### 5: Moodle submission
+Now upload the files `exercise1.tgz` and `code_exercise1.tgz` together with `solution.pdf` (if applicable) to the submission point on moodle
+
 
 # Exercise 1: Cubic Lagrange element 
 
@@ -69,8 +157,14 @@ Your code should pass the tests below, which verify correctness for special case
   
 ## Practicalities
 * Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise1`
-* Zip this directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise1.tgz exercise1`
-* Upload the resulting file `exercise1.tgz` to the submission point on moodle
+* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise1.tgz exercise1`
+* Create a single file `code_exercise1.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+```
+python -m code2pdf --path ./exercise1/ --output code
+```
+* Upload the following **two** files to the submission point on moodle:
+  - The zip file `exercise1.tgz` with your source code
+  - The file `code_exercise1.pdf` generated from your source code
 
 ## Tests
 ```python
@@ -230,13 +324,18 @@ Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution a
 * Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise2`
 * Use these methods in the file `driver.py` in the same directory
 * Zip the directory which contains `algorithms.py`, `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`
+* Create a single file `code_exercise2.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+```
+python -m code2pdf --path ./exercise2/ --output code_exercise2
+```
 * Create a file `solution.pdf` file with the following content:
     - a brief description of how you implemented and tested your code
     - a table which lists $\|e_h\|_{L_2(\widehat{K})}$ for $p=1$ and $p=3$
     - plots of the solution and error for $p=1$ and $p=3$
-* Upload the following **two** files to the submission point on moodle:
-    - The zip file `exercise2.tgz` with your code
-    - The `.pdf` file `solution.pdf` with your written solution
+* Upload the following **three** files to the submission point on moodle:
+    - The zip file `exercise2.tgz` with your source code
+    - The file `code_exercise2.pdf` generated from your source code
+    - The file `solution.pdf` with your written solution
 
 ## Hints
 * You can import the `LinearElement` and quadrature rules provided in the finite element library with 
@@ -543,11 +642,16 @@ which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
 * Save your implementation of `error_nrm()`in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise3`
-* Zip this directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
-* Write a brief report (no more than 2 pages) which describes your implementation and presents and discusses your numerical results. Include this as a single `.pdf` file called `solution.pdf`
-* Upload the following **two** files to the submission point on moodle:
-    - The zip file `exercise3.tgz` with your code
-    - The `.pdf` file `solution.pdf` with your written solution
+* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
+* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+```
+python -m code2pdf --path ./exercise3/ --output code_exercise3
+```
+* Write a brief report (no more than 2 pages) which describes your implementation and presents and discusses your numerical results. Include this as a single `.pdf` file called `solution_exercise3.pdf`
+* Upload the following **three** files to the submission point on moodle:
+    - The zip file `exercise3.tgz` with your source code
+    - The file `code_exercise3.pdf` generated from your source code
+    - The file `solution_exercise3.pdf` with your written solution
 
    
 # Exercise 4: Computational cost of backsubstitution
@@ -707,3 +811,8 @@ with measure_time("solve"):
     # call solver here
 
 ```
+* Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+```
+python -m code2pdf --path ./exercise5/ --output code_exercise5
+```
+

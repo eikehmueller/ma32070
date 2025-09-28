@@ -93,7 +93,7 @@ drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise2/
 ```
 
 #### 5: Moodle submission
-Now upload the files `exercise2.tgz` and `code_exercise2.tgz` together with `solution_exercise2.pdf` to the submission point on moodle.
+Now upload the files `exercise2.tgz` and `code_exercise2.pdf` together with `solution_exercise2.pdf` to the submission point on moodle.
 
 # Exercise 1: Cubic Lagrange element 
 

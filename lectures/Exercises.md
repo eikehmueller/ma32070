@@ -51,50 +51,49 @@ You can upload scans of handwritten solutions or word processed solutions, as lo
 If you are working on Notable, you can download any files you created to your own computer by right-clicking them in the file browser. 
 
 ### Example
-The following step-by-step instructions illustrate how to prepare the solution of Exercise 1 for submission (all shell-commands include the prompt `$` which needs to be removed when entering the command):
+The following step-by-step instructions illustrate how to prepare the solution of Exercise 2 for submission (all shell-commands include the prompt `$` which needs to be removed when entering the command):
 
 #### Step 1: Change to correct directory
-Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise1` to make sure everything is ready for submission:
+Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise2` to make sure everything is ready for submission:
 ```
 $ cd ma32070
 $ ls
-exercise1
-$ ls exercise1
-cubicelement.py  test_cubicelement.py
+exercise2
+$ ls exercise2
+algorithms.py  driver.py
 ```
 
 #### Step 2: Zip the source code
 Create a zip file from the source code with the `tar` command:
 ```
-$ tar czvf exercise1.tgz exercise1
-exercise1/
-exercise1/test_cubicelement.py
-exercise1/cubicelement.py
+$ tar czvf exercise2.tgz exercise2
+exercise2/
+exercise2/algorithms.py
+exercise2/driver.py
 ```
 
 #### Step 3: Create .pdf from code
 Create a `.pdf` file from the source code with
 ```
-$ python -m code2pdf --path ./exercise --output code_exercise1
+$ python -m code2pdf --path ./exercise2 --output code_exercise2
 ```
 
 #### Step 4: Checking
-In addition to the subdirectory `exercise1`, the `ma32070` folder now also contains the files `code_exercise1.pdf` and `exercise1.tgz`:
+In addition to the subdirectory `exercise1`, the `ma32070` folder now also contains the files `code_exercise2.pdf` and `exercise2.tgz`:
 ```
 $ ls
-code_exercise1.pdf  exercise1  exercise1.tgz
+code_exercise2.pdf  exercise2  exercise2.tgz
 ```
 Double check that the zip-file has the right content:
 ```
-$ tar tzvf exercise1.tgz
-drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise1/
--rw-rw-r-- eike/eike      6389 2025-09-28 14:36 exercise1/test_cubicelement.py
--rw-rw-r-- eike/eike      5779 2025-09-28 14:36 exercise1/cubicelement.py
+$ tar tzvf exercise2.tgz
+drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise2/
+-rw-rw-r-- eike/eike      6389 2025-09-28 14:36 exercise2/algorithms.py
+-rw-rw-r-- eike/eike      5779 2025-09-28 14:36 exercise2/driver.py
 ```
 
 #### 5: Moodle submission
-Now upload the files `exercise1.tgz` and `code_exercise1.tgz` together with `solution.pdf` (if applicable) to the submission point on moodle
-
+Now upload the files `exercise2.tgz` and `code_exercise2.tgz` together with `solution_exercise2.pdf` to the submission point on moodle.
 
 # Exercise 1: Cubic Lagrange element 
 

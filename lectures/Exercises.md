@@ -720,13 +720,48 @@ $$
 #### Due: end of week 10
 
 ## PETSc matrices
-Create two $3\times 3$ sparse PETSc matrices $A$, $B$.
+Write a Python script `linear_algebra.py` which constructs the $4\times 4$ sparse PETSc matrices $A$, $B$ and the vectors $\boldsymbol{u}, \boldsymbol{w}\in\mathbb{R}^4$ given by
 
-By using suitable functions (see [`petsc4py.Mat` documentation](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html)), compute
+$$
+A = \begin{pmatrix}
+1.7 & 2.3 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & -3.4 & \textcolor{lightgray}{0} & 4.5 \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 8.6 & \textcolor{lightgray}{0} \\
+-1.3 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.2
+\end{pmatrix}
+\qquad
+B = \begin{pmatrix}
+-0.7 & \textcolor{lightgray}{0} & 2.5 & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} &8.7 &  \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 3.2 & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 12.0 
+\end{pmatrix}
+\qquad
+\boldsymbol{v} = \begin{pmatrix}
+7.3 \\
+-0.7 \\
+\textcolor{lightgray}{0} \\
+3.2 
+\end{pmatrix}
+\qquad
+\boldsymbol{w} = \begin{pmatrix}
+\textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} \\
+0.3 \\
+2.8 
+\end{pmatrix}
+$$
+
+By using suitable functions (see documentation of [`petsc4py.Mat`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html) and [`petsc4py.Vec`](https://petsc.org/main/petsc4py/reference/petsc4py.PETSc.Vec.html)), compute
 
 * $AB$ 
 * $AB^\top$
-* $A+B$
+* $A^\top B$
+* $A+B^\top$
+* $A\boldsymbol{v} + \boldsymbol{w}$
+* $B^\top\boldsymbol{w}$
+
+and print out the result of each calculation (convert any sparse matrices to dense matrices first). Some of the operations can be implemented in different ways.
 
 ##  Gauss Seidel iteration
 Instead of $P=D$, we could also use the lower triangular part of $A$ and set $P=D+L$ where

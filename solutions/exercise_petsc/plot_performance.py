@@ -18,7 +18,16 @@ def run(n, ksp_type, pc_type):
     :arg ksp_type: KSP type of solver
     :arg pc_type: PC type of solver
     """
-    cmd = f"python linear_solve.py -n {n} -ksp_type {ksp_type} -pc_type {pc_type} -ksp_max_it 100000 -ksp_converged_reason"
+    maxiter = 10000000
+    if (
+        ksp_type == "richardson"
+        and (pc_type == "jacobi" or pc_type == "sor")
+        and n > 512
+    ):
+        return -1, 0
+    if ksp_type == "cg" and pc_type == "ilu":
+        maxiter = 1000
+    cmd = f"python linear_solve.py {n} -ksp_rtol 1.E-9 -ksp_type {ksp_type} -pc_type {pc_type} -ksp_max_it {maxiter} -ksp_monitor"
 
     output = subprocess.run(cmd.split(), stdout=subprocess.PIPE).stdout.decode("utf-8")
     converged = True
@@ -83,7 +92,7 @@ if not os.path.exists("data.json"):
     for ksp_type in "richardson", "cg", "gmres":
         niter_dict[ksp_type] = {}
         tsolve_dict[ksp_type] = {}
-        for pc_type in "jacobi", "ilu", "gamg":
+        for pc_type in ["jacobi", "sor", "ilu", "hypre"]:
             niter_dict[ksp_type][pc_type] = []
             tsolve_dict[ksp_type][pc_type] = []
             print(ksp_type, pc_type)
@@ -104,7 +113,9 @@ else:
         niter_dict = data["niter"]
 
 
-plot_results(niter_dict, problemsizes, "number of iterations", "niter.svg", [1, 20000])
+plot_results(
+    niter_dict, problemsizes, "number of iterations", "niter.svg", [1, 20000000]
+)
 plot_results(
     tsolve_dict,
     problemsizes,

@@ -24,12 +24,12 @@ values = n * [-1, 2 + 1 * h_sq, -1]
 A = PETSc.Mat().createAIJWithArrays(size=(n, n), csr=(row_start, col_indices, values))
 
 ksp = PETSc.KSP().create()
-ksp.setOperators(A)
 ksp.setFromOptions()
+ksp.setOperators(A)
+# ksp.setUp()
 rng = np.random.default_rng(seed=1241773)
 b = PETSc.Vec().createWithArray(rng.normal(size=n))
 u = PETSc.Vec().createWithArray(np.zeros(n))
-ksp.setUp()
 with measure_time("solve"):
     ksp.solve(b, u)
 niter = ksp.getIterationNumber()

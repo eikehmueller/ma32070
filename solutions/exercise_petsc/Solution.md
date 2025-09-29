@@ -105,6 +105,40 @@ $$
 
 ## Numerical experiments
 
+### Gauss Seidel iteration
+The problem $(D+L)\boldsymbol{z} = \boldsymbol{r}$ can be written in matrix form as
+
+$$
+\begin{pmatrix}
+A_{00} & 0 & 0 & 0 &\dots & 0 \\
+A_{10} & A_{11} & 0 &0 & & 0 \\
+A_{20} & A_{21} & A_{22} &0 & & 0 \\
+\vdots & & & & \ddots & \vdots\\ 
+A_{n-1,0} & A_{n-1,1} & A_{n-1,2} & A_{n-1,3} & \dots & A_{n-1,n-1}
+\end{pmatrix}
+\begin{pmatrix}
+z_0 \\ z_1 \\ z_2 \\\vdots \\ z_{n-1}
+\end{pmatrix}
+=
+\begin{pmatrix}
+r_0 \\ r_1 \\ r_2 \\\vdots \\ r_{n-1}
+\end{pmatrix}
+$$
+
+The $i$-th equation is given by:
+
+$$
+\sum_{j=0}^{i-1} A_{ij}z_j + A_{ii} z_i = r_i
+$$
+
+Hence, if we know $z_0,z_1,\dots,z_{i-1}$ we can compute $z_i$ as
+
+$$
+z_i = \frac{1}{A_{ii}}\left(r_i-\sum_{j=0}^{i-1} A_{ij}z_j\right).
+$$
+
+Starting with $z_0 = r_0/A_{00}$, this can be used to compute $z_1,z_2,\dots,z_{n-1}$ recursively.
+
 | problem size $n$ | number of iterations (Jacobi) | number of iterations (SOR) |
 | ---:             | ---:                          | ---:                       |
 | 32               |                        39 863 |                     9 685  |

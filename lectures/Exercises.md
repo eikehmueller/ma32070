@@ -142,6 +142,7 @@ You can use the following 10 monomials for the construction of the Vandermonde m
 $$
 \{\theta_\ell(x)\}_{\ell=0}^{9} = \{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,x_0^3,x_0^2x_1,x_0x_1^2,x_1^3\}
 $$
+
 ## Requirements
 * Your class should store the Lagrange points in an attribute `_nodal_points`, this can be done for example in the `__init__()` method.
 * Your class should contain a method `vandermonde_matrix(zeta,grad=False)` which accepts as an argument a $n\times 2$ array of $n$ two-dimensional points. The method should compute the $n\times \nu$ matrix $V(\boldsymbol{\zeta})$ defined in the lectures if `grad=False` and the $n\times \nu\times 2$ tensor $V^\partial(\boldsymbol{\zeta})$ if `grad=True`. If only a single point is passed to the method, it should return a vector of length $\nu$ for `grad=False` and an $\nu\times 2$ array for `grad=True`.

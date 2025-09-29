@@ -1893,7 +1893,7 @@ A.assemble()
 For debugging purposes, we might want to print out the matrix. This can be done by first converting the sparse matrix `A` to a dense matrix `A_dense` and then extracting the `numpy` array `A_numpy` which represents the values:
 ```python
 A_dense = PETSc.Mat()
-A_dense = A.convert("dense")
+A.convert("dense",A_dense)
 A_numpy = A_dense.getDenseArray()
 ```
 Obviously, this only makes sense for relatively small matrices.

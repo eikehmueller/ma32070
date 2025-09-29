@@ -820,13 +820,6 @@ rng = np.random.default_rng(seed=1241773)
 array = rng.normal(size=n)
 ```
 
-
-You might want to pass the value of $n$ to the script by using the `sys` module
-```Python
-import sys
-n = int(sys.argv[1])
-print(" n = ", n)
-```
 Create a PETSc `KSP` object, which can be configured with PETSc options passed from the command line. Your code should solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ to a relative tolerance of $10^{-9}$ on the preconditioned residual.
 
 ### Numerical experiments
@@ -835,55 +828,58 @@ Solve the system for different problem sizes $n=32,64,128,256,512$ to a (relativ
 
 Verify that the correct solver options have been used by passing the `-ksp_view` flag and inspect the output.
 
+You might want to pass the value of $n$ to the script by using the `sys` module
+```Python
+import sys
+n = int(sys.argv[1])
+print(" n = ", n)
+```
+This allows running the script as
+
+```
+python linear_solve.py N
+```
+where `N` is the numerical value of $n$.
+
 #### Gauss Seidel iteration
-Instead of $P=D$, we could also use the lower triangular part of $A$ and set $P=D+L$ where
+Recall that the Jacobi method uses $P=D$ as the preconditioner, where $D$ is the diagonal of the diagonal of the matrix $A$: to apply the preconditioner, the linear system $D\boldsymbol{z}=\boldsymbol{r}$ is solved. Instead, we could also use the lower triangular part of $A$ and set $P=D+L$ where
 $$
 L = \begin{cases}
 A_{ij} & \text{if $i<j$} \\
 0 & \text{otherwise}
 \end{cases}
 $$
-Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)z=r$ can be solved row-by-row, i.e. by computing first $\boldsymbol{z}_0 = \boldsymbol{r}_0/A_{00}$, then computing $\boldsymbol{z}_1 = (\boldsymbol{r}_1 - A_{10}\boldsymbol{z}_0)/A_{11}$, $\boldsymbol{z}_2=(\boldsymbol{r}_2 - A_{20}\boldsymbol{z}_0 - A_{21}\boldsymbol{z}_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`. Run the code with this preconditioner - how does the number of iterations change?
+Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)z=r$ can be solved row-by-row, i.e. by computing first $\boldsymbol{z}_0 = \boldsymbol{r}_0/A_{00}$, then computing $\boldsymbol{z}_1 = (\boldsymbol{r}_1 - A_{10}\boldsymbol{z}_0)/A_{11}$, $\boldsymbol{z}_2=(\boldsymbol{r}_2 - A_{20}\boldsymbol{z}_0 - A_{21}\boldsymbol{z}_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`.
 
+Run the code with this preconditioner - how does the number of iterations change? Record this in your table.
 
+#### Other solver configurations
+Repeat the above numerical experiment with the following solvers
 
-Use the following solvers
-
-* Conjugate Gradient (CG)
-* Generalised minimal residual (GMRES)
-* Richardson iteration
+* Conjugate Gradient (CG): `-ksp_type cg` 
+* Generalised minimal residual (GMRES): `-ksp_type gmres`
+* Richardson iteration: `-ksp_type richardson`
 
 and preconditioners
 
-* Jacobi
-* Successive overrelaxation (SOR)
-* Algebraic multigrid (`gamg`)
-* Incomplete LU factorisation (ILU)
+* Jacobi: `-ksp_type jacobi`
+* Successive overrelaxation (SOR): `-ksp_type sor`
+* Algebraic multigrid (BoomerAMG): `-ksp_type hypre`
+* Incomplete LU factorisation (ILU): `-ksp_type ilu`
 
-Do all solver/preconditioner combinations work as expected?
+There should $3\times 4$ solver/preconditioner combinations in total, do all of these work as expected? 
 
-Visualise the results.
-
-This allows running the script as
-
-```
-python linear_solve.py N
-```
-
-where `N` is the numerical value of $n$.
-
-
-### Practicalities
-* You can extract the number of solver iterations with `ksp.getIterationNumber()`
-* If you pass `-ksp_converged_reason `, PETSc will inform you whether the solver has converged.
-* You can measure the time spent in the solve by using the `meausure_time` decorator from `fem.utilities`:
+In addition to the number of iterations, also measure the time spent in the solve step by using the `meausure_time` decorator from `fem.utilities`:
 ```Python
 from fem.utilities import measure_time
 
 with measure_time("solve"):
     # call solver here
-
 ```
+Visualise the results.
+
+### Practicalities
+
 * Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
 python -m code2pdf --path ./exercise5/ --output code_exercise5

@@ -102,3 +102,13 @@ B^T \boldsymbol{w} = \begin{pmatrix}
 \textcolor{lightgray}{0} \\ \textcolor{lightgray}{0} \\  1.0 \\ 33.6
 \end{pmatrix}
 $$
+
+## Numerical experiments
+
+| problem size $n$ | number of iterations (Jacobi) | number of iterations (SOR) |
+| ---:             | ---:                          | ---:                       |
+| 32               |                        39 863 |                     9 685  |
+| 64               |                       157 472 |                     40 266 |
+| 128              |                       614 573 |                    145 829 |
+| 256              |                     2 349 120 |                    613 776 |
+| 512              |                     9 774 088 |                  2 384 298 |

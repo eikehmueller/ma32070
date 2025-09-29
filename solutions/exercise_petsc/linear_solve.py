@@ -1,6 +1,5 @@
 import sys
 import petsc4py
-import argparse
 from fem.utilities import measure_time
 
 petsc4py.init(sys.argv)
@@ -9,13 +8,10 @@ from petsc4py import PETSc
 import numpy as np
 
 # Read problem size from command line
-parser = argparse.ArgumentParser()
-parser.add_argument("n", type=int, action="store", help="problem size")
-args, _ = parser.parse_known_args()
-print(" n = ", args.n)
-n = args.n
+n = int(sys.argv[1])
+print(" n = ", n)
 
-h_sq = 1 / n
+h_sq = 1 / n**2
 
 col_indices = list(
     np.asarray(
@@ -26,6 +22,7 @@ row_start = list(np.arange(0, n * 3, 3)) + [3 * n]
 values = n * [-1, 2 + 1 * h_sq, -1]
 
 A = PETSc.Mat().createAIJWithArrays(size=(n, n), csr=(row_start, col_indices, values))
+A.assemble()
 
 ksp = PETSc.KSP().create()
 ksp.setOperators(A)

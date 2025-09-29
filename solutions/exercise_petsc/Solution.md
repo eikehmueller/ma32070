@@ -10,7 +10,7 @@
 ----
 
 ## Linear algebra with PETSc
-The matrices can be created either with `createAIJ()` followed by calls to `setValue()` or in one go with `createAIJWithArrays()`. Below, we use the two different approaches for $A$ and $B$ respectively.
+The matrices can be created either with `createAIJ()` followed by calls to `setValue()` (in this case, `assemble()` needs to be called to complete the assembly process ) or in one go with `createAIJWithArrays()`. Below, we use the two different approaches for $A$ and $B$ respectively.
 
 ```Python
 # Number of rows and columns
@@ -37,9 +37,8 @@ col_indices = [0, 1, 0, 2, 3]
 row_start = [0, 2, 3, 4, 5]
 values = [-0.7, 2.5, 8.7, 3.2, 12.0]
 B.createAIJWithArrays((n_row, n_col), (row_start, col_indices, values))
-B.assemble()
 ```
-Note that `assemble()` needs to be called to complete the assembly process. The vectors can be created with `createWithArray()`, for example
+The vectors can be created with `createWithArray()`, for example
 
 ```Python
 v = PETSc.Vec()

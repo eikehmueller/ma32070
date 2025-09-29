@@ -720,7 +720,7 @@ $$
 #### Set: week 9
 #### Due: end of week 10
 
-## PETSc matrices
+## Linear algebra with PETSc
 Write a Python script `linear_algebra.py` which constructs the $4\times 4$ sparse PETSc matrices $A$, $B$ and the vectors $\boldsymbol{u}, \boldsymbol{w}\in\mathbb{R}^4$ given by
 
 $$
@@ -764,40 +764,30 @@ By using suitable functions (see documentation of [`petsc4py.Mat`](https://petsc
 
 and print out the result of each calculation (convert any sparse matrices to dense matrices first). Some of the operations can be implemented in different ways.
 
-##  Gauss Seidel iteration
-Instead of $P=D$, we could also use the lower triangular part of $A$ and set $P=D+L$ where
-$$
-L = \begin{cases}
-A_{ij} & \text{if $i<j$} \\
-0 & \text{otherwise}
-\end{cases}
-$$
-Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)z=r$ can be solved row-by-row, i.e. by computing first $\boldsymbol{z}_0 = \boldsymbol{r}_0/A_{00}$, then computing $\boldsymbol{z}_1 = (\boldsymbol{r}_1 - A_{10}\boldsymbol{z}_0)/A_{11}$, $\boldsymbol{z}_2=(\boldsymbol{r}_2 - A_{20}\boldsymbol{z}_0 - A_{21}\boldsymbol{z}_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`. Run the code with this preconditioner - how does the number of iterations change?
-
 ## PETSc solver options
 For this exercise we consider the $n\times n$ matrix $A$ which is of the following form
 
 $$
 A_{ij} = \begin{cases}
-2 + h & \text{if $i=j$}\\
+2 + h^2 & \text{if $i=j$}\\
 -1 & \text{if $j=i\pm 1$ } \\
 -1 & \text{if ($i=0$ and $j=n-1$) or ($i=n-1$ and $j=0$)}
 \end{cases}
 $$
 
-where $h=1/n$. In other words, the entries on the main diagonal are $2+h$ while the entries on the first two sub-diagonals and in the upper right and lower right corner are $-1$.
+where $h=1/n$. In other words, the entries on the main diagonal are $2+h^2$ while the entries on the first two sub-diagonals and in the upper right and lower right corner are $-1$.
 
 An example for $n=8$ is shown here:
 $$
 A = \begin{pmatrix}
-  2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1\\
- -1 &   2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} &  -1 &   2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h &  -1 & \textcolor{lightgray}{0}\\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h &  -1\\
- -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h
+  2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1\\
+ -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1 & \textcolor{lightgray}{0}\\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2 &  -1\\
+ -1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} &  -1 &   2+h^2
 \end{pmatrix}
 $$
 
@@ -809,14 +799,53 @@ $$
 
 for a given right hand side $\boldsymbol{b}$.
 
-1. Use `PETSc.Mat().createAIJWithArrays()` to create the matrix $A$ in PETSc CSR format
-2. Use `PETSc.Vec().createWithArray()` to create a right-hand side vector $\boldsymbol{b}$ which contains random values. You can use the following code to create a numpy array of length $n$ with normally distributed random values:
+### Implementation
+Write a Python script `linear_solver.py` which constructs the matrix $A$ in PETSc CSR format. The required arrays $I$ (= `row_start`), $J$ (= `col_indices`) and $V$ (= `values`) can be constructed as follows:
+```Python
+
+h_sq = 1 / n**2
+
+col_indices = list(
+    np.asarray(
+        [[(row + col) % n for col in range(-1, 2)] for row in range(n)]
+    ).flatten()
+)
+row_start = list(np.arange(0, n * 3, 3)) + [3 * n]
+values = n * [-1, 2 + 1 * h_sq, -1]
+```
+
+The vector $\boldsymbol{b}\in\mathbb{R}^n$ should be represented by a PETSc vector. It should contain normally distributed random values; a numpy array with this content can be created as follows:
 ```Python
 rng = np.random.default_rng(seed=1241773)
 array = rng.normal(size=n)
 ```
-3. Create a PETSc `KSP` object, which can be configured with PETSc options passed from the command line.
-4. Solve the system for different problem sizes $n=32,64,128,256,512$ to a (relative) tolerance of $10^{-9}$ on the preconditioned residual. Investigate the number of iterations and runtime.
+
+
+You might want to pass the value of $n$ to the script by using the `sys` module
+```Python
+import sys
+n = int(sys.argv[1])
+print(" n = ", n)
+```
+Create a PETSc `KSP` object, which can be configured with PETSc options passed from the command line. Your code should solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ to a relative tolerance of $10^{-9}$ on the preconditioned residual.
+
+### Numerical experiments
+
+Solve the system for different problem sizes $n=32,64,128,256,512$ to a (relative) tolerance of $10^{-9}$ on the preconditioned residual, while using the Richardson iteration preconditioned with the Jacobi method. Create a table which lists the number of iterations for different values of $n$. If you include the command line `-ksp_converged_reason`, PETSc will print out information on whether the solver has converged and how many iterations this required. You might have to increase the maximum number of solver iterations to a sufficiently large value for the larger problem sizes $n$.It is also possible to extract the number of solver iterations from a `ksp` object with `ksp.getIterationNumber()`. 
+
+Verify that the correct solver options have been used by passing the `-ksp_view` flag and inspect the output.
+
+#### Gauss Seidel iteration
+Instead of $P=D$, we could also use the lower triangular part of $A$ and set $P=D+L$ where
+$$
+L = \begin{cases}
+A_{ij} & \text{if $i<j$} \\
+0 & \text{otherwise}
+\end{cases}
+$$
+Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)z=r$ can be solved row-by-row, i.e. by computing first $\boldsymbol{z}_0 = \boldsymbol{r}_0/A_{00}$, then computing $\boldsymbol{z}_1 = (\boldsymbol{r}_1 - A_{10}\boldsymbol{z}_0)/A_{11}$, $\boldsymbol{z}_2=(\boldsymbol{r}_2 - A_{20}\boldsymbol{z}_0 - A_{21}\boldsymbol{z}_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`. Run the code with this preconditioner - how does the number of iterations change?
+
+
 
 Use the following solvers
 
@@ -834,6 +863,15 @@ and preconditioners
 Do all solver/preconditioner combinations work as expected?
 
 Visualise the results.
+
+This allows running the script as
+
+```
+python linear_solve.py N
+```
+
+where `N` is the numerical value of $n$.
+
 
 ### Practicalities
 * You can extract the number of solver iterations with `ksp.getIterationNumber()`

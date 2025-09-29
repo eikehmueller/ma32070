@@ -130,6 +130,103 @@ In summary, the solution procedure for @eqn:weak_problem_discretised is this:
 
 In the rest of this course we will discuss how each of these steps can be implemented in Python. The focus will be on structuring the code such that the mathematical objects are mapped to the corresponding Python objects in the source code. For the solution of the linear algebra system we will use the [PETSc](https://petsc.org/) library.
 
+### Tensors
+In the following we will often work with tensors, which are $d$-dimensional arrays. A tensor $T$ of rank  $d$ is an object which can be indexed with $d$ integers $i_0,i_1,\dots,i_{d-1}$ where $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$, i.e. we can write $T_{i_0,i_1,\dots,i_{d-1}}\in \mathbb{R}$ for the tensor elements. The list $[s_0,s_1,\dots,s_{d-1}]$ is the **shape** of the tensor. We are already familiar with two special cases:
+
+* rank 0 tensors are scalars, i.e. real numbers $s\in\mathbb{R}$. In this case the shape is the empty list $[]$.
+* rank 1 tensors are vectors $\boldsymbol{v}\in \mathbb{R}^n$ with elements $v_i$ for $0\le i< n$. The shape of a vector is the single number $[n]$, i.e. the dimension of the vector.
+* rank 2 tensors are $n\times m$ matrices $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $[n,m]$, where $n$ is the number of rows and $m$ is the number of columns of the matrix.
+
+#### Tensors in numpy
+In numpy, tensors are represented by multidimensional arrays of type [`np.ndarray(...,dtype=float)`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $(2,3,4)$ with only zero entries like this:
+
+```Python
+T = np.zeros(shape=(2,3,4),dtype=float)
+```
+
+or construct the $2\times 3$ matrix $\begin{pmatrix}1.8 & 2.2 & 3.4 \\ 4.2 & 5.1 & 6.7\end{pmatrix}$ like this:
+
+```Python
+A = np.asarray([[1.8,2.2,3.4],[4.2,5.1,6.7]],dtype=float)
+```
+
+The shape is given by `T.shape` and `A.shape`.
+
+#### Adding tensors
+Tensors $T$, $T'$ of the same shape can be scaled and added: if $\alpha,\beta\in \mathbb{R}$ are real numbers, then $S=\alpha T+\beta T'$ is a new tensor of the same shape. The entries of $S$ are given by
+
+$$
+S_{i_0,i_1,\dots,i_{d-1}} = \alpha T_{i_0,i_1,\dots,i_{d-1}}+\beta T'_{i_0,i_1,\dots,i_{d-1}}
+\qquad \text{for all $i_0,i_1,\dots,i_{d-1}$ with $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$}.
+$$
+
+Tensors of the same shape can be scaled and added like this:
+
+```Python
+S = alpha*T + beta*Tprime
+```
+
+In fact, Python allows the addition of tensors of different shapes according to a set of [broadcasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html).
+
+#### Multiplying tensors
+Tensors can be multiplied in different ways by contracting indices. For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
+
+$$
+R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}
+$$
+
+Tensors can be multiplied with the powerful [`numpy.einsum()` function](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). For example, to compute $R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}$ use
+
+```Python
+R = np.einsum("ijk,mkln->ijmln",T,Tprime)
+```
+
+Alternatively, we could also compute a rank 1 tensor $S$ from $T$, $T'$ and the rank 2 tensor $T''$:
+
+$$
+S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}
+$$
+
+To compute $S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}$ use
+
+```Python
+S = np.einsum("ijk,kjni,nl->l",T,Tprime,Tprimeprime)
+```
+
+Note that the order of the indices matters! The matrix-vector product $\boldsymbol{v}=A\boldsymbol{w}$ is a special case:
+
+$$
+v_i = \sum_j A_{ij}w_j
+$$
+
+In`numpy`, it can be implemented as
+
+```Python
+v = np.einsum("ij,j->i",A,w)
+```
+
+or alternatively simply as
+
+```Python
+v = A @ w
+```
+
+The latter is usually preferred since it is easier to understand what the code does.
+
+Contractions can also result in a scalar. For example
+
+$$
+\boldsymbol{v}\cdot \boldsymbol{w} = \sum_i v_i w_i
+$$
+
+is the dot-product of two vectors $\boldsymbol{v}$ and $\boldsymbol{w}$, whereas
+
+$$
+\operatorname{trace}(A) = \sum_{i} A_{ii}
+$$
+
+is the trace of a matrix $A$. Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
+
 # Finite Elements
 We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
 

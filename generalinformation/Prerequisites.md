@@ -19,58 +19,10 @@ We will use several basic concepts that you have come across in your Numerical A
 * Numerical quadrature with the [Gauss-Legendre method](https://mathworld.wolfram.com/Legendre-GaussQuadrature.html)
 
 ## The Finite Element method
-You should be familiar with the fundamental ideas behind the finite element method, as taught in *"MA30366: Numerical solution of elliptic partial differential equations"*. However, the focus of the present unit is on *implementing* the finite element method, not on proofs and theory. We will recapitulate the key concepts at the beginning of this course, if anything looks unfamiliar please refer back to the lecture notes of MA30366 and/or consult the references below. 
+The fundamental ideas behind the finite element method will be taught in *"MA30366: Numerical solution of elliptic partial differential equations"*, which you should take alongside MA32070. However, the focus of the present unit is on *implementing* the finite element method, not on proofs and theory. We will review the key concepts of the finite element method at the beginning of this course, and the theoretical aspects will be discussed in more detail in MA30366. If anything looks unfamiliar please refer back to the lecture notes of MA30366 and/or consult the references below. 
 
 ## Linear Algebra
 I expect you to be familiar with fundamental concepts of linear algebra: for example, you should know how to manipulate matrices and vectors, know what eigenvalues and eigenvectors are and understand under which conditions a matrix is invertible.
-
-### Tensors
-In the following we will often work with tensors, which are $d$-dimensional arrays. A tensor $T$ of rank  $d$ is an object which can be indexed with $d$ integers $i_0,i_1,\dots,i_{d-1}$ where $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$, i.e. we can write $T_{i_0,i_1,\dots,i_{d-1}}\in \mathbb{R}$ for the tensor elements. The list $[s_0,s_1,\dots,s_{d-1}]$ is the **shape** of the tensor. We are already familiar with two special cases:
-
-* rank 0 tensors are scalars, i.e. real numbers $s\in\mathbb{R}$. In this case the shape is the empty list $[]$.
-* rank 1 tensors are vectors $\boldsymbol{v}\in \mathbb{R}^n$ with elements $v_i$ for $0\le i< n$. The shape of a vector is the single number $[n]$, i.e. the dimension of the vector.
-* rank 2 tensors are $n\times m$ matrices $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $[n,m]$, where $n$ is the number of rows and $m$ is the number of columns of the matrix.
-
-#### Adding tensors
-Tensors $T$, $T'$ of the same shape can be scaled and added: if $\alpha,\beta\in \mathbb{R}$ are real numbers, then $S=\alpha T+\beta T'$ is a new tensor of the same shape. The entries of $S$ are given by
-
-$$
-S_{i_0,i_1,\dots,i_{d-1}} = \alpha T_{i_0,i_1,\dots,i_{d-1}}+\beta T'_{i_0,i_1,\dots,i_{d-1}}
-\qquad \text{for all $i_0,i_1,\dots,i_{d-1}$ with $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$}.
-$$
-
-#### Multiplying tensors
-Tensors can be multiplied in different ways by contracting indices. For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
-
-$$
-R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}
-$$
-
-Alternatively, we could also compute a rank 1 tensor $S$ from $T$, $T'$ and the rank 2 tensor $T''$:
-
-$$
-S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}
-$$
-
-Note that the order of the indices matters! The matrix-vector product $\boldsymbol{v}=A\boldsymbol{w}$ is a special case:
-
-$$
-v_i = \sum_j A_{ij}w_j
-$$
-
-Contractions can also result in a scalar. For example
-
-$$
-\boldsymbol{v}\cdot \boldsymbol{w} = \sum_i v_i w_i
-$$
-
-is the dot-product of two vectors $\boldsymbol{v}$ and $\boldsymbol{w}$, whereas
-
-$$
-\operatorname{trace}(A) = \sum_{i} A_{ii}
-$$
-
-is the trace of a matrix $A$.
 
 # Python
 To complete this course successfully you need to have a solid command of the Python language, which you should be familiar with from your first year *"Programming and Mathematics"* unit. Below you can find a (non-exhaustive) list of fundamental concepts that we will use frequently. If any of these ideas are new to you, follow the links or consult the [Python tutorial](https://docs.python.org/3/tutorial/index.html), [Python language reference](https://docs.python.org/3/reference/index.html) and the [numpy API reference](https://numpy.org/doc/stable/reference/index.html), in particular the section on [linear algebra](https://numpy.org/doc/stable/reference/routines.linalg.html). If you have never seen some of the concepts don't worry, since they will become more familiar over the course of this semester. A crucial skill of a successful scientific programmer is the ability to find and digest documentation: if you come across a concept that you are not familiar with you should actively try to understand it. For this, you might want to implement some simplified examples to see what is going on or use google to find additional documentation.
@@ -106,57 +58,6 @@ To complete this course successfully you need to have a solid command of the Pyt
 * [Indexing and slicing](https://numpy.org/doc/stable/user/basics.indexing.html) arrays
 * Matrix- and vector manipulation such as [matrix transposition](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.transpose.html) and [matrix multiplication](https://numpy.org/devdocs/reference/generated/numpy.matmul.html)
 * Other basic [numerical linear algebra](https://numpy.org/doc/stable/reference/routines.linalg.html#module-numpy.linalg) operations
-
-#### Tensors in numpy
-In numpy, tensors are represented by multidimensional arrays of type [`np.ndarray(...,dtype=float)`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $(2,3,4)$ with only zero entries like this:
-
-```Python
-T = np.zeros(shape=(2,3,4),dtype=float)
-```
-
-or construct the $2\times 3$ matrix $\begin{pmatrix}1.8 & 2.2 & 3.4 \\ 4.2 & 5.1 & 6.7\end{pmatrix}$ like this:
-
-```Python
-A = np.asarray([[1.8,2.2,3.4],[4.2,5.1,6.7]],dtype=float)
-```
-
-The shape is given by `T.shape` and `A.shape`.
-
-Tensors of the same shape can be scaled and added like this:
-
-```Python
-S = alpha*T + beta*Tprime
-```
-
-In fact, Python allows the addition of tensors of different shapes according to a set of [broadcasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html).
-
-Tensors can be multiplied with the powerful [`numpy.einsum()` function](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). For example, to compute $R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}$ use
-
-```Python
-R = np.einsum("ijk,mkln->ijmln",T,Tprime)
-```
-
-and to compute $S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}$ use
-
-```Python
-S = np.einsum("ijk,kjni,nl->l",T,Tprime,Tprimeprime)
-```
-
-The matrix-vector product $\boldsymbol{v}=A\boldsymbol{w}$ can be written as
-
-```Python
-v = np.einsum("ij,j->i",A,w)
-```
-
-or alternatively simply as
-
-```Python
-v = A @ w
-```
-
-The latter us usually preferred since it is easier to understand what the code does.
-
-Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
 
 ## Documentation and style
 Comment your code as much as possible (but be concise). In particular, use [docstrings](https://docs.python.org/3/tutorial/controlflow.html#documentation-strings) to describe the input, output and functionality of functions. Use a consistent style and naming convention (for example, start class names with capital letters and variables with lowercase letters). You might want to take some inspiration form the [PEP8 style guide](https://peps.python.org/pep-0008/), but there is no need to strictly conform to this. It is much more important that you use a consistent style. VSCode (see below) can help with enforcing this. [Section 4 of [Ham23]](https://object-oriented-python.github.io/4_style.html) contains a useful discussion of style.

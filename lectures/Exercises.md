@@ -849,7 +849,7 @@ A_{ij} & \text{if $i<j$} \\
 0 & \text{otherwise}
 \end{cases}
 $$
-Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)z=r$ can be solved row-by-row, i.e. by computing first $\boldsymbol{z}_0 = \boldsymbol{r}_0/A_{00}$, then computing $\boldsymbol{z}_1 = (\boldsymbol{r}_1 - A_{10}\boldsymbol{z}_0)/A_{11}$, $\boldsymbol{z}_2=(\boldsymbol{r}_2 - A_{20}\boldsymbol{z}_0 - A_{21}\boldsymbol{z}_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`.
+Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)\boldsymbol{z}=\boldsymbol{r}$ can be solved row-by-row, i.e. by computing first $z_0 = r_0/A_{00}$, then computing $z_1 = (r_1 - A_{10}z_0)/A_{11}$, $z_2=(r_2 - A_{20}z_0 - A_{21}z_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`.
 
 Run the code with this preconditioner - how does the number of iterations change? Record this in your table.
 

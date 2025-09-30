@@ -92,7 +92,33 @@ jobs:
                   --resource-path generalinformation
                   --metadata-file metadata.yml
                   generalinformation/Setup.md
+            - name: Convert model solution exercise 1 markdown to html with pandoc
+              uses: docker://pandoc/latex:3.7.0.2                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --toc
+                  --to html
+                  --output model_solution_exercise_finiteelement.html
+                  --template uikit.html
+                  --resource-path solutions/exercise_finiteelement
+                  --metadata-file metadata.yml
+                  solutions/exercise_finiteelement/Solution.md
             - name: Convert model solution exercise 2 markdown to html with pandoc
+              uses: docker://pandoc/latex:3.7.0.2                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --toc
+                  --to html
+                  --output model_solution_exercise_localassembly.html
+                  --template uikit.html
+                  --resource-path solutions/exercise_localassembly
+                  --metadata-file metadata.yml
+                  solutions/exercise_localassembly/Solution.md
+            - name: Convert model solution bonus exercise markdown to html with pandoc
               uses: docker://pandoc/latex:3.7.0.2                
               with:
                 args: >- 
@@ -105,6 +131,32 @@ jobs:
                   --resource-path solutions/exercise_quadrature
                   --metadata-file metadata.yml
                   solutions/exercise_quadrature/Solution.md
+            - name: Convert model solution exercise 3 markdown to html with pandoc
+              uses: docker://pandoc/latex:3.7.0.2                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --toc
+                  --to html
+                  --output model_solution_global_error.html
+                  --template uikit.html
+                  --resource-path solutions/exercise_global_error
+                  --metadata-file metadata.yml
+                  solutions/exercise_global_error/Solution.md
+            - name: Convert model solution exercise 4 markdown to html with pandoc
+              uses: docker://pandoc/latex:3.7.0.2                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --toc
+                  --to html
+                  --output model_solution_complexity.html
+                  --template uikit.html
+                  --resource-path solutions/exercise_complexity
+                  --metadata-file metadata.yml
+                  solutions/exercise_complexity/Solution.md
             - name: Convert model solution exercise 5 markdown to html with pandoc
               uses: docker://pandoc/latex:3.7.0.2                
               with:
@@ -127,10 +179,26 @@ jobs:
                     mv notes.html docs
                     mv exercises.html docs
                     cp -r lectures/figures docs
+                    # EXERCISE 1
+                    mv model_solution_exercise_finiteelement.html docs
+                    cp solutions/exercise_finiteelement/cubicelement.py docs
+                    cp solutions/exercise_finiteelement/test_cubicelement.py docs
                     # EXERCISE 2
+                    mv model_solution_exercise_localassembly.html docs
+                    cp solutions/exercise_localassembly/algorithms.py docs
+                    cp solutions/exercise_localassembly/driver.py docs
+                    cp solutions/exercise_localassembly/triangle_solution_??.png docs
+                    # BONUS EXERCISE
                     mv model_solution_exercise_quadrature.html docs
                     cp solutions/exercise_quadrature/threepointquadrature.py docs
                     cp solutions/exercise_quadrature/test_threepointquadrature.py docs
+                    # EXERCISE 3
+                    mv model_solution_exercise_global_error.html docs
+                    cp solutions/exercise_global_error/algorithms.py docs
+                    cp solutions/exercise_global_error/driver.py docs
+                    cp solutions/exercise_global_error/convergence.png docs
+                    # EXERCISE 4
+                    mv model_solution_exercise_complexity.html docs
                     # EXERCISE 5
                     mv model_solution_exercise_petsc.html docs
                     cp solutions/exercise_petsc/*.svg docs

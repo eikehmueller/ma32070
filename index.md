@@ -4,9 +4,11 @@
 * [Prerequisites](prerequisites.html)
 * [Lecture notes](notes.html)
 * [Exercises](exercises.html)
-* [Model Solution: Exercise 1](model_solution_exercise_petsc.html)
-* [Model Solution: Exercise 2](model_solution_exercise_quadrature.html)
-* [Model Solution: Bonus Exercise](solution_bonus_exercise.html)
-* [Model Solution: Exercise 3](solution_exercise3.html)
-* [Model Solution: Exercise 4](solution_exercise4.html)
-* [Model Solution: Exercise 5](solution_exercise5.html)
+
+## Model Solution
+* [Exercise 1 (Cubic Lagrange element)](model_solution_exercise_finiteelement.html)
+* [Exercise 2 (Local assembly)](model_solution_exercise_localassembly.html)
+* [Bonus Exercise (Three point quadrature)](model_solution_exercise_quadrature.html)
+* [Exercise 3 (Global error)](solution_exercise_global_error.html)
+* [Exercise 4 (Computational complexity)](solution_complexity.html)
+* [Exercise 5 (PETSc)](model_solution_exercise_petsc.html)

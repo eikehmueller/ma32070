@@ -36,7 +36,7 @@ def degree_of_precision(self):
     return 2
 ```
 
-In the tests, we verify that the quadrature rule integrates monomials $x_0^{s_0}x_1^{s_1}$ of degree up to degree 2 exactly. `pytest.mark.parametrize()` is used to construct pairs of tuples $(s_0,s_1)$ and integrals $\int x_0^{s_0}x_1^{s_1}\;d\widehat{K}=s_0!s_1!/(s_0+s_1+2)!$
+In the tests, we verify that the quadrature rule integrates monomials $x_0^{s_0}x_1^{s_1}$ of degree up to degree 2 exactly. `pytest.mark.parametrize()` is used to construct pairs of tuples $(s_0,s_1)$ and integrals $\int_{\widehat{K}} x_0^{s_0}x_1^{s_1}\;dx=\frac{s_0!s_1!}{(s_0+s_1+2)!}.$
 
 The code can be found in [threepointquadrature.py](threepointquadrature.py) and the tests in [test_threepointquadrature.py](test_threepointquadrature.py).
 

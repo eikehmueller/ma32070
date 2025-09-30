@@ -92,6 +92,19 @@ jobs:
                   --resource-path generalinformation
                   --metadata-file metadata.yml
                   generalinformation/Setup.md
+            - name: Convert model solution exercise 2 markdown to html with pandoc
+              uses: docker://pandoc/latex:3.7.0.2                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --toc
+                  --to html
+                  --output model_solution_exercise_quadrature.html
+                  --template uikit.html
+                  --resource-path solutions/exercise_quadrature
+                  --metadata-file metadata.yml
+                  solutions/exercise_quadrature/Solution.md
             - name: Convert model solution exercise 5 markdown to html with pandoc
               uses: docker://pandoc/latex:3.7.0.2                
               with:
@@ -114,6 +127,11 @@ jobs:
                     mv notes.html docs
                     mv exercises.html docs
                     cp -r lectures/figures docs
+                    # EXERCISE 2
+                    mv model_solution_exercise_quadrature.html docs
+                    cp solutions/exercise_quadrature/threepointquadrature.py docs
+                    cp solutions/exercise_quadrature/test_threepointquadrature.py docs
+                    # EXERCISE 5
                     mv model_solution_exercise_petsc.html docs
                     cp solutions/exercise_petsc/*.svg docs
                     cp solutions/exercise_petsc/linear_algebra.py docs

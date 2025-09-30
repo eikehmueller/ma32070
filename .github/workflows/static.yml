@@ -191,7 +191,7 @@ jobs:
                     mv ${DIR}.html docs/${DIR}/solution.html
                     cp solutions/exercise_localassembly/algorithms.py docs/${DIR}
                     cp solutions/exercise_localassembly/driver.py docs/${DIR}
-                    cp solutions/exercise_localassembly/triangle_solution_??.png docs
+                    cp solutions/exercise_localassembly/triangle_solution_??.png docs/${DIR}
                     # BONUS EXERCISE
                     DIR=model_solution_exercise_quadrature
                     mkdir docs/${DIR}

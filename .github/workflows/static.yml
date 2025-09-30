@@ -92,6 +92,19 @@ jobs:
                   --resource-path generalinformation
                   --metadata-file metadata.yml
                   generalinformation/Setup.md
+            - name: Convert model solution exercise 5 markdown to html with pandoc
+              uses: docker://pandoc/latex:3.7.0.2                
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --toc
+                  --to html
+                  --output model_solution_exercise_petsc.html
+                  --template uikit.html
+                  --resource-path solutions/exercise_petsc
+                  --metadata-file metadata.yml
+                  solutions/exercise_petsc/Solution.md
             - name: Copy to deployment folder
               run: |
                     mkdir docs
@@ -101,6 +114,10 @@ jobs:
                     mv notes.html docs
                     mv exercises.html docs
                     cp -r lectures/figures docs
+                    mv model_solution_exercise_petsc.html docs
+                    cp solutions/exercise_petsc/*.svg docs
+                    cp solutions/exercise_petsc/linear_algebra.py docs
+                    cp solutions/exercise_petsc/linear_solve.py docs
             - name: Upload artifacts
               uses: actions/upload-pages-artifact@v3
               with:

@@ -18,31 +18,30 @@ def run(n, ksp_type, pc_type):
     :arg ksp_type: KSP type of solver
     :arg pc_type: PC type of solver
     """
-    maxiter = 10000000
-    if (
-        ksp_type == "richardson"
-        and (pc_type == "jacobi" or pc_type == "sor")
-        and n > 512
-    ):
-        return -1, 0
-    if ksp_type == "cg" and pc_type == "ilu":
-        maxiter = 1000
-    cmd = f"python linear_solve.py {n} -ksp_rtol 1.E-9 -ksp_type {ksp_type} -pc_type {pc_type} -ksp_max_it {maxiter} -ksp_monitor"
+
+    if ksp_type == "richardson" and n < 1024:
+        maxiter = 10000000
+    else:
+        maxiter = 200000
+    cmd = f"python linear_solve.py {n} -ksp_rtol 1.E-6 -ksp_type {ksp_type} -pc_type {pc_type} -ksp_max_it {maxiter} -ksp_monitor -ksp_converged_reason"
+    print(cmd)
 
     output = subprocess.run(cmd.split(), stdout=subprocess.PIPE).stdout.decode("utf-8")
-    converged = True
+    converged = False
     for line in output.split("\n"):
-        m = re.match("number of iterations = *([0-9]+) *", line)
+        m = re.match(
+            " *Linear solve converged due to CONVERGED_RTOL iterations *([0-9]+) *",
+            line,
+        )
         if m:
             niter = int(m.group(1))
+            converged = True
         m = re.match(r"time \[solve\] = *(.+) s", line)
         if m:
             tsolve = float(m.group(1))
-        m = re.match(".*Linear solve did not converge.*", line)
-        if m:
-            converged = False
     if not converged:
         niter = -1
+        tsolve = -1
     return niter, tsolve
 
 
@@ -59,17 +58,19 @@ def plot_results(data, problemsizes, ylabel, filename, ylim, scale=1.0):
     """
     plt.clf()
     fig, axs = plt.subplots(ncols=3, figsize=(12, 4))
-
+    marker = ["o", "s", "D", "v", "^"]
     for j, ksp_type in enumerate(data.keys()):
         ax = axs[j]
-        for pc_type in data[ksp_type].keys():
+        for k, pc_type in enumerate(data[ksp_type].keys()):
             Y = np.asarray(data[ksp_type][pc_type])
             ax.plot(
-                problemsizes,
-                scale * Y,
+                np.asarray(problemsizes)[Y > 0],
+                scale * Y[Y > 0],
                 linewidth=2,
-                markersize=4,
-                marker="o",
+                markersize=5,
+                markerfacecolor="white",
+                markeredgewidth=2,
+                marker=marker[k],
                 label=f"{pc_type}",
             )
             ax.set_xscale("log")
@@ -92,7 +93,7 @@ if not os.path.exists("data.json"):
     for ksp_type in "richardson", "cg", "gmres":
         niter_dict[ksp_type] = {}
         tsolve_dict[ksp_type] = {}
-        for pc_type in ["jacobi", "sor", "ilu", "hypre"]:
+        for pc_type in ["jacobi", "sor", "ilu", "icc", "gamg"]:
             niter_dict[ksp_type][pc_type] = []
             tsolve_dict[ksp_type][pc_type] = []
             print(ksp_type, pc_type)
@@ -112,15 +113,31 @@ else:
         tsolve_dict = data["tsolve"]
         niter_dict = data["niter"]
 
+extension = ".svg"
 
 plot_results(
-    niter_dict, problemsizes, "number of iterations", "niter.svg", [1, 20000000]
+    niter_dict, problemsizes, "number of iterations", "niter" + extension, [1, 20000000]
 )
 plot_results(
     tsolve_dict,
     problemsizes,
-    r"solve time [$\mu \text{s}]",
-    "tsolve.svg",
-    [10, 300000],
+    r"solve time [$\text{s}]$",
+    "tsolve" + extension,
+    [1e-5, 30],
+)
+
+# time per iteration
+titer_dict = {}
+for ksp in niter_dict.keys():
+    _d = {}
+    for pc in niter_dict[ksp].keys():
+        _d[pc] = np.array(tsolve_dict[ksp][pc]) / np.abs(np.array(niter_dict[ksp][pc]))
+    titer_dict[ksp] = _d
+plot_results(
+    titer_dict,
+    problemsizes,
+    r"time per iteration [$\mu \text{s}]$",
+    "titer" + extension,
+    [0.8, 3000],
     scale=1e6,
 )

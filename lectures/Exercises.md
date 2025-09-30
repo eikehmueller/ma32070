@@ -869,7 +869,7 @@ and preconditioners
 * Incomplete Cholesky factorisation (ICC): `-ksp_type icc`
 * Algebraic multigrid ([GAMG](https://petsc.org/release/manualpages/PC/PCGAMG/)): `-ksp_type gamg`
 
-There should $3\times 6$ solver/preconditioner combinations in total, do all of these work as expected? 
+There should $3\times 5=15$ different solver/preconditioner combinations in total, do all of these work as expected? 
 
 In addition to the number of iterations, also measure the time spent in the solve step by using the `meausure_time` decorator from `fem.utilities`:
 ```Python
@@ -879,11 +879,13 @@ with measure_time("solve"):
     # call solver here
 ```
 Visualise the results. For this plot the following quantities as a function of the problem size:
+
 * number of solver iterations
 * total solution time
 * time per solver iteration
 
 Comment on your results: which solver gives the best performance?
+
 ### Practicalities
 * Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/exercise5`
 * Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`

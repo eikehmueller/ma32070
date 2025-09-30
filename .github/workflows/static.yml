@@ -139,7 +139,7 @@ jobs:
                   --mathjax
                   --toc
                   --to html
-                  --output model_solution_global_error.html
+                  --output model_solution_exercise_global_error.html
                   --template uikit.html
                   --resource-path solutions/exercise_global_error
                   --metadata-file metadata.yml
@@ -152,7 +152,7 @@ jobs:
                   --mathjax
                   --toc
                   --to html
-                  --output model_solution_complexity.html
+                  --output model_solution_exercise_complexity.html
                   --template uikit.html
                   --resource-path solutions/exercise_complexity
                   --metadata-file metadata.yml

@@ -1571,7 +1571,7 @@ plt.contourf(X, Y, Z-Z_exact)
 ![:fig:solution_and_error_linear: Visualisation of finite element solution and error for piecewise linear finite elements](figures/solution_linear.png)
 
 As @fig:solution_and_error_cubic demonstrates, using cubic elements on the same mesh improves the solution.
-![:fig:solution_and_error_cubic: Visualisation of finite element solution and error for piecewise cubi  finite elements](figures/solution_cubic.png)
+![:fig:solution_and_error_cubic: Visualisation of finite element solution and error for piecewise cubic  finite elements](figures/solution_cubic.png)
 
 
 ## Performance

@@ -78,28 +78,20 @@ class CubicElement(FiniteElement):
 
         npoints = zeta.shape[0]
         if grad:
-            mat = np.empty([npoints, 10, 2])
-            mat[:, 0, 0] = 0
-            mat[:, 0, 1] = 0
+            mat = np.zeros([npoints, 10, 2])
             mat[:, 1, 0] = 1
-            mat[:, 1, 1] = 0
-            mat[:, 2, 0] = 0
-            mat[:, 2, 1] = 1
             mat[:, 3, 0] = 2 * zeta[..., 0]
-            mat[:, 3, 1] = 0
             mat[:, 4, 0] = zeta[..., 1]
-            mat[:, 4, 1] = zeta[..., 0]
-            mat[:, 5, 0] = 0
-            mat[:, 5, 1] = 2 * zeta[..., 1]
             mat[:, 6, 0] = 3 * zeta[..., 0] ** 2
-            mat[:, 6, 1] = 0
             mat[:, 7, 0] = 2 * zeta[..., 0] * zeta[..., 1]
-            mat[:, 7, 1] = zeta[..., 0] ** 2
             mat[:, 8, 0] = zeta[..., 1] ** 2
-            mat[:, 8, 1] = 2 * zeta[..., 0] * zeta[..., 1]
-            mat[:, 9, 0] = 0
-            mat[:, 9, 1] = 3 * zeta[..., 1] ** 2
 
+            mat[:, 2, 1] = 1
+            mat[:, 4, 1] = zeta[..., 0]
+            mat[:, 5, 1] = 2 * zeta[..., 1]
+            mat[:, 7, 1] = zeta[..., 0] ** 2
+            mat[:, 8, 1] = 2 * zeta[..., 0] * zeta[..., 1]
+            mat[:, 9, 1] = 3 * zeta[..., 1] ** 2
         else:
             mat = np.empty([npoints, 10])
             mat[:, 0] = 1

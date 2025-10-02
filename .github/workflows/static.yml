@@ -49,6 +49,7 @@ jobs:
                     --mathjax
                     --to html
                     --output notes.html
+                    --metadata title="MA32070 Notes"
                     --resource-path lectures
                     --metadata-file metadata.yml
                     --template uikit.html

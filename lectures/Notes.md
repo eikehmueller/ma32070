@@ -471,7 +471,7 @@ $$
 \begin{aligned}
 T^\partial_{r\ell a}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_\ell}{\partial x_a}(\zeta^{(r)}) 
  = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \frac{\partial \theta_m}{\partial x_a}(\zeta^{(r)}) \\
- &= V^\partial_{rma}(\boldsymbol{\zeta})C_{m\ell}.
+ &= \sum_{m=0}^{\nu-1} V^\partial_{rma}(\boldsymbol{\zeta})C_{m\ell}.
  \end{aligned}\qquad:eqn:tabulation_basis_gradients
 $$
 

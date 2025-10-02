@@ -690,8 +690,10 @@ More generally, an upper triangular matrix satisfies $A_{ij} = 0$ for all $i>j$;
 ## Tasks
 ### Pseudocode
 Write down the algorithm for solving $A\boldsymbol{u}=\boldsymbol{b}$
+
 ### Computational complexity
 Show that the solution of an $n\times n$ upper triangular system requires $n^2$ arithmetic operations.
+
 ### Tridiagonal matrix
 Now let $A$ be a **triangular** matrix with $A_{ij}=0$ for $|i-j|>1$. Here is an example for $n=5$:
 $$
@@ -705,6 +707,7 @@ A &=  \begin{pmatrix}
 \end{pmatrix}
 \end{aligned}
 $$
+
 * How many operations are required to reduce this to an upper triangular system if the procedure in the lecture is followed, but the zeros are taken into account?
 * What is the structure of the resulting upper triangular system?
 * How many operations are required to solve this system?

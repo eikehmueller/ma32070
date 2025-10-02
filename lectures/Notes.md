@@ -1530,33 +1530,49 @@ $$
 u(x) = \cos(\pi s_0 x_0) \cos(\pi s_1 x_1) \qquad\text{for $s_0, s_1\in \mathbb{N}$}
 $$
 
-in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation if the right hand side is chosen to be $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$.
+in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation if the right hand side is chosen to be $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$ and $s_0=2$, $s_1=4$.
 
 For the numerical experiments we choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `RectangleMesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
 
-We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$. The function `save_to_vtk(u,filename)` in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) can be used to save the dof-vector of a piecewise linear function to a `.vtk` file which can be visualised with [paraview](https://www.paraview.org/).
+We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$.
 
-We also visualise the spatial variation of the error. For this, we first project the exact solution $u_{\text{exact}}(x)$ into the finite element space $\mathcal{V}_h$:
-
-$$
-u_{\text{exact}}^{(h)} = \underset{v^{(h)}\in\mathcal{V}_h}{\operatorname{argmin}} \|v^{(h)} - u_{\text{exact}}\|_{L_2(\Omega)}
-$$
-
-It can be shown that is achieved by solving
+### Visualisation of solution and error
+To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u^{(h)}$ which is evaluated at the points of a structured rectangular grid which covers the domain. The $(n_x+1)(n_y+1)$ vertices of this grid are given by
 
 $$
-m(u_{\text{exact}}^{(h)},v^{(h)}) = m(u_{\text{exact}},v^{(h)})\qquad\text{for all $v^{(h)}$ in $\mathcal{V}_h$}
+x_{i,j} = \begin{pmatrix}
+x^{(0)}_0+h_x i \\ x^{(0)}_1 + h_y j
+\end{pmatrix}\in\mathbb{R}^2
+\qquad\text{for $i=0,1,2,\dots,n_x$, $j=0,1,2,\dots,x_y$}
 $$
+where $x^{(0)}\in\mathbb{R}^2$ is some suitable offset and $h_x,h_y$ are the grid spacings. The method `grid_function()` returns three arrays $X$, $Y$, $Z$ of shape $(n_x+1,n_y+1)$:
 
-where 
+* The $x$- coordinates of the grid vertices, i.e. $X_{i,j} = x^{(0)}_0+h_x i$
+* The $y$- coordiantes of the grid vertices, i.e. $Y_{i,j} = x^{(0)}_1+h_y j$
+* The values of the function $u^{(h)}$ evaluated at the grid vertices, i.e. $Z_{i,j} = u^{(h)}(x_{i,j})$
 
-$$
-\begin{aligned}
-m(u,v) = \int_\Omega u(x) v(x)\;dx
-\end{aligned}
-$$
+This allows plotting the function for example with [matplotlib's `contourf()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contourf.html):
 
-The left-hand side can be computed by using $a(\cdot,\cdot)$ in @eqn:definition_bilinear_a with $\omega=1$, $\kappa=0$; the resulting matrix is also known as the "mass matrix". The right-hand side can be computed by taking passing $u_{\text{exact}}$ to `assemble_rhs()`, which assembles $b(\cdot)$ for a given function.
+```Python
+from matplotlib import pyplot as plt
+X, Y, Z = grid_function(u_h)
+plt.contourf(X, Y, Z)
+```
+
+With this, it is also easy to compare the numerical solution $u^{(h)}(x)$ to the exact solution $u_{\text{exact}}(x) = cos(2\pi x_0)\cos(4\pi x_1)$:
+
+```Python
+Z_exact = np.cos(2*np.pi*X)*np.cos(4*np.pi*Y)
+plt.contourf(X, Y, Z-Z_exact)
+```
+
+@fig:solution_and_error_linear visualises the numerical solution $u^{(h)}$ (left), the exact solution $u_{\text{exact}}$ (right) and their difference $u^{(h)} - u_{\text{exact}}$ (centre) for a rectangle mesh with $n_{\text{ref}}=4$ refinements and piecewise linear finite elements.
+
+![:fig:solution_and_error_linear: Visualisation of finite element solution and error for piecewise linear finite elements](figures/solution_linear.png)
+
+As @fig:solution_and_error_cubic demonstrates, using cubic elements on the same mesh improves the solution.
+![:fig:solution_and_error_cubic: Visualisation of finite element solution and error for piecewise cubi  finite elements](figures/solution_cubic.png)
+
 
 ## Performance
 To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows

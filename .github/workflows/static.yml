@@ -36,6 +36,7 @@ jobs:
                     --mathjax
                     --to html
                     --output index.html
+                    --metadata title="MA32070"
                     --metadata-file metadata.yml
                     index.md
             - run: |

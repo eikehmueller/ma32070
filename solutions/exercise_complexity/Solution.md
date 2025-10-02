@@ -8,6 +8,15 @@
 
 ----
 ## Pseudocode for backsubstitution
+The solution vector $\boldsymbol{u}$ of the system $A\boldsymbol{u}=\boldsymbol{b}$ can be computed as follows if $A$ is an upper triangular matrix:
+
+1. **for** $i=n-1,n-2,\dots,0$ **do**
+2. $~~~~$ Set $r = b_i$
+3. $~~~~$ **for** $j=i+1,i+2,\dots,n-1$ **do**
+4. $~~~~~~~~$ Update $r\gets r - A_{ij}u_j$
+5. $~~~~$ **end for**
+6. $~~~~$ Set $u_i = r/A_{ii}$
+7. **end for**
 
 ## Computational complexity
 At the $i$-step of the algorithm we compute

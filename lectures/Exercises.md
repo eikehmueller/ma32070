@@ -160,7 +160,7 @@ Your code should pass the tests below, which verify correctness for special case
 * Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise1.tgz exercise1`
 * Create a single file `code_exercise1.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
-python -m code2pdf --path ./exercise1/ --output code
+python -m code2pdf --path ./exercise1/ --output code_exercise1
 ```
 * Upload the following **two** files to the submission point on moodle:
   - The zip file `exercise1.tgz` with your source code
@@ -820,11 +820,10 @@ rng = np.random.default_rng(seed=1241773)
 array = rng.normal(size=n)
 ```
 
-Create a PETSc `KSP` object, which can be configured with PETSc options passed from the command line. Your code should solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ to a relative tolerance of $10^{-9}$ on the preconditioned residual.
+Create a PETSc `KSP` object, which can be configured with PETSc options passed from the command line. Your code should solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ to a relative tolerance of $10^{-6}$ on the preconditioned residual.
 
 ### Numerical experiments
-
-Solve the system for different problem sizes $n=32,64,128,256,512$ to a (relative) tolerance of $10^{-9}$ on the preconditioned residual, while using the Richardson iteration preconditioned with the Jacobi method. Create a table which lists the number of iterations for different values of $n$. If you include the command line `-ksp_converged_reason`, PETSc will print out information on whether the solver has converged and how many iterations this required. You might have to increase the maximum number of solver iterations to a sufficiently large value for the larger problem sizes $n$.It is also possible to extract the number of solver iterations from a `ksp` object with `ksp.getIterationNumber()`. 
+Solve the system for different problem sizes $n=16,32,64,128,256,512$ to a (relative) tolerance of $10^{-6}$ on the preconditioned residual, while using the Richardson iteration preconditioned with the Jacobi method. Create a table which lists the number of iterations for different values of $n$. If you include the command line `-ksp_converged_reason`, PETSc will print out information on whether the solver has converged and how many iterations this required. You might have to increase the maximum number of solver iterations to a sufficiently large value for the larger problem sizes $n$.
 
 Verify that the correct solver options have been used by passing the `-ksp_view` flag and inspect the output.
 
@@ -841,7 +840,7 @@ python linear_solve.py N
 ```
 where `N` is the numerical value of $n$.
 
-#### Gauss Seidel iteration
+#### Gauss Seidel iteration (SOR)
 Recall that the Jacobi method uses $P=D$ as the preconditioner, where $D$ is the diagonal of the diagonal of the matrix $A$: to apply the preconditioner, the linear system $D\boldsymbol{z}=\boldsymbol{r}$ is solved. Instead, we could also use the lower triangular part of $A$ and set $P=D+L$ where
 $$
 L = \begin{cases}
@@ -849,11 +848,13 @@ A_{ij} & \text{if $i<j$} \\
 0 & \text{otherwise}
 \end{cases}
 $$
-Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)\boldsymbol{z}=\boldsymbol{r}$ can be solved row-by-row, i.e. by computing first $z_0 = r_0/A_{00}$, then computing $z_1 = (r_1 - A_{10}z_0)/A_{11}$, $z_2=(r_2 - A_{20}z_0 - A_{21}z_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor`.
+Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)\boldsymbol{z}=\boldsymbol{r}$ can be solved row-by-row, i.e. by computing first $z_0 = r_0/A_{00}$, then computing $z_1 = (r_1 - A_{10}z_0)/A_{11}$, $z_2=(r_2 - A_{20}z_0 - A_{21}z_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor` (in fact, in this setup PETSc will use a symmetric version of the Gauss-Seidel iteration by preconditioning with both $D+L$ and $D+L^\top$).
+
+For [technical reasons](https://petsc.org/release/manualpages/PC/PCSOR/), it is necessary to add the option `-ksp_monitor` (or `-ksp_monitor :/dev/null` to suppress output) when using PETSc's SOR preconditioner.
 
 Run the code with this preconditioner - how does the number of iterations change? Record this in your table.
 
-#### Other solver configurations
+#### Other solver-  and preconditioner configurations
 Repeat the above numerical experiment with the following solvers
 
 * Conjugate Gradient (CG): `-ksp_type cg` 
@@ -864,10 +865,11 @@ and preconditioners
 
 * Jacobi: `-ksp_type jacobi`
 * Successive overrelaxation (SOR): `-ksp_type sor`
-* Algebraic multigrid (BoomerAMG): `-ksp_type hypre`
-* Incomplete LU factorisation (ILU): `-ksp_type ilu`
+* [Incomplete LU factorisation](https://scispace.com/pdf/approximate-and-incomplete-factorizations-39yegl2sg5.pdf) (ILU(0)): `-ksp_type ilu`
+* Incomplete Cholesky factorisation (ICC): `-ksp_type icc`
+* Algebraic multigrid ([GAMG](https://petsc.org/release/manualpages/PC/PCGAMG/)): `-ksp_type gamg`
 
-There should $3\times 4$ solver/preconditioner combinations in total, do all of these work as expected? 
+There should $3\times 5=15$ different solver/preconditioner combinations in total, do all of these work as expected? 
 
 In addition to the number of iterations, also measure the time spent in the solve step by using the `meausure_time` decorator from `fem.utilities`:
 ```Python
@@ -876,12 +878,25 @@ from fem.utilities import measure_time
 with measure_time("solve"):
     # call solver here
 ```
-Visualise the results.
+Visualise the results. For this plot the following quantities as a function of the problem size:
+
+* number of solver iterations
+* total solution time
+* time per solver iteration
+
+Comment on your results: which solver gives the best performance?
 
 ### Practicalities
-
+* Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/exercise5`
+* Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
 * Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
 python -m code2pdf --path ./exercise5/ --output code_exercise5
 ```
-
+* Create a file `solution.pdf` with the following content:
+  - a table with the number of iterations for the Jacobi and SOR preconditioner for different problem sizes $n$
+  - plots which illustrate the performance of differ solver/preconditioner combinations
+  - a critical discussion of your results
+* Upload the following **three** files to the submission point on moodle:
+  - The zip file `exercise5.tgz` with your source code
+  - The file `code_exercise5.pdf` generated from your source code

@@ -100,6 +100,8 @@ While this could be done with `np.einsum()` as well, multiplying the vectors com
 error_nrm_2 += np.sum(w_q * error_K**2 * det_jac)
 ```
 
+The complete code for computing the global $L_2$ error can be found in [algorithms.py](algorithms.py). The main program has been implemented in [driver.py](driver.py).
+
 ## Numerical experiments
 
 ### Runtime

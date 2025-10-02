@@ -7,6 +7,38 @@
 *&#169; Eike Mueller, University of Bath 2025. These notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited. html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
 
 ----
+## Implementation
+
+The implementation is straightforward: we construct a class `ThreePointQuadratureReferenceTriangle`, which is derived from the abstract base class `Quadrature` in [fem/quadrature.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py). In the initialisation method, we set the nodes and associated weights:
+
+```Python
+self._nodes = np.asarray([[1 / 6, 1 / 6], [2 / 3, 1 / 6], [1 / 6, 2 / 3]])
+self._weights = np.asarray([1 / 6, 1 / 6, 1 / 6])
+```
+
+The properties `nodes` and `weights` simply return these arrays:
+
+```Python
+@property
+def nodes(self):
+    return self._nodes
+
+@property
+def weights(self):
+    return self._weights
+```
+
+The degree of precision is 2, and hence we return this in the `degree_of_precision()` method:
+
+```Python
+@property
+def degree_of_precision(self):
+    return 2
+```
+
+In the tests, we verify that the quadrature rule integrates monomials $x_0^{s_0}x_1^{s_1}$ of degree up to degree 2 exactly. `pytest.mark.parametrize()` is used to construct pairs of tuples $(s_0,s_1)$ and integrals $\int_{\widehat{K}} x_0^{s_0}x_1^{s_1}\;dx=\frac{s_0!s_1!}{(s_0+s_1+2)!}.$
+
+The code can be found in [threepointquadrature.py](threepointquadrature.py) and the tests in [test_threepointquadrature.py](test_threepointquadrature.py).
 
 ## Theory
 Using the given values of $w_q$ and $\xi^{(q)}$ we have that

@@ -40,6 +40,8 @@ stiffness_matrix = kappa * np.einsum("q,qik,qjk->ij", w_q, grad_phi, grad_phi)
                  + omega * np.einsum("q,qi,qj->ij", w_q, phi, phi)
 ```
 
+The complete code for assembling the stiffness matrix can be found in [algorithms.py](algorithms.py). The main program has been implemented in [driver.py](driver.py).
+
 ## Numerical experiments
 
 ### Error norm

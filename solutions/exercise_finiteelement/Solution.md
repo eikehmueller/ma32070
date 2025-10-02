@@ -57,21 +57,20 @@ $$
 We can interpret $V^\partial$ as two $n\times 10$ matrices $V^{\partial_0}=\frac{\partial V}{\partial x_0}$, $V^{\partial_1}=\frac{\partial V}{\partial x_1}$ obtained by taking suitable pertial derivatives of the Vandermonde matrix $V$ defined in $(\dagger)$ above. Explicitly these matrices are given by
 
 $$
+\begin{eqnarray}
 V^{\partial_0}  = \begin{pmatrix}
   0 &  1 & 0 & 2\zeta^{(0)}_0 & \zeta^{(0)}_1  & 0 &3(\zeta^{(0)}_0)^2 & 2\zeta^{(0)}_0 \zeta^{(0)}_1 & (\zeta^{(0)}_1)^2 & 0\\
   0 &  1 & 0 & 2\zeta^{(1)}_0 & \zeta^{(1)}_1  & 0 &3(\zeta^{(1)}_0)^2 & 2\zeta^{(1)}_0 \zeta^{(1)}_1 & (\zeta^{(1)}_1)^2 & 0\\
   \vdots & & & & & \vdots & & & & \vdots\\
   0 &  1 & 0 & 2\zeta^{(n-1)}_0 & \zeta^{(n-1)}_1  & 0 &3(\zeta^{(n-1)}_0)^2 & 2\zeta^{(n-1)}_0 \zeta^{(n-1)}_1 & (\zeta^{(n-1)}_1)^2 & 0\\
-\end{pmatrix}
-$$
-
-$$
+\end{pmatrix}\\[4ex]
 V^{\partial_1} = \begin{pmatrix}
   0 & 0 & 1 & 0 & \zeta^{(0)}_0 & 2\zeta^{(0)}_1 & 0 & (\zeta^{(0)}_0)^2 & 2\zeta^{(0)}_0\zeta^{(0)}_1 & 3 (\zeta^{(0)}_1)^2\\
   0 & 0 & 1 & 0 & \zeta^{(1)}_0 & 2\zeta^{(1)}_1 & 0 & (\zeta^{(1)}_0)^2 & 2\zeta^{(1)}_0\zeta^{(1)}_1 & 3 (\zeta^{(1)}_1)^2\\
   \vdots & & & & & \vdots & & & & \vdots\\
   0 & 0 & 1 & 0 & \zeta^{(n-1)}_0 & 2\zeta^{(n-1)}_1 & 0 & (\zeta^{(n-1)}_0)^2 & 2\zeta^{(n-1)}_0\zeta^{(n-1)}_1 & 3 (\zeta^{(n-1)}_1)^2
 \end{pmatrix}
+\end{eqnarray}
 $$
 In the code, the matrix $V^{\partial}$ is constructed with
 ```Python

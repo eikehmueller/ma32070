@@ -49,7 +49,7 @@ jobs:
                     --mathjax
                     --to html
                     --output notes.html
-                    --metadata title="MA32070 Notes"
+                    --metadata title="MA32070 Lecture Notes"
                     --resource-path lectures
                     --metadata-file metadata.yml
                     --template uikit.html
@@ -63,6 +63,7 @@ jobs:
                   --toc
                   --to html
                   --output exercises.html
+                  --metadata title="MA32070 Exercises"
                   --template uikit.html
                   --resource-path exercises
                   --metadata-file metadata.yml
@@ -76,6 +77,7 @@ jobs:
                   --toc
                   --to html
                   --output prerequisites.html
+                  --metadata title="MA32070 Prerequisites"
                   --template uikit.html
                   --resource-path generalinformation
                   --metadata-file metadata.yml
@@ -89,6 +91,7 @@ jobs:
                   --toc
                   --to html
                   --output setup.html
+                  --metadata title="MA32070 Setup Instructions"
                   --template uikit.html
                   --resource-path generalinformation
                   --metadata-file metadata.yml
@@ -102,6 +105,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_finiteelement.html
+                  --metadata title="MA32070 Model Solution Exercise 1"
                   --template uikit.html
                   --resource-path solutions/exercise_finiteelement
                   --metadata-file metadata.yml
@@ -115,6 +119,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_localassembly.html
+                  --metadata title="MA32070 Model Solution Exercise 2"
                   --template uikit.html
                   --resource-path solutions/exercise_localassembly
                   --metadata-file metadata.yml
@@ -128,6 +133,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_quadrature.html
+                  --metadata title="MA32070 Model Solution Bonus Exercise"
                   --template uikit.html
                   --resource-path solutions/exercise_quadrature
                   --metadata-file metadata.yml
@@ -141,6 +147,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_global_error.html
+                  --metadata title="MA32070 Model Solution Exercise 3"
                   --template uikit.html
                   --resource-path solutions/exercise_global_error
                   --metadata-file metadata.yml
@@ -154,6 +161,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_complexity.html
+                  --metadata title="MA32070 Model Solution Exercise 4"
                   --template uikit.html
                   --resource-path solutions/exercise_complexity
                   --metadata-file metadata.yml
@@ -167,6 +175,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_petsc.html
+                  --metadata title="MA32070 Model Solution Exercise 5"
                   --template uikit.html
                   --resource-path solutions/exercise_petsc
                   --metadata-file metadata.yml

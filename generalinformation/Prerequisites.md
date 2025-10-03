@@ -1,14 +1,10 @@
-<div align="center">
-  <p style="font-size:32px;">MA32070 Prerequisites and background reading</p>
-</div>
-
-In the following we list some prior knowledge that is expected for this course together with some links to further information. Most of this should be familiar to you, and you will become more confident with writing Python code for solving problems in Scientific Computing throughout this course. However, you might benefit from brushing up on you Python coding skills and mathematical concepts that you have seen in other courses at the beginning of the semester.
-
 ----
 
 *&#169; Eike Mueller, University of Bath 2025. These notes are copyright of Eike Mueller, University of Bath. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited. html generated with [pandoc](https://pandoc.org/) using [easy-pandoc-templates](https://github.com/ryangrose/easy-pandoc-templates) under the [GPL-3.0.1 license](https://github.com/ryangrose/easy-pandoc-templates?tab=GPL-3.0-1-ov-file#readme)*
 
 ----
+
+In the following we list some prior knowledge that is expected for this course together with some links to further information. Most of this should be familiar to you, and you will become more confident with writing Python code for solving problems in Scientific Computing throughout this course. However, you might benefit from brushing up on you Python coding skills and mathematical concepts that you have seen in other courses at the beginning of the semester.
 
 # Mathematical background
 

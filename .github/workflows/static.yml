@@ -106,7 +106,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_finiteelement.html
-                  --metadata title="MA32070 Model Solution Exercise 1"
+                  --metadata title="MA32070 Exercise 1: Model solution"
                   --template uikit.html
                   --resource-path solutions/exercise_finiteelement
                   --metadata-file metadata.yml
@@ -120,7 +120,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_localassembly.html
-                  --metadata title="MA32070 Model Solution Exercise 2"
+                  --metadata title="MA32070 Exercise 2: Model Solution"
                   --template uikit.html
                   --resource-path solutions/exercise_localassembly
                   --metadata-file metadata.yml
@@ -134,7 +134,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_quadrature.html
-                  --metadata title="MA32070 Model Solution Bonus Exercise"
+                  --metadata title="MA32070 Bonus Exercise: Model Solution"
                   --template uikit.html
                   --resource-path solutions/exercise_quadrature
                   --metadata-file metadata.yml
@@ -148,7 +148,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_global_error.html
-                  --metadata title="MA32070 Model Solution Exercise 3"
+                  --metadata title="MA32070 Exercise 3: Model Solution"
                   --template uikit.html
                   --resource-path solutions/exercise_global_error
                   --metadata-file metadata.yml
@@ -162,7 +162,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_complexity.html
-                  --metadata title="MA32070 Model Solution Exercise 4"
+                  --metadata title="MA32070 Exercise 4: Model Solution"
                   --template uikit.html
                   --resource-path solutions/exercise_complexity
                   --metadata-file metadata.yml
@@ -176,7 +176,7 @@ jobs:
                   --toc
                   --to html
                   --output model_solution_exercise_petsc.html
-                  --metadata title="MA32070 Model Solution Exercise 5"
+                  --metadata title="MA32070 Exercise 5: Model Solution"
                   --template uikit.html
                   --resource-path solutions/exercise_petsc
                   --metadata-file metadata.yml

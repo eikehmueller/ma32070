@@ -8,7 +8,7 @@
 
 ----
 # Motivation
-![Scientific Computing flowchart](figures/scientific_computing.svg)
+![Scientific Computing flowchart](figures/scientific_computing.png)
 
 # Mathematical background
 In the following we will give a brief overview of the finite element method and review some of the fundamental ideas as to why it works. The details of the implementation will be discussed in later lectures and the theory is the subject of MA30366.

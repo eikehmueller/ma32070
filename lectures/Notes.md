@@ -19,9 +19,9 @@ with boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial \Om
 Note that in the case $\kappa=1$, $\omega=0$ the problem would reduce to the Poisson equation $-\Delta u(x)=f(x)$. Unfortunately, for the given boundary condition the solution of the Poisson equation is not unique (if $u(x)$ is a solution then so is $u(x)+C$ for an arbitrary constant $C$), which is why we do not consider this case here. However, the methods developed in this course can be readily applied to this setup, provided we extend them to treat Dirichlet boundary conditions of the form $u(x)=\widetilde{g}(x)$ for $x\in\partial \Omega$ and some given function $\widetilde{g}(x)$.
 
 ## Weak solutions
-To solve @eqn:pde_continuum, we seek solutions $u(x)$ in some function space $\mathcal{V}$; we will discuss suitable choices for $\mathcal{V}$ below. In a finite element setting we usually only aim to determine the solution in the **weak sense**: Find $u(x)\in \mathcal{V}$ such that
+To solve @eqn:pde_continuum, we seek solutions $u(x)$ in some function space $\mathcal{V}$; we will discuss suitable choices for $\mathcal{V}$ below. In a finite element setting we usually only aim to determine the solution in the **weak sense**: Find $u\in \mathcal{V}$ such that
 $$
-\int_\Omega \left(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\right)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v(x)\in \mathcal{V}$}.
+\int_\Omega \left(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\right)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v \in \mathcal{V}$}.
 $$
 The function $v(x)$ is often called a *test function*. Observe that in contrast to @eqn:pde_continuum we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of @eqn:pde_continuum (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course.
  
@@ -55,9 +55,9 @@ and that $a(\cdot,\cdot)$ is symmetric:
 
 * $a(v,u) = a(u,v)$ for all $u,v\in \mathcal{V}$
   
-With these (bi-)linear forms, we can formulate the weak problem in @eqn:weak_form_explicit as follows: Find $u(x)\in \mathcal{V}$ such that
+With these (bi-)linear forms, we can formulate the weak problem in @eqn:weak_form_explicit as follows: Find $u \in \mathcal{V}$ such that
 $$
-a(u,v) = b(v) \qquad \text{for all $v(x)\in \mathcal{V}$}.\qquad:eqn:weak_problem_continuum
+a(u,v) = b(v) \qquad \text{for all $v \in \mathcal{V}$}.\qquad:eqn:weak_problem_continuum
 $$
 
 ### Choice of function space $\mathcal{V}$
@@ -71,9 +71,9 @@ $$
 and then set $L_2(\Omega) = \left\{u(x) : ||u||_{L_2(\Omega)}<\infty\right\}$ (the space of square-integrable real functions) and $H^1(\Omega) = \left\{u(x) : ||u||_{H_1(\Omega)}<\infty\right\}$ (the space of square-integrable functions with square-integrable first derivative).
 
 ## Finite element solutions
-Now, obviously it is not possible to solve @eqn:weak_problem_continuum on a computer since $\mathcal{V}$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $\mathcal{V}_h\subset \mathcal{V}$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. In this case the problem becomes: find $u_h\in \mathcal{V}_h$ such that 
+Now, obviously it is not possible to solve @eqn:weak_problem_continuum on a computer since $\mathcal{V}$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $\mathcal{V}_h\subset \mathcal{V}$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. In this case the problem becomes: find $u_h \in \mathcal{V}_h$ such that 
 $$
-a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h(x)\in \mathcal{V}_h$ }.\qquad:eqn:weak_problem_discretised
+a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h \in \mathcal{V}_h$ }.\qquad:eqn:weak_problem_discretised
 $$
 
 ### Existence and convergence of the solution
@@ -90,14 +90,14 @@ It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cd
 $$
 \|u_h - u\|_{\mathcal{V}} \le C \min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}.
 $$
-The constant $C$ on the right hand side is problem specific since it depends on $a(\cdot,\cdot)$ and $b(\cdot)$. In contrast, the term $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}$ only depends on the choice of function spaces $\mathcal{V}$, $\mathcal{V}_h$ and describes how well the function $u(x) \in \mathcal{V}$ can be approximated by a function $v_h\in \mathcal{V}_h$. For a suitable choice of $\mathcal{V}_h$, which we will discuss later, one can show that $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}\le C' h^{\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Hence, the finite element solution $u_h(x)$ converges to the "true" solution $u(x)$ as the mesh is refined ($h\rightarrow 0$):
+The constant $C$ on the right hand side is problem specific since it depends on $a(\cdot,\cdot)$ and $b(\cdot)$. In contrast, the term $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}$ only depends on the choice of function spaces $\mathcal{V}$, $\mathcal{V}_h$ and describes how well the function $u \in \mathcal{V}$ can be approximated by a function $v_h\in \mathcal{V}_h$. For a suitable choice of $\mathcal{V}_h$, which we will discuss later, one can show that $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}\le C' h^{\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Hence, the finite element solution $u_h(x)$ converges to the "true" solution $u(x)$ as the mesh is refined ($h\rightarrow 0$):
 $$
 \|u_h - u\|_{\mathcal{V}} \le C C' h^{\mu}.
 $$
 This is why the finite element works: it can be used to systematically approximate the true solution of the PDE.
 
 ## Reduction to linear algebra problem
-We now discuss how $u_h$ can be found in practice. Since $\mathcal{V}_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_k(x)\}_{k=0}^{n-1}$ such that every function $u_h(x)\in \mathcal{V}_h$ can be written as
+We now discuss how $u_h$ can be found in practice. Since $\mathcal{V}_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_k(x)\}_{k=0}^{n-1}$ such that every function $u_h \in \mathcal{V}_h$ can be written as
 $$
 u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k(x) \qquad\text{for all $x\in\Omega$.}\qquad:eqn:linear_algebra_problem
 $$
@@ -315,7 +315,7 @@ Let $\Omega\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(\Omega)$ be the space of f
 
 * point evaluation: $\lambda(w) := w(\xi)$ for some point $\xi\in \Omega$
 * differentiation: $\lambda(w) := \frac{\partial w}{\partial x_0}$
-* integration: $\lambda(w) := \int_\Omega f(x)w(x)$ for some function $f(x)\in L_2(\Omega)$
+* integration: $\lambda(w) := \int_\Omega f(x)w(x)$ for some function $f \in L_2(\Omega)$
 
 #### Exercise
 Convince yourself that these $\lambda$ indeed satisfy @eqn:linear_functional
@@ -1286,7 +1286,7 @@ The necessary functionality is implemented in the `FunctionSpace` class in [`fem
 * The method `local2global(self, alpha, ell)` implements the map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ described above. If the parameter `ell` is a single integer index in the range $0,1,\dots,\nu-1$, the method returns a single number $\ell_{\text{global}}$. If `ell` is an iterable (such as a list `[0,3,4]` or `range(1,6,2)`) the global index will be computed for each local index and the method returns a list.
 
 ### Functions
-To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a `numpy` array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h(x)\in \mathcal{V}_h$ given by
+To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a `numpy` array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h \in \mathcal{V}_h$ given by
 
 $$
 u_h(x) = \sum_{\ell_{\text{global}}=0}^{N-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)

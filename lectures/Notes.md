@@ -1,6 +1,6 @@
-<div align="center">
-  <p style="font-size:32px;">MA32070 lecture notes</p>
-</div>
+<title>
+MA32070 lecture notes
+</title>
 
 ----
 

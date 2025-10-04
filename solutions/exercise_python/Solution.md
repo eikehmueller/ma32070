@@ -105,20 +105,24 @@ The complete source code can be found in [driver.py](driver.py).
 
 # Linear algebra with numpy
 The matrix-vector product $A\boldsymbol{u}$ can be computed in (at least) three different ways:
+
 1. `A @ u`
 2. `np.dot(A, u)`
 3. `np.einsum("ij,j->i", A, u)`
 
 The matrix-matrix product $AB$ can be computed with
+
 1. `A @ B`
 2. `np.dot(A, B)`
 3. `np.einsum("ik,kj->ij", A, B)`
 
 The outer product $\boldsymbol{u}\otimes \boldsymbol{v}$ can be computed with
+
 1. `np.einsum("i,j->ij", u, v)`
 2. `np.tensordot(u, v, axes=0)`
 
 The trace $\text{trace}(AB^\top)$ can be computed with
+
 1. `np.sum(A * B.T)`
 2. `np.einsum("ij,ji->", A, B)`
 

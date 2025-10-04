@@ -219,7 +219,6 @@ $$
 ```Python
 np.einsum("ii->",v,w)
 ```
-
 is the dot-product of two vectors $\boldsymbol{v}$ and $\boldsymbol{w}$, whereas
 
 $$
@@ -629,7 +628,7 @@ The file [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/bl
     - `npoints` the number of points $n_q$
 * A quadrature rule $\mathcal{Q}^{(\text{GL},\widehat{K})}_{n_q}$ over the reference triangle $\widehat{K}$ based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureReferenceTriangle(npoints)`. The constructor is passed the number of points $n_q$.
 
-# Local assembly: FEM method on reference triangle
+# Local assembly: FE method on reference triangle
 We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle. For this we need to be able to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$.
 
 ### Stiffness matrix

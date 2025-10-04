@@ -29,6 +29,7 @@ where `exercise` is the name of the directory. Do not include temorary files suc
 tar tzvf exercise.tgz
 ```
 It is strongly recommended to do this before uploading the file to moodle.
+
 #### .pdf version of your code
 Create a single `.pdf` file called `code_exercise.pdf` which contains all your Python source code, i.e. all `.py` files you wrote. Assuming that the `finitelements` library has been installed (for example on the Notable server), you can use the `code2pdf` tool for this. For example, to generate a `.pdf` file from all `.py` files inside the `ma32070/exercise/` directory, change to the `ma32070/` directory and run
 ```
@@ -205,7 +206,8 @@ for integrator, integrals in results.items():
     )
 ```
 * Are the methods of the expected order?
-## numpy
+
+## Linear algebra with numpy
 Consider the following random vector $\boldsymbol{u},\boldsymbol{v}$, matrices $A,B$ and tensors $T,S,Q$:
 ```Python
 import numpy as np

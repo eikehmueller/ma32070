@@ -216,13 +216,18 @@ Contractions can also result in a scalar. For example
 $$
 \boldsymbol{v}\cdot \boldsymbol{w} = \sum_i v_i w_i
 $$
+```Python
+np.einsum("ii->",v,w)
+```
 
 is the dot-product of two vectors $\boldsymbol{v}$ and $\boldsymbol{w}$, whereas
 
 $$
 \operatorname{trace}(A) = \sum_{i} A_{ii}
 $$
-
+```Python
+np.einsum("ii->",A)
+```
 is the trace of a matrix $A$. Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
 
 # Finite Elements

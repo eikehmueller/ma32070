@@ -96,7 +96,10 @@ Now upload the files `exercise3.tgz` and `code_exercise3.pdf` together with `sol
 
 #### Set: week 1
 
+The following exercises are not marked, but you are strongly encouraged to work through them to familiarise yourself with Python, numpy and sparse linear algebra in PETSc. We will use these techniques in later exercises.
+
 ## Classes, inheritance and advanced Python concepts
+The purpose of the following exercises is to practice advanced Python concepts such as [classes](https://docs.python.org/3/tutorial/classes.html#a-first-look-at-classes), [inheritance](https://docs.python.org/3/tutorial/classes.html#inheritance), [abstract classes](https://docs.python.org/3/library/abc.html), [list comprehensions](https://docs.python.org/2/tutorial/datastructures.html#list-comprehensions), [dictionary comprehensions](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) and output formatting with [f-strings](https://docs.python.org/3/tutorial/inputoutput.html#formatted-string-literals). For this, we will look at how to implement different numerical integrator classes.
 
 ### Numerical integration
 Let $f:[a,b]\rightarrow \mathbb{R}$ be a real-valued function defined on the interval $[a,b]$. We want to compute numerical approximations of the integral
@@ -210,7 +213,7 @@ for integrator, integrals in results.items():
 * Are the methods of the expected order?
 
 ## Linear algebra with numpy
-Consider the following random vector $\boldsymbol{u},\boldsymbol{v}$, matrices $A,B$ and tensors $T,S,Q$:
+Let's now look at different ways of manipulating vector, matrices and tensors in numpy. For this consider the following random vectors $\boldsymbol{u},\boldsymbol{v}$, matrices $A,B$ and tensors $T,S,Q$:
 ```Python
 import numpy as np
 
@@ -226,6 +229,10 @@ T = rng.normal(size=(4, 3, 2))
 S = rng.normal(size=(2, 3, 5))
 Q = rng.normal(size=(5, 3))
 ```
+
+### Exercises
+In a file `linear_algebra_numpy.py` add the above code for creating the required variables. Then implement the following operations in the same file:
+
 * Compute the matrix-vector product $A\boldsymbol{u}$ in three different ways:
     - with the `@` operator
     - by using [`np.dot()`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html)
@@ -243,7 +250,7 @@ Q = rng.normal(size=(5, 3))
 * Compute the tensor $R$ with $R_{ab} = \sum_{ijk} T_{aji}S_{bjk} Q_{kjii}$ by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
 
 ## Linear algebra with PETSc
-Write a Python script `linear_algebra.py` which constructs the $4\times 4$ sparse PETSc matrices $A$, $B$ and the vectors $\boldsymbol{u}, \boldsymbol{w}\in\mathbb{R}^4$ given by
+Write a Python script `linear_algebra_petsc.py` which constructs the $4\times 4$ sparse PETSc matrices $A$, $B$ and the vectors $\boldsymbol{u}, \boldsymbol{w}\in\mathbb{R}^4$ given by
 
 $$
 A = \begin{pmatrix}

@@ -18,22 +18,11 @@ for n in [4, 8, 16, 32]:
     results["MidpointRule"].append(
         integrator_midpoint.evaluate(functools.partial(f, alpha=alpha))
     )
-    integrator_simpson = MidpointRule([0, 1], n)
+for n in [4, 8, 16, 32]:
+    integrator_simpson = SimpsonsRule([0, 1], n)
     results["SimpsonsRule"].append(
         integrator_simpson.evaluate(functools.partial(f, alpha=alpha))
     )
-
-# using list comprehensions
-results = {
-    "MidpointRule": [
-        MidpointRule([0, 1], n).evaluate(functools.partial(f, alpha=alpha))
-        for n in [4, 8, 16, 32]
-    ],
-    "SimpsonsRule": [
-        SimpsonsRule([0, 1], n).evaluate(functools.partial(f, alpha=alpha))
-        for n in [4, 8, 16, 32]
-    ],
-}
 
 # using list- and dictionary comprehensions
 results = {

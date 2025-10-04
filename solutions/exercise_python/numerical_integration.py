@@ -16,16 +16,18 @@ class NumericalIntegration(ABC):
     by sub-dividing [a,b] into n subintervals
     """
 
-    def __init__(self, interval, n):
+    def __init__(self, interval, n, order=None):
         """Initialise instance
 
         :arg interval: interval [a,b]
         :arg n: number of subintervals
+        :arg order: order of the integrator
         """
 
         self._a = interval[0]
         self._b = interval[1]
         self._n = n
+        self.order = -1 if order is None else order
 
     def evaluate(self, f):
         """Numerically approximate the integral int_a^b f(x) dx
@@ -38,10 +40,10 @@ class NumericalIntegration(ABC):
         h = (self._b - self._a) / self._n
         return float(
             np.sum(
-                [
+                (
                     self._integrate(f, self._a + j * h, self._a + (j + 1) * h)
                     for j in range(self._n)
-                ]
+                )
             )
         )
 
@@ -54,11 +56,6 @@ class NumericalIntegration(ABC):
         :arg x_+: upper bound
         """
 
-    @property
-    @abstractmethod
-    def order(self):
-        """Order of integration"""
-
 
 class MidpointRule(NumericalIntegration):
     def __init__(self, interval, n):
@@ -67,7 +64,7 @@ class MidpointRule(NumericalIntegration):
         :arg interval: interval [a,b]
         :arg n: number of subintervals
         """
-        super().__init__(interval, n)
+        super().__init__(interval, n, order=2)
 
     def _integrate(self, f, x_m, x_p):
         """Approximate int_{x_-}^{x_+} f(x)dx by midpoint rule
@@ -80,11 +77,6 @@ class MidpointRule(NumericalIntegration):
         """
         return (x_p - x_m) * f((x_m + x_p) / 2)
 
-    @property
-    def order(self):
-        """Order of integration"""
-        return 2
-
 
 class SimpsonsRule(NumericalIntegration):
     def __init__(self, interval, n):
@@ -93,7 +85,7 @@ class SimpsonsRule(NumericalIntegration):
         :arg interval: interval [a,b]
         :arg n: number of subintervals
         """
-        super().__init__(interval, n)
+        super().__init__(interval, n, order=4)
 
     def _integrate(self, f, x_m, x_p):
         """Approximate int_{x_-}^{x_+} f(x)dx by Simpson's rule
@@ -105,8 +97,3 @@ class SimpsonsRule(NumericalIntegration):
         :arg x_+: upper bound
         """
         return (x_p - x_m) / 6 * (f(x_m) + 4 * f((x_m + x_p) / 2) + f(x_p))
-
-    @property
-    def order(self):
-        """Order of integration"""
-        return 4

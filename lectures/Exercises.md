@@ -131,7 +131,7 @@ To implement different numerical integration methods in Python, we define an abs
 $$
 \sum_{j=0}^{n} I(x_j,x_{j+1}),
 $$
-this operation can be implemented in the base class. However, the numerical approximation of $I(x_j,x_{j+1})$ depends on the specific integral and should be defined in the derived classes. We define an abstract method `_integrate()` to explicitly declare the required interface for this; each of the derived classes must provide a concrete implementation of `_integrate()`.
+this operation can be implemented in the base class. However, the numerical approximation of $I(x_j,x_{j+1})$ depends on the specific integral and should be defined in the derived classes. We define an abstract method `_integrate()` to explicitly declare the required interface for this; each of the derived classes must provide a concrete implementation of `_integrate()`. The constructor of the base class gets passed the interval $[a,b]$, the number of intervals $n$ and (optionally) the order of the method.
 
 ```Python
 from abc import ABC, abstractmethod
@@ -146,16 +146,18 @@ class NumericalIntegration(ABC):
     by sub-dividing [a,b] into n subintervals
     """
 
-    def __init__(self, interval, n):
+    def __init__(self, interval, n, order=None):
         """Initialise instance
 
         :arg interval: interval [a,b]
         :arg n: number of subintervals
+        :arg order: order of the integrator
         """
 
         self._a = interval[0]
         self._b = interval[1]
         self._n = n
+        self.order = -1 if order is None else order
 
     def evaluate(self, f):
         """Numerically approximate the integral int_a^b f(x) dx
@@ -165,8 +167,15 @@ class NumericalIntegration(ABC):
 
         :arg f: function to integrate
         """
-        # Implement the evaluation of the sum 
-        # sum_{j=0}^{n} self._integrate(f,x_j,x_{j+1})        
+        h = (self._b - self._a) / self._n
+        return float(
+            np.sum(
+                (
+                    self._integrate(f, self._a + j * h, self._a + (j + 1) * h)
+                    for j in range(self._n)
+                )
+            )
+        )
 
     @abstractmethod
     def _integrate(self, f, x_m, x_p):
@@ -176,16 +185,11 @@ class NumericalIntegration(ABC):
         :arg x_m: lower bound
         :arg x_+: upper bound
         """
-
-    @property
-    @abstractmethod
-    def order(self):
-        """Order of integration"""
 ```
 
 ### Exercises
 * Copy the above code to a file `numerical_integration.py` and complete the method `evaluate()`, which should call the `_integrate()` method for all subintervals `[x_j,x_{j+1}]` and sum up the results. Instead of writing a for-loop, can you use a [list-comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions) and the [`np.sum() method`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)?
-* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()` and the `order()` property.
+* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()`.
 * Write a file `driver.py` which uses the classes `MidpointRule` and `SimpsonRule` to integrate the function $f_\alpha(x) = e^{-\alpha x}$ over the interval $[0,1]$ for fixed $\alpha=0.4$. For this, use the following definition of $f_\alpha$ and fix the parameter $\alpha$ with [`functools.partial`](https://docs.python.org/3/library/functools.html#functools.partial):
 ```Python
 def f(x, alpha):
@@ -211,6 +215,15 @@ for integrator, integrals in results.items():
     )
 ```
 * Are the methods of the expected order?
+
+### Hints
+* The name of a class can be obtained with the `__name__` property, for example:
+```Python
+label = MidpointRule.__name__
+# or
+integrator = SimpsonsRule([0, 1],8)
+label = type(integrator).__name__
+```
 
 ## Linear algebra with numpy
 Let's now look at different ways of manipulating vector, matrices and tensors in numpy. For this consider the following random vectors $\boldsymbol{u},\boldsymbol{v}$, matrices $A,B$ and tensors $T,S,Q$:

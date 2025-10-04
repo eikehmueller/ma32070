@@ -48,7 +48,7 @@ You can upload scans of handwritten solutions or word processed solutions, as lo
 If you are working on Notable, you can download any files you created to your own computer by right-clicking them in the file browser. 
 
 ### Example
-The following step-by-step instructions illustrate how to prepare the solution of Exercise 2 for submission (all shell-commands include the prompt `$` which needs to be removed when entering the command):
+The following step-by-step instructions illustrate how to prepare the solution of Exercise 3 for submission (all shell-commands include the prompt `$` which needs to be removed when entering the command):
 
 #### Step 1: Change to correct directory
 Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise2` to make sure everything is ready for submission:
@@ -56,43 +56,45 @@ Change to the `ma32070/` directory, list its contents and the contents of the su
 $ cd ma32070
 $ ls
 exercise2
-$ ls exercise2
+$ ls exercise3
 algorithms.py  driver.py
 ```
 
 #### Step 2: Zip the source code
 Create a zip file from the source code with the `tar` command:
 ```
-$ tar czvf exercise2.tgz exercise2
-exercise2/
-exercise2/algorithms.py
-exercise2/driver.py
+$ tar czvf exercise3.tgz exercise3
+exercise3/
+exercise3/algorithms.py
+exercise3/driver.py
 ```
 
 #### Step 3: Create .pdf from code
 Create a `.pdf` file from the source code with
 ```
-$ python -m code2pdf --path ./exercise2 --output code_exercise2
+$ python -m code2pdf --path ./exercise3 --output code_exercise3
 ```
 
 #### Step 4: Checking
-In addition to the subdirectory `exercise1`, the `ma32070` folder now also contains the files `code_exercise2.pdf` and `exercise2.tgz`:
+In addition to the subdirectory `exercise3`, the `ma32070` folder now also contains the files `code_exercise3.pdf` and `exercise3.tgz`:
 ```
 $ ls
-code_exercise2.pdf  exercise2  exercise2.tgz
+code_exercise3.pdf  exercise2  exercise3.tgz
 ```
 Double check that the zip-file has the right content:
 ```
-$ tar tzvf exercise2.tgz
-drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise2/
--rw-rw-r-- eike/eike      6389 2025-09-28 14:36 exercise2/algorithms.py
--rw-rw-r-- eike/eike      5779 2025-09-28 14:36 exercise2/driver.py
+$ tar tzvf exercise3.tgz
+drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise3/
+-rw-rw-r-- eike/eike      6389 2025-09-28 14:36 exercise3/algorithms.py
+-rw-rw-r-- eike/eike      5779 2025-09-28 14:36 exercise3/driver.py
 ```
 
 #### 5: Moodle submission
-Now upload the files `exercise2.tgz` and `code_exercise2.pdf` together with `solution_exercise2.pdf` to the submission point on moodle.
+Now upload the files `exercise3.tgz` and `code_exercise3.pdf` together with `solution_exercise3.pdf` to the submission point on moodle.
 
-# Exercise 0: Python warmup exercises (not marked)
+# Exercise 1: Python warmup practice [not marked]
+
+#### Set: week 1
 
 ## Classes, inheritance and advanced Python concepts
 
@@ -284,7 +286,7 @@ By using suitable functions (see documentation of [`petsc4py.Mat`](https://petsc
 
 and print out the result of each calculation (convert any sparse matrices to dense matrices first). Some of the operations can be implemented in different ways.
 
-# Exercise 1: Cubic Lagrange element 
+# Exercise 2: Cubic Lagrange element 
 
 #### Set: week 2
 #### Due: at the end of week 4
@@ -345,15 +347,15 @@ Your code should pass the tests below, which verify correctness for special case
 * `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$
   
 ## Practicalities
-* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise1`
-* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise1.tgz exercise1`
-* Create a single file `code_exercise1.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise2`
+* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`
+* Create a single file `code_exercise2.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
-python -m code2pdf --path ./exercise1/ --output code_exercise1
+python -m code2pdf --path ./exercise2/ --output code_exercise2
 ```
 * Upload the following **two** files to the submission point on moodle:
-  - The zip file `exercise1.tgz` with your source code
-  - The file `code_exercise1.pdf` generated from your source code
+  - The zip file `exercise2.tgz` with your source code
+  - The file `code_exercise2.pdf` generated from your source code
 
 ## Tests
 ```python
@@ -468,7 +470,7 @@ def test_tabulate_gradient_multiple_points():
     assert np.allclose(tabulated, expected, rtol=1.0e-12)
 ```
 
-# Exercise 2: Local assembly on the reference triangle
+# Exercise 3: Local assembly on the reference triangle
 
 #### Set: week 3
 #### Due: end of week 5
@@ -510,20 +512,20 @@ Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution a
 
 ## Practicalities
 
-* Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise2`
+* Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise3`
 * Use these methods in the file `driver.py` in the same directory
-* Zip the directory which contains `algorithms.py`, `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`
-* Create a single file `code_exercise2.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Zip the directory which contains `algorithms.py`, `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
+* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
-python -m code2pdf --path ./exercise2/ --output code_exercise2
+python -m code2pdf --path ./exercise3/ --output code_exercise3
 ```
 * Create a file `solution.pdf` file with the following content:
     - a brief description of how you implemented and tested your code
     - a table which lists $\|e_h\|_{L_2(\widehat{K})}$ for $p=1$ and $p=3$
     - plots of the solution and error for $p=1$ and $p=3$
 * Upload the following **three** files to the submission point on moodle:
-    - The zip file `exercise2.tgz` with your source code
-    - The file `code_exercise2.pdf` generated from your source code
+    - The zip file `exercise3.tgz` with your source code
+    - The file `code_exercise3.pdf` generated from your source code
     - The file `solution.pdf` with your written solution
 
 ## Hints
@@ -599,7 +601,7 @@ x = np.asarray([0.4,0.7])
 f_star(x)
 ```
 
-# Bonus Exercise: Three point quadrature (not marked)
+# Exercise 4: Three point quadrature [not marked]
 
 #### Set: week 3
 
@@ -656,10 +658,10 @@ $$
 $$
 
 ## Practicalities
-* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py` in the directory `ma32070/bonus_exercise`
+* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py` in the directory `ma32070/exercise4`
 * Implement the tests in `test_threepointquadrature.py` in the same directory
 
-# Exercise 3: Computation of global $L_2$-error
+# Exercise 5: Computation of global $L_2$-error
 
 #### Set: week 6
 #### Due: end of week 7
@@ -830,20 +832,20 @@ $$
 which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
-* Save your implementation of `error_nrm()`in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise3`
-* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
-* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation of `error_nrm()`in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
+* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
+* Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
-python -m code2pdf --path ./exercise3/ --output code_exercise3
+python -m code2pdf --path ./exercise5/ --output code_exercise5
 ```
-* Write a brief report (no more than 2 pages) which describes your implementation and presents and discusses your numerical results. Include this as a single `.pdf` file called `solution_exercise3.pdf`
+* Write a brief report (no more than 2 pages) which describes your implementation and presents and discusses your numerical results. Include this as a single `.pdf` file called `solution_exercise5.pdf`
 * Upload the following **three** files to the submission point on moodle:
-    - The zip file `exercise3.tgz` with your source code
-    - The file `code_exercise3.pdf` generated from your source code
-    - The file `solution_exercise3.pdf` with your written solution
+    - The zip file `exercise5.tgz` with your source code
+    - The file `code_exercise5.pdf` generated from your source code
+    - The file `solution_exercise5.pdf` with your written solution
 
    
-# Exercise 4: Computational cost of backsubstitution
+# Exercise 6: Computational cost of backsubstitution
 
 #### Set: week 7
 #### Due: end of week 8
@@ -907,7 +909,7 @@ $$
 * Make sure you explain your thinking.
 * Upload the file `solution.pdf` to the submission point on moodle
 
-# Exercise 5: PETSc sparse matrices and linear solvers
+# Exercise 7: PETSc sparse matrices and linear solvers
 
 #### Set: week 9
 #### Due: end of week 10
@@ -1035,16 +1037,16 @@ Visualise the results. For this plot the following quantities as a function of t
 Comment on your results: which solver gives the best performance?
 
 ### Practicalities
-* Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/exercise5`
-* Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
-* Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/exercise7`
+* Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/` and run `tar czvf exercise7.tgz exercise7`
+* Create a single file `code_exercise7.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
-python -m code2pdf --path ./exercise5/ --output code_exercise5
+python -m code2pdf --path ./exercise7/ --output code_exercise7
 ```
 * Create a file `solution.pdf` with the following content:
   - a table with the number of iterations for the Jacobi and SOR preconditioner for different problem sizes $n$
   - plots which illustrate the performance of differ solver/preconditioner combinations
   - a critical discussion of your results
 * Upload the following **three** files to the submission point on moodle:
-  - The zip file `exercise5.tgz` with your source code
-  - The file `code_exercise5.pdf` generated from your source code
+  - The zip file `exercise7.tgz` with your source code
+  - The file `code_exercise7.pdf` generated from your source code

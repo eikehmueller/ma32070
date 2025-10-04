@@ -91,6 +91,166 @@ drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise2/
 #### 5: Moodle submission
 Now upload the files `exercise2.tgz` and `code_exercise2.pdf` together with `solution_exercise2.pdf` to the submission point on moodle.
 
+# Exercise 0: Python warmup exercises (not marked)
+
+## Classes, inheritance and advanced Python concepts
+
+### Numerical integration
+Let $f:[a,b]\rightarrow \mathbb{R}$ be a real-valued function defined on the interval $[a,b]$. We want to compute numerical approximations of the integral
+$$
+I =\int_{a}^{b} f(x)\;dx
+$$
+For this, the interval $[a,b]$ is split into $n$ smaller intervals $[x_j,x_{j+1}]$ with $x_{j} = a + h\cdot j$ with $h=\frac{b-a}{n}$ for $j=0,1,\dots,n$ such that
+$$
+I = \sum_{j=0}^{n} \underbrace{\int_{x_j}^{x_{j+1}}f(x)\;dx}_{=:I(x_j,j_{j+1})}.
+$$
+The integrals $I(x_j,x_{j+1}) = \int_{x_j}^{x_{j+1}}f(x)\;dx$ on the small subintervals are approximated numerically. Possible methods are:
+
+* **Midpoint rule**:
+  $$
+  I(x_-,x_+) \approx I^{\text{(midpoint)}}(x_-,x_+) = (x_+-x_-)\cdot f\left(\frac{x_-+x_+}{2}\right)
+  $$
+* **Simpson's rule**:
+  $$
+  I(x_-,x_+) \approx I^{\text{(Simpson)}}(x_-,x_+) = \frac{x_+-x_-}{6}\left(f(x_-)+4f\left(\frac{x_-+x_+}{2}\right)+f(x_+)\right)
+  $$
+
+  We say that an integration method is of order $\alpha$ if the error in computing $I$ is $\mathcal{O}(h^\alpha)$. For example, the midpoint rule is of order $2$ since
+
+$$
+\left|I^{\text{(midpoint)}}(n) - I\right| = \mathcal{O}(h^2)\qquad\text{with}\quad I^{\text{(midpoint)}}(n) := \sum_{j=0}^{n} I^{\text{(midpoint)}}(x_{j},x_{j+1})
+$$
+
+To implement different numerical integration methods in Python, we define an abstract base class `NumericalIntegration` and then implement derived classes for specific integrators. Since all integrators need to compute the sum
+$$
+\sum_{j=0}^{n} I(x_j,x_{j+1}),
+$$
+this operation can be implemented in the base class. However, the numerical approximation of $I(x_j,x_{j+1})$ depends on the specific integral and should be defined in the derived classes. We define an abstract method `_integrate()` to explicitly declare the required interface for this; each of the derived classes must provide a concrete implementation of `_integrate()`.
+
+```Python
+from abc import ABC, abstractmethod
+
+class NumericalIntegration(ABC):
+    """Numerically integrate a real-valued function in the interval [a,b]
+
+    Numerically approximate the integral
+
+        int_a^b f(x) dx
+
+    by sub-dividing [a,b] into n subintervals
+    """
+
+    def __init__(self, interval, n):
+        """Initialise instance
+
+        :arg interval: interval [a,b]
+        :arg n: number of subintervals
+        """
+
+        self._a = interval[0]
+        self._b = interval[1]
+        self._n = n
+
+    def evaluate(self, f):
+        """Numerically approximate the integral int_a^b f(x) dx
+
+        For this, loop over the subintervals [x_j,x_{j+1}], approximate
+        the integral in each subinterval and sum the result
+
+        :arg f: function to integrate
+        """
+        # Implement the evaluation of the sum 
+        # sum_{j=0}^{n} self._integrate(f,x_j,x_{j+1})        
+
+    @abstractmethod
+    def _integrate(self, f, x_m, x_p):
+        """Approximate int_{x_-}^{x_+} f(x)dx
+
+        :arg f: function to integrate
+        :arg x_m: lower bound
+        :arg x_+: upper bound
+        """
+
+    @property
+    @abstractmethod
+    def order(self):
+        """Order of integration"""
+```
+
+### Exercises
+* Copy the above code to a file `numerical_integration.py` and complete the method `evaluate()`, which should call the `_integrate()` method for all subintervals `[x_j,x_{j+1}]` and sum up the results. Instead of writing a for-loop, can you use a [list-comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions) and the [`np.sum() method`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)?
+* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()` and the `order()` property.
+* Write a file `driver.py` which uses the classes `MidpointRule` and `SimpsonRule` to integrate the function $f_\alpha(x) = e^{-\alpha x}$ over the interval $[0,1]$ for fixed $\alpha=0.4$. For this, use the following definition of $f_\alpha$ and fix the parameter $\alpha$ with [`functools.partial`](https://docs.python.org/3/library/functools.html#functools.partial):
+```Python
+def f(x, alpha):
+    """Function to integrate f(x,alpha) = exp(-alpha*x)"""
+    return np.exp(-alpha * x)
+```
+* Create a Python dictionary `results` whose keys are the names of the two numerical integrators and whose values are the numerical integrals of the function above with $n=4,8,16,32$:
+  
+$$
+\begin{aligned}
+  {\large\{}\texttt{MidpointRule} &: [I^{\text{(midpoint)}}(4),I^{\text{(midpoint)}}(8),I^{\text{(midpoint)}}(16),I^{\text{(midpoint)}}(32)],\\
+  \texttt{SimpsonsRule} &: [I^{\text{(simpson)}}(4),I^{\text{(simpson)}}(8),I^{\text{(simpson)}}(16),I^{\text{(simpson)}}(32)]
+  {\large\}}
+\end{aligned}
+$$
+* Print this dictionary with the following code, which you should try to understand:
+```Python
+exact_result = 1 / alpha * (1 - np.exp(-alpha))
+for integrator, integrals in results.items():
+    print(
+        f"{integrator}: "
+        + ", ".join([f"{abs(x-exact_result):8.4e}" for x in integrals])
+    )
+```
+* Are the methods of the expected order?
+## numpy
+
+## Linear algebra with PETSc
+Write a Python script `linear_algebra.py` which constructs the $4\times 4$ sparse PETSc matrices $A$, $B$ and the vectors $\boldsymbol{u}, \boldsymbol{w}\in\mathbb{R}^4$ given by
+
+$$
+A = \begin{pmatrix}
+1.7 & 2.3 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & -3.4 & \textcolor{lightgray}{0} & 4.5 \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 8.6 & \textcolor{lightgray}{0} \\
+-1.3 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.2
+\end{pmatrix}
+\qquad
+B = \begin{pmatrix}
+-0.7 & \textcolor{lightgray}{0} & 2.5 & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} &8.7 &  \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 3.2 & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 12.0 
+\end{pmatrix}
+\qquad
+\boldsymbol{v} = \begin{pmatrix}
+7.3 \\
+-0.7 \\
+\textcolor{lightgray}{0} \\
+3.2 
+\end{pmatrix}
+\qquad
+\boldsymbol{w} = \begin{pmatrix}
+\textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} \\
+0.3 \\
+2.8 
+\end{pmatrix}
+$$
+
+By using suitable functions (see documentation of [`petsc4py.Mat`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html) and [`petsc4py.Vec`](https://petsc.org/main/petsc4py/reference/petsc4py.PETSc.Vec.html)), compute
+
+* $AB$ 
+* $AB^\top$
+* $A^\top B$
+* $A+B^\top$
+* $A\boldsymbol{v} + \boldsymbol{w}$
+* $B^\top\boldsymbol{w}$
+
+and print out the result of each calculation (convert any sparse matrices to dense matrices first). Some of the operations can be implemented in different ways.
+
 # Exercise 1: Cubic Lagrange element 
 
 #### Set: week 2
@@ -718,50 +878,6 @@ $$
 
 #### Set: week 9
 #### Due: end of week 10
-
-## Linear algebra with PETSc
-Write a Python script `linear_algebra.py` which constructs the $4\times 4$ sparse PETSc matrices $A$, $B$ and the vectors $\boldsymbol{u}, \boldsymbol{w}\in\mathbb{R}^4$ given by
-
-$$
-A = \begin{pmatrix}
-1.7 & 2.3 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & -3.4 & \textcolor{lightgray}{0} & 4.5 \\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 8.6 & \textcolor{lightgray}{0} \\
--1.3 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 1.2
-\end{pmatrix}
-\qquad
-B = \begin{pmatrix}
--0.7 & \textcolor{lightgray}{0} & 2.5 & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} &8.7 &  \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 3.2 & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 12.0 
-\end{pmatrix}
-\qquad
-\boldsymbol{v} = \begin{pmatrix}
-7.3 \\
--0.7 \\
-\textcolor{lightgray}{0} \\
-3.2 
-\end{pmatrix}
-\qquad
-\boldsymbol{w} = \begin{pmatrix}
-\textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} \\
-0.3 \\
-2.8 
-\end{pmatrix}
-$$
-
-By using suitable functions (see documentation of [`petsc4py.Mat`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html) and [`petsc4py.Vec`](https://petsc.org/main/petsc4py/reference/petsc4py.PETSc.Vec.html)), compute
-
-* $AB$ 
-* $AB^\top$
-* $A^\top B$
-* $A+B^\top$
-* $A\boldsymbol{v} + \boldsymbol{w}$
-* $B^\top\boldsymbol{w}$
-
-and print out the result of each calculation (convert any sparse matrices to dense matrices first). Some of the operations can be implemented in different ways.
 
 ## PETSc solver options
 For this exercise we consider the $n\times n$ matrix $A$ which is of the following form

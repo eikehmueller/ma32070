@@ -206,6 +206,37 @@ for integrator, integrals in results.items():
 ```
 * Are the methods of the expected order?
 ## numpy
+Consider the following random vector $\boldsymbol{u},\boldsymbol{v}$, matrices $A,B$ and tensors $T,S,Q$:
+```Python
+import numpy as np
+
+rng = np.random.default_rng(seed=361847)
+
+u = rng.normal(size=4)
+v = rng.normal(size=4)
+
+A = rng.normal(size=(3, 4))
+B = rng.normal(size=(4, 3))
+
+T = rng.normal(size=(4, 3, 2))
+S = rng.normal(size=(2, 3, 5))
+Q = rng.normal(size=(5, 3))
+```
+* Compute the matrix-vector product $A\boldsymbol{u}$ in three different ways:
+    - with the `@` operator
+    - by using [`np.dot()`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html)
+    - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
+* Compute the matrix-vector product $AB$ in three different ways:
+    - with the `@` operator
+    - by using [`np.dot()`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html)
+    - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
+* Compute the tensor product $U = \boldsymbol{u}\otimes \boldsymbol{v}$ with $U_{ij}=u_iv_j$ in two different ways:
+    - with [`np.tensordot()`](https://numpy.org/doc/stable/reference/generated/numpy.tensordot.html)
+    - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
+* Compute the trace of $AB^\top$ in two different ways:
+    - with the `@` operator, `.T` (to transpose a matrix) and [`np.sum()`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)
+    - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
+* Compute the tensor $R$ with $R_{ab} = \sum_{ijk} T_{aji}S_{bjk} Q_{kjii}$ by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
 
 ## Linear algebra with PETSc
 Write a Python script `linear_algebra.py` which constructs the $4\times 4$ sparse PETSc matrices $A$, $B$ and the vectors $\boldsymbol{u}, \boldsymbol{w}\in\mathbb{R}^4$ given by

@@ -536,6 +536,17 @@ We also call the degree of the highest polynomial that can be integrated exactly
 $$
 \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1
 $$
+
+The first three Gauss-Legendre quadrature rules are shown in the following table:
+
+| number of points $n_q$ | quadrature points $\widetilde{\zeta}^{(q)}$ | weights $\widetilde{w}_q$ | degree of precision $\text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q})$ |
+| :---: | :---: | :---: | :---:  |
+| 1   | $0$ | $2$ | $1$ |
+| 2   | $-\frac{1}{\sqrt{3}}, +\frac{1}{\sqrt{3}}$ | $1$ | $3$ |
+| 3   | $-\sqrt{\frac{3}{5}},0,+\sqrt{\frac{3}{5}}$ | $\frac{5}{9},\frac{8}{9},\frac{5}{9}$ | $5$ |
+
+The cases $n_q=1$ and $n_q=2$ were derived in your Numerical Analysis lecture.
+
 While so far we have only considered integration over the interval $[-1,+1]$, it turns out that integration over more general domains and higher-dimensional can be reduced to this case.
 
 ## Integration along a line

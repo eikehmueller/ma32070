@@ -108,7 +108,7 @@ I =\int_{a}^{b} f(x)\;dx
 $$
 For this, the interval $[a,b]$ is split into $n$ smaller intervals $[x_j,x_{j+1}]$ with $x_{j} = a + h\cdot j$ with $h=\frac{b-a}{n}$ for $j=0,1,\dots,n$ such that
 $$
-I = \sum_{j=0}^{n} \underbrace{\int_{x_j}^{x_{j+1}}f(x)\;dx}_{=:I(x_j,j_{j+1})}.
+I = \sum_{j=0}^{n-1} \underbrace{\int_{x_j}^{x_{j+1}}f(x)\;dx}_{=:I(x_j,j_{j+1})}.
 $$
 The integrals $I(x_j,x_{j+1}) = \int_{x_j}^{x_{j+1}}f(x)\;dx$ on the small subintervals are approximated numerically. Possible methods are:
 
@@ -124,12 +124,12 @@ The integrals $I(x_j,x_{j+1}) = \int_{x_j}^{x_{j+1}}f(x)\;dx$ on the small subin
   We say that an integration method is of order $\alpha$ if the error in computing $I$ is $\mathcal{O}(h^\alpha)$. For example, the midpoint rule is of order $2$ since
 
 $$
-\left|I^{\text{(midpoint)}}(n) - I\right| = \mathcal{O}(h^2)\qquad\text{with}\quad I^{\text{(midpoint)}}(n) := \sum_{j=0}^{n} I^{\text{(midpoint)}}(x_{j},x_{j+1})
+\left|I^{\text{(midpoint)}}(n) - I\right| = \mathcal{O}(h^2)\qquad\text{with}\quad I^{\text{(midpoint)}}(n) := \sum_{j=0}^{n-1} I^{\text{(midpoint)}}(x_{j},x_{j+1})
 $$
 
 To implement different numerical integration methods in Python, we define an abstract base class `NumericalIntegration` and then implement derived classes for specific integrators. Since all integrators need to compute the sum
 $$
-\sum_{j=0}^{n} I(x_j,x_{j+1}),
+\sum_{j=0}^{n-1} I(x_j,x_{j+1}),
 $$
 this operation can be implemented in the base class. However, the numerical approximation of $I(x_j,x_{j+1})$ depends on the specific integral and should be defined in the derived classes. We define an abstract method `_integrate()` to explicitly declare the required interface for this; each of the derived classes must provide a concrete implementation of `_integrate()`. The constructor of the base class gets passed the interval $[a,b]$, the number of intervals $n$ and (optionally) the order of the method.
 
@@ -196,6 +196,7 @@ def f(x, alpha):
     """Function to integrate f(x,alpha) = exp(-alpha*x)"""
     return np.exp(-alpha * x)
 ```
+
 * Create a Python dictionary `results` whose keys are the names of the two numerical integrators and whose values are the numerical integrals of the function above with $n=4,8,16,32$:
   
 $$
@@ -205,6 +206,7 @@ $$
   {\large\}}
 \end{aligned}
 $$
+
 * Print this dictionary with the following code, which you should try to understand:
 ```Python
 exact_result = 1 / alpha * (1 - np.exp(-alpha))

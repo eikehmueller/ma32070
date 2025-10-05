@@ -51,11 +51,11 @@ If you are working on Notable, you can download any files you created to your ow
 The following step-by-step instructions illustrate how to prepare the solution of Exercise 3 for submission (all shell-commands include the prompt `$` which needs to be removed when entering the command):
 
 #### Step 1: Change to correct directory
-Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise2` to make sure everything is ready for submission:
+Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise3` to make sure everything is ready for submission:
 ```
 $ cd ma32070
 $ ls
-exercise2
+exercise3
 $ ls exercise3
 algorithms.py  driver.py
 ```
@@ -79,7 +79,7 @@ $ python -m code2pdf --path ./exercise3 --output code_exercise3
 In addition to the subdirectory `exercise3`, the `ma32070` folder now also contains the files `code_exercise3.pdf` and `exercise3.tgz`:
 ```
 $ ls
-code_exercise3.pdf  exercise2  exercise3.tgz
+code_exercise3.pdf  exercise3  exercise3.tgz
 ```
 Double check that the zip-file has the right content:
 ```

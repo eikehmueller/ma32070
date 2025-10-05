@@ -6,7 +6,7 @@
 * [Exercises](exercises.html)
 
 ## Model solutions of exercises
-* [Exercise 1 (Python warmup pratice)](model_solution_exercise_python/solution.html)
+* [Exercise 1 (Python warmup practice)](model_solution_exercise_python/solution.html)
 * [Exercise 2 (Cubic Lagrange element)](model_solution_exercise_finiteelement/solution.html)
 * [Exercise 3 (Local assembly)](model_solution_exercise_localassembly/solution.html)
 * [Exercise 4 (Three point quadrature)](model_solution_exercise_quadrature/solution.html)

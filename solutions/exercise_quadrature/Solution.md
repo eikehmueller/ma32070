@@ -48,6 +48,7 @@ S(s_0,s_1) &:= \sum_{q=0}^{2} w_q (\xi_0^{(q)})^{s_0}(\xi_1^{(q)})^{s_1}\\
 $$
 
 Because of the symmetry $s_0\leftrightarrow s_1$ it is sufficient to consider four cases:
+
 * $s_0=0$, $s_1=0$: $S(0,0) = \left(\frac{1}{6}\right)^{1}\left(1+4^{0}+4^{0}\right)=\frac{1}{2}=\frac{1}{2!} =\frac{0!0!}{(0+0+2)!}\\[1ex]$
 * $s_0=1$, $s_1=0$: $S(1,0) = \left(\frac{1}{6}\right)^{2}\left(1+4^{1}+4^{0}\right)=\frac{1}{6}=\frac{1}{3!}=\frac{1!0!}{(1+0+2)!}\\[1ex]$
 * $s_0=1$, $s_1=1$: $S(1,1) = \left(\frac{1}{6}\right)^{3}\left(1+4^{1}+4^{1}\right)=\frac{1}{24}=\frac{1}{4!}=\frac{1!1!}{(1+1+2)!}\\[1ex]$

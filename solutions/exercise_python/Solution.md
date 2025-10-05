@@ -9,6 +9,7 @@ def evaluate(self, f):
     integral = 0.0
     for j in range(self._n):
         integral += self._integrate(f, self._a + j * h, self._a + (j + 1) * h)
+    return integral
 ```
 
 Alternatively, we could use a list comprehension to construct a list `Is` which contains the integrals over the sub-intervals $[I(x_0,x_1), I(x_1,x_2), \dots, I(x_{n-1},x_n)]$ and then sum all entries of the list with `np.sum()` as follows:

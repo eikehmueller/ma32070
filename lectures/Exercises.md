@@ -89,7 +89,7 @@ drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise3/
 -rw-rw-r-- eike/eike      5779 2025-09-28 14:36 exercise3/driver.py
 ```
 
-#### 5: Moodle submission
+#### Step 5: Moodle submission
 Now upload the files `exercise3.tgz` and `code_exercise3.pdf` together with `solution_exercise3.pdf` to the submission point on moodle.
 
 # Exercise 1: Python warmup practice [not marked]

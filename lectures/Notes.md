@@ -20,7 +20,7 @@ The physical phenomenon first needs to be expressed in mathematical form. This r
 In this course we will consider a variant of the Poisson equation, namely the following partial differential equation (PDE):
 
 $$
--\nabla(\kappa \nabla u) + \omega u = f :eqn:pde_sci_comp
+-\nabla(\kappa \nabla u) + \omega u = f\qquad :eqn:pde_sci_comp
 $$
 
 This equation, which is to be solved for the function $u$ for a given right hand side $f$, arises in many applications. In fact, the Met Office repeatedly solve a slightly more complicated form of this PDE to produce their weather forecasts.

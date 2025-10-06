@@ -6,9 +6,108 @@
 # Motivation
 ![Scientific Computing flowchart](figures/scientific_computing.svg)
 
-# Background: linear algebra and tensors
+# Background: linear algebra, sparse matrices and tensors
+Implementating the finite element method require the manipulation of matrices and vectors. We will use the [numpy](https://numpy.org/doc/stable/index.html) linear algebra for this. In the following we will briefly review the implementation of fundamental linear algebra operations in numpy. Since many matrices that we will encounter in this course are *sparse*, we will discuss an efficient storage format for this class of matrices and describe its implementation in the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org/release/) (pronounced "pet-see"). We will also introduce the concept of tensors, which generalise matrices and vectors.
 
-## Compressed Sparse Row storage
+## Linear algebra in numpy
+In numpy, vectors and matrices are represented by [np.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html) objects. For example, the vectors $\boldsymbol{v}, \boldsymbol{b}\in\mathbb{R}^3$ and the $3\times 3$ matrix $A$ given by
+
+$$
+\boldsymbol{v} = \begin{pmatrix}
+1.2 \\ 7.6 \\ 2.1
+\end{pmatrix}
+\qquad
+\boldsymbol{b} = \begin{pmatrix}
+-7.2 \\ 0.6 \\ 1.3
+\end{pmatrix}
+\qquad
+A = \begin{pmatrix}
+4.3 & -1.2 & 2.8 \\
+0.7 & 7.3 & 1.1 \\
+-0.4 & 0.2 & 9.7
+\end{pmatrix}
+$$
+
+can be created as follows:
+
+```Python
+import numpy as np
+
+v = np.array([1.2,7.6,2.1], dtype=float)
+b = np.array([-7.2, 0.6, 1.3], dtype=float)
+A = np.array([[4.3, -1.2, 2.8],[0.7, 7.3, 1.1], [-0.4, 0.2, 9.7]], dtype=float)
+```
+Usually we can leave out the keyword argument `dtype=float`. However, since Python will infer the data type automatically, it is required in cases like `z = np.array([1,2,4])` which by default will create an integer-valued array. Recall also that there is a subtle difference between [np.array()](https://numpy.org/doc/stable/reference/generated/numpy.array.html) and [np.asarray()](https://numpy.org/doc/stable/reference/generated/numpy.asarray.html): the latter will try to only create a reference to the data.
+
+### Special matrices
+It is also possible to create special matrices such as the identity or matrix containing only zeros:
+
+```Python
+identity_3x3 = np.eye(3)         # Creates a 3x3 identity matrix
+zero_4x3 = np.zeros(shape=(4,3)) # Creates a 4x3 matric containing only zeros
+```
+
+We might also want to create matrices with random values. For example, a $4\times 2$ matrix with entries that are normally distributed can be created like this:
+
+```Python
+rng = np.random.default_rng(seed=24618567)
+random_4x2 = rng.normal(size=(4,2))
+```
+
+Note that instead of using `np.random.normal(size=(4,2))` we create a random number generator generator with a fixed seed first. This ensures that the results are the same in subsequent runs of the code.
+
+### Manipulating vectors and matrices
+Numpy provides functionality for manipulating matrices and vectors. For example, we can compute the matrix-vector product $\boldsymbol{w} = A\boldsymbol{v}$ or the dot-product $\rho = \boldsymbol{v}\cdot \boldsymbol{b}$:
+
+```Python
+w = A @ v
+rho = np.dot(v,b)
+```
+
+Note that the `*` operator will result in element-wise multiplication:
+
+```Python
+t = v * b
+```
+The result $\boldsymbol{t}\in\mathbb{R}^3$ is a three-dimensional vector
+
+$$
+\boldsymbol{t} =  \begin{pmatrix}
+1.2\cdot (-7.2) \\ 7.6 \cdot 0.6  \\ 2.1 \cdot 1.3
+\end{pmatrix}
+=
+\boldsymbol{v} = \begin{pmatrix}
+-8.64 \\ 4.56 \\ 2.73
+\end{pmatrix}
+$$
+
+### Solving linear systems
+To solve the linear system $A\boldsymbol{u} = \boldsymbol{b}$ we can use [`np.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html):
+
+```Python
+u = np.linalg.solve(A,b)
+```
+
+Note that this is more efficient than multiplying $\boldsymbol{b}$ by the inverse $A^{-1}$ of $A$:
+
+```Python
+u = np.linalg.inv(A) @ b # Don't do this!
+```
+
+For more information on numpy please refer to the [documentation](https://numpy.org/doc/stable/index.html), in particular the [documentation of Linear Algebra routines](https://numpy.org/doc/stable/reference/routines.linalg.html).
+
+## Sparse matrices
+Many matrices that arise in Scientific Computing contain a lot of zero entries, consider for example the examples in the [SuiteSparse Matrix Collection](https://sparse.tamu.edu/): clicking on the names of individual matrices will provide more details and a visualisation of their structure.
+
+@fig:stiffness_matrix shows a spy-plot of the $81\times 81$ matrix that is obtained from a finite element discretisation; we will discuss how this matrix is constructed in more detail later.
+
+![:fig:stiffness_matrix: Stiffness matrix](figures/stiffness_matrix.png)
+
+Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or $7.6\%$ are nonzero, which corresponds to an average number of around $\overline{n}_{\text{nz}} = 6.14$ nonzeros per row. Clearly, it is very inefficient to store all these zero entries if only a fraction of entries are in fact required to encode the data stored in the matrix.
+
+We therefore introduce a widely-used storage format which is more suitable for matrices like this.
+
+### Compressed Sparse Row storage
 A matrix $A$ with $n_{\text{nz}}\ll n$ nonzero entries is often called *sparse*. To store sparse matrices, we can proceed as follows:
 
 1. Store all non-zero entries in a long array $V$ of length $n_{\text{nz}}$, going throw the matrix row by row
@@ -60,8 +159,9 @@ We have the following arrays:
 Note that one of the rows contains only zero entries.
 
 ### Matrix-vector multiplication
+Clearly, matrices stored in the CSR format are only useful if they can be used in linear algebra operations such as the computation of the matrix-vector product $\boldsymbol{v}=A\boldsymbol{u}$. This can be realised with the following algorithm:
 
-#### Algorithm: Matrix-vector multiplication $y = y + Ax$ in CSR storage
+#### Algorithm: Matrix-vector multiplication $\boldsymbol{y} = \boldsymbol{y} + A\boldsymbol{x}$ in CSR storage
 1. Set $\ell\gets 0$
 2. for $i=0,1,2,\dots,n-1$ **do**
 3. $~~~~$ for $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
@@ -70,8 +170,10 @@ Note that one of the rows contains only zero entries.
 6. $~~~~$ **end do**
 7. **end do**
 
-## PETSc implementation
-To implement matrices in the CSR storage format, we use the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org) (pronounced "pet-see"). Since PETSc itself is written in the [C-programming language](https://www.c-language.org/), we will work with the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After [installation](https://petsc.org/release/petsc4py/install.html), this can be imported as follows:
+Fortunately, we do not need to implement this algorithm (and other, more complicated operations such as matrix-matrix products) ourselves. Instead, we will use a suitable library.
+
+### PETSc implementation
+To implement matrices in the CSR storage format, we use the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org). Since PETSc itself is written in the [C-programming language](https://www.c-language.org/), we will work with the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After [installation](https://petsc.org/release/petsc4py/install.html), this can be imported as follows:
 ```python
 from petsc4py import PETSc
 ```
@@ -186,6 +288,107 @@ To print the vector we need to first extract the underlying array with the `getA
 w_numpy = w.getArray()
 print(w_numpy)
 ```
+
+## Tensors
+Tensors are generalisations of vectors and matrices, they can be understood as $d$-dimensional arrays. A tensor $T$ of rank $d$ is an object which can be indexed with $d$ integers $i_0,i_1,\dots,i_{d-1}$ where $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$, i.e. we can write $T_{i_0,i_1,\dots,i_{d-1}}\in \mathbb{R}$ for the tensor elements. The list $[s_0,s_1,\dots,s_{d-1}]$ is the **shape** of the tensor. We are already familiar with two special cases:
+
+* rank 0 tensors are scalars, i.e. real numbers $s\in\mathbb{R}$. In this case the shape is the empty list $[]$.
+* rank 1 tensors are vectors $\boldsymbol{v}\in \mathbb{R}^n$ with elements $v_i$ for $0\le i< n$. The shape of a vector is the single number $[n]$, i.e. the dimension of the vector.
+* rank 2 tensors are $n\times m$ matrices $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $[n,m]$, where $n$ is the number of rows and $m$ is the number of columns of the matrix.
+
+### Tensors in numpy
+In numpy, tensors are represented by multidimensional arrays of type [`np.ndarray(...,dtype=float)`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $(2,3,4)$ with only zero entries like this:
+
+```Python
+T = np.zeros(shape=(2,3,4),dtype=float)
+```
+
+or construct the $2\times 3$ matrix $\begin{pmatrix}1.8 & 2.2 & 3.4 \\ 4.2 & 5.1 & 6.7\end{pmatrix}$ like this:
+
+```Python
+A = np.asarray([[1.8,2.2,3.4],[4.2,5.1,6.7]],dtype=float)
+```
+
+The shape is given by `T.shape` and `A.shape`.
+
+### Adding tensors
+Tensors $T$, $T'$ of the same shape can be scaled and added: if $\alpha,\beta\in \mathbb{R}$ are real numbers, then $S=\alpha T+\beta T'$ is a new tensor of the same shape. The entries of $S$ are given by
+
+$$
+S_{i_0,i_1,\dots,i_{d-1}} = \alpha T_{i_0,i_1,\dots,i_{d-1}}+\beta T'_{i_0,i_1,\dots,i_{d-1}}
+\qquad \text{for all $i_0,i_1,\dots,i_{d-1}$ with $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$}.
+$$
+
+Tensors of the same shape can be scaled and added like this:
+
+```Python
+S = alpha*T + beta*Tprime
+```
+
+In fact, Python allows the addition of tensors of different shapes according to a set of [broadcasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html).
+
+### Multiplying tensors
+Tensors can be multiplied in different ways by contracting indices. For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
+
+$$
+R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}
+$$
+
+Tensors can be multiplied with the powerful [`numpy.einsum()` function](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). For example, to compute $R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}$ use
+
+```Python
+R = np.einsum("ijk,mkln->ijmln",T,Tprime)
+```
+
+Alternatively, we could also compute a rank 1 tensor $S$ from $T$, $T'$ and the rank 2 tensor $T''$:
+
+$$
+S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}
+$$
+
+To compute $S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}$ use
+
+```Python
+S = np.einsum("ijk,kjni,nl->l",T,Tprime,Tprimeprime)
+```
+
+Note that the order of the indices matters! The matrix-vector product $\boldsymbol{v}=A\boldsymbol{w}$ is a special case:
+
+$$
+v_i = \sum_j A_{ij}w_j
+$$
+
+In`numpy`, it can be implemented as
+
+```Python
+v = np.einsum("ij,j->i",A,w)
+```
+
+or alternatively simply as
+
+```Python
+v = A @ w
+```
+
+The latter is usually preferred since it is easier to understand what the code does.
+
+Contractions can also result in a scalar. For example
+
+$$
+\boldsymbol{v}\cdot \boldsymbol{w} = \sum_i v_i w_i
+$$
+```Python
+np.einsum("ii->",v,w)
+```
+is the dot-product of two vectors $\boldsymbol{v}$ and $\boldsymbol{w}$, whereas
+
+$$
+\operatorname{trace}(A) = \sum_{i} A_{ii}
+$$
+```Python
+np.einsum("ii->",A)
+```
+is the trace of a matrix $A$. Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
 
 # Mathematical background of the finite element method
 In the following we will give a brief overview of the finite element method and review some of the fundamental ideas as to why it works. The details of the implementation will be discussed in later lectures and the theory is the subject of MA32066.
@@ -308,107 +511,6 @@ In summary, the solution procedure for @eqn:weak_problem_discretised is this:
 4. Reconstruct the solution $u_h(x)$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in @eqn:linear_algebra_problem.
 
 In the rest of this course we will discuss how each of these steps can be implemented in Python. The focus will be on structuring the code such that the mathematical objects are mapped to the corresponding Python objects in the source code. For the solution of the linear algebra system we will use the [PETSc](https://petsc.org/) library.
-
-### Tensors
-In the following we will often work with tensors, which are $d$-dimensional arrays. A tensor $T$ of rank  $d$ is an object which can be indexed with $d$ integers $i_0,i_1,\dots,i_{d-1}$ where $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$, i.e. we can write $T_{i_0,i_1,\dots,i_{d-1}}\in \mathbb{R}$ for the tensor elements. The list $[s_0,s_1,\dots,s_{d-1}]$ is the **shape** of the tensor. We are already familiar with two special cases:
-
-* rank 0 tensors are scalars, i.e. real numbers $s\in\mathbb{R}$. In this case the shape is the empty list $[]$.
-* rank 1 tensors are vectors $\boldsymbol{v}\in \mathbb{R}^n$ with elements $v_i$ for $0\le i< n$. The shape of a vector is the single number $[n]$, i.e. the dimension of the vector.
-* rank 2 tensors are $n\times m$ matrices $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $[n,m]$, where $n$ is the number of rows and $m$ is the number of columns of the matrix.
-
-#### Tensors in numpy
-In numpy, tensors are represented by multidimensional arrays of type [`np.ndarray(...,dtype=float)`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $(2,3,4)$ with only zero entries like this:
-
-```Python
-T = np.zeros(shape=(2,3,4),dtype=float)
-```
-
-or construct the $2\times 3$ matrix $\begin{pmatrix}1.8 & 2.2 & 3.4 \\ 4.2 & 5.1 & 6.7\end{pmatrix}$ like this:
-
-```Python
-A = np.asarray([[1.8,2.2,3.4],[4.2,5.1,6.7]],dtype=float)
-```
-
-The shape is given by `T.shape` and `A.shape`.
-
-#### Adding tensors
-Tensors $T$, $T'$ of the same shape can be scaled and added: if $\alpha,\beta\in \mathbb{R}$ are real numbers, then $S=\alpha T+\beta T'$ is a new tensor of the same shape. The entries of $S$ are given by
-
-$$
-S_{i_0,i_1,\dots,i_{d-1}} = \alpha T_{i_0,i_1,\dots,i_{d-1}}+\beta T'_{i_0,i_1,\dots,i_{d-1}}
-\qquad \text{for all $i_0,i_1,\dots,i_{d-1}$ with $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$}.
-$$
-
-Tensors of the same shape can be scaled and added like this:
-
-```Python
-S = alpha*T + beta*Tprime
-```
-
-In fact, Python allows the addition of tensors of different shapes according to a set of [broadcasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html).
-
-#### Multiplying tensors
-Tensors can be multiplied in different ways by contracting indices. For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
-
-$$
-R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}
-$$
-
-Tensors can be multiplied with the powerful [`numpy.einsum()` function](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). For example, to compute $R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}$ use
-
-```Python
-R = np.einsum("ijk,mkln->ijmln",T,Tprime)
-```
-
-Alternatively, we could also compute a rank 1 tensor $S$ from $T$, $T'$ and the rank 2 tensor $T''$:
-
-$$
-S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}
-$$
-
-To compute $S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}$ use
-
-```Python
-S = np.einsum("ijk,kjni,nl->l",T,Tprime,Tprimeprime)
-```
-
-Note that the order of the indices matters! The matrix-vector product $\boldsymbol{v}=A\boldsymbol{w}$ is a special case:
-
-$$
-v_i = \sum_j A_{ij}w_j
-$$
-
-In`numpy`, it can be implemented as
-
-```Python
-v = np.einsum("ij,j->i",A,w)
-```
-
-or alternatively simply as
-
-```Python
-v = A @ w
-```
-
-The latter is usually preferred since it is easier to understand what the code does.
-
-Contractions can also result in a scalar. For example
-
-$$
-\boldsymbol{v}\cdot \boldsymbol{w} = \sum_i v_i w_i
-$$
-```Python
-np.einsum("ii->",v,w)
-```
-is the dot-product of two vectors $\boldsymbol{v}$ and $\boldsymbol{w}$, whereas
-
-$$
-\operatorname{trace}(A) = \sum_{i} A_{ii}
-$$
-```Python
-np.einsum("ii->",A)
-```
-is the trace of a matrix $A$. Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
 
 # Finite Elements
 We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.

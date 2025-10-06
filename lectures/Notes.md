@@ -390,7 +390,7 @@ np.einsum("ii->",A)
 ```
 is the trace of a matrix $A$. Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
 
-# Mathematical background of the finite element method
+# The finite element method
 In the following we will give a brief overview of the finite element method and review some of the fundamental ideas as to why it works. The details of the implementation will be discussed in later lectures and the theory is the subject of MA32066.
 
 ## Model problem

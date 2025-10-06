@@ -4,7 +4,61 @@
 
 ----
 # Motivation
-![Scientific Computing flowchart](figures/scientific_computing.svg)
+
+## What is Scientific Computing?
+The goal of Scientific Computing is to simulate physical phenomena, such as the weather or climate, on a computer. The output of a simulation are numerical results which can be visualised and analysed to get a better understanding of the physical system or to inform decisions for example on the mitigation of climate change. For this simulation to be useful it is crucial to obtain accurate results in the shortest possible time: tomorrow's weather forecast will not be very useful if it takes a week to produce it!
+
+Fun fact: the world's [first numerical weather forecast](https://www.metoffice.gov.uk/about-us/who-we-are/our-history/celebrating-100-years-of-scientific-forecasting) by Lewis Fry Richardson took six week to produce! The six-hour forecast was also completely wrong.
+
+![:fig:scientific_computing: Scientific Computing flowchart](figures/scientific_computing.svg)
+
+The process is illustrated in @fig:scientific_computing. It involves many steps, which require expertise from different disciplines:
+
+### Step 1: Modelling
+The physical phenomenon first needs to be expressed in a mathematical form. This requires domain-specific knowledge and some sort of judgement as to which processes need to be included or can be neglected. For example, atmospheric fluid dynamics can be modelled with the Navier Stokes equations, but there are several simplications that are often applied to obtain a simpler system of equations. No model is perfect, and hence this step will introduce modelling errors which need to be quantified. For example, in models of the atmosphere, the physics of cloud formation are still not fully understood and need to be approximated. Mathematical modelling is discussed in other courses and not the subject of this unit: in the following we will assume that we are given a mathematical description of the problem that we want to simulate.
+
+### Step 2: Discretisation
+In virtually all cases the resulting mathematical model can not be solved analytically. For example, the Navier Stokes equations are a system of time-dependent coupled nonlinear partial differential equations formulated on a non-trivial domain. To solve the problem on a computer, the continuous equations need to be discretised to obtain a finite set of equations that can be solved. Several methods can be used for this, and in this course we will use the Finite Element Method. The justification and analysis of this approach is the topic of MA32066, which employs techniques from Numerical Analysis to investigate the accuracy and stability of the method. Discretisation introduces additional errors. However, in contrast to modelling errors, these discretisation errors can usually be quantified and (at least in principle) be made arbitrarily small. 
+
+### Step 3: Algorithm design
+To solve the equations that arise from discretisation, we need to employ suitable algorithms. For example, in many cases we need to assemble and solve large systems of linear equations. While simple methods like Gaussian elimination can be employed for small problems, more sophisticated algorithms are required for the large problems that arise in real-life applications: reducing the discretisation errors below an acceptable threshold often requires the solution of problems with millions of unknowns. The methods need to be robust, stable and efficient in the sense that their computational complexity should not grow too rapidly with the problem size. In this unit we will use different numerical methods for solving sparse systems of linear equations. For optimal efficiency, these algorithms only provide an approximate solution, i.e. they introduce additional errors which need to be carefully balanced with the discretisation errors.
+
+### Step 4: Implementation
+For the numerical algorithms to be useful they need to be implemented on a computer. This requires great care to ensure that the implementation is both efficient and correct. Since codes for real-life applications in Scientific Computing are often very complex, it is crucial that they are carefully designed and documented. The number of bugs can be minimised by careful testing and debugging. The code should also be optimised as much as possible to make optimal use of computational resources. In many cases well-established libraries need to be used for optimal performance. Knowing how to use external libraries is an important skill.
+
+The focus of this unit is the implementation of the Finite Element method in Python. For this, we will build on several libraries for numerical linear algebra.
+
+### Step 5: Run code
+The obtain numerical results, the code needs to be run on a computer. Since real-life problems are very large, this often means running on a supercomputer, which requires adaptation of the code to run on several processing units in parallel to reduce the runtime to an acceptable level. The code might have to be optimised for particular hardware such as Graphics Processing Units (GPUs). While not the main focus of this unit, we will look at the fundamental concepts to parallelisation at the end of the semester. 
+
+Since real numbers can only be represented approximately on a computer, rounding errors can potentially seriously distort the results of a simulation. This additional source of error needs to be taken into account during the algorithm design stage.
+
+## Abstractions and software design
+Note that the during the process the problem that we are trying to solve is expressed at different levels of abstraction. For example, the mathematical equations that descibed the model explicitly refer to physical variables such as pressure and temperature, while in the discretised equations we use a different formalism based on vertors and matrices. The computer code contains only for-loops that operate on induces and the machine code of the executable which is ultimately run on the supercomputer only operates on 0's and 1's.
+
+The following diagram illustrates how the problem is transformed:
+$$
+\begin{aligned}
+\text{\textbf{physical}}\; & \text{\textbf{phenomenon}}\\
+\downarrow\\
+\text{mathematical}\; & \text{model}\\
+\downarrow\\
+\text{discretised}\; & \text{equations}\\
+\downarrow\\
+\text{algorithm}\; & \text{pseudocode}\\
+\downarrow\\
+\text{computer}\; & \text{code (Python)}\\
+\downarrow\\
+\text{executable}\; & \text{program}\\
+\downarrow\\
+\text{\textbf{numerical}}\; & \text{\textbf{result}}\\
+\end{aligned}
+$$
+Crucially, information is lost when moving down this hierarchy: looking at a for-loop in the Python code will not tell use what the physical meaning of the corresponding variables is or how the are related to terms in the discretised equations. This makes it difficult to verify the correctness of the code since we are trying to analyse it at the wrong level.
+
+This problem can be mitigated by mapping mathematical objects to computer code in a better way by using suitable abstractions and defining sensible interfaces: for example, when using the finite element method, we can map mathematical concepts such as basis functions directly to suitable classes in the Python code: the code explicitly encodes the mathematics which makes it much easier to understand and debug.
+
+We will employ this idea, which is used to great success by well-established Finite Element packages such as [Firedrake](https://www.firedrakeproject.org/), throughout this course.
 
 # Background: linear algebra, sparse matrices and tensors
 Implementating the finite element method require the manipulation of matrices and vectors. We will use the [numpy](https://numpy.org/doc/stable/index.html) linear algebra for this. In the following we will briefly review the implementation of fundamental linear algebra operations in numpy. Since many matrices that we will encounter in this course are *sparse*, we will discuss an efficient storage format for this class of matrices and describe its implementation in the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org/release/) (pronounced "pet-see"). We will also introduce the concept of tensors, which generalise matrices and vectors.

@@ -72,7 +72,7 @@ We will employ this idea, which is used to great success by well-established Fin
 Implementating the finite element method requires the manipulation of matrices and vectors. We will use the [numpy](https://numpy.org/doc/stable/index.html) linear algebra for this. In the following we briefly review the implementation of fundamental linear algebra operations in numpy. Since many matrices that we will encounter in this course are *sparse*, we will discuss an efficient storage format for this class of matrices and describe its implementation in the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org/release/) (pronounced "pet-see"). We will also introduce the concept of tensors, which generalise matrices and vectors.
 
 ## Linear algebra in numpy
-In numpy, vectors and matrices are represented by [np.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html) objects. For example, the vectors $\boldsymbol{v}, \boldsymbol{b}\in\mathbb{R}^3$ and the $3\times 3$ matrix $A$ given by
+In numpy, vectors and matrices are represented by objects of type [`np.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html). For example, the vectors $\boldsymbol{v}, \boldsymbol{b}\in\mathbb{R}^3$ and the $3\times 3$ matrix $A$ given by
 
 $$
 \boldsymbol{v} = \begin{pmatrix}
@@ -99,17 +99,17 @@ v = np.array([1.2,7.6,2.1], dtype=float)
 b = np.array([-7.2, 0.6, 1.3], dtype=float)
 A = np.array([[4.3, -1.2, 2.8],[0.7, 7.3, 1.1], [-0.4, 0.2, 9.7]], dtype=float)
 ```
-Usually we can leave out the keyword argument `dtype=float`. However, since Python will infer the data type automatically, it is required in cases like `z = np.array([1,2,4])` which by default will create an integer-valued array. Recall also that there is a subtle difference between [np.array()](https://numpy.org/doc/stable/reference/generated/numpy.array.html) and [np.asarray()](https://numpy.org/doc/stable/reference/generated/numpy.asarray.html): the latter will try to only create a reference to the data.
+Usually we can leave out the keyword argument `dtype=float`. However, since Python will infer the data type automatically, it is required in cases like `z = np.array([1,2,4])` which by default will create an integer-valued array. Recall also that there is a subtle difference between [`np.array()`](https://numpy.org/doc/stable/reference/generated/numpy.array.html) and [`np.asarray()`](https://numpy.org/doc/stable/reference/generated/numpy.asarray.html): the latter will try to only create a reference to the data.
 
 ### Special matrices
-It is also possible to create special matrices such as the identity or matrix containing only zeros:
+It is also possible to create special matrices such as the identity or a matrix containing only zeros:
 
 ```Python
 identity_3x3 = np.eye(3)         # Creates a 3x3 identity matrix
 zero_4x3 = np.zeros(shape=(4,3)) # Creates a 4x3 matric containing only zeros
 ```
 
-We might also want to create matrices with random values. For example, a $4\times 2$ matrix with entries that are normally distributed can be created like this:
+To test your code, we might also want to create matrices with random values. For example, a $4\times 2$ matrix with entries that are normally distributed with mean zero and variance one can be created like this:
 
 ```Python
 rng = np.random.default_rng(seed=24618567)
@@ -119,7 +119,7 @@ random_4x2 = rng.normal(size=(4,2))
 Note that instead of using `np.random.normal(size=(4,2))` we create a random number generator generator with a fixed seed first. This ensures that the results are the same in subsequent runs of the code.
 
 ### Manipulating vectors and matrices
-Numpy provides functionality for manipulating matrices and vectors. For example, we can compute the matrix-vector product $\boldsymbol{w} = A\boldsymbol{v}$ or the dot-product $\rho = \boldsymbol{v}\cdot \boldsymbol{b}$:
+Numpy provides functionality for manipulating matrices and vectors. For example, we can compute the matrix-vector product $\boldsymbol{w} = A\boldsymbol{v}$ or the dot-product $\rho = \boldsymbol{v}\cdot \boldsymbol{b}$ by using the [`@` operator](https://numpy.org/doc/stable/reference/routines.linalg.html#the-operator) and the [`np.dot()` method](https://numpy.org/doc/stable/reference/generated/numpy.dot.html):
 
 ```Python
 w = A @ v
@@ -131,7 +131,7 @@ Note that the `*` operator will result in element-wise multiplication:
 ```Python
 t = v * b
 ```
-The result $\boldsymbol{t}\in\mathbb{R}^3$ is a three-dimensional vector
+results in the three-dimensional vector $\boldsymbol{t}\in\mathbb{R}^3$ with
 
 $$
 \boldsymbol{t} =  \begin{pmatrix}
@@ -140,7 +140,7 @@ $$
 =
 \boldsymbol{v} = \begin{pmatrix}
 -8.64 \\ 4.56 \\ 2.73
-\end{pmatrix}
+\end{pmatrix}.
 $$
 
 ### Solving linear systems
@@ -150,7 +150,7 @@ To solve the linear system $A\boldsymbol{u} = \boldsymbol{b}$ we can use [`np.li
 u = np.linalg.solve(A,b)
 ```
 
-Note that this is more efficient than multiplying $\boldsymbol{b}$ by the inverse $A^{-1}$ of $A$:
+Usually this is more efficient than multiplying $\boldsymbol{b}$ by the inverse $A^{-1}$ of $A$:
 
 ```Python
 u = np.linalg.inv(A) @ b # Don't do this!

@@ -390,7 +390,7 @@ np.einsum("ii->",A)
 ```
 is the trace of a matrix $A$. Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
 
-# The finite element method
+# The Finite Element Method
 In the following we will give a brief overview of the finite element method and review some of the fundamental ideas as to why it works. The details of the implementation will be discussed in later lectures and the theory is the subject of MA32066.
 
 ## Model problem
@@ -922,7 +922,7 @@ The file [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/bl
     - `npoints` the number of points $n_q$
 * A quadrature rule $\mathcal{Q}^{(\text{GL},\widehat{K})}_{n_q}$ over the reference triangle $\widehat{K}$ based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureReferenceTriangle(npoints)`. The constructor is passed the number of points $n_q$.
 
-# Local assembly: FE method on reference triangle
+# Local assembly
 We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle. For this we need to be able to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$.
 
 ### Stiffness matrix

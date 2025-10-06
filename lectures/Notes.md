@@ -4,9 +4,190 @@
 
 ----
 # Motivation
-![Scientific Computing flowchart](figures/scientific_computing.png)
+![Scientific Computing flowchart](figures/scientific_computing.svg)
 
-# Mathematical background
+# Background: linear algebra and tensors
+
+## Compressed Sparse Row storage
+A matrix $A$ with $n_{\text{nz}}\ll n$ nonzero entries is often called *sparse*. To store sparse matrices, we can proceed as follows:
+
+1. Store all non-zero entries in a long array $V$ of length $n_{\text{nz}}$, going throw the matrix row by row
+2. For each non-zero entry also store the corresponding column index in an array $J$ of the same length
+ 
+We could now also store the corresponding row-indices in an array $I$ of the same length. With this, it would then be possible to reconstruct all non-zero entries of $A$:
+
+#### Algorithm: Reconstruction of matrix 
+1. Set $A\gets 0$
+2. for $\ell=0,1,2,\dots,n_{\text{nz}}$ **do**
+3. $~~~~$ Set $A_{I_\ell,J_\ell} \gets V_{\ell}$
+4. **end do**
+
+However, there is a more efficient way of doing this: Since the arrays $V$ and $J$ are constructed by going through the matrix row by row, we only need to keep track of the positions where a new row starts. This can be encoded as follows:
+
+3. Store an array $R$ of length $n+1$ such that $R_i$ describes the index in $V$, $J$ where a new row starts. For convenience, we also store $R_{n} = n_{\text{nz}}$.
+
+The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR)
+
+#### Algorithm: Reconstruction of matrix in CSR
+1. Set $A\gets 0$
+2. Set $\ell\gets 0$
+3. for $i=0,1,2,\dots,n-1$ **do**
+4. $~~~~$ for $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
+5. $~~~~~~~~$ Set $A_{i,J_\ell} \gets V_{\ell}$
+6. $~~~~~~~~$ Increment $\ell\gets \ell+1$
+7. $~~~~$ **end do**
+8. **end do**
+
+#### Example
+Consider the following $5\times 5$ matrix with $n_{\text{nz}}=11$ non-zero entries:
+
+$$
+\begin{pmatrix}
+1.3 & 2.4 & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
+4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
+\end{pmatrix}
+$$
+
+We have the following arrays:
+
+1. Values: $V=[1.3, 2.4, 8.7, 4.5, 6.1, 2.1, 8.3, 9.4, 3.7, 1.1, 7.7]$
+2. Column indices: $J=[0,1,3,0,1,1,2,4,1,2,4]$
+3. Row pointers: $R=[0,3,6,8,8,11]$
+
+Note that one of the rows contains only zero entries.
+
+### Matrix-vector multiplication
+
+#### Algorithm: Matrix-vector multiplication $y = y + Ax$ in CSR storage
+1. Set $\ell\gets 0$
+2. for $i=0,1,2,\dots,n-1$ **do**
+3. $~~~~$ for $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
+4. $~~~~~~~~$ Set $y_i \gets y_i + V_{\ell} x_{J_{\ell}}$
+5. $~~~~~~~~$ Increment $\ell\gets \ell+1$
+6. $~~~~$ **end do**
+7. **end do**
+
+## PETSc implementation
+To implement matrices in the CSR storage format, we use the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org) (pronounced "pet-see"). Since PETSc itself is written in the [C-programming language](https://www.c-language.org/), we will work with the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After [installation](https://petsc.org/release/petsc4py/install.html), this can be imported as follows:
+```python
+from petsc4py import PETSc
+```
+We can now create an (empty) matrix with
+
+```python
+A = PETSc.Mat()
+```
+
+To create the $5\times 5$ matrix above we first need to set up the sparsity structure, i.e. the arrays $J$ (called `col_indices`) and $R$ (called `row_start`). This is done with the `createAIJ()` method, which gets passed the number of rows and columns and the keyword argument `csr` which is a tuple of the form $(R,J)$:
+```python
+n_row = 5
+n_col = 5
+
+col_indices = [0, 1, 3, 0, 1, 1, 2, 4, 1, 2, 4]
+row_start = [0, 3, 5, 8, 8, 11]
+
+A.createAIJ((n_row, n_col), csr=(row_start, col_indices))
+```
+We can now insert values, for example we might want to set $A_{0,3} = 8$, as highlighted in red here:
+$$
+\begin{pmatrix}
+1.3 & 2.4 & \textcolor{lightgray}{0} & \textcolor{red}{8.7} & \textcolor{lightgray}{0} \\
+4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
+\end{pmatrix}
+$$
+This can be done by calling the `setValue()` method:
+```python
+# Set 
+row = 0
+col = 3
+value = 8.7
+A.setValue(row, col, value)
+```
+Trying to set an element which is not part of the sparsity structure (such as `row=4`, `col=2`) will result in an error. Note that the `setValue()` method has an optional parameter `addv`. For `addv=True` the value will be added to an already existing value and for `addv=False` already existing entries will be overwritten.
+
+We can also set blocks of several values. For example, we might want to set the $2\times 2$ block in the upper left corner, as highlighhted in red here:
+$$
+\begin{pmatrix}
+\textcolor{red}{1.3} & \textcolor{red}{2.4} & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
+\textcolor{red}{4.5} & \textcolor{red}{6.1} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
+\end{pmatrix}
+$$
+For this, we need to specify the rows and columns in the target matrix and use the `setValues()` (plural) method as follows:
+```python
+rows = [0, 1]
+cols = [0, 1]
+local_matrix = np.asarray([1.3, 2.4, 4.5, 6.1])
+A.setValues(rows, cols, local_matrix)
+```
+Blocks do not have to be contiguous but they have to have a tensor-product index structure defined by `rows x cols`. We could, for example, to set the 6 non-zero values highlighted in red here:
+$$
+\begin{pmatrix}
+1.3 & 2.4 & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
+4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & \textcolor{red}{2.1} & \textcolor{red}{8.3} & \textcolor{lightgray}{0} & \textcolor{red}{9.4} \\
+\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
+\textcolor{lightgray}{0} & \textcolor{red}{3.7} & \textcolor{red}{1.1} & \textcolor{lightgray}{0} & \textcolor{red}{7.7}
+\end{pmatrix}
+$$
+The indices of these values are described by the tensor product $(2,4)\times(1,2,4)$, and hence we need to do this:
+```python
+rows = [2, 4]
+cols = [1, 2, 4]
+A_local = np.asarray([2.1, 8.3, 9.4, 3.7, 1.1, 7.7])
+A.setValues(rows, cols, A_local)
+```
+Finally, before we can use the matrix for any computations, we need to assemble it:
+```python
+A.assemble()
+```
+
+For debugging purposes, we might want to print out the matrix. This can be done by first converting the sparse matrix `A` to a dense matrix `A_dense` and then extracting the `numpy` array `A_numpy` which represents the values:
+```python
+A_dense = PETSc.Mat()
+A.convert("dense",A_dense)
+A_numpy = A_dense.getDenseArray()
+```
+Obviously, this only makes sense for relatively small matrices.
+
+### Matrix-vector multiplication
+PETSc also provides a vector class. For example, to create the vector
+$$
+\boldsymbol{v} = \begin{pmatrix}
+8.1\\0\\9.3\\-4.3\\5.2
+\end{pmatrix}
+$$
+we can do this:
+```python
+v = PETSc.Vec()
+v.createWithArray([8.1, 0, 9.3, -4.3, 5.2])
+```
+We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$. For this, we first need to create an empty five-dimensional vector $\boldsymbol{v}$, which can be done with the `createSeq()` method.
+```python
+w = PETSc.Vec()
+n = 5
+w.createSeq(n)
+A.mult(v, w)
+```
+Instead of the `mult()` methid we can also just use the `@` operator, as for `numpy` matrices/vectors:
+```python
+w = A @ v
+```
+To print the vector we need to first extract the underlying array with the `getArray()` method:
+```python
+w_numpy = w.getArray()
+print(w_numpy)
+```
+
+# Mathematical background of the finite element method
 In the following we will give a brief overview of the finite element method and review some of the fundamental ideas as to why it works. The details of the implementation will be discussed in later lectures and the theory is the subject of MA32066.
 
 ## Model problem
@@ -1775,186 +1956,7 @@ Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or 
 
 Clearly, it is very inefficient to store all these zero entries if only $\mathcal{O}(n)$ entries are in fact required to encode the data stored in the matrix. We therefore introduce a storage format which is more suitable for matrices like this.
 
-## Compressed Sparse Row storage
-A matrix $A$ with $n_{\text{nz}}\ll n$ nonzero entries is often called *sparse*. To store sparse matrices, we can proceed as follows:
-
-1. Store all non-zero entries in a long array $V$ of length $n_{\text{nz}}$, going throw the matrix row by row
-2. For each non-zero entry also store the corresponding column index in an array $J$ of the same length
- 
-We could now also store the corresponding row-indices in an array $I$ of the same length. With this, it would then be possible to reconstruct all non-zero entries of $A$:
-
-#### Algorithm: Reconstruction of matrix 
-1. Set $A\gets 0$
-2. for $\ell=0,1,2,\dots,n_{\text{nz}}$ **do**
-3. $~~~~$ Set $A_{I_\ell,J_\ell} \gets V_{\ell}$
-4. **end do**
-
-However, there is a more efficient way of doing this: Since the arrays $V$ and $J$ are constructed by going through the matrix row by row, we only need to keep track of the positions where a new row starts. This can be encoded as follows:
-
-3. Store an array $R$ of length $n+1$ such that $R_i$ describes the index in $V$, $J$ where a new row starts. For convenience, we also store $R_{n} = n_{\text{nz}}$.
-
-The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR)
-
-#### Algorithm: Reconstruction of matrix in CSR
-1. Set $A\gets 0$
-2. Set $\ell\gets 0$
-3. for $i=0,1,2,\dots,n-1$ **do**
-4. $~~~~$ for $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
-5. $~~~~~~~~$ Set $A_{i,J_\ell} \gets V_{\ell}$
-6. $~~~~~~~~$ Increment $\ell\gets \ell+1$
-7. $~~~~$ **end do**
-8. **end do**
-
-#### Example
-Consider the following $5\times 5$ matrix with $n_{\text{nz}}=11$ non-zero entries:
-
-$$
-\begin{pmatrix}
-1.3 & 2.4 & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
-4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
-\end{pmatrix}
-$$
-
-We have the following arrays:
-
-1. Values: $V=[1.3, 2.4, 8.7, 4.5, 6.1, 2.1, 8.3, 9.4, 3.7, 1.1, 7.7]$
-2. Column indices: $J=[0,1,3,0,1,1,2,4,1,2,4]$
-3. Row pointers: $R=[0,3,6,8,8,11]$
-
-Note that one of the rows contains only zero entries.
-
-### Matrix-vector multiplication
-
-#### Algorithm: Matrix-vector multiplication $y = y + Ax$ in CSR storage
-1. Set $\ell\gets 0$
-2. for $i=0,1,2,\dots,n-1$ **do**
-3. $~~~~$ for $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
-4. $~~~~~~~~$ Set $y_i \gets y_i + V_{\ell} x_{J_{\ell}}$
-5. $~~~~~~~~$ Increment $\ell\gets \ell+1$
-6. $~~~~$ **end do**
-7. **end do**
-
 # Solving linear systems in PETSc
-
-## PETSc implementation
-To implement matrices in the CSR storage format, we use the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org) (pronounced "pet-see"). Since PETSc itself is written in the [C-programming language](https://www.c-language.org/), we will work with the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After [installation](https://petsc.org/release/petsc4py/install.html), this can be imported as follows:
-```python
-from petsc4py import PETSc
-```
-We can now create an (empty) matrix with
-
-```python
-A = PETSc.Mat()
-```
-
-To create the $5\times 5$ matrix above we first need to set up the sparsity structure, i.e. the arrays $J$ (called `col_indices`) and $R$ (called `row_start`). This is done with the `createAIJ()` method, which gets passed the number of rows and columns and the keyword argument `csr` which is a tuple of the form $(R,J)$:
-```python
-n_row = 5
-n_col = 5
-
-col_indices = [0, 1, 3, 0, 1, 1, 2, 4, 1, 2, 4]
-row_start = [0, 3, 5, 8, 8, 11]
-
-A.createAIJ((n_row, n_col), csr=(row_start, col_indices))
-```
-We can now insert values, for example we might want to set $A_{0,3} = 8$, as highlighted in red here:
-$$
-\begin{pmatrix}
-1.3 & 2.4 & \textcolor{lightgray}{0} & \textcolor{red}{8.7} & \textcolor{lightgray}{0} \\
-4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
-\end{pmatrix}
-$$
-This can be done by calling the `setValue()` method:
-```python
-# Set 
-row = 0
-col = 3
-value = 8.7
-A.setValue(row, col, value)
-```
-Trying to set an element which is not part of the sparsity structure (such as `row=4`, `col=2`) will result in an error. Note that the `setValue()` method has an optional parameter `addv`. For `addv=True` the value will be added to an already existing value and for `addv=False` already existing entries will be overwritten.
-
-We can also set blocks of several values. For example, we might want to set the $2\times 2$ block in the upper left corner, as highlighhted in red here:
-$$
-\begin{pmatrix}
-\textcolor{red}{1.3} & \textcolor{red}{2.4} & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
-\textcolor{red}{4.5} & \textcolor{red}{6.1} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
-\end{pmatrix}
-$$
-For this, we need to specify the rows and columns in the target matrix and use the `setValues()` (plural) method as follows:
-```python
-rows = [0, 1]
-cols = [0, 1]
-local_matrix = np.asarray([1.3, 2.4, 4.5, 6.1])
-A.setValues(rows, cols, local_matrix)
-```
-Blocks do not have to be contiguous but they have to have a tensor-product index structure defined by `rows x cols`. We could, for example, to set the 6 non-zero values highlighted in red here:
-$$
-\begin{pmatrix}
-1.3 & 2.4 & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
-4.5 & 6.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & \textcolor{red}{2.1} & \textcolor{red}{8.3} & \textcolor{lightgray}{0} & \textcolor{red}{9.4} \\
-\textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
-\textcolor{lightgray}{0} & \textcolor{red}{3.7} & \textcolor{red}{1.1} & \textcolor{lightgray}{0} & \textcolor{red}{7.7}
-\end{pmatrix}
-$$
-The indices of these values are described by the tensor product $(2,4)\times(1,2,4)$, and hence we need to do this:
-```python
-rows = [2, 4]
-cols = [1, 2, 4]
-A_local = np.asarray([2.1, 8.3, 9.4, 3.7, 1.1, 7.7])
-A.setValues(rows, cols, A_local)
-```
-Finally, before we can use the matrix for any computations, we need to assemble it:
-```python
-A.assemble()
-```
-
-For debugging purposes, we might want to print out the matrix. This can be done by first converting the sparse matrix `A` to a dense matrix `A_dense` and then extracting the `numpy` array `A_numpy` which represents the values:
-```python
-A_dense = PETSc.Mat()
-A.convert("dense",A_dense)
-A_numpy = A_dense.getDenseArray()
-```
-Obviously, this only makes sense for relatively small matrices.
-
-### Matrix-vector multiplication
-PETSc also provides a vector class. For example, to create the vector
-$$
-\boldsymbol{v} = \begin{pmatrix}
-8.1\\0\\9.3\\-4.3\\5.2
-\end{pmatrix}
-$$
-we can do this:
-```python
-v = PETSc.Vec()
-v.createWithArray([8.1, 0, 9.3, -4.3, 5.2])
-```
-We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$. For this, we first need to create an empty five-dimensional vector $\boldsymbol{v}$, which can be done with the `createSeq()` method.
-```python
-w = PETSc.Vec()
-n = 5
-w.createSeq(n)
-A.mult(v, w)
-```
-Instead of the `mult()` methid we can also just use the `@` operator, as for `numpy` matrices/vectors:
-```python
-w = A @ v
-```
-To print the vector we need to first extract the underlying array with the `getArray()` method:
-```python
-w_numpy = w.getArray()
-print(w_numpy)
-```
 
 ## Solving linear systems
 The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $A\boldsymbol{u}=\boldsymbol{b}$. We will discuss this in more detail in the next lecture, but for now let us just look at a simple example:

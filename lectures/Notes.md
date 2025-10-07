@@ -2016,7 +2016,7 @@ $$
 
 Note that the first row remains unchanged. For this transformation we need to do the following operations for each of the $n-1$ rows $i=1,2,\dots,n-1$
 
-* compute $\rho_i = -A_{0i}/A_{00}$ $\Rightarrow$ **$\boldsymbol{1}$ division**
+* compute $\rho_i = -A_{i0}/A_{00}$ $\Rightarrow$ **$\boldsymbol{1}$ division**
 * scale the first row by the factor $\rho_i$ and add the scaled first row to row $i$ $\Rightarrow$ **$\boldsymbol{n-1}$ multiplications** and **$\boldsymbol{n-1}$ additions**, since we can ignore the first entry which will be set to zero by construction
 * update $b_i \gets b_i - \rho_i b_0$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ subtraction**
 

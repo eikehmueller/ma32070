@@ -690,7 +690,7 @@ $$
 #### Due: end of week 7
 
 ## Task
-As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{globa;}}}(x)$, we can write the error $e_h$ as
+As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution $u_{\text{exact}}(x)$ and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{global}}}^{(h)}(x)$, we can write the error $e_h(x)$ as
 
 $$
 e_h(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
@@ -700,7 +700,7 @@ The square of the $L_2$ norm of the error can be computed by summing over all tr
 
 $$
 \begin{aligned}
-\|e_h\|_{L_2(\Omega)}^2 &= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell_{\text{global}}}(x)\right)^2\;dx\\
+\|e_h\|_{L_2(\Omega)}^2 &= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi_{\ell_{\text{global}}}^{(h)}(x)\right)^2\;dx\\
 &= \sum_{K\in\Omega_h} \int_{K} \left(u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)\right)^2\;dx\\
 \end{aligned}
 $$
@@ -922,10 +922,10 @@ A &=  \begin{pmatrix}
 \end{aligned}
 $$
 
-* How many operations are required to reduce this to an upper triangular system if the procedure in the lecture is followed, but the zeros are taken into account?
+* How many operations are required to reduce this to an upper triangular system and modify the right hand side vector $\boldsymbol{b}$ accordingly if the procedure in the lecture is followed, but the zeros are taken into account?
 * What is the structure of the resulting upper triangular system?
 * How many operations are required to solve this system?
-* What is the computational complexity for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ is $A$ is a triangular matrix?
+* What is the computational complexity for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ is $A$ if a triangular matrix?
 
 ## Practicalities
 * Write down your solution and save it as a `.pdf` file `solution.pdf`. You do not have to typeset your solution and can also submit scans of handwritten workings, provided they are legible.

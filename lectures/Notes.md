@@ -594,7 +594,7 @@ In the rest of this course we will discuss how each of these steps can be implem
 We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
 
 ## Reference triangle
-Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $v_0=(0,0)$, $v_1=(1,0)$ and $v_2=(0,1)$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $F_0 = \overrightarrow{v_1v_2}$, $F_1 = \overrightarrow{v_2v_0}$ and $F_2 = \overrightarrow{v_0v_1}$. This ordering will later be important.
+Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $\textcolor{red}{v_0=(0,0)}$, $\textcolor{red}{v_1=(1,0)}$ and $\textcolor{red}{v_2=(0,1)}$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $\textcolor{blue}{F_0 = \overrightarrow{v_1v_2}}$, $\textcolor{blue}{F_1 = \overrightarrow{v_2v_0}}$ and $\textcolor{blue}{F_2 = \overrightarrow{v_0v_1}}$. This ordering will later be important.
 
 ![:fig:reference_triangle: reference triangle](figures/reference_triangle.svg)
 
@@ -606,7 +606,7 @@ $$
 \mathcal{V}_h := \mathcal{P}_p(\widehat{K}) = \{q:q(x) = \sum_{\substack{s_0,s_1\\s_0+s_1\le p}} a_{s_0,s_1} x_0^{s_0}x_1^{s_1}\;\text{for all $x\in K$ with $a_{s_0,s_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
 $$
 
-The space $\mathcal{P}_p(\widehat{K})$ is spanned by $n_{\text{dof}}=\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
+The space $\mathcal{P}_p(\widehat{K})$ is spanned by $n_{\text{dof}}=\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
 $$
 \phi_\ell(\xi^{(k)}) = \delta_{\ell k} = \begin{cases}
     1 & \text{for $\ell=k$}\\
@@ -618,7 +618,7 @@ $$
 \{\xi^{(\ell)}\}_{\ell=0}^{\nu-1} = \left\{\left(\frac{\ell_0}{p},\frac{\ell_1}{p}\right) \quad \text{for $\ell_0,\ell_1\in\mathbb{N}$ with $0\le \ell_0\le \ell_1 \le p$}\right\}.\qquad:eqn:nodal_points
 $$
 
-We order these points (and the associated basis functions $\phi_\ell(x)$) as follows:
+We order these points (and the associated basis functions $\phi_\ell$) as follows:
 
 1. Points associated with the three vertices $v_0$, $v_1$, $v_2$ (in this order); there is $\nu_{\text{vertex}}=1$ point per vertex,
 2. points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in @fig:reference_triangle and finally

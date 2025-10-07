@@ -17,8 +17,8 @@ The crucial ingredients are
 
 At the beginning of the course, please work through the two steps below to get set up. Once you have done this, review the section on the directory layout for the course material.
 
-## Notable
-The default setup is to use the **Notable** environment, which every student on this course has access to. This provides a suitable Python installation with all required packages. You can access Notable through the link on moodle. You should choose the "Standard Python 3 with VS-Code editor" notebook, which allows you to edit files with the built-in VScode editor.
+## Noteable
+The default setup is to use the **Noteable** environment, which every student on this course has access to. This provides a suitable Python installation with all required packages. You can access Noteable through the link on moodle. You should choose the "Standard Python 3 with VS-Code editor" notebook, which allows you to edit files with the built-in VScode editor.
 
 ## Working on your own computer
 You are welcome to set up a suitable Python environment on your own computer and work with this if you prefer. This is relatively straightforward on a Linux or Mac computer, but more challenging on Windows. Below are some instructions that might help you with this. **Note that if you choose to use your own computer it is your responsibility to set it up correctly, and we can only provide limited support for this. You are also responsible for backing up any code you write. Problems with your own computer are not a valid reason for requesting a coursework extension.**
@@ -29,17 +29,17 @@ Scientific software is usually developed in a command line environment: the user
 If you have never used the command line, familiarise yourself with the basics by working through sections 1 to 3 of the [Software Carpentry tutorial on the Unix shell](https://swcarpentry.github.io/shell-novice/).
 
 ### Accessing a terminal
-On Notable, you can launch a terminal by choosing "File" $\rightarrow$ "New" $\rightarrow$ "Terminal" from the menu bar or by clicking the square "Terminal" button in the "Launcher" tab on the right.
+On Noteable, you can launch a terminal by choosing "File" $\rightarrow$ "New" $\rightarrow$ "Terminal" from the menu bar or by clicking the square "Terminal" button in the "Launcher" tab on the right.
 
-In the VSCode environment (both on Notable and in a standalone installation on your own computer) you can access the command line through a terminal in one of the tabs at the bottom of the window.
+In the VSCode environment (both on Noteable and in a standalone installation on your own computer) you can access the command line through a terminal in one of the tabs at the bottom of the window.
 
 ## Directory layout
 It is strongly recommended that you carry out all work related to this course in a dedicated directory (or folder), which will be referred to as `ma32070/` in the following. Depending on your setup, this folder will contain additional subdirectories, see below for more details on how to organise your code.
 
 # Step 1: Setup of the required Python environment
 
-## Option 1: Notable
-Access Notable through the link on moodle and choose the "Standard Python 3 with VS-Code editor" notebook.
+## Option 1: Noteable
+Access Noteable through the link on moodle and choose the "Standard Python 3 with VS-Code editor" notebook.
 
 When you log in for the very first time, open a terminal window and create a new conda environment by typing the following commands (press enter at the end of each line):
 

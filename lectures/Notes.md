@@ -28,7 +28,7 @@ This equation, which is to be solved for the function $u$ for a given right hand
 ### Step 2: Discretisation
 In virtually all practically relevant cases the resulting mathematical model can not be solved analytically (of course, this depends on how the model is chosen. However, if it can be solved, this usually means that the model is too simplistic, i.e. it will only give inaccurate predictions). For example, the Navier Stokes equations for fluid flow are a system of time-dependent coupled nonlinear PDEs formulated on a non-trivial domain. These PDEs have no known closed form solution, and in fact the same applies for the problem in @eqn:pde_sci_comp in all but the simplest setups. To solve the problem on a computer, the continuous equations need to be discretised to obtain a finite set of equations that can be solved. Several methods can be used for this, and in this course we will employ the Finite Element Method which is widely used in science and industry. As we will see, this allows rewriting @eqn:pde_sci_comp as a linear algebra problem
 $$
-A\boldsymbol{u} = \boldsymbol{b} :eqn:linear_algebra_sci_comp
+A\boldsymbol{u} = \boldsymbol{b}\qquad :eqn:linear_algebra_sci_comp
 $$
 where $A$ is an $n\times n$ matrix and $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$. Discretisation introduces additional errors. However, in contrast to modelling errors, these discretisation errors can usually be quantified and (at least in principle) they can be made arbitrarily small. The justification and analysis of the Finite Element Method is the topic of MA32066, which uses techniques from Numerical Analysis to investigate the accuracy and stability of the approach. 
 

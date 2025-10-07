@@ -77,7 +77,7 @@ Crucially, information is lost when moving down this hierarchy: looking at a for
 This problem can be mitigated by mapping mathematical objects to computer code in a transparent way by using suitable abstractions and defining sensible interfaces: for example, when using the finite element method, we can map mathematical concepts such as basis functions directly to suitable classes in the Python code: the code explicitly encodes the mathematics which makes it much easier to understand and debug. We will employ this idea, which is used to great success by well-established Finite Element packages such as [Firedrake](https://www.firedrakeproject.org/), throughout this course.
 
 # Background: linear algebra, sparse matrices and tensors
-Implementating the finite element method requires the manipulation of matrices and vectors. We will use the [numpy](https://numpy.org/doc/stable/index.html) linear algebra for this. In the following we briefly review the implementation of fundamental linear algebra operations in numpy. Since many matrices that we will encounter in this course are *sparse*, we will discuss an efficient storage format for this class of matrices and describe its implementation in the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org/release/) (pronounced "pet-see"). We will also introduce the concept of tensors, which generalise matrices and vectors.
+Implementating the finite element method requires the manipulation of matrices and vectors. We will use the [numpy](https://numpy.org/doc/stable/index.html) library for this. In the following we briefly review the implementation of fundamental linear algebra operations in this library. Since many matrices that we will encounter in this course are *sparse*, we will discuss an efficient storage format for this class of matrices and describe its implementation in the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org/release/) (pronounced "pet-see"). We will also introduce the concept of tensors, which generalise matrices and vectors, and which we will need during the assembly phase of the finite element method.
 
 ## Linear algebra in numpy
 In numpy, vectors and matrices are represented by objects of type [`np.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html). For example, the vectors $\boldsymbol{v}, \boldsymbol{b}\in\mathbb{R}^3$ and the $3\times 3$ matrix $A$ given by
@@ -107,24 +107,24 @@ v = np.array([1.2,7.6,2.1], dtype=float)
 b = np.array([-7.2, 0.6, 1.3], dtype=float)
 A = np.array([[4.3, -1.2, 2.8],[0.7, 7.3, 1.1], [-0.4, 0.2, 9.7]], dtype=float)
 ```
-Usually we can leave out the keyword argument `dtype=float`. However, since Python will infer the data type automatically, it is required in cases like `z = np.array([1,2,4])` which by default will create an integer-valued array. Recall also that there is a subtle difference between [`np.array()`](https://numpy.org/doc/stable/reference/generated/numpy.array.html) and [`np.asarray()`](https://numpy.org/doc/stable/reference/generated/numpy.asarray.html): the latter will try to only create a reference to the data.
+Usually we can leave out the keyword argument `dtype=float`. However, since Python will infer the data type automatically, it is required in cases like `z = np.array([1,2,4])` which by default will create an integer-valued array (in contrast, `v = np.array([1.2,7.6,2.1])` will result in an array whose entries are of type `float`). Recall also that there is a subtle difference between [`np.array()`](https://numpy.org/doc/stable/reference/generated/numpy.array.html) and [`np.asarray()`](https://numpy.org/doc/stable/reference/generated/numpy.asarray.html): the latter will try to only create a reference to the data.
 
 ### Special matrices
-It is also possible to create special matrices such as the identity or a matrix containing only zeros:
+It is possible to create special matrices such as the identity or a matrix containing only zeros:
 
 ```Python
 identity_3x3 = np.eye(3)         # Creates a 3x3 identity matrix
-zero_4x3 = np.zeros(shape=(4,3)) # Creates a 4x3 matric containing only zeros
+zero_4x3 = np.zeros(shape=(4,3)) # Creates a 4x3 matrix containing only zeros
 ```
 
-To test your code, we might also want to create matrices with random values. For example, a $4\times 2$ matrix with entries that are normally distributed with mean zero and variance one can be created like this:
+To test our code, we might also want to create matrices with random values. For example, a $4\times 2$ matrix with entries that are normally distributed with mean zero and variance one can be created like this:
 
 ```Python
 rng = np.random.default_rng(seed=24618567)
 random_4x2 = rng.normal(size=(4,2))
 ```
 
-Note that instead of using `np.random.normal(size=(4,2))` we create a random number generator generator with a fixed seed first. This ensures that the results are the same in subsequent runs of the code.
+Observe that instead of using `np.random.normal(size=(4,2))` we create a random number generator generator with a fixed seed first. This ensures that the results are the same in subsequent runs of the code.
 
 ### Manipulating vectors and matrices
 Numpy provides functionality for manipulating matrices and vectors. For example, we can compute the matrix-vector product $\boldsymbol{w} = A\boldsymbol{v}$ or the dot-product $\rho = \boldsymbol{v}\cdot \boldsymbol{b}$ by using the [`@` operator](https://numpy.org/doc/stable/reference/routines.linalg.html#the-operator) and the [`np.dot()` method](https://numpy.org/doc/stable/reference/generated/numpy.dot.html):
@@ -134,7 +134,7 @@ w = A @ v
 rho = np.dot(v,b)
 ```
 
-Note that the `*` operator will result in element-wise multiplication:
+In contrast, the `*` operator will perform element-wise multiplication:
 
 ```Python
 t = v * b
@@ -145,14 +145,13 @@ $$
 \boldsymbol{t} =  \begin{pmatrix}
 1.2\cdot (-7.2) \\ 7.6 \cdot 0.6  \\ 2.1 \cdot 1.3
 \end{pmatrix}
-=
-\boldsymbol{v} = \begin{pmatrix}
+= \begin{pmatrix}
 -8.64 \\ 4.56 \\ 2.73
 \end{pmatrix}.
 $$
 
 ### Solving linear systems
-To solve the linear system $A\boldsymbol{u} = \boldsymbol{b}$ we can use [`np.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html):
+To solve the linear system $A\boldsymbol{u} = \boldsymbol{b}$ for some invertible square matrix $A$ we can use [`np.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html):
 
 ```Python
 u = np.linalg.solve(A,b)
@@ -164,7 +163,7 @@ Usually this is more efficient than multiplying $\boldsymbol{b}$ by the inverse 
 u = np.linalg.inv(A) @ b # Don't do this!
 ```
 
-For more information please refer to the [`numpy` documentation](https://numpy.org/doc/stable/index.html), in particular the [documentation of Linear Algebra routines](https://numpy.org/doc/stable/reference/routines.linalg.html).
+For more information please refer to the [numpy documentation](https://numpy.org/doc/stable/index.html), in particular the [documentation of Linear Algebra routines](https://numpy.org/doc/stable/reference/routines.linalg.html).
 
 ## Sparse matrices
 Many matrices that arise in Scientific Computing contain a lot of zero entries. Examples can be found in the [SuiteSparse Matrix Collection](https://sparse.tamu.edu/): clicking on the names of individual matrices will provide more details and a visualisation of their structure.
@@ -173,12 +172,12 @@ Many matrices that arise in Scientific Computing contain a lot of zero entries. 
 
 ![:fig:stiffness_matrix: Stiffness matrix](figures/stiffness_matrix.png)
 
-Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or $7.6\%$ are nonzero, which corresponds to an average number of around $\overline{n}_{\text{nz}} = 6.14$ nonzeros per row. Clearly, it is very inefficient to store all these zero entries if only a fraction of entries are in fact required to encode the data stored in the matrix.
+Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or $7.6\%$ are nonzero, which corresponds to an average number of around $\overline{n}_{\text{nz}} = 6.14$ nonzeros per row. A matrix $A$ with $n_{\text{nz}}\ll n$ nonzero entries is often called *sparse*. Clearly, it is very inefficient to store all these zero entries if only a fraction of entries is in fact required to encode the data stored in the matrix.
 
 We therefore introduce a widely-used storage format which is more suitable for matrices like this.
 
 ### Compressed Sparse Row storage
-A matrix $A$ with $n_{\text{nz}}\ll n$ nonzero entries is often called *sparse*. To store sparse matrices, we can proceed as follows:
+To store sparse matrices, we proceed as follows:
 
 1. Store all non-zero entries in a long array $V$ of length $n_{\text{nz}}$, going throw the matrix row by row
 2. For each non-zero entry also store the corresponding column index in an array $J$ of the same length
@@ -191,11 +190,11 @@ We could now also store the corresponding row-indices in an array $I$ of the sam
 3. $~~~~$ Set $A_{I_\ell,J_\ell} \gets V_{\ell}$
 4. **end do**
 
-However, there is a more efficient way of doing this: Since the arrays $V$ and $J$ are constructed by going through the matrix row by row, we only need to keep track of the positions where a new row starts. This can be encoded as follows:
+However, there is a more efficient way of doing this: Since the arrays $V$ and $J$ are constructed by going through the matrix row by row, we only need to keep track of where a new row starts. This can be encoded as follows:
 
-3. Store an array $R$ of length $n+1$ such that $R_i$ describes the index in $V$, $J$ where a new row starts. For convenience, we also store $R_{n} = n_{\text{nz}}$.
+1. Store an array $R$ of length $n+1$ such that $R_i$ describes the index in $V$, $J$ where a new row starts. For convenience, we also store $R_{n} = n_{\text{nz}}$.
 
-The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR)
+The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR). Given $V,J,R$ it is possible to reconstruct the matrix $A$ as follows:
 
 #### Algorithm: Reconstruction of matrix in CSR
 1. Set $A\gets 0$

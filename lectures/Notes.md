@@ -462,6 +462,10 @@ can be computed with
 ```Python
 np.einsum("ii->",A)
 ```
+or alternatively with
+```Python
+np.linalg.trace(A)
+```
 Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
 
 # The Finite Element Method

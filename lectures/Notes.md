@@ -196,7 +196,7 @@ However, there is a more efficient way of doing this: Since the arrays $V$ and $
 
 The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR). Given $V,J,R$ it is possible to reconstruct the matrix $A$ as follows:
 
-#### Algorithm: Reconstruction of matrix in CSR
+#### Algorithm: Reconstruction of matrix in CSR format
 1. Set $A\gets 0$
 2. Set $\ell\gets 0$
 3. for $i=0,1,2,\dots,n-1$ **do**
@@ -262,7 +262,7 @@ row_start = [0, 3, 5, 8, 8, 11]
 
 A.createAIJ((n_row, n_col), csr=(row_start, col_indices))
 ```
-We can now insert values, for example we might want to set $A_{0,3} = 8$, as highlighted in red here:
+We can now insert values, for example we might want to set $A_{0,3} = 8.7$, as highlighted in red here:
 $$
 \begin{pmatrix}
 1.3 & 2.4 & \textcolor{lightgray}{0} & \textcolor{red}{8.7} & \textcolor{lightgray}{0} \\
@@ -299,7 +299,7 @@ cols = [0, 1]
 local_matrix = np.asarray([1.3, 2.4, 4.5, 6.1])
 A.setValues(rows, cols, local_matrix)
 ```
-Blocks do not have to be contiguous but they have to have a tensor-product index structure defined by `rows x cols`. We could, for example, to set the 6 non-zero values highlighted in red here:
+Blocks do not have to be contiguous but they have to have a tensor-product index structure defined by `rows` $\otimes$ `cols`. We could, for example, to set the 6 non-zero values highlighted in red here:
 $$
 \begin{pmatrix}
 1.3 & 2.4 & \textcolor{lightgray}{0} & 8.7 & \textcolor{lightgray}{0} \\
@@ -309,7 +309,7 @@ $$
 \textcolor{lightgray}{0} & \textcolor{red}{3.7} & \textcolor{red}{1.1} & \textcolor{lightgray}{0} & \textcolor{red}{7.7}
 \end{pmatrix}
 $$
-The indices of these values are described by the tensor product $(2,4)\times(1,2,4)$, and hence we need to do this:
+The indices of these values are described by the tensor product $(2,4)\otimes(1,2,4)$, and hence we need to do this:
 ```python
 rows = [2, 4]
 cols = [1, 2, 4]
@@ -329,8 +329,10 @@ A_numpy = A_dense.getDenseArray()
 ```
 Obviously, this only makes sense for relatively small matrices.
 
+PETSc provides a lot of additional functionality for manipulating matrices, see the [documentation of `petsc4py.PETSc.Mat`](https://petsc.org/main/petsc4py/reference/petsc4py.PETSc.Mat.html#) for further details. 
+
 ### Matrix-vector multiplication
-PETSc also provides a vector class. For example, to create the vector
+PETSc also provides a vector class. To create vectors such as the five-dimensional $\boldsymbol{v}\in\mathbb{R}^5$ with
 $$
 \boldsymbol{v} = \begin{pmatrix}
 8.1\\0\\9.3\\-4.3\\5.2
@@ -348,7 +350,7 @@ n = 5
 w.createSeq(n)
 A.mult(v, w)
 ```
-Instead of the `mult()` methid we can also just use the `@` operator, as for `numpy` matrices/vectors:
+Instead of the `mult()` method we can also just use the `@` operator, as for `numpy` matrices/vectors:
 ```python
 w = A @ v
 ```
@@ -357,38 +359,39 @@ To print the vector we need to first extract the underlying array with the `getA
 w_numpy = w.getArray()
 print(w_numpy)
 ```
+For more information on PETSc vectors see the [documentation of `petsc4py.PETSc.Vec`](https://petsc.org/main/petsc4py/reference/petsc4py.PETSc.Vec.html).
 
 ## Tensors
-Tensors are generalisations of vectors and matrices, they can be understood as $d$-dimensional arrays. A tensor $T$ of rank $d$ is an object which can be indexed with $d$ integers $i_0,i_1,\dots,i_{d-1}$ where $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$, i.e. we can write $T_{i_0,i_1,\dots,i_{d-1}}\in \mathbb{R}$ for the tensor elements. The list $[s_0,s_1,\dots,s_{d-1}]$ is the **shape** of the tensor. We are already familiar with two special cases:
+Tensors are generalisations vectors and matrices: they can be understood as $d$-dimensional arrays. A tensor $T$ of rank $d$ is an object which can be indexed with $d$ integers $i_0,i_1,\dots,i_{d-1}$ where $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$, i.e. we can write $T_{i_0,i_1,\dots,i_{d-1}}\in \mathbb{R}$ for the tensor elements. The list $[s_0,s_1,\dots,s_{d-1}]$ is known as the **shape** of the tensor. We are already familiar with three special cases:
 
-* rank 0 tensors are scalars, i.e. real numbers $s\in\mathbb{R}$. In this case the shape is the empty list $[]$.
-* rank 1 tensors are vectors $\boldsymbol{v}\in \mathbb{R}^n$ with elements $v_i$ for $0\le i< n$. The shape of a vector is the single number $[n]$, i.e. the dimension of the vector.
-* rank 2 tensors are $n\times m$ matrices $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $[n,m]$, where $n$ is the number of rows and $m$ is the number of columns of the matrix.
+* rank 0 tensors are **scalars**, i.e. real numbers $s\in\mathbb{R}$. In this case the shape is the empty list $[\;]$.
+* rank 1 tensors are **vectors** $\boldsymbol{v}\in \mathbb{R}^n$ with elements $v_i$ for $0\le i< n$. The shape of a vector is the single number $[n]$, i.e. the dimension of the vector.
+* rank 2 tensors are $n\times m$ **matrices** $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $[n,m]$, where $n$ is the number of rows and $m$ is the number of columns of the matrix.
 
 ### Tensors in numpy
-In numpy, tensors are represented by multidimensional arrays of type [`np.ndarray(...,dtype=float)`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $(2,3,4)$ with only zero entries like this:
+In numpy, tensors are represented by multidimensional arrays of type [`np.ndarray(...,dtype=float)`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $[2,3,4]$ with only zero entries like this:
 
 ```Python
-T = np.zeros(shape=(2,3,4),dtype=float)
+T = np.zeros(shape=[2,3,4],dtype=float)
 ```
 
-or construct the $2\times 3$ matrix $\begin{pmatrix}1.8 & 2.2 & 3.4 \\ 4.2 & 5.1 & 6.7\end{pmatrix}$ like this:
+or construct the $2\times 3$ matrix $\begin{pmatrix}1.8 & 2.2 & 3.4 \\ 4.2 & 5.1 & 6.7\end{pmatrix}$ of shape $[2,3]$ like this:
 
 ```Python
 A = np.asarray([[1.8,2.2,3.4],[4.2,5.1,6.7]],dtype=float)
 ```
 
-The shape is given by `T.shape` and `A.shape`.
+The shapes are given by `T.shape` and `A.shape`.
 
 ### Adding tensors
-Tensors $T$, $T'$ of the same shape can be scaled and added: if $\alpha,\beta\in \mathbb{R}$ are real numbers, then $S=\alpha T+\beta T'$ is a new tensor of the same shape. The entries of $S$ are given by
+Tensors $T$, $T'$ of the same shape can be scaled and added elementwise: if $\alpha,\beta\in \mathbb{R}$ are real numbers, then $S=\alpha T+\beta T'$ is a new tensor of the same shape. The entries of $S$ are given by
 
 $$
 S_{i_0,i_1,\dots,i_{d-1}} = \alpha T_{i_0,i_1,\dots,i_{d-1}}+\beta T'_{i_0,i_1,\dots,i_{d-1}}
 \qquad \text{for all $i_0,i_1,\dots,i_{d-1}$ with $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$}.
 $$
 
-Tensors of the same shape can be scaled and added like this:
+In numpy this can be implemented like this:
 
 ```Python
 S = alpha*T + beta*Tprime
@@ -397,13 +400,13 @@ S = alpha*T + beta*Tprime
 In fact, Python allows the addition of tensors of different shapes according to a set of [broadcasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html).
 
 ### Multiplying tensors
-Tensors can be multiplied in different ways by contracting indices. For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
+Tensors can be multiplied in different ways by summing over repeated indices; this is often also called "contracting indices". For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
 
 $$
-R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}
+R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}\qquad :eqn:tensor_contraction_1
 $$
 
-Tensors can be multiplied with the powerful [`numpy.einsum()` function](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). For example, to compute $R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}$ use
+In numpy, indices can be contracted with the powerful [`numpy.einsum()` method](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). For example, to compute $R_{ijm\ell n}$ according to @eqn:tensor_contraction we can write
 
 ```Python
 R = np.einsum("ijk,mkln->ijmln",T,Tprime)
@@ -412,10 +415,10 @@ R = np.einsum("ijk,mkln->ijmln",T,Tprime)
 Alternatively, we could also compute a rank 1 tensor $S$ from $T$, $T'$ and the rank 2 tensor $T''$:
 
 $$
-S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}
+S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}\qquad :eqn:tensor_contraction_2
 $$
 
-To compute $S_{\ell} = \sum_{ijk} T_{ijk} T'_{kjni} T''_{n\ell}$ use
+To compute $S_{\ell}$ according to @eqn:tensor_contraction_2, we can use
 
 ```Python
 S = np.einsum("ijk,kjni,nl->l",T,Tprime,Tprimeprime)
@@ -427,7 +430,7 @@ $$
 v_i = \sum_j A_{ij}w_j
 $$
 
-In`numpy`, it can be implemented as
+In`numpy`, this can be implemented as
 
 ```Python
 v = np.einsum("ij,j->i",A,w)
@@ -444,20 +447,22 @@ The latter is usually preferred since it is easier to understand what the code d
 Contractions can also result in a scalar. For example
 
 $$
-\boldsymbol{v}\cdot \boldsymbol{w} = \sum_i v_i w_i
+\boldsymbol{v}\cdot \boldsymbol{w} = \sum_i v_i w_i,
 $$
+which is implemented as
 ```Python
 np.einsum("ii->",v,w)
 ```
-is the dot-product of two vectors $\boldsymbol{v}$ and $\boldsymbol{w}$, whereas
-
+is the dot-product of two vectors $\boldsymbol{v}$ and $\boldsymbol{w}$. Similarly 
+the trace of a matrix $A$ defined by
 $$
 \operatorname{trace}(A) = \sum_{i} A_{ii}
 $$
+can be computed with
 ```Python
 np.einsum("ii->",A)
 ```
-is the trace of a matrix $A$. Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
+Look at [the documentation of `numpy.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) for further details.
 
 # The Finite Element Method
 In the following we will give a brief overview of the finite element method and review some of the fundamental ideas as to why it works. The details of the implementation will be discussed in later lectures and the theory is the subject of MA32066.

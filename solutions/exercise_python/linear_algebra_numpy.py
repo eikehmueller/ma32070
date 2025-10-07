@@ -32,10 +32,11 @@ print(np.einsum("i,j->ij", u, v))
 print(np.tensordot(u, v, axes=0))
 print()
 
-# trace(A B^T)
-print("trace(A B^T)")
+# trace(A B)
+print("trace(A B)")
 print(np.einsum("ij,ji->", A, B))
 print(np.sum(A * B.T))
+print(np.linalg.trace(A @ B))
 print()
 
 print("T S Q")

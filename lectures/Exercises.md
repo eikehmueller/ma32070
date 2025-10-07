@@ -259,9 +259,10 @@ In a file `linear_algebra_numpy.py` add the above code for creating the required
 * Compute the tensor product $U = \boldsymbol{u}\otimes \boldsymbol{v}$ with $U_{ij}=u_iv_j$ in two different ways:
     - with [`np.tensordot()`](https://numpy.org/doc/stable/reference/generated/numpy.tensordot.html)
     - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
-* Compute the trace of $AB^\top$ in two different ways:
+* Compute the trace of $AB$ in three different ways:
     - with the `@` operator, `.T` (to transpose a matrix) and [`np.sum()`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)
     - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
+    - by using [`np.linalg.trace()`](https://numpy.org/doc/stable/reference/generated/numpy.trace.html)
 * Compute the tensor $R$ with $R_{ab} = \sum_{ijk} T_{aji}S_{bjk} Q_{kjii}$ by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
 
 ## Linear algebra with PETSc

@@ -122,10 +122,11 @@ The outer product $\boldsymbol{u}\otimes \boldsymbol{v}$ can be computed with
 1. `np.einsum("i,j->ij", u, v)`
 2. `np.tensordot(u, v, axes=0)`
 
-The trace $\text{trace}(AB^\top)$ can be computed with
+The trace $\text{trace}(AB)$ can be computed with
 
 1. `np.sum(A * B.T)`
 2. `np.einsum("ij,ji->", A, B)`
+3. `np.linalg.trace(A@B)`
 
 Finally, the specified triple-product of $T$, $S$ and $Q$ can be computed with
 `np.einsum("aji,bjk,kjii->ab", T, S, Q)`.

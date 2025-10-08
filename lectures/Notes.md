@@ -186,23 +186,23 @@ To store sparse matrices, we proceed as follows:
  
 We could now also store the corresponding row-indices in an array $I$ of the same length. With this, it would then be possible to reconstruct all non-zero entries of $A$:
 
-**Algorithm: Reconstruction of matrix from $I$, $J$ and $V$**
+**Algorithm: Reconstruction of matrix from arrays $\boldsymbol{V}$, $\boldsymbol{J}$ and $\boldsymbol{I}$**
 1. Set $A\gets 0$
-2. **for** $\ell=0,1,2,\dots,n_{\text{nz}}$ **do**
+2. **for** $\ell=0,1,2,\dots,n_{\text{nz}}-1$ **do**
 3. $~~~~$ Set $A_{I_\ell,J_\ell} \gets V_{\ell}$
 4. **end do**
 
 However, there is a more efficient way of doing this: Since the arrays $V$ and $J$ are constructed by going through the matrix row by row, we only need to keep track of where a new row starts. This can be encoded as follows:
 
-1. Store an array $R$ of length $n+1$ such that $R_i$ describes the index in $V$, $J$ where a new row starts. For convenience, we also store $R_{n} = n_{\text{nz}}$.
+3. Store an array $R$ of length $n+1$ such that $R_i$ describes the index in $V$, $J$ where a new row starts. For convenience, we also store $R_{n} = n_{\text{nz}}$.
 
 The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR). Given $V,J,R$ it is possible to reconstruct the matrix $A$ as follows:
 
-**Algorithm: Reconstruction of matrix in CSR format from $R$, $J$ and $V$**
+**Algorithm: Reconstruction of matrix in CSR format from arrays $\boldsymbol{V}$, $\boldsymbol{J}$ and $\boldsymbol{R}$**
 1. Set $A\gets 0$
 2. Set $\ell\gets 0$
-3. for $i=0,1,2,\dots,n-1$ **do**
-4. $~~~~$ for $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
+3. **for** $i=0,1,2,\dots,n-1$ **do**
+4. $~~~~$ **for** $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
 5. $~~~~~~~~$ Set $A_{i,J_\ell} \gets V_{\ell}$
 6. $~~~~~~~~$ Increment $\ell\gets \ell+1$
 7. $~~~~$ **end do**
@@ -232,16 +232,16 @@ Note that one of the rows contains only zero entries.
 ### Matrix-vector multiplication
 Clearly, matrices stored in the CSR format are only useful if they can be used in linear algebra operations such as the computation of the matrix-vector product $\boldsymbol{v}=A\boldsymbol{u}$. This can be realised with the following algorithm:
 
-**Algorithm: Matrix-vector multiplication $\boldsymbol{y} = \boldsymbol{y} + A\boldsymbol{x}$ in CSR storage**
+**Algorithm: Matrix-vector multiplication $\boldsymbol{v} = \boldsymbol{v} + A\boldsymbol{u}$ in CSR storage**
 1. Set $\ell\gets 0$
-2. for $i=0,1,2,\dots,n-1$ **do**
-3. $~~~~$ for $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
-4. $~~~~~~~~$ Set $y_i \gets y_i + V_{\ell} x_{J_{\ell}}$
+2. **for** $i=0,1,2,\dots,n-1$ **do**
+3. $~~~~$ **for** $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
+4. $~~~~~~~~$ Set $v_i \gets v_i + V_{\ell} u_{J_{\ell}}$
 5. $~~~~~~~~$ Increment $\ell\gets \ell+1$
 6. $~~~~$ **end do**
 7. **end do**
 
-Fortunately, we do not need to implement this algorithm (and other, more complicated operations such as matrix-matrix products) ourselves. Instead, we will use a suitable library.
+Fortunately, we do not need to implement this algorithm (and other, more complicated operations such as matrix-matrix multiplication) ourselves. Instead, we will use a suitable library.
 
 ### PETSc implementation
 To implement matrices in the CSR storage format, we use the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org). Since PETSc itself is written in the [C-programming language](https://www.c-language.org/), we will work with the [petsc4py](https://petsc.org/release/petsc4py/) Python interface. After [installation](https://petsc.org/release/petsc4py/install.html), this can be imported as follows:

@@ -180,8 +180,9 @@ def visualise_element(element, filename):
     plt.clf()
     ndof = element.ndof
     nrows, ncols = balanced_factorisation(ndof)
-    fig, axs = plt.subplots(nrows, ncols, figsize=(10, 5))
-    h = 0.002
+    figsize = (10, 5)
+    fig, axs = plt.subplots(nrows, ncols, figsize=(10 / 3 * ncols, 5 / 2 * nrows))
+    h = 0.001
     X = np.arange(0, 1 + h / 2, h)
     Y = np.arange(0, 1 + h / 2, h)
     X, Y = np.meshgrid(X, Y)
@@ -201,6 +202,13 @@ def visualise_element(element, filename):
             X.flatten()[...] + Y.flatten()[...] > 1,
         )
     )
+    for j in range(ndof):
+        Z[..., j].reshape([-1])[idx] = 0
+    max_Z = np.max(Z)
+    min_Z = np.min(Z)
+    print(f"max = {max_Z} min = {min_Z}")
+    Z[-1, -1] = max_Z
+    Z[-1, -2] = min_Z
 
     for j in range(ndof):
         row = j // ncols
@@ -217,11 +225,8 @@ def visualise_element(element, filename):
         ax.set_xlim(-0.1, 1.1)
         ax.set_ylim(-0.1, 1.1)
         ax.set_title(j)
-        Z[..., j].reshape([-1])[idx] = 0
-        Z[-1, -1] = 1
-        Z[-1, -2] = -0.125
         cs = ax.contourf(
-            X, Y, Z[..., j], levels=100, vmin=-0.125, vmax=1.0, cmap="terrain"
+            X, Y, Z[..., j], levels=100, vmin=min_Z, vmax=max_Z, cmap="terrain"
         )
         ax.quiver(X_c, Y_c, gradZ[..., j, 0], gradZ[..., j, 1], color="red")
         sigma = 2
@@ -252,7 +257,7 @@ def visualise_element(element, filename):
         )
     fig.colorbar(cs, ax=axs[...], shrink=0.6, location="right", extend="both")
 
-    plt.savefig(filename, bbox_inches="tight")
+    plt.savefig(filename, bbox_inches="tight", dpi=300)
 
 
 def visualise_quadrature(quad, filename):
@@ -316,13 +321,9 @@ print()
 
 visualise_mesh(mesh, "mesh.svg")
 
-# try:
-from fem.polynomialelement import PolynomialElement
 
 element = PolynomialElement(2)
 visualise_element(element, "element.png")
-# except:
-#    print("FAIL")
 
-quad = GaussLegendreQuadratureReferenceTriangle(3)
+quad = GaussLegendreQuadratureReferenceTriangle(2)
 visualise_quadrature(quad, "quadrature.pdf")

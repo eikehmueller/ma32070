@@ -685,11 +685,11 @@ $$
 The space of all linear functionals on $\mathcal{V}$ is called the **dual space** $\mathcal{V}^*$. If $\mathcal{V}$ is finite-dimensional then so is $\mathcal{V}^*$ and both spaces have the same dimension.
 
 #### Examples
-Let $\Omega\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(\Omega)$ be the space of functions on $\Omega$ with a square integrable first derivative. Then the following $\lambda$ are linear functionals:
+Let $\Omega\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(\Omega)$ be the space of functions on $\Omega$ with a square integrable first derivative. Then the following $\lambda\in\mathcal{V}^*$ are linear functionals:
 
 * point evaluation: $\lambda(w) := w(\xi)$ for some point $\xi\in \Omega$
-* differentiation: $\lambda(w) := \frac{\partial w}{\partial x_0}$
-* integration: $\lambda(w) := \int_\Omega f(x)w(x)$ for some function $f \in L_2(\Omega)$
+* differentiation: $\lambda(w) := \frac{\partial w}{\partial x_0}(\xi)$ for some point $\xi\in \Omega$
+* integration: $\lambda(w) := \int_\Omega f(x)w(x)\;dx$ for some function $f \in L_2(\Omega)$
 
 #### Exercise
 Convince yourself that these $\lambda$ indeed satisfy @eqn:linear_functional
@@ -697,15 +697,14 @@ Convince yourself that these $\lambda$ indeed satisfy @eqn:linear_functional
 ### Ciarlet's definition of the finite element
 This now leads to the following definition, originally due to Ciarlet (see [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) for the version used here): a finite element is a triple $(\widehat{K},\widehat{\mathcal{V}},\mathcal{L})$ which consists of
 
-* the **domain** $\widehat{K}$ (which we will always chose to be the reference trinagle in this course),
+* the **domain** $\widehat{K}$ (which we will always choose to be the reference triangle in this course),
 * a **function space** $\widehat{\mathcal{V}}=\widehat{\mathcal{V}}(\widehat{K})$ of real-valued functions on $\widehat{K}$,
-* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda_\ell\}_{\ell=0}^{\nu-1}$, which is a basis for $\widehat{\mathcal{V}}^*$, the dual of $\widehat{\mathcal{V}}$
+* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda_\ell\}_{\ell=0}^{\nu-1}$ and which is a basis for $\widehat{\mathcal{V}}^*$, the dual of $\widehat{\mathcal{V}}$.
 
-Crucially, we define the finite element by choosing a basis of the *dual* space $\mathcal{V}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$ by requiring that
+Crucially, we define the finite element by choosing a basis of the *dual* space $\widehat{\mathcal{V}}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$ by requiring that
 $$
 \lambda_\ell (\phi_k) = \delta_{\ell k} \qquad\text{for all $\ell,k=0,1,\dots,\nu-1$}.
 $$
-In the following we will assume that $\widehat{K}$ is the reference triangle introduced above, unless specified otherwise.
 
 #### Examples
 The **polynomial Lagrange element** we described above is a special case of this with 
@@ -714,7 +713,7 @@ The **polynomial Lagrange element** we described above is a special case of this
 * $\widehat{\mathcal{V}} = \mathcal{P}_p(\widehat{K})$, the space of bi-variate polynomials of degree $p$
 * $\mathcal{L}=\{\lambda_\ell\}_{\ell=0}^{\nu-1}$ with $\lambda_\ell(w) = w(\xi^{(\ell)})$ the point evaluation at the nodal points $\xi^{(\ell)}$ given in @eqn:nodal_points
 
-An alternative choice for the nodes would have been to define for some point $\mathring{\xi}\in \widehat{K}$:
+An alternative choice for the degrees of freedom would have been to define for some point $\mathring{\xi}\in \widehat{K}$:
 $$
 \lambda_\ell (w) = \frac{\partial^{\ell_a}w}{\partial x_0^{\ell_b} \partial x_1^{\ell_a-\ell_b}}(\mathring{\xi}) \qquad\text{for $0\le \ell_b \le \ell_a\le p$ and $\ell=\frac{1}{2}\ell_a(\ell_a-1) + \ell_b$}
 $$
@@ -729,7 +728,7 @@ The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.
   - $\lambda_{9+3\rho+2a+b}(w) = \frac{\partial^2 w}{\partial x_a \partial x_b}(v_\rho)$ with $0\le a\le b\le 1$ (Hessian evaluation at each vertex $v_\rho$ $\Rightarrow$ 9 nodes)
   - $\lambda_{18+\rho}(w) = n_\rho\cdot \nabla w(m_\rho)$ (normal derivative evaluation at the midpoints $m_\rho$ of each facet $F_\rho$ $\Rightarrow$ 3 nodes)
 
-Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative.
+Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative. We will not use the Argyris element in this course.
 
 ### Node numbering
 As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom. For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$ in @fig:reference_triangle. These entities are

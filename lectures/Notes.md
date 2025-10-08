@@ -539,7 +539,7 @@ $$
 \| u\|_{\mathcal{V}} = \| u\|_{H^1(\Omega)} &:= \left(\int_\Omega \left(u(x)^2+|\nabla u|^2\right)\;dx\right)^{\frac{1}{2}}
 \end{aligned}
 $$
-and then set $L_2(\Omega) = \left\{u : ||u||_{L_2(\Omega)}<\infty\right\}$ (the space of square-integrable real functions) and $H^1(\Omega) = \left\{u : ||u||_{H_1(\Omega)}<\infty\right\}$ (the space of square-integrable functions with square-integrable first derivative).
+and then set $L_2(\Omega) = \left\{u : ||u||_{L_2(\Omega)}<\infty\right\}$ (the space of square-integrable real functions) and $H^1(\Omega) = \left\{u : ||u||_{H^1(\Omega)}<\infty\right\}$ (the space of square-integrable functions with square-integrable first derivative).
 
 ## Finite element solutions
 Now, obviously it is not possible to solve @eqn:weak_problem_continuum on a computer since $\mathcal{V}$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $\mathcal{V}_h\subset \mathcal{V}$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. In this case the problem becomes: find $u_h \in \mathcal{V}_h$ such that 
@@ -561,7 +561,7 @@ It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cd
 $$
 \|u_h - u\|_{\mathcal{V}} \le C \min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}.
 $$
-The constant $C$ on the right hand side is problem specific since it depends on $a(\cdot,\cdot)$ and $b(\cdot)$. In contrast, the term $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}$ only depends on the choice of function spaces $\mathcal{V}$, $\mathcal{V}_h$ and describes how well the function $u \in \mathcal{V}$ can be approximated by a function $v_h\in \mathcal{V}_h$. For a suitable choice of $\mathcal{V}_h$, which we will discuss later, one can show that $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}\le C' h^{\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Hence, the finite element solution $u_h$ converges to the "true" solution $u$ as the mesh is refined ($h\rightarrow 0$):
+The constant $C$ on the right-hand side is problem specific since it depends on $a(\cdot,\cdot)$ and $b(\cdot)$. In contrast, the term $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}$ only depends on the choice of function spaces $\mathcal{V}$, $\mathcal{V}_h$ and describes how well the function $u \in \mathcal{V}$ can be approximated by a function $v_h\in \mathcal{V}_h$. For a suitable choice of $\mathcal{V}_h$, which we will discuss later, one can show that $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}\le C' h^{\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Here $h$ is the grid-spacing of the mesh on which the problem is formulated. Hence, the finite element solution $u_h$ converges to the "true" solution $u$ as the mesh is refined ($h\rightarrow 0$):
 $$
 \|u_h - u\|_{\mathcal{V}} \le C C' h^{\mu}.
 $$
@@ -585,7 +585,7 @@ $$
 Although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $\mathbb{R}^n$, they are constructed in a fundamentally different way:
 
 * The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_\ell^{(h)}$ are the expansion coefficients of the function $u_h$ in @eqn:linear_algebra_problem.
-* In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b(\Phi_\ell^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
+* In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b_\ell^{(h)}=b(\Phi_\ell^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
 
 The reason for this is that $b(\cdot)$ is an element of the dual space $\mathcal{V}^*$, which consists of all linear functionals defined on the space $\mathcal{V}$. We will discuss dual spaces in more detail below.
 
@@ -597,25 +597,25 @@ In summary, the solution procedure for @eqn:weak_problem_discretised is this:
 3. Solve the linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ in @eqn:linear_system_Aub for $\boldsymbol{u}^{(h)}$.
 4. Reconstruct the solution $u_h$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in @eqn:linear_algebra_problem.
 
-In the rest of this course we will discuss how each of these steps can be implemented in Python. The focus will be on structuring the code such that the mathematical objects are mapped to the corresponding Python objects in the source code. For the solution of the linear algebra system we will use the [PETSc](https://petsc.org/) library.
+In the rest of this course we will discuss how each of these steps can be implemented in Python. The focus will be on structuring the code such that the mathematical objects are mapped to the corresponding Python objects in the source code. For the solution of the linear algebra problem in @eqn:linear_system_Aub we will use the [PETSc](https://petsc.org/) library.
 
 # Finite Elements
-We start by solving the weak form of the PDE for a special case, namely a domain consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
+We start by considering the weak form of the PDE for a special case, namely a domain $\Omega$ consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
 
 ## Reference triangle
-Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $\textcolor{red}{v_0=(0,0)}$, $\textcolor{red}{v_1=(1,0)}$ and $\textcolor{red}{v_2=(0,1)}$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $\textcolor{blue}{F_0 = \overrightarrow{v_1v_2}}$, $\textcolor{blue}{F_1 = \overrightarrow{v_2v_0}}$ and $\textcolor{blue}{F_2 = \overrightarrow{v_0v_1}}$. This ordering will later be important.
+Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $\textcolor{red}{v_0=(0,0)}$, $\textcolor{red}{v_1=(1,0)}$ and $\textcolor{red}{v_2=(0,1)}$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $\textcolor{blue}{F_0 = \overrightarrow{v_1v_2}}$, $\textcolor{blue}{F_1 = \overrightarrow{v_2v_0}}$ and $\textcolor{blue}{F_2 = \overrightarrow{v_0v_1}}$. This ordering will be important later.
 
 ![:fig:reference_triangle: reference triangle](figures/reference_triangle.svg)
 
-In the following we will also refer to this as the *reference triangle* $\widehat{K}$.
+In the following we will also refer to this domain as the *reference triangle* $\widehat{K}$.
 
 Recall that the finite element approach starts with the choice of a suitable function space $\mathcal{V}_h$. For this, consider the space of bi-variate polynomials of degree $p$ on $\widehat{K}$:
 
 $$
-\mathcal{V}_h := \mathcal{P}_p(\widehat{K}) = \{q:q(x) = \sum_{\substack{s_0,s_1\\s_0+s_1\le p}} a_{s_0,s_1} x_0^{s_0}x_1^{s_1}\;\text{for all $x\in K$ with $a_{s_0,s_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
+\mathcal{V}_h := \mathcal{P}_p(\widehat{K}) = \{q:q(x) = \sum_{\substack{s_0,s_1\\s_0+s_1\le p}} a_{s_0,s_1} x_0^{s_0}x_1^{s_1}\;\text{for all $x\in \widehat{K}$ with $a_{s_0,s_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
 $$
 
-The space $\mathcal{P}_p(\widehat{K})$ is spanned by $n_{\text{dof}}=\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). This will later allow us to construct $H^1(\Omega)$ functions on a mesh that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
+The space $\mathcal{P}_p(\widehat{K})$ is spanned by $n_{\text{dof}}=\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). Recall that in one dimension a Lagrange interpolating polynomial is the unique polynomial of degree $m$ which passes through $m+1$ points $\{(t_k,z_k)\}_{k=0}^{m}$, i.e. $p(t_k)=z_k$ for all $k=0,1,\dots,m$. This will later allow us to construct $H^1(\Omega)$ functions on a mesh for a more general domain $\Omega$ that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials in two dimensions, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
 $$
 \phi_\ell(\xi^{(k)}) = \delta_{\ell k} = \begin{cases}
     1 & \text{for $\ell=k$}\\
@@ -642,7 +642,7 @@ The associated finite elements are known as **Lagrange elements**.
 ### Examples
 
 #### Linear finite element
-For $p=1$ we obtain the (bi-)linear finite element with the following basis three functions:
+For $p=1$ we obtain the (bi-)linear finite element with the following basis three functions, each of which is associated with a vertex:
 $$
 \begin{aligned}
 \phi_0(x) &= 1-x_0-y_0\\
@@ -665,10 +665,10 @@ $$
 \begin{aligned}
 \phi_3(x) &= 4x_0x_1,\\
 \phi_4(x) &= 4x_1(1-x_0-x_1),\\
-\phi_5(x) &= 4x_0(1-x_0-x_1).
+\phi_5(x) &= 4x_0(1-x_0-x_1),
 \end{aligned}
 $$
-These functions are visualised in the following figure (red arrows indicate gradients):
+see @fig:lagrange_nodes. These functions are visualised in the following figure (red arrows indicate gradients):
 
 ![:fig:basis_functions_quadratic: Basis functions for quadratic finite element](figures/quadratic_element.png)
 

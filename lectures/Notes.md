@@ -77,7 +77,7 @@ Crucially, information is lost when moving down this hierarchy: looking at a for
 This problem can be mitigated by mapping mathematical objects to computer code in a transparent way by using suitable abstractions and defining sensible interfaces: for example, when using the finite element method, we can map mathematical concepts such as basis functions directly to suitable classes in the Python code: the code explicitly encodes the mathematics which makes it much easier to understand and debug. We will employ this idea, which is used to great success by well-established Finite Element packages such as [Firedrake](https://www.firedrakeproject.org/), throughout this course.
 
 # Background: linear algebra, sparse matrices and tensors
-Implementating the finite element method requires the manipulation of matrices and vectors. We will use the [numpy](https://numpy.org/doc/stable/index.html) library for this. In the following we briefly review the implementation of fundamental linear algebra operations in this library. Since many matrices that we will encounter in this course are *sparse*, we will discuss an efficient storage format for this class of matrices and describe its implementation in the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org/release/) (pronounced "pet-see"). We will also introduce the concept of tensors, which generalise matrices and vectors, and which we will need during the assembly phase of the finite element method.
+Implementating the finite element method requires the manipulation of vectors and matrices. In the following we briefly review the implementation of fundamental linear algebra operations in the [numpy library](https://numpy.org/doc/stable/index.html). Since many matrices that we will encounter in this course are *sparse*, we will discuss an efficient storage format for this class of matrices and describe its implementation in the [Portable, Extensible Toolkit for Scientific Computation (PETSc)](https://petsc.org/release/) (pronounced "pet-see"). We will also introduce the concept of tensors, which generalise vectors and matrices, and which we will need during the assembly phase of the finite element method.
 
 ## Linear algebra in numpy
 In numpy, vectors and matrices are represented by objects of type [`np.ndarray`](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html). For example, the vectors $\boldsymbol{v}, \boldsymbol{b}\in\mathbb{R}^3$ and the $3\times 3$ matrix $A$ given by
@@ -107,7 +107,9 @@ v = np.array([1.2,7.6,2.1], dtype=float)
 b = np.array([-7.2, 0.6, 1.3], dtype=float)
 A = np.array([[4.3, -1.2, 2.8],[0.7, 7.3, 1.1], [-0.4, 0.2, 9.7]], dtype=float)
 ```
-Usually we can leave out the keyword argument `dtype=float`. However, since Python will infer the data type automatically, it is required in cases like `z = np.array([1,2,4])` which by default will create an integer-valued array (in contrast, `v = np.array([1.2,7.6,2.1])` will result in an array whose entries are of type `float`). Recall also that there is a subtle difference between [`np.array()`](https://numpy.org/doc/stable/reference/generated/numpy.array.html) and [`np.asarray()`](https://numpy.org/doc/stable/reference/generated/numpy.asarray.html): the latter will try to only create a reference to the data.
+Usually we can leave out the keyword argument `dtype=float` which explicitly specifies the data type. However, since without this keyword Python will infer the data type automatically, it is required in cases like `z = np.array([1,2,4])` which by default will create an integer-valued array (in contrast, `v = np.array([1.2,7.6,2.1])` will result in an array whose entries are of type `float` since Python interprets `1.2` as a real number).
+
+Recall also that there is a subtle difference between [`np.array()`](https://numpy.org/doc/stable/reference/generated/numpy.array.html) and [`np.asarray()`](https://numpy.org/doc/stable/reference/generated/numpy.asarray.html): the latter will try to only create a reference to the data while the former will create a new copy.
 
 ### Special matrices
 It is possible to create special matrices such as the identity or a matrix containing only zeros:
@@ -124,9 +126,9 @@ rng = np.random.default_rng(seed=24618567)
 random_4x2 = rng.normal(size=(4,2))
 ```
 
-Observe that instead of using `np.random.normal(size=(4,2))` we create a random number generator generator with a fixed seed first. This ensures that the results are the same in subsequent runs of the code.
+Observe that instead of using `np.random.normal(size=(4,2))` we create a random number generator generator with a fixed seed first. This ensures that the results are the same in subsequent runs of the code which will simplify debugging.
 
-### Manipulating vectors and matrices
+### Linear algebra operations for vectors and matrices
 Numpy provides functionality for manipulating matrices and vectors. For example, we can compute the matrix-vector product $\boldsymbol{w} = A\boldsymbol{v}$ or the dot-product $\rho = \boldsymbol{v}\cdot \boldsymbol{b}$ by using the [`@` operator](https://numpy.org/doc/stable/reference/routines.linalg.html#the-operator) and the [`np.dot()` method](https://numpy.org/doc/stable/reference/generated/numpy.dot.html):
 
 ```Python
@@ -134,12 +136,12 @@ w = A @ v
 rho = np.dot(v,b)
 ```
 
-In contrast, the `*` operator will perform element-wise multiplication:
+In contrast, the `*` operator will perform element-wise multiplication: The Python code
 
 ```Python
 t = v * b
 ```
-results in the three-dimensional vector $\boldsymbol{t}\in\mathbb{R}^3$ with
+creates the three-dimensional vector $\boldsymbol{t}\in\mathbb{R}^3$ with
 
 $$
 \boldsymbol{t} =  \begin{pmatrix}
@@ -168,7 +170,7 @@ For more information please refer to the [numpy documentation](https://numpy.org
 ## Sparse matrices
 Many matrices that arise in Scientific Computing contain a lot of zero entries. Examples can be found in the [SuiteSparse Matrix Collection](https://sparse.tamu.edu/): clicking on the names of individual matrices will provide more details and a visualisation of their structure.
 
-@fig:stiffness_matrix shows a spy-plot of the $81\times 81$ matrix that is obtained from a finite element discretisation; we will discuss how this matrix is constructed in more detail later.
+@fig:stiffness_matrix shows a spy-plot of the $81\times 81$ matrix that is obtained from a finite element discretisation; we will discuss how this matrix is constructed in more detail later, for now we are only interested in how it can be stored and used.
 
 ![:fig:stiffness_matrix: Stiffness matrix](figures/stiffness_matrix.png)
 
@@ -180,13 +182,13 @@ We therefore introduce a widely-used storage format which is more suitable for m
 To store sparse matrices, we proceed as follows:
 
 1. Store all non-zero entries in a long array $V$ of length $n_{\text{nz}}$, going throw the matrix row by row
-2. For each non-zero entry also store the corresponding column index in an array $J$ of the same length
+2. For each non-zero entry also store the corresponding column index in an array $J$ of the same length as $V$
  
 We could now also store the corresponding row-indices in an array $I$ of the same length. With this, it would then be possible to reconstruct all non-zero entries of $A$:
 
-#### Algorithm: Reconstruction of matrix 
+**Algorithm: Reconstruction of matrix from $I$, $J$ and $V$**
 1. Set $A\gets 0$
-2. for $\ell=0,1,2,\dots,n_{\text{nz}}$ **do**
+2. **for** $\ell=0,1,2,\dots,n_{\text{nz}}$ **do**
 3. $~~~~$ Set $A_{I_\ell,J_\ell} \gets V_{\ell}$
 4. **end do**
 
@@ -196,7 +198,7 @@ However, there is a more efficient way of doing this: Since the arrays $V$ and $
 
 The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR). Given $V,J,R$ it is possible to reconstruct the matrix $A$ as follows:
 
-#### Algorithm: Reconstruction of matrix in CSR format
+**Algorithm: Reconstruction of matrix in CSR format from $R$, $J$ and $V$**
 1. Set $A\gets 0$
 2. Set $\ell\gets 0$
 3. for $i=0,1,2,\dots,n-1$ **do**
@@ -230,7 +232,7 @@ Note that one of the rows contains only zero entries.
 ### Matrix-vector multiplication
 Clearly, matrices stored in the CSR format are only useful if they can be used in linear algebra operations such as the computation of the matrix-vector product $\boldsymbol{v}=A\boldsymbol{u}$. This can be realised with the following algorithm:
 
-#### Algorithm: Matrix-vector multiplication $\boldsymbol{y} = \boldsymbol{y} + A\boldsymbol{x}$ in CSR storage
+**Algorithm: Matrix-vector multiplication $\boldsymbol{y} = \boldsymbol{y} + A\boldsymbol{x}$ in CSR storage**
 1. Set $\ell\gets 0$
 2. for $i=0,1,2,\dots,n-1$ **do**
 3. $~~~~$ for $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**
@@ -1799,20 +1801,20 @@ J_{ab}(\xi^{(q)}) = \frac{\partial (x_K^{(q)})_a }{\partial x_b} = \frac{\partia
 $$
 Putting everything together, we arrive at the following procedure:
 
-### Algorithm: assembly of right-hand-side vector $\boldsymbol{b}^{(h)}$
+**Algorithm: assembly of right-hand-side vector $\boldsymbol{b}^{(h)}$**
 1. Initialise $\boldsymbol{b}^{(h)} \gets \boldsymbol{0}$
-1. For all cells $K$ **do**:
-1. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
-1. $~~~~$ For all quadrature points $q$ **do**:
-1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
-1. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = \widehat{f}_K(\xi^{(q)})$
-1. $~~~~$ **end do**
-2. $~~~~$ Construct the local dof-vector $\boldsymbol{b}^{(h),\text{local}}$ with
+2. For all cells $K$ **do**:
+3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
+4. $~~~~$ For all quadrature points $q$ **do**:
+5. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
+6. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = \widehat{f}_K(\xi^{(q)})$
+7. $~~~~$ **end do**
+8. $~~~~$ Construct the local dof-vector $\boldsymbol{b}^{(h),\text{local}}$ with
 $$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$$
-3. $~~~~$ For all local dof-indices $\ell$ **do**:
-4. $~~~~~~~~$ Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$
-5. $~~~~$ **end do**
-6. **end do**
+1. $~~~~$ For all local dof-indices $\ell$ **do**:
+2. $~~~~~~~~$ Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$
+3. $~~~~$ **end do**
+4. **end do**
 
 #### Illustration
 @fig:global_assembly_rhs visualises the assembly of the global vector $\boldsymbol{b}^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global vector entry $b^{(h)}_8$.
@@ -1867,23 +1869,23 @@ The value $J(\xi^{(q)})$ of the Jacobian at the quadrature points can be compute
 
 Putting everything together we arrive at the following procedure:
 
-### Algorithm: assembly of stiffness matrix $A^{(h)}$
+**Algorithm: assembly of stiffness matrix $A^{(h)}$**
 1. Initialise $A^{(h)} \gets 0$
-1. For all cells $K$ **do**:
-2. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(i,\ell^\times)}$
-3. $~~~~$ For all quadrature points $q$ **do**:
-4. $~~~~~~~~$ Compute the Jacobian $J(\xi^{(q)})$ with $J_{qab} = J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^{\times}ab}$
-5. $~~~~~~~~$ Compute the determinant $D_q$ of $J(\xi^{(q)})$
-6. $~~~~~~~~$ Compute the matrix $J^{(2)}_q = J^{\top}(\xi^{(q)}) J(\xi^{(q)})$ with $J^{(2)}_{qab} = \sum_{c} J_{qca}J_{qcb}$ and invert it to obtain $J^{(-2)}_{q} = \left(J^{(2)}_q\right)^{-1}$
-7. $~~~~$ **end do**
-8. $~~~~$ Construct the local stiffness matrix $A^{(h),\text{local}}$ with
+2. For all cells $K$ **do**:
+3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(i,\ell^\times)}$
+4. $~~~~$ For all quadrature points $q$ **do**:
+5. $~~~~~~~~$ Compute the Jacobian $J(\xi^{(q)})$ with $J_{qab} = J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^{\times}ab}$
+6. $~~~~~~~~$ Compute the determinant $D_q$ of $J(\xi^{(q)})$
+7. $~~~~~~~~$ Compute the matrix $J^{(2)}_q = J^{\top}(\xi^{(q)}) J(\xi^{(q)})$ with $J^{(2)}_{qab} = \sum_{c} J_{qca}J_{qcb}$ and invert it to obtain $J^{(-2)}_{q} = \left(J^{(2)}_q\right)^{-1}$
+8. $~~~~$ **end do**
+9. $~~~~$ Construct the local stiffness matrix $A^{(h),\text{local}}$ with
 $$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{q\ell a}(J^{(-2)}_q)_{ab} T^\partial_{qkb} D_q + \omega \sum_{q} w_q  T_{q\ell}T_{qk} D_q$$
-9. $~~~~$ For all local dof-indices $\ell$ **do**:
-10. $~~~~~~~~$ For all local dof-indices $k$ **do**:
-11. $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$ and $k_{\text{global}} = k_{\text{global}}(\alpha,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $\alpha$
-12. $~~~~~~~~$ **end do**
-13. $~~~~$ **end do**
-14. **end do**
+1. $~~~~$ For all local dof-indices $\ell$ **do**:
+2.  $~~~~~~~~$ For all local dof-indices $k$ **do**:
+3.  $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$ and $k_{\text{global}} = k_{\text{global}}(\alpha,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $\alpha$
+4.  $~~~~~~~~$ **end do**
+5.  $~~~~$ **end do**
+6.  **end do**
 
 #### Illustration
 @fig:global_assembly_stiffness visualises the assembly of the stiffness matrix $A^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global matrix entry $A^{(h)}_{8,8}$.
@@ -2232,7 +2234,7 @@ $$
 $$
 Which can be written as follows:
 
-### Algorithm: preconditioned Richardson iteration
+**Algorithm: preconditioned Richardson iteration**
 1. **for** $k=0,1,\dots,k_{\text{max}}-1$ **do**
 2. $~~~~$ Compute $\boldsymbol{r}^{(k)} = \boldsymbol{b} - A\boldsymbol{u}^{(k)}$
 3. $~~~~$ Solve $P\boldsymbol{z}^{(k)} = \boldsymbol{r}^{(k)}$ for $\boldsymbol{z}^{(k)}$
@@ -2348,7 +2350,7 @@ and it is up to us to recognise that the computed solution does not solve $A\bol
 ## Conjugate Gradient method
 The (preconditioned) Richardson iteration is not very efficient. A better alternative for symmetric positive definite (SPD) $A$ is the Conjugate Gradient algorithm, which is given as follows:
 
-### Algorithm: Conjugate Gradient method
+**Algorithm: Conjugate Gradient method**
 1. Set $\boldsymbol{r}^{(0)}\gets \boldsymbol{b} - A\boldsymbol{u}^{(0)}$
 2. Solve $P\boldsymbol{z}^{(0)} = \boldsymbol{r}^{(0)}$
 3. Set $\boldsymbol{p}^{(0)}\gets \boldsymbol{z}^{(0)}$
@@ -2395,7 +2397,6 @@ To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work 
 For this observe that for each row $\ell_{\text{global}}$ of $A^{(h)}$ we need to find the set of indices $\mathcal{J}_{\ell_{\text{global}}}$ such that $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $k_{\text{global}}\in \mathcal{J}_{\ell_{\text{global}}}$. To achieve this, observe that all unknowns associated with a given cell with index $\alpha$ couple to each other, i.e. $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$ the set of global unknowns associated with cell $K$. We can therefore construct the sets $\mathcal{J}_{\ell_{\text{global}}}$ by iterating over all cells of the mesh. Once we have done this, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to construct the column index array $J$ and the row-pointer array $R$ as shown in the following procedure:
 
 **Algorithm: create sparsity structure**
-
 1. Set $\mathcal{J}_{\ell_{\text{global}}} = \emptyset$ for all $\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$
 2. **for all** cells $K$ with index $\alpha$
 3. $~~~~$ Set $\mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$, the set of global indices of dofs associated with cell $K$

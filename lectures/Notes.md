@@ -274,7 +274,7 @@ $$
 \textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
 \end{pmatrix}
 $$
-This can be done by calling the `setValue()` method:
+This can be done by calling the [`setValue()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.setValue):
 ```python
 # Set 
 row = 0
@@ -294,7 +294,7 @@ $$
 \textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
 \end{pmatrix}
 $$
-For this, we need to specify the rows and columns in the target matrix and use the `setValues()` (plural) method as follows:
+For this, we need to specify the rows and columns in the target matrix and use the [`setValues()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.setValues) as follows:
 ```python
 rows = [0, 1]
 cols = [0, 1]
@@ -323,7 +323,7 @@ Finally, before we can use the matrix for any computations, we need to assemble 
 A.assemble()
 ```
 
-For debugging purposes, we might want to print out the matrix. This can be done by first converting the sparse matrix `A` to a dense matrix `A_dense` and then extracting the `numpy` array `A_numpy` which represents the values:
+For debugging purposes, we might want to print out the matrix. This can be done by first converting the sparse matrix `A` to a dense matrix `A_dense` and then extracting the numpy array `A_numpy` which represents the values:
 ```python
 A_dense = PETSc.Mat()
 A.convert("dense",A_dense)
@@ -345,18 +345,18 @@ we can do this:
 v = PETSc.Vec()
 v.createWithArray([8.1, 0, 9.3, -4.3, 5.2])
 ```
-We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$. For this, we first need to create an empty five-dimensional vector $\boldsymbol{v}$, which can be done with the `createSeq()` method.
+We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$. For this, we first need to create an empty five-dimensional vector $\boldsymbol{v}$, which can be done with the [`createSeq()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Vec.html#petsc4py.PETSc.Vec.createSeq).
 ```python
 w = PETSc.Vec()
 n = 5
 w.createSeq(n)
 A.mult(v, w)
 ```
-Instead of the `mult()` method we can also just use the `@` operator, as for `numpy` matrices/vectors:
+Instead of the [`mult()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.mult) we can also just use the `@` operator, as for numpy matrices/vectors:
 ```python
 w = A @ v
 ```
-To print the vector we need to first extract the underlying array with the `getArray()` method:
+To print the vector we need to first extract the underlying array with the [`getArray()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Vec.html#petsc4py.PETSc.Vec.getArray):
 ```python
 w_numpy = w.getArray()
 print(w_numpy)
@@ -371,7 +371,7 @@ Tensors are generalisations vectors and matrices: they can be understood as $d$-
 * rank 2 tensors are $n\times m$ **matrices** $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $[n,m]$, where $n$ is the number of rows and $m$ is the number of columns of the matrix.
 
 ### Tensors in numpy
-In numpy, tensors are represented by multidimensional arrays of type [`np.ndarray(...,dtype=float)`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $[2,3,4]$ with only zero entries like this:
+In numpy, (real-valued) tensors are represented by multidimensional arrays of type [`np.ndarray(...,dtype=float)`](https://numpy.org/devdocs/reference/generated/numpy.ndarray.html). For example, we can create a rank 3 tensor of shape $[2,3,4]$ with only zero entries like this:
 
 ```Python
 T = np.zeros(shape=[2,3,4],dtype=float)
@@ -383,9 +383,9 @@ or construct the $2\times 3$ matrix $\begin{pmatrix}1.8 & 2.2 & 3.4 \\ 4.2 & 5.1
 A = np.asarray([[1.8,2.2,3.4],[4.2,5.1,6.7]],dtype=float)
 ```
 
-The shapes are given by `T.shape` and `A.shape`.
+The shapes are given by `T.shape` and `A.shape` respectively.
 
-### Adding tensors
+### Adding tensors and elementwise multiplication
 Tensors $T$, $T'$ of the same shape can be scaled and added elementwise: if $\alpha,\beta\in \mathbb{R}$ are real numbers, then $S=\alpha T+\beta T'$ is a new tensor of the same shape. The entries of $S$ are given by
 
 $$
@@ -399,10 +399,17 @@ In numpy this can be implemented like this:
 S = alpha*T + beta*Tprime
 ```
 
-In fact, Python allows the addition of tensors of different shapes according to a set of [broadcasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html).
+As for vectors and matrices, tensors can be multiplied element-wise: if $T$, $T'$ are tensors of the same shape, then their elementwise product $P=T*T'$ is a new tensor of the same shape.  The entries of $P$ are given by
+
+$$
+P_{i_0,i_1,\dots,i_{d-1}} = T_{i_0,i_1,\dots,i_{d-1}}T'_{i_0,i_1,\dots,i_{d-1}}
+\qquad \text{for all $i_0,i_1,\dots,i_{d-1}$ with $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$}.
+$$
+
+In fact, Python allows the addition and elementwise multiplication of tensors of different shapes according to a set of [broadcasting rules](https://numpy.org/doc/stable/user/basics.broadcasting.html).
 
 ### Multiplying tensors
-Tensors can be multiplied in different ways by summing over repeated indices; this is often also called "contracting indices". For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
+Tensors can be multiplied in different ways by summing over repeated indices; this is often also called *"contracting indices"*. For example, we can multiply the rank 3 tensor $T$ and the rank 4 tensor $T'$ to obtain a rank 5 tensor $R$ as follows:
 
 $$
 R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}\qquad :eqn:tensor_contraction_1
@@ -432,7 +439,7 @@ $$
 v_i = \sum_j A_{ij}w_j
 $$
 
-In`numpy`, this can be implemented as
+Innumpy, this can be implemented as
 
 ```Python
 v = np.einsum("ij,j->i",A,w)
@@ -1664,7 +1671,7 @@ The necessary functionality is implemented in the `FunctionSpace` class in [`fem
 * The method `local2global(self, alpha, ell)` implements the map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ described above. If the parameter `ell` is a single integer index in the range $0,1,\dots,\nu-1$, the method returns a single number $\ell_{\text{global}}$. If `ell` is an iterable (such as a list `[0,3,4]` or `range(1,6,2)`) the global index will be computed for each local index and the method returns a list.
 
 ### Functions
-To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a `numpy` array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h \in \mathcal{V}_h$ given by
+To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a numpy array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h \in \mathcal{V}_h$ given by
 
 $$
 u_h(x) = \sum_{\ell_{\text{global}}=0}^{N-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
@@ -2423,7 +2430,7 @@ Recall that previous we inserted the cell-local matrix `local_matrix` into the c
 ```python
 stiffness_matrix[np.ix_(j_g, j_g)] += local_matrix
 ```
-where `stiffness_matrix` is a dense `numpy` array and `j_g` is the list of global dof-indices associated with a particular cell $K$. When using PETSc this needs to be replaced by 
+where `stiffness_matrix` is a dense numpy array and `j_g` is the list of global dof-indices associated with a particular cell $K$. When using PETSc this needs to be replaced by 
 
 ```python
 stiffness_matrix.setValues(j_g, j_g, local_matrix, addv=True)

@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
-
+from fem.polynomialelement import PolynomialElement
 from fem.utilitymeshes import RectangleMesh
 from fem.quadrature import GaussLegendreQuadratureReferenceTriangle
 
@@ -180,8 +180,8 @@ def visualise_element(element, filename):
     plt.clf()
     ndof = element.ndof
     nrows, ncols = balanced_factorisation(ndof)
-    fig, axs = plt.subplots(nrows, ncols)
-    h = 0.01
+    fig, axs = plt.subplots(nrows, ncols, figsize=(10, 5))
+    h = 0.002
     X = np.arange(0, 1 + h / 2, h)
     Y = np.arange(0, 1 + h / 2, h)
     X, Y = np.meshgrid(X, Y)
@@ -195,6 +195,13 @@ def visualise_element(element, filename):
     X_c, Y_c = np.meshgrid(X_c, Y_c)
     xi_c = np.asarray((X_c.flatten(), Y_c.flatten())).T
     gradZ = element.tabulate_gradient(xi_c).reshape((*X_c.shape, ndof, 2))
+    idx = np.where(
+        np.logical_or(
+            np.logical_or(X.flatten()[...] > 1, Y.flatten()[...] > 1),
+            X.flatten()[...] + Y.flatten()[...] > 1,
+        )
+    )
+
     for j in range(ndof):
         row = j // ncols
         col = j % ncols
@@ -210,7 +217,12 @@ def visualise_element(element, filename):
         ax.set_xlim(-0.1, 1.1)
         ax.set_ylim(-0.1, 1.1)
         ax.set_title(j)
-        ax.contourf(X, Y, Z[..., j], levels=100, vmin=0, vmax=1, cmap="terrain")
+        Z[..., j].reshape([-1])[idx] = 0
+        Z[-1, -1] = 1
+        Z[-1, -2] = -0.125
+        cs = ax.contourf(
+            X, Y, Z[..., j], levels=100, vmin=-0.125, vmax=1.0, cmap="terrain"
+        )
         ax.quiver(X_c, Y_c, gradZ[..., j, 0], gradZ[..., j, 1], color="red")
         sigma = 2
         mask = Polygon(
@@ -238,6 +250,7 @@ def visualise_element(element, filename):
             marker="o",
             color="red",
         )
+    fig.colorbar(cs, ax=axs[...], shrink=0.6, location="right", extend="both")
 
     plt.savefig(filename, bbox_inches="tight")
 
@@ -303,13 +316,13 @@ print()
 
 visualise_mesh(mesh, "mesh.svg")
 
-try:
-    from fem.polynomialelement import PolynomialElement
+# try:
+from fem.polynomialelement import PolynomialElement
 
-    element = PolynomialElement(2)
-    visualise_element(element, "element.png")
-except:
-    pass
+element = PolynomialElement(2)
+visualise_element(element, "element.png")
+# except:
+#    print("FAIL")
 
 quad = GaussLegendreQuadratureReferenceTriangle(3)
 visualise_quadrature(quad, "quadrature.pdf")

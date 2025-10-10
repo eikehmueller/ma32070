@@ -415,7 +415,7 @@ $$
 R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}\qquad :eqn:tensor_contraction_1
 $$
 
-In numpy, indices can be contracted with the powerful [`numpy.einsum()` method](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). For example, to compute $R$ according to @eqn:tensor_contraction we can write
+In numpy, indices can be contracted with the powerful [`numpy.einsum()` method](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). For example, to compute $R$ according to @eqn:tensor_contraction_1 we can write
 
 ```Python
 R = np.einsum("ijk,mkln->ijmln",T,Tprime)

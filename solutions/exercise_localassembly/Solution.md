@@ -124,6 +124,8 @@ The following table shows the $L_2$ norm of the error for polynomial degrees $p=
 |         3  |          $8.38\cdot 10^{-3}$ |
 |         4  |          $2.82\cdot 10^{-3}$ |
 
+Using cubic instead of linear finite elements reduces the error by approximately one order of magnitude.
+
 ### Plot of solution and error
 The following plots visualise the solution and error for polynomial degrees $p=1,2,3,4$
 

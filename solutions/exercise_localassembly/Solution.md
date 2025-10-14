@@ -103,7 +103,7 @@ We also construct the vector $\boldsymbol{u}^{(\text{exact})}$ (=`u_q`) by evalu
 ```Python
 u_q = u_exact(zeta_q)
 ```
-The vector $\boldsymbol{e}$ (=`e_q`) is then given by $\boldsymbol{e}=\boldsymbol{u}^{\text{exact}}-T \boldsymbol{u}^{(h)}$:
+The vector $\boldsymbol{e}$ (=`e_q`) is then given by $\boldsymbol{e}=\boldsymbol{u}^{(\text{exact})}-T \boldsymbol{u}^{(h)}$:
 ```Python
 e_q = u_q - phi @ u_numerical
 ```

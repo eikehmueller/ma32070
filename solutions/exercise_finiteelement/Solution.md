@@ -150,7 +150,7 @@ self._nodal_points = np.asarray(
             ]
         )
 ```
-in the `__init__()` method. In the same method we also construct the coefficient matrix $C = \left(V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1})\right)^{-1}$ (stored in `self._oefficient`), which is given by the inverse of the Vandermonde matrix $V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1})$ evaluated at the nodal points :
+in the `__init__()` method. In the same method we also construct the coefficient matrix $C = \left(V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1})\right)^{-1}$ (stored in `self._coefficient`), which is given by the inverse of the Vandermonde matrix $V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1})$ evaluated at the nodal points :
 
 ```Python
 vandermonde_matrix = self._vandermonde_matrix(self._nodal_points)

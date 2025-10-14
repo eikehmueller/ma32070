@@ -98,7 +98,7 @@ w_q = quad.weights
 phi = element.tabulate(zeta_q)
 ```
 
-We also construct the vector $\boldsymbol{u}^{\text{exact}}$ (=`u_q`) by evaluating the function $u_{\text{exact}}$ at the quadrature points
+We also construct the vector $\boldsymbol{u}^{(\text{exact})}$ (=`u_q`) by evaluating the function $u_{\text{exact}}$ at the quadrature points
 
 ```Python
 u_q = u_exact(zeta_q)

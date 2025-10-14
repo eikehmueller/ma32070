@@ -539,7 +539,7 @@ u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}\left\|\boldsymbol{x}-\bolds
 $$
 with a peak of width $\sigma = 0.5$ centred at $x_0 = (0.6, 0.25)^\top$.
 
-In the weak form which defines the PDE $-\nabla\cdot (\kappa \nabla u) + \omega u = f$, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
+In the weak form which defines the PDE $-\nabla (\kappa \nabla u) + \omega u = f$, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
 
 Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution and error for polynomial degrees $p=1$ and $p=3$.
 
@@ -700,7 +700,7 @@ $$
 #### Due: end of week 7
 
 ## Task
-As for the simplified case where $\Omega=\widehat{K}$ is the reference triangle, the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution $u_{\text{exact}}(x)$ and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{global}}}^{(h)}(x)$, we can write the error $e_h(x)$ as
+As for the simplified case where the domain $\Omega$ is the reference triangle $\widehat{K}$, the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution $u_{\text{exact}}(x)$ and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{global}}}^{(h)}(x)$, we can write the error $e_h(x)$ as
 
 $$
 e_h(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
@@ -757,7 +757,7 @@ Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algori
 * A Python function `u_hexact` which can represents the exact solution $u_{\text{exact}}(x)$ and which be evaluated at arbitrary points $x\in \Omega$ 
 * A suitable quadrature rule `quad`
 
-You can use the following main program, which solves the PDE $-\kappa\Delta u + \omega u=f$ for $\kappa=0.9$, $\omega=0.4$ with the right hand side $f(x)$ chosen such that the exact solution is
+You can use the following main program, which solves the PDE $-\nabla(\kappa\nabla) u + \omega u=f$ for $\kappa=0.9$, $\omega=0.4$ with the right hand side $f(x)$ chosen such that the exact solution is
 
 $$
 u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)
@@ -862,7 +862,7 @@ Assuming that for $h\ll 1$ we have
 $$
 \|e_h\|_{L_2(\Omega)}\approx C h^{\alpha}
 $$
-which empirical rate of convergence $\alpha$ do you observe in the two cases?
+for some constant $C$, which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
 * Save your implementation of `error_nrm()`in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`

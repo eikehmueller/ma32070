@@ -342,7 +342,9 @@ $$
 \end{aligned}
 $$
 
-You can use the following 10 monomials for the construction of the Vandermonde matrix:
+![Visualisation of basis functions for cubic Lagrange element](figures/cubic_element.png)
+
+You should use the following 10 monomials for the construction of the Vandermonde matrix:
 
 $$
 \{\theta_\ell(x)\}_{\ell=0}^{9} = \{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,x_0^3,x_0^2x_1,x_0x_1^2,x_1^3\}

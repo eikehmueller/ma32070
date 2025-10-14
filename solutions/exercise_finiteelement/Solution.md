@@ -160,8 +160,3 @@ The implementation of the abstract properties `ndof_per_interior`, `ndof_per_fac
 
 ## Complete code
 The full implementation of the `CubicElement` class can be found in [cubicelement.py](cubicelement.py). The corresponding tests are contained in [test_cubicelement.py](test_cubicelement.py).
-
-## Visualisation
-The following figure shows the 10 basis functions
-
-![Visualisation ob basis functions](cubic_element.png)

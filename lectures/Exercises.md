@@ -361,8 +361,7 @@ Your code should pass the tests below, which verify correctness for special case
 
 * `tabulate()` correctly computes $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points.
 * `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$.
-* The method `inverse_dofmap()` which is inherited from the abstract base class, behaves as expected.
-
+* The method `inverse_dofmap()` which is inherited from the abstract base class, behaves as expected. 
   
 ## Practicalities
 * Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise2`.

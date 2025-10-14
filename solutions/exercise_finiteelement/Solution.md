@@ -215,7 +215,22 @@ def test_tabulate_dofs():
     assert np.allclose(tabulated, np.eye(10), rtol=1e-12)
 ```
 
-The following code checks the output of `inverse_dofmap()` and compares it to the expected results:
+Looking at the order in which dofs are associated with the Lagrange nodes, the inverse dof-map is defined as follows:
+$$
+\begin{aligned}
+0 &\mapsto (\texttt{"vertex"}, 0, 0),\\
+1 &\mapsto (\texttt{"vertex"}, 1, 0),\\
+2 &\mapsto (\texttt{"vertex"}, 2, 0),\\
+3 &\mapsto (\texttt{"facet"}, 0, 0),\\
+4 &\mapsto (\texttt{"facet"}, 0, 1),\\
+5 &\mapsto (\texttt{"facet"}, 1, 0),\\
+6 &\mapsto (\texttt{"facet"}, 1, 1),\\
+7 &\mapsto (\texttt{"facet"}, 2, 0),\\
+8 &\mapsto (\texttt{"facet"}, 2, 1),\\
+9 &\mapsto (\texttt{"interior"}, 0, 0).
+\end{aligned}
+$$
+The following code checks the output of `inverse_dofmap()` and compares it to the expected results.
 ```Python
 def test_inverse_dofmap():
     """Check that results of inverse_dofmap() are correct"""

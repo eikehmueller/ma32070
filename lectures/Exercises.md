@@ -659,7 +659,7 @@ $$
 Implement this quadrature rule in the class `ThreePointQuadratureReferenceTriangle`, which should be a subclass of the abstract base class `Quadrature`. Write a suitable test which verifies that the implemention is correct. For this, observe that
 
 $$
-\int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1 = \frac{s_0!s_1!}{(s_0+s_1+2)!}
+\int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1 = \int_0^1 \int_0^{1-x_1} x_0^{s_0}x_1^{s_1}\;dx_0\;dx_1=\frac{1}{s_0+1}\int_0^1 (1-x_1)^{s_0+1}x_1^{s_1}\;dx_1=\frac{s_0!s_1!}{(s_0+s_1+2)!}
 $$
 
 Use the [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html) decorator to write a suitable, parametrised test which verifies this:

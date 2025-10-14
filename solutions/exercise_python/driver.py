@@ -11,19 +11,6 @@ def f(x, alpha):
 alpha = 0.4
 I_exact = 1 / alpha * (1 - np.exp(-alpha))
 
-# pedestrian implementation
-results = {"MidpointRule": [], "SimpsonsRule": []}
-for n in [4, 8, 16, 32]:
-    integrator_midpoint = MidpointRule([0, 1], n)
-    results["MidpointRule"].append(
-        integrator_midpoint.evaluate(functools.partial(f, alpha=alpha))
-    )
-for n in [4, 8, 16, 32]:
-    integrator_simpson = SimpsonsRule([0, 1], n)
-    results["SimpsonsRule"].append(
-        integrator_simpson.evaluate(functools.partial(f, alpha=alpha))
-    )
-
 # using list- and dictionary comprehensions
 results = {
     Integrator.__name__: [

@@ -6,7 +6,7 @@
 
 # Implementation
 
-The class `CubicElement` is a subclass of the abstract `FiniteElement` class, which needs to be imported from [fem/finiteelement.py]()https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py:
+The class `CubicElement` is a subclass of the abstract `FiniteElement` class, which needs to be imported from [fem/finiteelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py):
 
 ```Python
 from fem.finiteelement import FiniteElement
@@ -157,7 +157,12 @@ self._coefficients = np.linalg.inv(vandermonde_matrix)
 ### Class properties
 The implementation of the abstract properties `ndof_per_interior`, `ndof_per_facet` and `ndof_per_vertex`, which should return 1, 2 and 1 respectively, is straightforward.
 
+### Complete code
+The full implementation of the `CubicElement` class can be found in [cubicelement.py](cubicelement.py).
+
 ## Tests
+All tests are contained in [test_cubicelement.py](test_cubicelement.py).
+
 The following code checks that $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points. For this, we construct a $10\times 10$ matrix `tabulated` by passing the 10 nodal points stored in $\xi$ to the `tabulate()` method. If everything is correct, this matrix should be the identity matrix.
 ```Python
 def test_tabulate_nodal_points():
@@ -253,6 +258,3 @@ def test_inverse_dofmap():
     }
     assert predicted == expected
 ```
-
-## Complete code
-The full implementation of the `CubicElement` class can be found in [cubicelement.py](cubicelement.py). The corresponding tests are contained in [test_cubicelement.py](test_cubicelement.py).

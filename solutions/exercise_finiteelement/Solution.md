@@ -110,7 +110,7 @@ mat = np.squeeze(
 ```
 
 ### Tabulation of gradients of basis functions
-To compute $T^\partial$ with $T^{\partial}_{r\ell a} = \sum_{m=0}^{\nu-1} V^\partial_{rma}(\{\zeta^{(r)}\}_{r=0}^{n-1}) C_{m\ell}$ we use [np.einsum()](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). Again, `np.expand_dims()` and `np.squeeze()` are used to deal with the special case where `zeta` is a vector.
+To compute $T^\partial$ with $T^{\partial}_{r\ell a} = \sum_{m=0}^{\nu-1} V^\partial_{rma}(\{\zeta^{(r)}\}_{r=0}^{n-1}) C_{m\ell}$ we use [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). Again, `np.expand_dims()` and `np.squeeze()` are used to deal with the special case where `zeta` is a vector.
 
 ```Python
 mat = np.squeeze(

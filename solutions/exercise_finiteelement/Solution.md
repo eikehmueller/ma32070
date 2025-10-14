@@ -97,7 +97,7 @@ _zeta = np.asarray(zeta)
 mat = self._vandermonde_matrix(_zeta,grad=False) @ self._coefficients
 ```
 
-This assumes that `zeta` is passed as an array of shape $(n,2)$. If `zeta` is a single point, i.e. a two-dimensional vector, we first use [`np.expand_dims()`](https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html) to convert it to an array of shape $(1,2)$ which can be passed to the `_vandermonde_matrix()` method. The resulting matrix `mat` will have shape $(1,nu)$ and we use [`np.squeeze()`](https://numpy.org/doc/stable/reference/generated/numpy.squeeze.html) to turn it into a $\nu$-dimensional vector. Instead of using an if-statement to distinguish the two cases, we can write this more compactly as
+This assumes that `zeta` is passed as an array of shape $(n,2)$. If `zeta` is a single point, i.e. a two-dimensional vector, we first use [`np.expand_dims()`](https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html) to convert it to an array of shape $(1,2)$ which can be passed to the `_vandermonde_matrix()` method. The resulting matrix `mat` will have shape $(1,\nu)$ and we use [`np.squeeze()`](https://numpy.org/doc/stable/reference/generated/numpy.squeeze.html) to turn it into a $\nu$-dimensional vector. Instead of using an if-statement to distinguish the two cases, we can write this more compactly as
 
 ```Python
 mat = np.squeeze(

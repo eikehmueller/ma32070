@@ -490,7 +490,23 @@ def test_tabulate_gradient_multiple_points():
 # Exercise 3: Local assembly on the reference triangle
 
 #### Set: week 3
+
 #### Due: end of week 5
+The purpose of this exercise is to assemble the stiffness matrix $A^{(h)}$ and right hand side vector $\boldsymbol{b}^{(h)}$ for the linear algebra problem
+$$
+A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}
+$$
+which arises in the finite element discretisation on the reference triangle $\widehat{K}$. Recall that
+$$
+\begin{aligned}
+A^{(h)}_{\ell k} &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_\ell}{\partial x_a}(x) \frac{\partial\phi_k}{\partial x_a}(x) + \omega\; \phi_\ell(x) \phi_k(x)\right)\;dx\\
+b^{(h)}_\ell  &= \int_{\widehat{K}} f(x)\phi_\ell(x)\;dx + \int_{\partial \widehat{K}} g(x)\phi_\ell(x)\;dx
+\end{aligned}
+$$
+and see the lecture notes for further details. The accuracy of the method will be quantified with the error given by
+$$
+\|e_h\|_{L_2(\widehat{K})} = \left(\int_{\widehat{K}}(u_{\text{exact}}-u_h)^2\;dx\right)^{1/2}.
+$$
 
 ## Tasks
 ### Implementation
@@ -498,13 +514,13 @@ def test_tabulate_gradient_multiple_points():
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
 * Implement a method `assemble_rhs(f, g, element, n_q)` which assembles the right-hand side vector $\boldsymbol{b}^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
-  - The function `f` which describes the right-hand side function $f(x)$
-  - The function `g` which describes the Neumann boundary function $g(x)$
+  - The function `f` which describes the right-hand side function $f$
+  - The function `g` which describes the Neumann boundary function $g$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
 * Implement a method `error_nrm(u_numerical, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e_h\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
-  - The vector `u_numerical` which is the dof-vector $\boldsymbol{u}^{(h)}$ that represents the function $u_h(x)$ 
-  - A function `u_exact` which represents the exact solution $u_{\text{exact}}(x)$ and which can be evaluated at arbitrary points $\zeta\in \widehat{K}$
+  - The vector `u_numerical` which is the dof-vector $\boldsymbol{u}^{(h)}$ that represents the function $u_h$ 
+  - A function `u_exact` which represents the exact solution $u_{\text{exact}}$ and which can be evaluated at arbitrary points $\zeta\in \widehat{K}$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
 
@@ -523,7 +539,7 @@ u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}\left\|\boldsymbol{x}-\bolds
 $$
 with a peak of width $\sigma = 0.5$ centred at $x_0 = (0.6, 0.25)^\top$.
 
-In the weak form which defines the PDE $-\kappa \Delta u + \omega u = f$, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
+In the weak form which defines the PDE $-\nabla\cdot (\kappa \nabla u) + \omega u = f$, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
 
 Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution and error for polynomial degrees $p=1$ and $p=3$.
 
@@ -531,7 +547,7 @@ Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution a
 
 * Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise3`
 * Use these methods in the file `driver.py` in the same directory
-* Zip the directory which contains `algorithms.py`, `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
+* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
 * Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
 python -m code2pdf --path ./exercise3/ --output code_exercise3
@@ -555,8 +571,9 @@ from fem.quadrature import (
     GaussLegendreQuadratureReferenceTriangle,
 )
 ```
-* The method `plot_solution(u_numerical, u_exact, element, filename)` in `fem.utilities` can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
-* You can use the Python functions $u_{\text{exact}}(x)$, $f(x)$ and $g(x)$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points.
+* The method `plot_solution(u_numerical, u_exact, element, filename)` in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py)
+* [`fem.utilities`]() can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
+* You can use the Python implementations of the functions $u_{\text{exact}}$, $f$ and $g$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points.
 
 ```Python
 def u_exact(x, sigma, x0):

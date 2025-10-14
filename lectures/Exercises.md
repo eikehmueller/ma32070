@@ -342,7 +342,7 @@ $$
 \end{aligned}
 $$
 
-![Visualisation of basis functions for cubic Lagrange element](figures/cubic_element.png)
+![Visualisation of basis functions $\phi_0,\phi_1,\dots,\phi_9$ for cubic Lagrange element](figures/cubic_element.png)
 
 You should use the following 10 monomials for the construction of the Vandermonde matrix:
 

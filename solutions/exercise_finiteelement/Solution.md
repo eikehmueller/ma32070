@@ -32,6 +32,7 @@ Hence, for `grad=False` we return the matrix `mat` which can be constructed like
 
 ```Python
 mat = np.empty([npoints, 10])
+
 mat[:, 0] = 1
 mat[:, 1] = zeta[..., 0]
 mat[:, 2] = zeta[..., 1]
@@ -72,6 +73,7 @@ $$
 In the code, the tensor $V^{\partial}$ with $V^{\partial}_{rma}= V^{\partial_a}_{rm}$ is constructed with
 ```Python
 mat = np.zeros([npoints, 10, 2])
+
 mat[:, 1, 0] = 1
 mat[:, 3, 0] = 2 * zeta[..., 0]
 mat[:, 4, 0] = zeta[..., 1]

@@ -50,7 +50,7 @@ $$
 V^\partial_{rma} = \frac{\partial \theta_m}{\partial x_a}(\zeta^{(r)})
 $$
 
-We can interpret $V^\partial$ as two $n\times 10$ matrices $V^{\partial_0}=\frac{\partial V}{\partial x_0}$, $V^{\partial_1}=\frac{\partial V}{\partial x_1}$ obtained by taking suitable pertial derivatives of the Vandermonde matrix $V$ defined in $(\dagger)$ above. Explicitly these matrices are given by
+We can interpret the tensor $V^\partial$ as two $n\times 10$ matrices $V^{\partial_0}=\frac{\partial V}{\partial x_0}$, $V^{\partial_1}=\frac{\partial V}{\partial x_1}$ obtained by taking suitable pertial derivatives of the Vandermonde matrix $V$ defined in $(\dagger)$ above. Explicitly these matrices are given by
 
 $$
 \begin{aligned}
@@ -68,7 +68,8 @@ V^{\partial_1} &= \begin{pmatrix}
 \end{pmatrix}
 \end{aligned}
 $$
-In the code, the matrix $V^{\partial}$ is constructed with
+
+In the code, the tensor $V^{\partial}$ with $V^{\partial}_{rma}= V^{\partial_a}_{rm}$ is constructed with
 ```Python
 mat = np.zeros([npoints, 10, 2])
 mat[:, 1, 0] = 1

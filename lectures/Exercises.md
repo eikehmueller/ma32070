@@ -553,8 +553,7 @@ from fem.quadrature import (
     GaussLegendreQuadratureReferenceTriangle,
 )
 ```
-* The method `plot_solution(u_numerical, u_exact, element, filename)` in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py)
-* [`fem.utilities`]() can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
+* The method `plot_solution(u_numerical, u_exact, element, filename)` in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
 * You can use the Python implementations of the functions $u_{\text{exact}}$, $f$ and $g$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points. You might want to have a look at the discuss discussion of [numpy dimensional indexing tools](https://numpy.org/doc/stable/user/basics.indexing.html#dimensional-indexing-tools) for a more details on how to use the ellipsis `...` with numpy arrays.
 
 ```Python

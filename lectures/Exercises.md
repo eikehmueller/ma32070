@@ -543,24 +543,6 @@ In the weak form which defines the PDE $-\nabla\cdot (\kappa \nabla u) + \omega 
 
 Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution and error for polynomial degrees $p=1$ and $p=3$.
 
-## Practicalities
-
-* Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise3`
-* Use these methods in the file `driver.py` in the same directory
-* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
-* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
-```
-python -m code2pdf --path ./exercise3/ --output code_exercise3
-```
-* Create a file `solution_exercise3.pdf` file with the following content:
-    - a brief description of how you implemented and tested your code
-    - a table which lists $\|e_h\|_{L_2(\widehat{K})}$ for $p=1$ and $p=3$
-    - plots of the solution and error for $p=1$ and $p=3$
-* Upload the following **three** files to the submission point on moodle:
-    - The zip file `exercise3.tgz` with your source code
-    - The file `code_exercise3.pdf` generated from your source code
-    - The file `solution_exercise3.pdf` with your written solution
-
 ## Hints
 * You can import the `LinearElement` and quadrature rules provided in the finite element library with 
  
@@ -573,7 +555,7 @@ from fem.quadrature import (
 ```
 * The method `plot_solution(u_numerical, u_exact, element, filename)` in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py)
 * [`fem.utilities`]() can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
-* You can use the Python implementations of the functions $u_{\text{exact}}$, $f$ and $g$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points.
+* You can use the Python implementations of the functions $u_{\text{exact}}$, $f$ and $g$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points. You might want to have a look at the discuss discussion of [numpy dimensional indexing tools](https://numpy.org/doc/stable/user/basics.indexing.html#dimensional-indexing-tools) for a more details on how to use the ellipsis `...` with numpy arrays.
 
 ```Python
 def u_exact(x, sigma, x0):
@@ -634,6 +616,24 @@ We can now call the function $f^*(x)$ with a single argument $x$:
 x = np.asarray([0.4,0.7])
 f_star(x)
 ```
+
+## Practicalities
+
+* Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise3`
+* Use these methods in the file `driver.py` in the same directory
+* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
+* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+```
+python -m code2pdf --path ./exercise3/ --output code_exercise3
+```
+* Create a file `solution_exercise3.pdf` file with the following content:
+    - a brief description of how you implemented and tested your code
+    - a table which lists $\|e_h\|_{L_2(\widehat{K})}$ for $p=1$ and $p=3$
+    - plots of the solution and error for $p=1$ and $p=3$
+* Upload the following **three** files to the submission point on moodle:
+    - The zip file `exercise3.tgz` with your source code
+    - The file `code_exercise3.pdf` generated from your source code
+    - The file `solution_exercise3.pdf` with your written solution
 
 # Exercise 4: Three point quadrature [not marked]
 

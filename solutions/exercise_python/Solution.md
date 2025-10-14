@@ -240,7 +240,7 @@ v.createWithArray([7.3, -0.7, 0, 3.2])
 
 The results of the linear algebra operations are as follows:
 
-The product $AB$ can be computed either with `C = A.matMult(B)` or by using the `@` operator as `C = A @ B`.
+The product $AB$ can be computed either with [`matMult()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.matMult) as `C = A.matMult(B)` or by using the `@` operator as `C = A @ B`.
 $$
 A B =\begin{pmatrix}
 18.8 &  4.2 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
@@ -250,7 +250,7 @@ A B =\begin{pmatrix}
 \end{pmatrix}
 $$
 
-The product $AB^\top$ can be computed with `C = A.matTransposeMult(B)` or as `C = A @ B.transpose()`.
+The product $AB^\top$ can be computed with [`matTransposeMult()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.matTransposeMult) as `C = A.matTransposeMult(B)` or by using the `@` operator and [`transpose()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.transpose) as `C = A @ B.transpose()`.
 $$ 
 A B^T = \begin{pmatrix}
  4.6 & 14.8 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
@@ -259,7 +259,7 @@ A B^T = \begin{pmatrix}
  0.9 & -11.3 & \textcolor{lightgray}{0} & 14.4\\
 \end{pmatrix}
 $$
-Similarly, the product $A^\top B$ can be computed with `C = A.transposeMatMult(B)` or as `C = A.transpose() @ B`.
+Similarly, the product $A^\top B$ can be computed with [`transposeMatMult()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.transposeMatMult) as `C = A.transposeMatMult(B)` or as `C = A.transpose() @ B`.
 $$
 A^T B = \begin{pmatrix}
 -1.2 &  4.2 & \textcolor{lightgray}{0} & -15.6\\
@@ -277,7 +277,7 @@ A + B^T = \begin{pmatrix}
 -1.3 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 13.2\\
 \end{pmatrix}
 $$
-The matrix-vector product $A\boldsymbol{v} + \boldsymbol{w}$ can be computed by constructing a vector `r` with and then calling the `multAdd()` method of `A`:
+The matrix-vector product $A\boldsymbol{v} + \boldsymbol{w}$ can be computed by constructing a vector `r` with [`createSeq()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Vec.html#petsc4py.PETSc.Vec.createSeq) and then calling the [`multAdd()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.multAdd) method of `A`:
 ```
 r = PETSc.Vec()
 r.createSeq(n_row)
@@ -289,11 +289,11 @@ A \boldsymbol{v} + \boldsymbol{w} = \begin{pmatrix}
 10.8 \\ 16.8 \\  0.3 \\ -2.9
 \end{pmatrix}
 $$
-Similarly, to compute $B^T\boldsymbol{w}$ we can use either `B.multTranspose(w, r)` or simply `B.transpose() @ w`.
+Similarly, to compute $B^T\boldsymbol{w}$ we can use either [`multTranspose()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.multTranspose) as `B.multTranspose(w, r)` or simply `B.transpose() @ w`.
 $$
 B^T \boldsymbol{w} = \begin{pmatrix}
 \textcolor{lightgray}{0} \\ \textcolor{lightgray}{0} \\  1.0 \\ 33.6
 \end{pmatrix}
 $$
 
-The entire source code is available in [`linear_algebra_petsc.py`](linear_algebra_petsc.py).
+The entire source code is available in [linear_algebra_petsc.py](linear_algebra_petsc.py).

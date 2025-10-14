@@ -218,6 +218,7 @@ jobs:
                     mv ${DIR}.html docs/${DIR}/solution.html
                     cp solutions/exercise_finiteelement/cubicelement.py docs/${DIR}
                     cp solutions/exercise_finiteelement/test_cubicelement.py docs/${DIR}
+                    cp solutions/exercise_finiteelement/lagrange_nodes_cubic.svg docs/${DIR}
                     # EXERCISE 3
                     DIR=model_solution_exercise_localassembly
                     mkdir docs/${DIR}

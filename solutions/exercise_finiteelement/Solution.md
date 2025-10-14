@@ -215,7 +215,10 @@ def test_tabulate_dofs():
     assert np.allclose(tabulated, np.eye(10), rtol=1e-12)
 ```
 
-Looking at the order in which dofs are associated with the Lagrange nodes, the inverse dof-map is defined as follows:
+The following diagram shows how dofs are associated with the Lagrange nodal points.
+![Nodal points for cubic element](lagrange_nodes_cubic.svg)
+
+Based on this, we deduce that the inverse dof-map is defined as follows:
 $$
 \begin{aligned}
 0 &\mapsto (\texttt{"vertex"}, 0, 0),\\

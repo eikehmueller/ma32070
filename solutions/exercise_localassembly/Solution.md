@@ -71,7 +71,7 @@ The other contribution to $b^{(h)}_\ell$ has contributions from each of the face
 for v_a, v_b in [[(1, 0), (0, 1)], [(0, 1), (0, 0)], [(0, 0), (1, 0)]]:
     quad_facet = GaussLegendreQuadratureLineSegment(v_a, v_b, n_q)
 ```
-For each facet $F_\rho$ we then compute $\sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\boldsymbol{\zeta}_{F_\rho})T_{q\ell}(\boldsymbol{\zeta}_{F_\rho})$. The code for this has the same structure as the above code for computing $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ but with $\boldsymbol{w}\mapsto \boldsymbol{w}_{F_{\rho}}$ (=`w_facet_q`), $\boldsymbol{\zeta} \mapsto \boldsymbol{\zeta}_{F_{\rho}}$ (=`zeta_facet_q`), $\boldsymbol{f}\mapsto \boldsymbol{g}$ (=`g_q`) with components $g_q=q(\zeta_{F_\rho}^{(q)})$. We also tabulate the basis functions at the quadrature points $\boldsymbol{w}_{F_\rho}$ to obtain `phi_facet`.
+For each facet $F_\rho$ we then compute $\sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\boldsymbol{\zeta}_{F_\rho})T_{q\ell}(\boldsymbol{\zeta}_{F_\rho})$. The code for this has the same structure as the above code for computing $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ but with $\boldsymbol{w}\mapsto \boldsymbol{w}_{F_{\rho}}$ (=`w_facet_q`), $\boldsymbol{\zeta} \mapsto \boldsymbol{\zeta}_{F_{\rho}}$ (=`zeta_facet_q`), $\boldsymbol{f}\mapsto \boldsymbol{g}$ (=`g_q`) with components $g_q=q(\zeta_{F_\rho}^{(q)})$. We also tabulate the basis functions at the quadrature points $\boldsymbol{w}_{F_\rho}$ to obtain $T(\boldsymbol{\zeta}_{F_{\rho}})$ (=`phi_facet`).
 ```Pythom
     w_facet_q = quad_facet.weights
     zeta_facet_q = np.asarray(quad_facet.nodes)

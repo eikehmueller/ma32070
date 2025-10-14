@@ -157,6 +157,84 @@ self._coefficients = np.linalg.inv(vandermonde_matrix)
 ### Class properties
 The implementation of the abstract properties `ndof_per_interior`, `ndof_per_facet` and `ndof_per_vertex`, which should return 1, 2 and 1 respectively, is straightforward.
 
+## Tests
+The following code checks that $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points. For this, we construct a $10\times 10$ matrix `tabulated` by passing the 10 nodal points stored in $\xi$ to the `tabulate()` method. If everything is correct, this matrix should be the identity matrix.
+```Python
+def test_tabulate_nodal_points():
+    """Check that tabulation at nodal points is correct"""
+    element = CubicElement()
+    xi = [
+        [0, 0],
+        [1, 0],
+        [0, 1],
+        [2 / 3, 1 / 3],
+        [1 / 3, 2 / 3],
+        [0, 2 / 3],
+        [0, 1 / 3],
+        [1 / 3, 0],
+        [2 / 3, 0],
+        [1 / 3, 1 / 3],
+    ]
+    tabulated = element.tabulate(xi)
+    assert np.allclose(tabulated, np.eye(10), rtol=1e-12)
+```
+
+To verify that $\lambda_\ell(\phi_k) = \delta_{\ell k}$, we construct a list of 10  functions $\lambda_0,\lambda_1,\dots,\lambda_9$ such that $\lambda_j=\phi_j$ is the $j$-th basis function. This is used to construct a $10\times 10$ matrix `tabulated`, which should be the identity matrix.
+```Python
+def test_tabulate_dofs():
+    """Check that dof-tabulation of basis functions is correct"""
+    basis_functions = [
+        lambda x: 1
+        - 11 / 2 * (x[..., 0] + x[..., 1])
+        + 9 * (x[..., 0] + x[..., 1]) ** 2
+        - 9 / 2 * (x[..., 0] + x[..., 1]) ** 3,
+        lambda x: x[..., 0] * (1 - 9 / 2 * x[..., 0] + 9 / 2 * x[..., 0] ** 2),
+        lambda x: x[..., 1] * (1 - 9 / 2 * x[..., 1] + 9 / 2 * x[..., 1] ** 2),
+        lambda x: -9 / 2 * x[..., 0] * x[..., 1] * (1 - 3 * x[..., 0]),
+        lambda x: -9 / 2 * x[..., 0] * x[..., 1] * (1 - 3 * x[..., 1]),
+        lambda x: -9
+        / 2
+        * x[..., 1]
+        * (1 - x[..., 0] - 4 * x[..., 1] + 3 * x[..., 1] * (x[..., 0] + x[..., 1])),
+        lambda x: 9
+        / 2
+        * x[..., 1]
+        * (2 - 5 * (x[..., 0] + x[..., 1]) + 3 * (x[..., 0] + x[..., 1]) ** 2),
+        lambda x: 9
+        / 2
+        * x[..., 0]
+        * (2 - 5 * (x[..., 0] + x[..., 1]) + 3 * (x[..., 0] + x[..., 1]) ** 2),
+        lambda x: -9
+        / 2
+        * x[..., 0]
+        * (1 - x[..., 1] - 4 * x[..., 0] + 3 * x[..., 0] * (x[..., 0] + x[..., 1])),
+        lambda x: 27 * x[..., 0] * x[..., 1] * (1 - x[..., 0] - x[..., 1]),
+    ]
+    element = CubicElement()
+    tabulated = [element.tabulate_dofs(phi) for phi in basis_functions]
+    assert np.allclose(tabulated, np.eye(10), rtol=1e-12)
+```
+
+The following code checks the output of `inverse_dofmap()` and compares it to the expected results:
+```Python
+def test_inverse_dofmap():
+    """Check that results of inverse_dofmap() are correct"""
+    element = CubicElement()
+    predicted = {ell: element.inverse_dofmap(ell) for ell in range(10)}
+    expected = {
+        0:("vertex", 0, 0),
+        1:("vertex", 1, 0),
+        2:("vertex", 2, 0),
+        3:("facet", 0, 0),
+        4:("facet", 0, 1),
+        5:("facet", 1, 0),
+        6:("facet", 1, 1),
+        7:("facet", 2, 0),
+        8:("facet", 2, 1),
+        9:("interior", 0, 0),
+    }
+    assert predicted == expected
+```
 
 ## Complete code
 The full implementation of the `CubicElement` class can be found in [cubicelement.py](cubicelement.py). The corresponding tests are contained in [test_cubicelement.py](test_cubicelement.py).

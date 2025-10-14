@@ -190,13 +190,11 @@ def test_tabulate_nodal_points():
         [1 / 3, 1 / 3],
     ]
     tabulated = element.tabulate(xi)
-    # np.set_printoptions(precision=12, suppress=True)
-    # print()
-    # print(np.array2string(element._coefficients, separator=","))
     assert np.allclose(tabulated, np.eye(10), rtol=1e-12)
 
 
 def test_tabulate_dofs():
+    """Check that dof-tabulation of basis functions is correct"""
     basis_functions = [
         lambda x: 1
         - 11 / 2 * (x[..., 0] + x[..., 1])
@@ -227,3 +225,22 @@ def test_tabulate_dofs():
     element = CubicElement()
     tabulated = [element.tabulate_dofs(phi) for phi in basis_functions]
     assert np.allclose(tabulated, np.eye(10), rtol=1e-12)
+
+
+def test_inverse_dofmap():
+    """Check that results of inverse_dofmap() are correct"""
+    element = CubicElement()
+    predicted = {ell: element.inverse_dofmap(ell) for ell in range(10)}
+    expected = {
+        0: ("vertex", 0, 0),
+        1: ("vertex", 1, 0),
+        2: ("vertex", 2, 0),
+        3: ("facet", 0, 0),
+        4: ("facet", 0, 1),
+        5: ("facet", 1, 0),
+        6: ("facet", 1, 1),
+        7: ("facet", 2, 0),
+        8: ("facet", 2, 1),
+        9: ("interior", 0, 0),
+    }
+    assert predicted == expected

@@ -354,18 +354,19 @@ $$
 * Your class should store the Lagrange points in an attribute `_nodal_points`, this can be done for example in the `__init__()` method.
 * Your class should contain a method `_vandermonde_matrix(zeta,grad=False)` which accepts as an argument a $n\times 2$ array of $n$ two-dimensional points. The method should compute the $n\times \nu$ matrix $V(\boldsymbol{\zeta})$ defined in the lectures if `grad=False` and the $n\times \nu\times 2$ tensor $V^\partial(\boldsymbol{\zeta})$ if `grad=True`. If only a single point is passed to the method, it should return a vector of length $\nu$ for `grad=False` and an $\nu\times 2$ array for `grad=True`.
 * In the `__init__()` method, use the `_vandermonde_matrix()` method together with `_nodal_points` to construct the coefficient matrix $C$ defined in the lectures. Store this matrix in a class attribute `_coefficients`
-* Use `_coefficients` and the `_vandermonde_matrix()` method to tabulate the basis functions and their gradients to implement the `tabulate()` and `tabulate_gradient()` methods. You might find the [`numpy.einsum()`](https://numpy.org/doc/2.2/reference/generated/numpy.einsum.html) method useful to compute $T^\partial(\boldsymbol{\zeta})$
-* Verify that the methods `dofmap()` and `inverse_dofmap()`, which are inherited from the abstract base class behave as expected. For this, inspect the output of `inverse_dofmap(ell)` for $\ell=0,1,2,\dots,9$
+* Use `_coefficients` and the `_vandermonde_matrix()` method to tabulate the basis functions and their gradients in the `tabulate()` and `tabulate_gradient()` methods. You might find the [`numpy.einsum()`](https://numpy.org/doc/2.2/reference/generated/numpy.einsum.html) method useful to compute $T^\partial(\boldsymbol{\zeta})$
 * Make sure you implement all other methods/properties that are marked as abstract in the base class.
   
 Your code should pass the tests below, which verify correctness for special cases. Use [pytest](https://docs.pytest.org/) to add further tests which verify that your implementation is correct. In particular, you should check that
 
 * `tabulate()` correctly computes $\phi_\ell(\xi^{(k)}) = \delta_{\ell k}$ where $\xi^{(k)}$ are the nodal points.
-* `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$
+* `tabulate_dofs()` correctly computes $\lambda_\ell(\phi_k) = \delta_{\ell k}$.
+* The method, `inverse_dofmap()`, which is inherited from the abstract base class, behaves as expected.
+
   
 ## Practicalities
-* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise2`
-* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`
+* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise2`.
+* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`.
 * Create a single file `code_exercise2.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
 python -m code2pdf --path ./exercise2/ --output code_exercise2

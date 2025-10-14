@@ -58,6 +58,8 @@ class NumericalIntegration(ABC):
 
 
 class MidpointRule(NumericalIntegration):
+    """Numerical integration with the midpoint rule"""
+
     def __init__(self, interval, n):
         """Initialise instance
 
@@ -72,13 +74,15 @@ class MidpointRule(NumericalIntegration):
         (x_+ - x_-) * f((x_+ + x_-)/2)
 
         :arg f: function to integrate
-        :arg x_m: lower bound
-        :arg x_+: upper bound
+        :arg x_m: lower bound x_-
+        :arg x_p: upper bound x_+
         """
         return (x_p - x_m) * f((x_m + x_p) / 2)
 
 
 class SimpsonsRule(NumericalIntegration):
+    """Numerical integration with Simpson's rule"""
+
     def __init__(self, interval, n):
         """Initialise instance
 
@@ -93,7 +97,7 @@ class SimpsonsRule(NumericalIntegration):
         (x_+ - x_-)/6 * ( f(x_-) + 4*f((x_+ + x_-)/2) + f(x_+) )
 
         :arg f: function to integrate
-        :arg x_m: lower bound
-        :arg x_+: upper bound
+        :arg x_m: lower bound x_-
+        :arg x_p: upper bound x_+
         """
         return (x_p - x_m) / 6 * (f(x_m) + 4 * f((x_m + x_p) / 2) + f(x_p))

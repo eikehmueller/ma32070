@@ -5,6 +5,13 @@ The `evaluate()` method of the `NumericalIntegration` base class can be implemen
 
 ```Python
 def evaluate(self, f):
+    """Numerically approximate the integral int_a^b f(x) dx
+
+    For this, loop over the subintervals [x_j,x_{j+1}], approximate
+    the integral in each subinterval and sum the result
+
+    :arg f: function to integrate
+    """
     h = (self._b - self._a) / self._n
     integral = 0.0
     for j in range(self._n):
@@ -19,7 +26,7 @@ Is = [ self._integrate(f, self._a + j * h, self._a + (j + 1) * h) for j in range
 integral = float(np.sum(Is))
 ```
 
-We convert the result to the native Python `float` type. In fact, this approach is not ideal, since for large $n$ the list `Is` is constructed and stored explicitly in memory, while we only need to accumulate its value. To avoid this, one could use a [generator expression](https://docs.python.org/3/reference/expressions.html#generator-expressions). This is achieved by replacing the square brackets `[`,`]` in the definition of `Is` with round brackets `(`, `)`:
+We convert the result to the native Python `float` type. In fact, this approach is not ideal, since for large $n$ the list `Is` is constructed and stored explicitly in memory, while we only need to inspect one element at a time and add it to the sum. To avoid this, one could use a [generator expression](https://docs.python.org/3/reference/expressions.html#generator-expressions). This is achieved by replacing the square brackets `[`,`]` in the definition of `Is` with round brackets `(`, `)`:
 
 ```Python
 Is = ( self._integrate(f, self._a + j * h, self._a + (j + 1) * h) for j in range(self._n) )
@@ -31,27 +38,55 @@ The classes `MidpointRule` and `SimpsonsRule` are both derived from `NumericalIn
 
 ```Python
 class MidpointRule(NumericalIntegration):
+    """Numerical integration with the midpoint rule"""
     def __init__(self, interval, n):
+        """Initialise instance
+
+        :arg interval: interval [a,b]
+        :arg n: number of subintervals
+        """
         super().__init__(interval, n, order=2)
 
     def _integrate(self, f, x_m, x_p):
+        """Approximate int_{x_-}^{x_+} f(x)dx by midpoint rule
+
+        (x_+ - x_-) * f((x_+ + x_-)/2)
+
+        :arg f: function to integrate
+        :arg x_m: lower bound x_-
+        :arg x_p: upper bound x_+
+        """
         return (x_p - x_m) * f((x_m + x_p) / 2)
 
 class SimpsonsRule(NumericalIntegration):
+    """Numerical integration with Simpson's rule"""
     def __init__(self, interval, n):
+        """Initialise instance
+
+        :arg interval: interval [a,b]
+        :arg n: number of subintervals
+        """
         super().__init__(interval, n, order=4)
 
     def _integrate(self, f, x_m, x_p):
+        """Approximate int_{x_-}^{x_+} f(x)dx by Simpson's rule
+
+        (x_+ - x_-)/6 * ( f(x_-) + 4*f((x_+ + x_-)/2) + f(x_+) )
+
+        :arg f: function to integrate
+        :arg x_m: lower bound x_-
+        :arg x_p: upper bound x_+
+        """
         return (x_p - x_m) / 6 * (f(x_m) + 4 * f((x_m + x_p) / 2) + f(x_p))
 ```
 
 The `order` property is set by passing it to the initialiser of the base class when calling `super().__init__()`.
 
-The complete, commented source code can be found in [numerical_integration.py](numerical_integration.py).
+The complete source code can be found in [numerical_integration.py](numerical_integration.py).
 
 ## Implementation of main program
 The `results` dictionary can be construced by appending to the lists for each integrator in a for-loop like this:
-```
+```Python
 results = {"MidpointRule": [], "SimpsonsRule": []}
 for n in [4, 8, 16, 32]:
     integrator_midpoint = MidpointRule([0, 1], n)
@@ -65,7 +100,7 @@ for n in [4, 8, 16, 32]:
     )
 ```
 
-However, it is more elegant to use list- and dictionary comprehensions like this:
+However, it is more elegant to use list- and [dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) comprehensions like this:
 ```Python
 results = {
     Integrator.__name__: [
@@ -91,18 +126,52 @@ In the print-statement
 ```Python
 f"{integrator}: "
 ```
-constructs a string with the name of the integrator followed by `: `.
-
-The code 
+constructs a string with the name of the integrator followed by `: `. The code 
 ```Python
-[f"{abs(x-exact_result):8.4e}" for x in integrals]
+[f"{abs(I-I_exact):8.4e}" for I in integrals]
 ```
-uses a list comprehension to construct a list of strings, each of which is obtained by computing $\left|I^{\text{(integrator)}}(n) - I\right|$ and formatting the result as a floating point number of 8 charactes in total and 4 places after the decimal point. The resulting list of strings is passed to the [str.join()](https://docs.python.org/3/library/stdtypes.html#str.join) method which concatenated the string and separates them by `, `:
+uses a list comprehension to construct a list of strings, each of which is obtained by computing $\left|I^{\text{(integrator)}}(n) - I\right|$ and formatting the result as a floating point number of 8 charactes in total and 4 places after the decimal point. The resulting list of strings is passed to the [str.join()](https://docs.python.org/3/library/stdtypes.html#str.join) method which concatenates the strings and separates them by `, `:
 ```Python
-", ".join([f"{abs(x-exact_result):8.4e}" for x in integrals])
+", ".join([f"{abs(I-I_exact):8.4e}" for I in integrals])
 ```
 
 The complete source code can be found in [driver.py](driver.py).
+
+### Order of convergence
+To empirically compute the order of convergence, observe that for sufficiently small $h$ we have that
+
+$$
+I(n) \approx I + C h^\mu \qquad\text{with $h=(b-a)/n$.}
+$$
+
+It is easy to see that
+
+$$
+\mu \approx \log_2\left( \frac{I(n)-I(2n)}{I(2n)-I(4n)}\right)
+$$
+
+Crucially, the exact value (which might be unknown) and the constants $C$ cancel out in the ratio. The following code can be used to compute and print $\mu$ for different values of $n$:
+
+```Python
+for integrator, integrals in results.items():
+    print(f"{integrator}: ")
+    mu = [
+        np.log2(
+            (integrals[j] - integrals[j + 1]) / (integrals[j + 1] - integrals[j + 2])
+        )
+        for j in range(len(integrals) - 2)
+    ]
+    print(
+        "  mu = ",
+        ", ".join([f"{z:8.4f}" for z in mu]),
+    )
+```
+We obtain the following results, which confirm that the integrators are indeed of order $2$ and $4$ respectively:
+
+| $n$   | Midpoint rule | Simpson's rule |
+| :---: | :---:         | :---:          |
+| $4$   | $1.9996$      | $3.9997$       |   
+| $8$   | $1.9999$      | $3.9999$       |
 
 # Linear algebra with numpy
 The matrix-vector product $A\boldsymbol{u}$ can be computed in (at least) three different ways:

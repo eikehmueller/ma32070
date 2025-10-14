@@ -9,7 +9,7 @@ def f(x, alpha):
 
 
 alpha = 0.4
-exact_result = 1 / alpha * (1 - np.exp(-alpha))
+I_exact = 1 / alpha * (1 - np.exp(-alpha))
 
 # pedestrian implementation
 results = {"MidpointRule": [], "SimpsonsRule": []}
@@ -35,7 +35,18 @@ results = {
 
 # Print out results
 for integrator, integrals in results.items():
+    print(f"{integrator}: " + ", ".join([f"{abs(I-I_exact):8.4e}" for I in integrals]))
+
+# Print out empirical comvergence rate
+for integrator, integrals in results.items():
+    print(f"{integrator}: ")
+    mu = [
+        np.log2(
+            (integrals[j] - integrals[j + 1]) / (integrals[j + 1] - integrals[j + 2])
+        )
+        for j in range(len(integrals) - 2)
+    ]
     print(
-        f"{integrator}: "
-        + ", ".join([f"{abs(x-exact_result):8.4e}" for x in integrals])
+        "  mu = ",
+        ", ".join([f"{z:8.4f}" for z in mu]),
     )

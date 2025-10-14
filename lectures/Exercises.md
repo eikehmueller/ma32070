@@ -4,34 +4,32 @@
 
 ----
 # Submission of problem sheets
-Please submit your solution to the problem sheets as per the following instructions. Being able to efficiently share code with others is an important skill for a scientific programmer. The key question you should ask yourself is: *If someone gave this to solution to me, would I be able to understand it?*
-
-The same submission instructions will be used for the coursework, so make sure you are familiar with the procedure.
+Please submit your solutions to the problem sheets as per the following instructions. The same submission instructions will be used for the coursework, so make sure you are familiar with the procedure. Being able to efficiently share code with others is an important skill for a scientific programmer. The key question you should ask yourself is: *If someone gave this to solution to me, would I be able to understand it?*
 
 ## Files to submit
 In general, you need to **submit three files** for each exercise:
 
-1. A single file containing a zipped version of your source code
-2. A single file containing the `.pdf` generated from your source code
-3. A single file which contains your solution to the written part of the assignment
+1. A single file containing a **zipped version of your source code**
+2. A single file containing the **.pdf generated from your source code**
+3. A single file which contains your **solution to the written part** of the exercise in .pdf format
 
 For some exercises you might only have to write code or perform a written derivation, in that case you only need to submit a subset of these files.
 
-Details on how to generate these files and what they should contain can be found in the following sections. You might also want to have a look at the step-by-step for an example below.
+Details on how to generate the files and what they should contain can be found in the following sections. You might also want to have a look at the step-by-step instructions for the example below.
 
-#### Zipped version of your source code
-Put all source files containing your solution into a single directory, usually a subdirectory of your `ma32070/` directory such as `ma32070/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/` directory and zip the `exercise` directory into a single file called `exercise.tgz` using the command
+#### 1. Zipped version of your source code
+Keep all source files containing your solution in a single directory, usually a subdirectory of your `ma32070/` directory such as `ma32070/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/` directory and zip the `exercise/` subdirectory into a single file called `exercise.tgz` using the command
 ```
 tar czvf exercise.tgz exercise
 ```
-where `exercise` is the name of the directory. Do not include temorary files such as those ending in `~`. You can double check the content of the zip file with
+Do not include temorary files such as those ending in `~`. You can double check the content of the zip file with
 ```
 tar tzvf exercise.tgz
 ```
 It is strongly recommended to do this before uploading the file to moodle.
 
-#### .pdf version of your code
-Create a single `.pdf` file called `code_exercise.pdf` which contains all your Python source code, i.e. all `.py` files you wrote. Assuming that the `finitelements` library has been installed (for example on the Notable server), you can use the `code2pdf` tool for this. For example, to generate a `.pdf` file from all `.py` files inside the `ma32070/exercise/` directory, change to the `ma32070/` directory and run
+#### 2. .pdf version of your code
+Create a single `.pdf` file called `code_exercise.pdf` which contains all your Python source code, i.e. all `.py` files you wrote. Assuming that the `finitelements` library has been installed (for example on the Notable server), you can use the `code2pdf` tool for this. For example, to generate the file `code_exercise.pdf` from all `.py` files inside the `ma32070/exercise/` directory, change to the `ma32070/` directory and run
 ```
 python -m code2pdf --path ./exercise/ --output code_exercise
 ```
@@ -41,17 +39,17 @@ python -m code2pdf --help
 ```
 You are free to use any other tool, such as a word processor, to create this `.pdf` file as long as the output is formatted correctly and legible.
 
-#### Solution to written part of the assignment
-You can upload scans of handwritten solutions or word processed solutions, as long as the text is clearly readable. Please make sure you number your solutions to the individual exercises correctly. Use concise language and sound mathematical arguments and explain your reasoning.
+#### 3. Solution to written part of the exercise
+You can upload scans of handwritten solutions or word processed solutions in a single file `solution_exercise.pdf`, as long as the text is clearly readable. Please make sure you number your solutions to the individual exercises correctly. Use concise language and sound mathematical arguments and explain your reasoning.
 
 #### Downloading files from Notable
-If you are working on Notable, you can download any files you created to your own computer by right-clicking them in the file browser. 
+If you are working on Notable, you can download any files you created to your own computer by right-clicking them in the file browser. The upload the files from your own computer to moodle. 
 
 ### Example
 The following step-by-step instructions illustrate how to prepare the solution of Exercise 3 for submission (all shell-commands include the prompt `$` which needs to be removed when entering the command):
 
 #### Step 1: Change to correct directory
-Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise3` to make sure everything is ready for submission:
+Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise3` to make sure everything is ready for submission and the `exercise3` directory does not contain any superfluous files:
 ```
 $ cd ma32070
 $ ls
@@ -106,9 +104,9 @@ Let $f:[a,b]\rightarrow \mathbb{R}$ be a real-valued function defined on the int
 $$
 I =\int_{a}^{b} f(x)\;dx
 $$
-For this, the interval $[a,b]$ is split into $n$ smaller intervals $[x_j,x_{j+1}]$ with $x_{j} = a + h\cdot j$ with $h=\frac{b-a}{n}$ for $j=0,1,\dots,n$ such that
+For this, the interval $[a,b]$ is split into $n$ smaller intervals $[x_j,x_{j+1}]$ where $x_{j} = a + h\cdot j$ with $h=x_{j+1}-x_j = \frac{b-a}{n}$ for $j=0,1,\dots,n-1$ such that
 $$
-I = \sum_{j=0}^{n-1} \underbrace{\int_{x_j}^{x_{j+1}}f(x)\;dx}_{=:I(x_j,j_{j+1})}.
+I = \sum_{j=0}^{n-1} \underbrace{\int_{x_j}^{x_{j+1}}f(x)\;dx}_{=:I(x_j,x_{j+1})}.
 $$
 The integrals $I(x_j,x_{j+1}) = \int_{x_j}^{x_{j+1}}f(x)\;dx$ on the small subintervals are approximated numerically. Possible methods are:
 
@@ -121,17 +119,17 @@ The integrals $I(x_j,x_{j+1}) = \int_{x_j}^{x_{j+1}}f(x)\;dx$ on the small subin
   I(x_-,x_+) \approx I^{\text{(Simpson)}}(x_-,x_+) = \frac{x_+-x_-}{6}\left(f(x_-)+4f\left(\frac{x_-+x_+}{2}\right)+f(x_+)\right)
   $$
 
-  We say that an integration method is of order $\alpha$ if the error in computing $I$ is $\mathcal{O}(h^\alpha)$. For example, the midpoint rule is of order $2$ since
+  We say that an integration method is of order $\mu$ if the error in computing $I$ is $\mathcal{O}(h^\mu)$. For example, the midpoint rule is of order $2$ since
 
 $$
-\left|I^{\text{(midpoint)}}(n) - I\right| = \mathcal{O}(h^2)\qquad\text{with}\quad I^{\text{(midpoint)}}(n) := \sum_{j=0}^{n-1} I^{\text{(midpoint)}}(x_{j},x_{j+1})
+\left|I^{\text{(midpoint)}}(n) - I\right| = \mathcal{O}(h^2)\qquad\text{with}\quad I^{\text{(midpoint)}}(n) := \sum_{j=0}^{n-1} I^{\text{(midpoint)}}(x_{j},x_{j+1}).
 $$
 
 To implement different numerical integration methods in Python, we define an abstract base class `NumericalIntegration` and then implement derived classes for specific integrators. Since all integrators need to compute the sum
 $$
 \sum_{j=0}^{n-1} I(x_j,x_{j+1}),
 $$
-this operation can be implemented in the base class. However, the numerical approximation of $I(x_j,x_{j+1})$ depends on the specific integral and should be defined in the derived classes. We define an abstract method `_integrate()` to explicitly declare the required interface for this; each of the derived classes must provide a concrete implementation of `_integrate()`. The constructor of the base class gets passed the interval $[a,b]$, the number of intervals $n$ and (optionally) the order of the method.
+this operation can be implemented in the base class. However, the numerical approximation of $I(x_j,x_{j+1})$ depends on the specific integrator and its definition should be deferred to the derived classes. We define an abstract method `_integrate()` to explicitly declare the required interface for this; each of the derived classes must provide a concrete implementation of `_integrate()`. The constructor of the base class gets passed the interval $[a,b]$, the number of intervals $n$ and (optionally) the order of the method.
 
 ```Python
 from abc import ABC, abstractmethod
@@ -168,14 +166,7 @@ class NumericalIntegration(ABC):
         :arg f: function to integrate
         """
         h = (self._b - self._a) / self._n
-        return float(
-            np.sum(
-                (
-                    self._integrate(f, self._a + j * h, self._a + (j + 1) * h)
-                    for j in range(self._n)
-                )
-            )
-        )
+        # TODO: Compute numerical approximation of integral
 
     @abstractmethod
     def _integrate(self, f, x_m, x_p):
@@ -189,8 +180,8 @@ class NumericalIntegration(ABC):
 
 ### Exercises
 * Copy the above code to a file `numerical_integration.py` and complete the method `evaluate()`, which should call the `_integrate()` method for all subintervals `[x_j,x_{j+1}]` and sum up the results. Instead of writing a for-loop, can you use a [list-comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions) and the [`np.sum() method`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)?
-* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()`.
-* Write a file `driver.py` which uses the classes `MidpointRule` and `SimpsonRule` to integrate the function $f_\alpha(x) = e^{-\alpha x}$ over the interval $[0,1]$ for fixed $\alpha=0.4$. For this, use the following definition of $f_\alpha$ and fix the parameter $\alpha$ with [`functools.partial`](https://docs.python.org/3/library/functools.html#functools.partial):
+* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()`. In the initialise of these methods, call the initialiser of the base class with `order=2` and `order=4` respectively; you can use the [`super()` function](https://docs.python.org/3/library/functions.html#super) for this.
+* Write a file `driver.py` which uses the classes `MidpointRule` and `SimpsonRule` to integrate the function $f_\alpha(x) = e^{-\alpha x}$ over the interval $[0,1]$ for fixed $\alpha=0.4$. For this, use the following definition of $f_\alpha$ and fix the parameter $\alpha$ with [`functools.partial`](https://docs.python.org/3/library/functools.html#functools.partial) when passing the function to `evaluate()`:
 ```Python
 def f(x, alpha):
     """Function to integrate f(x,alpha) = exp(-alpha*x)"""
@@ -202,18 +193,18 @@ def f(x, alpha):
 $$
 \begin{aligned}
   {\large\{}\texttt{MidpointRule} &: [I^{\text{(midpoint)}}(4),I^{\text{(midpoint)}}(8),I^{\text{(midpoint)}}(16),I^{\text{(midpoint)}}(32)],\\
-  \texttt{SimpsonsRule} &: [I^{\text{(simpson)}}(4),I^{\text{(simpson)}}(8),I^{\text{(simpson)}}(16),I^{\text{(simpson)}}(32)]
+  \texttt{SimpsonsRule} &: [I^{\text{(Simpson)}}(4),I^{\text{(Simpson)}}(8),I^{\text{(Simpson)}}(16),I^{\text{(Simpson)}}(32)]
   {\large\}}
 \end{aligned}
 $$
 
 * Print this dictionary with the following code, which you should try to understand:
 ```Python
-exact_result = 1 / alpha * (1 - np.exp(-alpha))
+I_exact = (1 - np.exp(-alpha)) / alpha # exact value of integral
 for integrator, integrals in results.items():
     print(
         f"{integrator}: "
-        + ", ".join([f"{abs(x-exact_result):8.4e}" for x in integrals])
+        + ", ".join([f"{abs(I-I_exact):8.4e}" for I in integrals])
     )
 ```
 * Are the methods of the expected order?
@@ -228,7 +219,7 @@ label = type(integrator).__name__
 ```
 
 ## Linear algebra with numpy
-Let's now look at different ways of manipulating vector, matrices and tensors in numpy. For this consider the following random vectors $\boldsymbol{u},\boldsymbol{v}$, matrices $A,B$ and tensors $T,S,Q$:
+Let's now look at different ways of manipulating vector, matrices and tensors in numpy. For this consider the following vectors $\boldsymbol{u},\boldsymbol{v}$, matrices $A,B$ and tensors $T,S,Q$, whose entries are initialised with random values:
 ```Python
 import numpy as np
 
@@ -249,18 +240,18 @@ Q = rng.normal(size=(5, 3))
 In a file `linear_algebra_numpy.py` add the above code for creating the required variables. Then implement the following operations in the same file:
 
 * Compute the matrix-vector product $A\boldsymbol{u}$ in three different ways:
-    - with the `@` operator
+    - with the [`@` operator](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html)
     - by using [`np.dot()`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html)
     - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
 * Compute the matrix-vector product $AB$ in three different ways:
-    - with the `@` operator
+    - with the [`@` operator](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html)
     - by using [`np.dot()`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html)
     - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
 * Compute the tensor product $U = \boldsymbol{u}\otimes \boldsymbol{v}$ with $U_{ij}=u_iv_j$ in two different ways:
     - with [`np.tensordot()`](https://numpy.org/doc/stable/reference/generated/numpy.tensordot.html)
     - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
 * Compute the trace of $AB$ in three different ways:
-    - with the `@` operator, `.T` (to transpose a matrix) and [`np.sum()`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)
+    - with the [`@` operator](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html), the [`.T` property](https://numpy.org/doc/stable/reference/generated/numpy.transpose.html) (to transpose a matrix) and [`np.sum()`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)
     - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
     - by using [`np.linalg.trace()`](https://numpy.org/doc/stable/reference/generated/numpy.trace.html)
 * Compute the tensor $R$ with $R_{ab} = \sum_{ijk} T_{aji}S_{bjk} Q_{kjii}$ by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
@@ -307,7 +298,7 @@ By using suitable functions (see documentation of [`petsc4py.Mat`](https://petsc
 * $A\boldsymbol{v} + \boldsymbol{w}$
 * $B^\top\boldsymbol{w}$
 
-and print out the result of each calculation (convert any sparse matrices to dense matrices first). Some of the operations can be implemented in different ways.
+and print out the result of each calculation (for this, convert any sparse matrices to dense matrices first). Some of the operations can be implemented in different ways.
 
 # Exercise 2: Cubic Lagrange element 
 
@@ -542,14 +533,14 @@ Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution a
 ```
 python -m code2pdf --path ./exercise3/ --output code_exercise3
 ```
-* Create a file `solution.pdf` file with the following content:
+* Create a file `solution_exercise3.pdf` file with the following content:
     - a brief description of how you implemented and tested your code
     - a table which lists $\|e_h\|_{L_2(\widehat{K})}$ for $p=1$ and $p=3$
     - plots of the solution and error for $p=1$ and $p=3$
 * Upload the following **three** files to the submission point on moodle:
     - The zip file `exercise3.tgz` with your source code
     - The file `code_exercise3.pdf` generated from your source code
-    - The file `solution.pdf` with your written solution
+    - The file `solution_exercise3.pdf` with your written solution
 
 ## Hints
 * You can import the `LinearElement` and quadrature rules provided in the finite element library with 
@@ -928,9 +919,9 @@ $$
 * What is the computational complexity for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ is $A$ if a triangular matrix?
 
 ## Practicalities
-* Write down your solution and save it as a `.pdf` file `solution.pdf`. You do not have to typeset your solution and can also submit scans of handwritten workings, provided they are legible.
+* Write down your solution and save it as a `.pdf` file `solution_exercise6.pdf`. You do not have to typeset your solution and can also submit scans of handwritten workings, provided they are legible.
 * Make sure you explain your thinking.
-* Upload the file `solution.pdf` to the submission point on moodle
+* Upload the file `solution_exercise6.pdf` to the submission point on moodle
 
 # Exercise 7: PETSc sparse matrices and linear solvers
 
@@ -1066,7 +1057,7 @@ Comment on your results: which solver gives the best performance?
 ```
 python -m code2pdf --path ./exercise7/ --output code_exercise7
 ```
-* Create a file `solution.pdf` with the following content:
+* Create a file `solution_exercise7.pdf` with the following content:
   - a table with the number of iterations for the Jacobi and SOR preconditioner for different problem sizes $n$
   - plots which illustrate the performance of differ solver/preconditioner combinations
   - a critical discussion of your results

@@ -554,7 +554,7 @@ from fem.quadrature import (
 )
 ```
 * The method `plot_solution(u_numerical, u_exact, element, filename)` in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
-* You can use the Python implementations of the functions $u_{\text{exact}}$, $f$ and $g$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $n\times 2$ which represents a collection of $n$ two-dimensional points. You might want to have a look at the discuss discussion of [numpy dimensional indexing tools](https://numpy.org/doc/stable/user/basics.indexing.html#dimensional-indexing-tools) for a more details on how to use the ellipsis `...` with numpy arrays.
+* You can use the Python implementations of the functions $u_{\text{exact}}$, $f$ and $g$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $2\times n$ which represents a collection of $n$ two-dimensional points.
 
 ```Python
 def u_exact(x, sigma, x0):
@@ -563,13 +563,11 @@ def u_exact(x, sigma, x0):
     :arg x: point at which the function is evaluated
     :arg sigma: width of peak
     :arg x0: location of peak"""
-    return np.exp(
-        -1 / (2 * sigma**2) * ((x[..., 0] - x0[0]) ** 2 + (x[..., 1] - x0[1]) ** 2)
-    )
+    return np.exp(-1 / (2 * sigma**2) * ((x[0] - x0[0]) ** 2 + (x[1] - x0[1]) ** 2))
 
 
 def f(x, kappa, omega, sigma, x0):
-    """Function f(x) for right hand side
+    """function to interpolate
 
     :arg x: point at which the function is evaluated
     :arg kappa: coefficient of diffusion term
@@ -577,29 +575,29 @@ def f(x, kappa, omega, sigma, x0):
     :arg sigma: width of peak
     :arg x0: location of peak
     """
-    x_sq = (x[..., 0] - x0[0]) ** 2 + (x[..., 1] - x0[1]) ** 2
+    x_sq = (x[0] - x0[0]) ** 2 + (x[1] - x0[1]) ** 2
     return (2 * kappa / sigma**2 + omega - kappa / sigma**4 * x_sq) * u_exact(
         x, sigma, x0
     )
 
 
 def g(x, kappa, sigma, x0):
-    """Boundary function g(x)
+    """boundary function
 
     :arg x: point at which the function is evaluated
     :arg kappa: coefficient of diffusion term
     :arg sigma: width of peak
     :arg x0: location of peak
     """
-    if np.all(x[..., 1]) < 1e-12:
+    if np.all(x[1]) < 1e-12:
         # facet F_1
-        n_dot_x = -(x[..., 1] - x0[1])
-    elif np.all(x[..., 0]) < 1e-12:
+        n_dot_x = -(x[1] - x0[1])
+    elif np.all(x[0]) < 1e-12:
         # facet F_2
-        n_dot_x = -(x[..., 0] - x0[0])
+        n_dot_x = -(x[0] - x0[0])
     else:
         # facet F_0
-        n_dot_x = (x[..., 0] - x0[0] + x[..., 1] - x0[1]) / np.sqrt(2)
+        n_dot_x = (x[0] - x0[0] + x[1] - x0[1]) / np.sqrt(2)
     return -kappa / sigma**2 * n_dot_x * u_exact(x, sigma, x0)
 ```
 
@@ -738,18 +736,19 @@ where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a
 
 This leads to the following procedure:
 
-### Algorithm: Computation of global $L_2$ error
+**Algorithm: Computation of global $L_2$ error**
+
 1. Initialise $S \gets 0$
-1. For all cells $K$ **do**:
-1. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
-1. $~~~~$ Extract the local dof-vector $\overline{\boldsymbol{u}}$ with $\overline{u}_{\ell} = u^{(h)}_{\ell_\text{global}(\alpha,\ell)}$
-1. $~~~~$ For all quadrature points $q$ **do**:
-1. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
-1. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $u^{\text{(exact)}}_q = \widehat{u}_{K,\text{exact}}(\xi^{(q)}) = u_{\text{exact}}(x_K^{(q)})$
-1. $~~~~~~~~$ Compute $e_q = u^{\text{(exact)}}_q - \sum_{\ell=0}^{\nu-1}T_{q\ell} \overline{u}_\ell$
-2. $~~~~~~~~$ Update $S \gets S + w_q e_q^2 D_q$
-3. $~~~~$ **end do**
-4.  **end do**
+2. For all cells $K$ **do**:
+3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
+4. $~~~~$ Extract the local dof-vector $\overline{\boldsymbol{u}}$ with $\overline{u}_{\ell} = u^{(h)}_{\ell_\text{global}(\alpha,\ell)}$
+5. $~~~~$ For all quadrature points $q$ **do**:
+6. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
+7. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $u^{\text{(exact)}}_q = \widehat{u}_{K,\text{exact}}(\xi^{(q)}) = u_{\text{exact}}(x_K^{(q)})$
+8. $~~~~~~~~$ Compute $e_q = u^{\text{(exact)}}_q - \sum_{\ell=0}^{\nu-1}T_{q\ell} \overline{u}_\ell$
+9. $~~~~~~~~$ Update $S \gets S + w_q e_q^2 D_q$
+10. $~~~~$ **end do**
+11. **end do**
 
 ### Implementation
 Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algorithm. Your method should take the following parameters:

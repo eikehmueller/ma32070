@@ -59,7 +59,7 @@ w_q = quad.weights
 ```
 We also construct a vector $\boldsymbol{f}\in\mathbb{R}^{N_q}$ whose components are given by evaluating the function $f$ at the quadrature points:
 ```Python
-f_q = f(zeta_q)
+f_q = f(zeta_q.T)
 ```
 After tabulating the basis functions and storing the matrix $T$ as `phi`, we can compute the contribution $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ to $b^{(h)}_\ell$ as
 ```Python
@@ -75,7 +75,7 @@ For each facet $F_\rho$ we then compute $\sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\
 ```Pythom
     w_facet_q = quad_facet.weights
     zeta_facet_q = np.asarray(quad_facet.nodes)
-    g_q = g(zeta_facet_q)
+    g_q = g(zeta_facet_q.T)
     phi_facet = element.tabulate(zeta_facet_q)
     r += np.einsum("q,q,qi->i", w_facet_q, g_q, phi_facet)
 ```
@@ -101,7 +101,7 @@ phi = element.tabulate(zeta_q)
 We also construct the vector $\boldsymbol{u}^{(\text{exact})}$ (=`u_q`) by evaluating the function $u_{\text{exact}}$ at the quadrature points
 
 ```Python
-u_q = u_exact(zeta_q)
+u_q = u_exact(zeta_q.T)
 ```
 The vector $\boldsymbol{e}$ (=`e_q`) is then given by $\boldsymbol{e}=\boldsymbol{u}^{(\text{exact})}-T \boldsymbol{u}^{(h)}$:
 ```Python

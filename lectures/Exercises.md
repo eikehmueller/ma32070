@@ -754,6 +754,7 @@ This leads to the following procedure:
 
 ### Implementation
 Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algorithm. Your method should accept the following arguments:
+
 * An object `u_h` of class `Function` which represents the numerical solution $u_h$
 * A Python function `u_exact` which can represents the exact solution $u_{\text{exact}}(x)$ and which be evaluated at arbitrary points $x\in \Omega$ 
 * A suitable quadrature rule `quad`

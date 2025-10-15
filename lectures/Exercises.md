@@ -758,7 +758,7 @@ Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algori
 * A Python function `u_exact` which can represents the exact solution $u_{\text{exact}}(x)$ and which be evaluated at arbitrary points $x\in \Omega$ 
 * A suitable quadrature rule `quad`
 
-You can use the following main program, which solves the PDE $-\nabla(\kappa\nabla) u + \omega u=f$ for $\kappa=0.9$, $\omega=0.4$ with the right hand side $f(x)$ chosen such that the exact solution is
+Try to avoid implementing an explicit for-loop over the quadrature points and instead use numpy's vectorisation capabilities. The determinant of a matrix can be computed with the [`np.linalg.det()` function](https://numpy.org/doc/stable/reference/generated/numpy.linalg.det.html). You can use the following main program, which solves the PDE $-\nabla(\kappa\nabla) u + \omega u=f$ for $\kappa=0.9$, $\omega=0.4$ with the right hand side $f(x)$ chosen such that the exact solution is
 
 $$
 u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)

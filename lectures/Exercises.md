@@ -394,7 +394,7 @@ def test_ndof_per_interior():
     assert element.ndof_per_interior == 1
 
 
-def test_tabulate_dofs():
+def test_tabulate_dofs_selected():
     """Check that dof-tabulation of exp(-x)*(2+sin(x)) is correct"""
     element = CubicElement()
     expected = [
@@ -402,7 +402,7 @@ def test_tabulate_dofs():
         2.61836980, 2.32719470, 1.43306262, 1.02683424, 1.66750787,
     ]
     tabulated = element.tabulate_dofs(
-        lambda x: np.exp(-x[..., 0]) * (2 + np.sin(x[..., 1]))
+        lambda x: np.exp(-x[0]) * (2 + np.sin(x[1]))
     )
     assert np.allclose(expected, tabulated, rtol=1.0e-8)
 

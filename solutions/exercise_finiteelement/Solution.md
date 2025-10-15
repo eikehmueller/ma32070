@@ -130,7 +130,7 @@ Tabulation of the dofs is achieved by evaluating the passed function $\widehat{f
 
 ```Python
 def tabulate_dofs(self, fhat):
-    return fhat(self._nodal_points)
+    return fhat(self._nodal_points.T)
 ```
 The nodal points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ can be initialised when the object is created by setting 
 
@@ -192,31 +192,16 @@ To verify that $\lambda_\ell(\phi_k) = \delta_{\ell k}$, we construct a list of 
 def test_tabulate_dofs():
     """Check that dof-tabulation of basis functions is correct"""
     basis_functions = [
-        lambda x: 1
-        - 11 / 2 * (x[..., 0] + x[..., 1])
-        + 9 * (x[..., 0] + x[..., 1]) ** 2
-        - 9 / 2 * (x[..., 0] + x[..., 1]) ** 3,
-        lambda x: x[..., 0] * (1 - 9 / 2 * x[..., 0] + 9 / 2 * x[..., 0] ** 2),
-        lambda x: x[..., 1] * (1 - 9 / 2 * x[..., 1] + 9 / 2 * x[..., 1] ** 2),
-        lambda x: -9 / 2 * x[..., 0] * x[..., 1] * (1 - 3 * x[..., 0]),
-        lambda x: -9 / 2 * x[..., 0] * x[..., 1] * (1 - 3 * x[..., 1]),
-        lambda x: -9
-        / 2
-        * x[..., 1]
-        * (1 - x[..., 0] - 4 * x[..., 1] + 3 * x[..., 1] * (x[..., 0] + x[..., 1])),
-        lambda x: 9
-        / 2
-        * x[..., 1]
-        * (2 - 5 * (x[..., 0] + x[..., 1]) + 3 * (x[..., 0] + x[..., 1]) ** 2),
-        lambda x: 9
-        / 2
-        * x[..., 0]
-        * (2 - 5 * (x[..., 0] + x[..., 1]) + 3 * (x[..., 0] + x[..., 1]) ** 2),
-        lambda x: -9
-        / 2
-        * x[..., 0]
-        * (1 - x[..., 1] - 4 * x[..., 0] + 3 * x[..., 0] * (x[..., 0] + x[..., 1])),
-        lambda x: 27 * x[..., 0] * x[..., 1] * (1 - x[..., 0] - x[..., 1]),
+        lambda x: 1 - 11 / 2 * (x[0] + x[1]) + 9 * (x[0] + x[1]) ** 2 - 9 / 2 * (x[0] + x[1]) ** 3,
+        lambda x: x[0] * (1 - 9 / 2 * x[0] + 9 / 2 * x[0] ** 2),
+        lambda x: x[1] * (1 - 9 / 2 * x[1] + 9 / 2 * x[1] ** 2),
+        lambda x: -9 / 2 * x[0] * x[1] * (1 - 3 * x[0]),
+        lambda x: -9 / 2 * x[0] * x[1] * (1 - 3 * x[1]),
+        lambda x: -9 / 2 * x[1] * (1 - x[0] - 4 * x[1] + 3 * x[1] * (x[0] + x[1])),
+        lambda x: 9 / 2 * x[1] * (2 - 5 * (x[0] + x[1]) + 3 * (x[0] + x[1]) ** 2),
+        lambda x: 9 / 2 * x[0] * (2 - 5 * (x[0] + x[1]) + 3 * (x[0] + x[1]) ** 2),
+        lambda x: -9 / 2 * x[0] * (1 - x[1] - 4 * x[0] + 3 * x[0] * (x[0] + x[1])),
+        lambda x: 27 * x[0] * x[1] * (1 - x[0] - x[1]),
     ]
     element = CubicElement()
     tabulated = [element.tabulate_dofs(phi) for phi in basis_functions]

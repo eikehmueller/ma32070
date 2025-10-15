@@ -654,13 +654,13 @@ p(x_0,x_1) = \sum_{\substack{s_0,s_1\\s_0+s_1\le 2}} a_{s_0,s_1} x_0^{s_0} x_1^{
 $$
 
 ### Implementation
-Implement this quadrature rule in the class `ThreePointQuadratureReferenceTriangle`, which should be a subclass of the abstract base class `Quadrature`. Write a suitable test which verifies that the implemention is correct. For this, observe that
+Implement this quadrature rule in the class `ThreePointQuadratureReferenceTriangle`, which should be a subclass of the abstract base class `Quadrature`. You should check that your implementation is correct. For this, observe that
 
 $$
-\int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1 = \int_0^1 \int_0^{1-x_1} x_0^{s_0}x_1^{s_1}\;dx_0\;dx_1=\frac{1}{s_0+1}\int_0^1 (1-x_1)^{s_0+1}x_1^{s_1}\;dx_1=\frac{s_0!s_1!}{(s_0+s_1+2)!}
+\int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1 = \int_0^1 \int_0^{1-x_1} x_0^{s_0}x_1^{s_1}\;dx_0\;dx_1=\frac{1}{s_0+1}\int_0^1 (1-x_1)^{s_0+1}x_1^{s_1}\;dx_1=\frac{s_0!s_1!}{(s_0+s_1+2)!}.
 $$
 
-Use the [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html) decorator to write a suitable, parametrised test which verifies this:
+Use the [`@pytest.mark.parametrize`](https://docs.pytest.org/en/stable/example/parametrize.html) decorator to write a suitable, parametrised test which verifies this for all monomials $x_0^{s_0}x_1^{s_1}$:
 
 ```python
 import pytest
@@ -680,7 +680,7 @@ def test_threepoint_quadrature_monomial(s, expected):
     """
     # Add your own test code here
 ```
-
+Here the tuple $s=(s_0,s_1)$ represents the two powers $s_0$ and $s_1$ of the monomial and `expected` is the expected result according to the above formula.
 ### Theory
 Confirm that the quadrature rule is exact for polynomials of degree less than or equal 2, i.e. that
 
@@ -698,7 +698,7 @@ $$
 #### Due: end of week 7
 
 ## Task
-As for the simplified case where the domain $\Omega$ is the reference triangle $\widehat{K}$, the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution $u_{\text{exact}}(x)$ and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{global}}}^{(h)}(x)$, we can write the error $e_h(x)$ as
+As for the simplified case where the domain $\Omega$ is the reference triangle $\widehat{K}$ (see Exercise 3), the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution $u_{\text{exact}}(x)$ and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{global}}}^{(h)}(x)$, we can write the error $e_h(x)$ as
 
 $$
 e_h(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
@@ -708,7 +708,8 @@ The square of the $L_2$ norm of the error can be computed by summing over all tr
 
 $$
 \begin{aligned}
-\|e_h\|_{L_2(\Omega)}^2 &= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi_{\ell_{\text{global}}}^{(h)}(x)\right)^2\;dx\\
+\|e_h\|_{L_2(\Omega)}^2 &= \int_{\Omega}\left(u_{\text{exact}}(x)-u_h(x)\right)^2\;dx\\
+&= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi_{\ell_{\text{global}}}^{(h)}(x)\right)^2\;dx\\
 &= \sum_{K\in\Omega_h} \int_{K} \left(u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)\right)^2\;dx\\
 \end{aligned}
 $$
@@ -717,13 +718,13 @@ Changing variables to integrate over the reference cell $\widehat{K}$ this leads
 
 $$
 \begin{aligned}
-\|e_h\|_{L_2(\Omega)}^2 &= \sum_{K\in\Omega_h} \int_{\widehat{K}} \left(\widehat{u}_{K,\text{exact}}(\widehat{x}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell}(\widehat{x})\right)^2\left|\det{J(\widehat{x})}\right|\;dx
+\|e_h\|_{L_2(\Omega)}^2 &= \sum_{K\in\Omega_h} \int_{\widehat{K}} \left(\widehat{u}_{K,\text{exact}}(\widehat{x}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell}(\widehat{x})\right)^2\left|\det{J(\widehat{x})}\right|\;d\widehat{x}
 \end{aligned}
 $$
 
 with $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ the global index corresponding to the local dof-index $\ell$ in the cell with index $\alpha$ and $\widehat{u}_{K,\text{exact}} = u_{\text{exact}}\circ X_K$ the pullback of the exact solution to the cell $K$. 
 
-Finally, we approximate integration by numerical quadrature to obtain
+Finally, we approximate the integration by numerical quadrature to obtain
 
 $$
 \begin{aligned}
@@ -739,21 +740,21 @@ This leads to the following procedure:
 **Algorithm: Computation of global $L_2$ error**
 
 1. Initialise $S \gets 0$
-2. For all cells $K$ **do**:
+2. **for** all cells $K$ **do**:
 3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
 4. $~~~~$ Extract the local dof-vector $\overline{\boldsymbol{u}}$ with $\overline{u}_{\ell} = u^{(h)}_{\ell_\text{global}(\alpha,\ell)}$
-5. $~~~~$ For all quadrature points $q$ **do**:
+5. $~~~~$ **for** all quadrature points $q$ **do**:
 6. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
 7. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $u^{\text{(exact)}}_q = \widehat{u}_{K,\text{exact}}(\xi^{(q)}) = u_{\text{exact}}(x_K^{(q)})$
 8. $~~~~~~~~$ Compute $e_q = u^{\text{(exact)}}_q - \sum_{\ell=0}^{\nu-1}T_{q\ell} \overline{u}_\ell$
 9. $~~~~~~~~$ Update $S \gets S + w_q e_q^2 D_q$
-10. $~~~~$ **end do**
-11. **end do**
+10. $~~~~$ **end for**
+11. **end for**
 
 ### Implementation
-Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algorithm. Your method should take the following parameters:
-* An object `u_h` of class `Function` which represents the numerical solution $u^{(h)}$
-* A Python function `u_hexact` which can represents the exact solution $u_{\text{exact}}(x)$ and which be evaluated at arbitrary points $x\in \Omega$ 
+Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algorithm. Your method should accept the following arguments:
+* An object `u_h` of class `Function` which represents the numerical solution $u_h$
+* A Python function `u_exact` which can represents the exact solution $u_{\text{exact}}(x)$ and which be evaluated at arbitrary points $x\in \Omega$ 
 * A suitable quadrature rule `quad`
 
 You can use the following main program, which solves the PDE $-\nabla(\kappa\nabla) u + \omega u=f$ for $\kappa=0.9$, $\omega=0.4$ with the right hand side $f(x)$ chosen such that the exact solution is
@@ -846,9 +847,9 @@ Run your code for different problem sizes by setting $n_{\text{ref}} = 3,4,5,6,7
 Produce a table which shows the time spent in the following parts of the code
 * Assembly of stiffness matrix $A^{(h)}$ in `assemble_lhs()`
 * Assembly of right-hand side $\boldsymbol{b}^{(h)}$ in `assemble_rhs()`
-* Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$
+* Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ with `np.linalg.solve()`
   
-as a function of the number of unknowns $n_{\text{dof}}$, which can be obtained as `fs.ndof` if `fs` is an instance of `FunctionSpace`. In the above main program, the `measure_time` decorator is used to time specific components of the code.
+as a function of the number of unknowns $n_{\text{dof}}$, which can be obtained as `fs.ndof` if `fs` is an instance of `FunctionSpace`. In the above main program, the `measure_time` decorator defined in [fem.utilities](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) is used to time specific components of the code.
 
 How does the time spent in different parts of the code increase as a function of $n_{\text{dof}}$?
 

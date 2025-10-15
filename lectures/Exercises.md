@@ -847,6 +847,7 @@ Run your code for different problem sizes by setting $n_{\text{ref}} = 3,4,5,6,7
 
 #### Runtime measurements
 Produce a table which shows the time spent in the following parts of the code
+
 * Assembly of stiffness matrix $A^{(h)}$ in `assemble_lhs()`
 * Assembly of right-hand side $\boldsymbol{b}^{(h)}$ in `assemble_rhs()`
 * Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ with `np.linalg.solve()`

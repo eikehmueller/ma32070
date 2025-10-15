@@ -52,7 +52,7 @@ The result is a vector $\boldsymbol{u}^{\text{(exact)}}\in \mathbb{R}^{n_q}$.
 We extract the $n_q\times \nu$ matrix $T$ which contains the values of the $\nu$ basis functions at the quadrature points by calling the `tabulate()` method of the finite element. With this we compute the vector
 
 $$
-\boldsymbol{e} = \boldsymbol{u}^{\text{exact}} - T \overline{\boldsymbol{u}}\in\mathbb{R}^{N_q},
+\boldsymbol{e} = \boldsymbol{u}^{\text{(exact)}} - T \overline{\boldsymbol{u}}\in\mathbb{R}^{N_q},
 $$
 
 such that the entry $e_q$ is the error at quadrature point $q$.

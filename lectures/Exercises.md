@@ -965,7 +965,7 @@ A_{ij} = \begin{cases}
 \end{cases}
 $$
 
-where $h=1/n$. In other words, the entries on the main diagonal are $2+h^2$ while the entries on the first two sub-diagonals and in the upper right and lower right corner are $-1$.
+where $h=1/n$. In other words, the entries on the main diagonal are $2+h^2$ while the entries on the first two sub-diagonals and in the upper right and lower left corner are $-1$.
 
 An example for $n=8$ is shown here:
 $$
@@ -1010,10 +1010,10 @@ rng = np.random.default_rng(seed=1241773)
 array = rng.normal(size=n)
 ```
 
-Create a PETSc `KSP` object, which can be configured with PETSc options passed from the command line. Your code should solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ to a relative tolerance of $10^{-6}$ on the preconditioned residual.
+Create a PETSc `KSP` object which can be configured with PETSc options passed from the command line.
 
 ### Numerical experiments
-Solve the system for different problem sizes $n=16,32,64,128,256,512$ to a (relative) tolerance of $10^{-6}$ on the preconditioned residual, while using the Richardson iteration preconditioned with the Jacobi method. Create a table which lists the number of iterations for different values of $n$. If you include the command line `-ksp_converged_reason`, PETSc will print out information on whether the solver has converged and how many iterations this required. You might have to increase the maximum number of solver iterations to a sufficiently large value for the larger problem sizes $n$.
+Run your code to solve the system $A\boldsymbol{u}=\boldsymbol{b}$ for different problem sizes $n=16,32,64,128,256,512$ to a (relative) tolerance of $10^{-6}$ on the preconditioned residual. Start by using the Richardson iteration preconditioned with the Jacobi method. Create a table which lists the number of iterations for different values of $n$. If you include the command line `-ksp_converged_reason`, PETSc will print out information on whether the solver has converged and how many iterations this required. You might have to increase the maximum number of solver iterations to a sufficiently large value for the larger problem sizes $n$.
 
 Verify that the correct solver options have been used by passing the `-ksp_view` flag and inspect the output.
 
@@ -1038,7 +1038,7 @@ A_{ij} & \text{if $i<j$} \\
 0 & \text{otherwise}
 \end{cases}
 $$
-Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)\boldsymbol{z}=\boldsymbol{r}$ can be solved row-by-row, i.e. by computing first $z_0 = r_0/A_{00}$, then computing $z_1 = (r_1 - A_{10}z_0)/A_{11}$, $z_2=(r_2 - A_{20}z_0 - A_{21}z_1)/A_{22}$ and so on. The corresponding preconditioner is also known as the successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor` (in fact, in this setup PETSc will use a symmetric version of the Gauss-Seidel iteration by preconditioning with both $D+L$ and $D+L^\top$).
+Convince yourself that for a given vector $\boldsymbol{r}$ the equation $(D+L)\boldsymbol{z}=\boldsymbol{r}$ can be solved row-by-row, i.e. by computing first $z_0 = r_0/A_{00}$, then computing $z_1 = (r_1 - A_{10}z_0)/A_{11}$, $z_2=(r_2 - A_{20}z_0 - A_{21}z_1)/A_{22}$ and so on (compare also Exercise 6). The corresponding preconditioner is known as the Gauss-Seidel or successive overrelaxation (SOR) method. It can be chosen by setting `-pc_type sor` (in fact, in this setup PETSc will use a symmetric version of the Gauss-Seidel iteration by preconditioning with both $D+L$ and $D+L^\top$).
 
 For [technical reasons](https://petsc.org/release/manualpages/PC/PCSOR/), it is necessary to add the option `-ksp_monitor` (or `-ksp_monitor :/dev/null` to suppress output) when using PETSc's SOR preconditioner.
 
@@ -1061,7 +1061,7 @@ and preconditioners
 
 There should $3\times 5=15$ different solver/preconditioner combinations in total, do all of these work as expected? 
 
-In addition to the number of iterations, also measure the time spent in the solve step by using the `meausure_time` decorator from `fem.utilities`:
+In addition to the number of iterations, also measure the time spent in the solve step by using the `meausure_time` decorator from [fem.utilities](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py):
 ```Python
 from fem.utilities import measure_time
 

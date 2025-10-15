@@ -4,11 +4,12 @@
 
 ----
 ## Implementation
+The complete code for assembling the stiffness matrix, right hand side vector and $L_2$ error can be found in [algorithms.py](algorithms.py). The main program has been implemented in [driver.py](driver.py).
 
-The code can be made very compact by implementing tensor contractions with the [`np.einsum()` method](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html).
+As the following discussion shows, the implementation can be made very compact by implementing tensor contractions with the [`np.einsum()` method](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html).
 
 ### Stiffness matrix
-Consider, for example, the assembly of the left-hand side siffness matrix $A^{(h)}_{\ell k}$ in `assemble_lhs()`. From the lectures we know that
+First consider the assembly of the stiffness matrix $A^{(h)}_{\ell k}$ in `assemble_lhs()`. From the lectures we know that
 
 $$
 \begin{aligned}
@@ -19,12 +20,12 @@ $$
 
 with the quadrature weights $w_q$ and the tensors $T$, $T^\partial$ of shapes $(N_q,\nu)$, $(N_q,\nu,2)$ respectively. More explicitly, the tensor components are $T_{q\ell} = \phi_\ell(\zeta^{(q)})$ and $T_{q\ell a}^{\partial} = \frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(q)})$ where $\{\zeta^{(q)}\}_{q=0}^{N_q-1}$ are the quadrature points.
 
-In the code, we start by constructing a quadrature rule and construct the vector $\boldsymbol{w}\in\mathbb{R}^{N_q}$ which holds the weights $w_q$:
+In the code, we start by constructing a quadrature rule and extract the vector $\boldsymbol{w}\in\mathbb{R}^{N_q}$ which holds the weights $w_q$:
 ```Python
 quad = GaussLegendreQuadratureReferenceTriangle(n_q)
 w_q = quad.weights
 ```
-The quadrature points $\zeta$ are stored in an array `zeta_q` of shape $(N_q,2)$, which can be passed to the `tabulate()` and `tabulate_gradient()` methods of the finite element
+The quadrature points are stored in an array `zeta_q` of shape $(N_q,2)$, which can be passed to the `tabulate()` and `tabulate_gradient()` methods of the finite element:
 
 ```Python
 zeta_q = np.asarray(quad.nodes)
@@ -39,8 +40,6 @@ stiffness_matrix = kappa * np.einsum("q,qik,qjk->ij", w_q, grad_phi, grad_phi)
                  + omega * np.einsum("q,qi,qj->ij", w_q, phi, phi)
 ```
 
-The complete code for assembling the stiffness matrix can be found in [algorithms.py](algorithms.py). The main program has been implemented in [driver.py](driver.py).
-
 ### Right hand side vector
 To construct the right hand side vector $\boldsymbol{b}^{(h)}$ given by
 
@@ -51,7 +50,7 @@ b^{(h)}_\ell &= \sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsy
 $$
 
 
-we again construct quadrature points `zeta_q` and weights `w_q`. 
+we again extract the quadrature points `zeta_q` and weights `w_q` from the quadrature rule. 
 ```Python
 quad = GaussLegendreQuadratureReferenceTriangle(n_q)
 zeta_q = np.asarray(quad.nodes)
@@ -61,17 +60,27 @@ We also construct a vector $\boldsymbol{f}\in\mathbb{R}^{N_q}$ whose components 
 ```Python
 f_q = f(zeta_q)
 ```
+Note that the ellipsis operator `...` has been used to implement the function $f$ such that it will work both for a single point $\boldsymbol{x}\in \mathbb{R}^2$ and for a collection of $n$ points, i.e. a rank 2 tensor $X$ of shape $(n,2)$. Consider in particular this line:
+
+```Python
+x_sq = (x[..., 0] - x0[0]) ** 2 + (x[..., 1] - x0[1]) ** 2
+```
+
+Depending on whether `x` has shape $(2,)$ or $(n,2)$, the result `x_sq` will either be a scalar $S = \sqrt{(x_0-x^{(0)}_0)^2+(x_1-x^{(0)}_1)^2}$ or a vector $\boldsymbol{S}\in\mathbb{R}^n$ with $S_j=\sqrt{(X_{j,0}-x^{(0)}_0)^2+(X_{j,1}-x^{(0)}_1)^2}$.
+
 After tabulating the basis functions and storing the matrix $T$ as `phi`, we can compute the contribution $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ to $b^{(h)}_\ell$ as
 ```Python
 phi = element.tabulate(zeta_q)
 r = np.einsum("q,q,qi->i", w_q, f_q, phi)
 ```
-The other contribution to $b^{(h)}_\ell$ has contributions from each of the facets. Each facet is defined by a line segment $\overline{v_a,v_b}$ where the points $v_a,v_b\in\mathbb{R}^{2}$ are $v_a=\begin{pmatrix}1\\0\end{pmatrix},v_b=\begin{pmatrix}0\\1\end{pmatrix}$ for facet $F_0$, $v_a=\begin{pmatrix}0\\1\end{pmatrix},v_b=\begin{pmatrix}0\\0\end{pmatrix}$ for facet $F_1$ and $v_a=\begin{pmatrix}0\\0\end{pmatrix},v_b=\begin{pmatrix}1\\0\end{pmatrix}$ for facet $F_2$. We thus loop over the three possible tuples $(v_a,v_b)$ and construct a quadrature rule of type `GaussLegendreQuadratureLineSegment` for each.
+and store the result in the variable `r`.
+
+The other term in the expression for $b^{(h)}_\ell$ has contributions from the three facets of $\widehat{K}$. Each facet $F_\rho$ is defined by a line segment $\overline{v_a,v_b}$ where the points $v_a,v_b\in\mathbb{R}^{2}$ are $v_a=\begin{pmatrix}1\\0\end{pmatrix},v_b=\begin{pmatrix}0\\1\end{pmatrix}$ for facet $F_0$, $v_a=\begin{pmatrix}0\\1\end{pmatrix},v_b=\begin{pmatrix}0\\0\end{pmatrix}$ for facet $F_1$ and $v_a=\begin{pmatrix}0\\0\end{pmatrix},v_b=\begin{pmatrix}1\\0\end{pmatrix}$ for facet $F_2$. We thus loop over the three possible tuples $(v_a,v_b)$ and construct a quadrature rule `quad_facet` of type `GaussLegendreQuadratureLineSegment` for each of them.
 ```Python
 for v_a, v_b in [[(1, 0), (0, 1)], [(0, 1), (0, 0)], [(0, 0), (1, 0)]]:
     quad_facet = GaussLegendreQuadratureLineSegment(v_a, v_b, n_q)
 ```
-For each facet $F_\rho$ we then compute $\sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\boldsymbol{\zeta}_{F_\rho})T_{q\ell}(\boldsymbol{\zeta}_{F_\rho})$. The code for this has the same structure as the above code for computing $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ but with $\boldsymbol{w}\mapsto \boldsymbol{w}_{F_{\rho}}$ (=`w_facet_q`), $\boldsymbol{\zeta} \mapsto \boldsymbol{\zeta}_{F_{\rho}}$ (=`zeta_facet_q`), $\boldsymbol{f}\mapsto \boldsymbol{g}$ (=`g_q`) with components $g_q=q(\zeta_{F_\rho}^{(q)})$. We also tabulate the basis functions at the quadrature points $\boldsymbol{w}_{F_\rho}$ to obtain $T(\boldsymbol{\zeta}_{F_{\rho}})$ (=`phi_facet`).
+For each facet $F_\rho$ we then compute $\sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\boldsymbol{\zeta}_{F_\rho})T_{q\ell}(\boldsymbol{\zeta}_{F_\rho})$ with [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). The code for this has the same structure as the above code for computing $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ in the interior of the cell but with $\boldsymbol{w}\mapsto \boldsymbol{w}_{F_{\rho}}$ (=`w_facet_q`), $\boldsymbol{\zeta} \mapsto \boldsymbol{\zeta}_{F_{\rho}}$ (=`zeta_facet_q`), $\boldsymbol{f}\mapsto \boldsymbol{g}$ (=`g_q`) with components $g_q=q(\zeta_{F_\rho}^{(q)})$. We also tabulate the basis functions at the quadrature points $\boldsymbol{w}_{F_\rho}$ to obtain $T(\boldsymbol{\zeta}_{F_{\rho}})$ (=`phi_facet`).
 ```Pythom
     w_facet_q = quad_facet.weights
     zeta_facet_q = np.asarray(quad_facet.nodes)
@@ -79,7 +88,7 @@ For each facet $F_\rho$ we then compute $\sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\
     phi_facet = element.tabulate(zeta_facet_q)
     r += np.einsum("q,q,qi->i", w_facet_q, g_q, phi_facet)
 ```
-
+Again, the function $g$ has been implemented to accept both a single two-dimensional vector or a rank 2 tensor of shape $(n,2)$.
 ### $\boldsymbol{L_2}$-error
 The computation of the $L_2$ error according to
 
@@ -89,7 +98,7 @@ $$
 \end{aligned}
 $$
 
-is straightforward. Again, we start by constructing quadrature points `zeta_q` and weights `w_q` and tabulate the basis functions at the quadrature points:
+is straightforward. Again, we start by constructing quadrature points `zeta_q` and weights `w_q` and tabulate the basis functions at the quadrature points in `phi`:
 
 ```Python
 quad = GaussLegendreQuadratureReferenceTriangle(n_q)
@@ -115,7 +124,7 @@ nrm = np.sqrt(np.sum(w_q * e_q**2))
 ## Numerical experiments
 
 ### Error norm
-The following table shows the $L_2$ norm of the error for polynomial degrees $p=1,2,3,4$
+The following table shows the $L_2$ norm of the error for polynomial degrees $p=1,2,3,4$:
 
 | degree $p$ | error norm $\|\|e_h\|\|_{L_2(\widehat{K})}$ |
 | ---------- | ---------------------------- |
@@ -127,7 +136,7 @@ The following table shows the $L_2$ norm of the error for polynomial degrees $p=
 Using cubic instead of linear finite elements reduces the error by approximately one order of magnitude.
 
 ### Plot of solution and error
-The following plots visualise the solution and error for polynomial degrees $p=1,2,3,4$
+The following plots visualise the solution and error for polynomial degrees $p=1,2,3,4$. Again, they demonstrate that the error is substantially smaller for finite elements with higher polynomial degrees.
 
 #### Solution and error for $p=1$
 ![Solution and error for $p=1$](triangle_solution_01.png)

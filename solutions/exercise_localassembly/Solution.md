@@ -60,13 +60,16 @@ We also construct a vector $\boldsymbol{f}\in\mathbb{R}^{N_q}$ whose components 
 ```Python
 f_q = f(zeta_q.T)
 ```
-Note that the ellipsis operator `...` has been used to implement the function $f$ such that it will work both for a single point $\boldsymbol{x}\in \mathbb{R}^2$ and for a collection of $n$ points, i.e. a rank 2 tensor $X$ of shape $(n,2)$. Consider in particular this line:
+Note that the function $f$ will work both for a single point $\boldsymbol{x}\in \mathbb{R}^2$ and for a collection of $n$ points, i.e. a rank 2 tensor $X$ of shape $(2,n)$. In the latter case, the code will evaluate the function at each point and return a vector with these point evaluations. We need to be careful, however, to transpose the argument that is passed to $f$ first since the quadrature points `zeta_q` are stored in an array of shape $(n,2)$. Consider in particular this line:
 
 ```Python
-x_sq = (x[..., 0] - x0[0]) ** 2 + (x[..., 1] - x0[1]) ** 2
+x_sq = (x[0] - x0[0]) ** 2 + (x[1] - x0[1]) ** 2
 ```
-
-Depending on whether `x` has shape $(2,)$ or $(n,2)$, the result `x_sq` will either be a scalar $S = \sqrt{(x_0-x^{(0)}_0)^2+(x_1-x^{(0)}_1)^2}$ or a vector $\boldsymbol{S}\in\mathbb{R}^n$ with $S_j=\sqrt{(X_{j,0}-x^{(0)}_0)^2+(X_{j,1}-x^{(0)}_1)^2}$.
+which is equivalent to 
+```Python
+x_sq = (x[0,...] - x0[0]) ** 2 + (x[1,...] - x0[1]) ** 2
+```
+If `x` represents a tensor $X$ of shape $(2,n)$, `x[0]` or `x[0,...]` will return the vector $\widetilde{\boldsymbol{X}}\in\mathbb{R}^n$ with $\widetilde{X}_j = X_{0,j}$. Hence, depending on whether `x` has shape $(2,)$ or $(2,n)$, the result `x_sq` will either be a scalar $S = \sqrt{(x_0-x^{(0)}_0)^2+(x_1-x^{(0)}_1)^2}$ or a vector $\boldsymbol{S}\in\mathbb{R}^n$ with $S_j=\sqrt{(X_{0,j}-x^{(0)}_0)^2+(X_{1,j}-x^{(0)}_1)^2}$.
 
 After tabulating the basis functions and storing the matrix $T$ as `phi`, we can compute the contribution $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ to $b^{(h)}_\ell$ as
 ```Python

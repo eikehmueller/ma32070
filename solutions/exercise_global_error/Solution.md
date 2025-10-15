@@ -108,8 +108,8 @@ The following table shows the time spent in different parts of the code for incr
 
 The time spent in the assembly of the stiffness matrix $A^{(h)}$ and the right-hand side vector $\boldsymbol{b}^{(h)}$ increases in proportion to the number of unknowns: incrementing $n_{\text{ref}}$ by one results is an increase of the problem size by a factor of approximately 4 and the time grows by roughly the same factor for the larger problem sizes.
 
-The growth in the time spent in the linear solve is much more rapid: changing $n_{\text{dof}} = 1089 \rightarrow 4225$ results in a $62$-fold increase in runtime while increasing the problem size further to $n_{\text{dof}}=16641$ results in a growth in the runtime by a factor of $72$. Since $62$ and $72$ are close to $64=4^3$, it is reasonable to conjecture that the time spent in the linear solve grows in proportion to the third power of the problem size:
-$t_{\text{solve}}\propto n_{\text{dof}}^3$.
+The growth in the time spent in the linear solve is much more rapid: changing $n_{\text{dof}} = 1089 \rightarrow 4225$ results in a $62$-fold increase in runtime while increasing the problem size further to $n_{\text{dof}}=16641$ results in a growth in the runtime by another factor of $72$. Since $62$ and $72$ are close to $64=4^3$, it is reasonable to conjecture that the time spent in the linear solve grows in proportion to the third power of the problem size:
+$t_{\text{solve}}\propto n_{\text{dof}}^3$. As we will see, this is consistent with a theoretical complexity analysis.
 
 ### Convergence
 The following figure shows the $L_2$ error $\|e_h\|_{L_2(\Omega)}$ as a function of the grid spacing $h$ for both the `LinearElement` and `CubicElement`.

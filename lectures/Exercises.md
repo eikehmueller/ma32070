@@ -701,7 +701,7 @@ $$
 As for the simplified case where the domain $\Omega$ is the reference triangle $\widehat{K}$ (see Exercise 3), the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution $u_{\text{exact}}(x)$ and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the basis functions $\Phi_{\ell_{\text{global}}}^{(h)}(x)$, we can write the error $e_h(x)$ as
 
 $$
-e_h(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
+e_h(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n_{\text{dof}}-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
 $$
 
 The square of the $L_2$ norm of the error can be computed by summing over all triangles in the mesh
@@ -709,7 +709,7 @@ The square of the $L_2$ norm of the error can be computed by summing over all tr
 $$
 \begin{aligned}
 \|e_h\|_{L_2(\Omega)}^2 &= \int_{\Omega}\left(u_{\text{exact}}(x)-u_h(x)\right)^2\;dx\\
-&= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi_{\ell_{\text{global}}}^{(h)}(x)\right)^2\;dx\\
+&= \int_{\Omega} \left(u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n_{\text{dof}}-1} u^{(h)}_{\ell_{\text{global}}} \Phi_{\ell_{\text{global}}}^{(h)}(x)\right)^2\;dx\\
 &= \sum_{K\in\Omega_h} \int_{K} \left(u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)\right)^2\;dx\\
 \end{aligned}
 $$
@@ -722,7 +722,7 @@ $$
 \end{aligned}
 $$
 
-with $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ the global index corresponding to the local dof-index $\ell$ in the cell with index $\alpha$ and $\widehat{u}_{K,\text{exact}} = u_{\text{exact}}\circ X_K$ the pullback of the exact solution to the cell $K$. 
+with $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ the global index corresponding to the local dof-index $\ell$ in the cell with index $\alpha$ and $\widehat{u}_{K,\text{exact}} = u_{\text{exact}}\circ X_K$ the pullback of the exact solution to the reference triangle $\widehat{K}$. 
 
 Finally, we approximate the integration by numerical quadrature to obtain
 

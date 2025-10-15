@@ -704,7 +704,7 @@ $$
 e_h(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n_{\text{dof}}-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
 $$
 
-The square of the $L_2$ norm of the error can be computed by summing over all triangles in the mesh
+The square of the $L_2$ norm of the error can be computed by summing over all cells $K$ in the mesh
 
 $$
 \begin{aligned}

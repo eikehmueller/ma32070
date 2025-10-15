@@ -29,8 +29,8 @@ def error_nrm(u_numerical, u_exact, quad):
         zeta = np.asarray(quad.nodes)
         w_q = quad.weights
         T_coord = element_coord.tabulate(zeta)
-        x_global = np.einsum("qla,l->aq", T_coord, x_dof_vector)
-        u_exact_K = u_exact(x_global)
+        x_global = np.einsum("qla,l->qa", T_coord, x_dof_vector)
+        u_exact_K = u_exact(x_global.T)
         T = element.tabulate(zeta)
         error_K = u_exact_K - T @ u_numerical_K
         T_coord_partial = element_coord.tabulate_gradient(zeta)

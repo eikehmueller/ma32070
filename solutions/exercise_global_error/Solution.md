@@ -5,11 +5,10 @@
 ----
 
 ## Implementation
-
-In each cell with index $\alpha$ we need to carry out the following operations:
+The complete code for computing the global $L_2$ error can be found in [algorithms.py](algorithms.py). The main program has been implemented in [driver.py](driver.py). Obviously, there is an outer loop over all cells $K$ of the mesh. In each cell we perform the following operations:
 
 #### Extract coordinate dof-vector
-Let $\nu^{\times}$ be the number of local basis functions of the finite element used for discretising the coordinate field. To extract the dof-vector $\overline{\boldsymbol{X}}\in \mathbb{R}^{\nu^{\times}}$ from the global coordinate dof-vector $\boldsymbol{X}$, we first need to work out the $\nu^{\times}$ indices $\ell^\times_\text{global}$. This is done by using the `local2global()` method of the coordinate function space `fs_coord` in the current cell. If we pass the list $[0,1,2,\dots,\nu^{\times}-1]$ to this method it will return the list $\ell^\times_\text{global}$. Since the global coordinate dof-vector $\boldsymbol{X}$ is stored in the function `mesh.coordinates`, we can obtain $\overline{\boldsymbol{X}}$ by indexing the `data` attribute of `mesh.coordinates` with $\ell^\times_\text{global}$, i.e. `ell_g_coord`:
+Let $\nu^{\times}$ be the number of local basis functions of the finite element used for discretising the coordinate field. To extract the cell-local dof-vector $\overline{\boldsymbol{X}}\in \mathbb{R}^{\nu^{\times}}$ from the global coordinate dof-vector $\boldsymbol{X}$ in the cell with index $\alpha$, we first need to work out the $\nu^{\times}$ indices $\ell^\times_\text{global}(\alpha,0),\ell^\times_\text{global}(\alpha,1),\dots,\ell^\times_\text{global}(\alpha,\nu^\times-1)$. This is done by using the `local2global()` method of the coordinate function space `fs_coord` in the current cell. If we pass the list $[0,1,2,\dots,\nu^{\times}-1]$ to this method it will return the list of global indices $\boldsymbol{\ell}^\times_\text{global}$ which is stored in `ell_g_coord`. Since the global coordinate dof-vector $\boldsymbol{X}$ is stored in the function `mesh.coordinates`, we can obtain $\overline{\boldsymbol{X}}$ by indexing the `data` attribute of `mesh.coordinates` with `ell_g_coord`, i.e. $\boldsymbol{\ell}^\times_\text{global}$:
 
 ```Python
 ell_coord = range(element_coord.ndof)
@@ -18,7 +17,7 @@ x_dof_vector = mesh.coordinates.data[ell_g_coord]
 ```
 
 #### Extract solution dof-vector
-The same approach can be used to extract the local dof-vector $\overline{\boldsymbol{u}}\in\mathbb{R}^{\nu}$ from the global dof-vector `u_numerical.data`. Here we use the `local2global` map of the function space `fs` of the numerical solution $u^{(h)}$:
+The same approach can be used to extract the cell-local dof-vector $\overline{\boldsymbol{u}}\in\mathbb{R}^{\nu}$ from the global dof-vector `u_numerical.data`. Here we use the `local2global` map of the function space `fs` of the numerical solution $u_{h}$:
 
 ```Python
 ell = range(element.ndof)
@@ -38,24 +37,22 @@ For this, we first use the `tabulate()` method of the coordinate element and the
 zeta = np.asarray(quad.nodes)
 w_q = quad.weights
 T_coord = element_coord.tabulate(zeta)
-x_global = np.einsum("qla,l->aq", T_coord, x_dof_vector)
+x_global = np.einsum("qla,l->qa", T_coord, x_dof_vector)
 ```
 
-Note that the resulting array has the correct shape ($n_q\times 2$ as opposed to $2\times n_q$) since the indices after the `->` symbol are given in the order `aq`.
-
-We can now evaluate the function $u_{\text{exact}}(x)$ at the $n_q$ positions $x_K^{(q)}$ by passing the tensor `x_global` to `u_exact` (this assumes that the function `u_exact()` can take rank-2 tensors as input, which it does):
+We can now evaluate the function $u_{\text{exact}}$ at the $n_q$ positions $x_K^{(q)}$ by passing the tensor `x_global` to the function $u_{\text{exact}}$. Since `u_exact` accepts two-dimensional vectors or rank 2 tensors of shape $(2,n)$, we need to transpose `x_global` first:
 
 ```Python
-u_exact_K = u_exact(x_global)
+u_exact_K = u_exact(x_global.T)
 ```
 
-The result is the vector $\boldsymbol{u}^{\text{(exact)}}\in \mathbb{R}^{n_q}$.
+The result is a vector $\boldsymbol{u}^{\text{(exact)}}\in \mathbb{R}^{n_q}$.
 
 #### Compute error at quadrature points
-Finally, we compute the $n_q\times \nu$ matrix $T$ which contains the values of the $\nu$ basis functions at the quadrature points and compute the vector
+We extract the $n_q\times \nu$ matrix $T$ which contains the values of the $\nu$ basis functions at the quadrature points by calling the `tabulate()` method of the finite element. With this we compute the vector
 
 $$
-\boldsymbol{e} = \boldsymbol{u}^{\text{exact}} - T \overline{\boldsymbol{u}},
+\boldsymbol{e} = \boldsymbol{u}^{\text{exact}} - T \overline{\boldsymbol{u}}\in\mathbb{R}^{N_q},
 $$
 
 such that the entry $e_q$ is the error at quadrature point $q$.
@@ -77,7 +74,7 @@ After extracting the tabulation tensor $T^{\times\partial}$ with `tabulate_gradi
 T_coord_partial = element_coord.tabulate_gradient(zeta)
 jac = np.einsum("l,qlab->qab", x_dof_vector, T_coord_partial)
 ```
-We can also compute the determinant $\boldsymbol{D}\in \mathbb{R}^{n_q}$ at the quadrature points with $D_q = \text{det}(J(\xi^{(q)}))$ by applying the [`np.linalg.det()` method](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.det.html), which automatically vectorises over all but the last two dimensions.
+We can also compute the determinant $\boldsymbol{D}\in \mathbb{R}^{n_q}$ (=`det_jac`) at the quadrature points with $D_q = \text{det}(J(\xi^{(q)}))$ by applying the [`np.linalg.det()` method](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.det.html), which automatically vectorises over all but the last two dimensions.
 
 ```Python
 det_jac = np.abs(np.linalg.det(J))
@@ -96,8 +93,6 @@ While this could be done with `np.einsum()` as well, multiplying the vectors com
 error_nrm_2 += np.sum(w_q * error_K**2 * det_jac)
 ```
 
-The complete code for computing the global $L_2$ error can be found in [algorithms.py](algorithms.py). The main program has been implemented in [driver.py](driver.py).
-
 ## Numerical experiments
 
 ### Runtime
@@ -111,7 +106,7 @@ The following table shows the time spent in different parts of the code for incr
 | 6 | 4225 | $2.06\cdot 10^{-1}$ | $3.24\cdot 10^{-1}$ | $5.95\cdot 10^{-1}$ |
 | 7 | 16641 | $8.57\cdot 10^{-1}$ | $1.45$ | $43.0$ |
 
-The time spent in the assembly of the stiffness matrix $A^{(h)}$ and the right-hand side vector $\boldsymbol{b}^{(h)}$ increases in proportion to the number of unknowns: incrementing $n_{ref}$ by one results is an increase of the problem size by a factor of approximately 4 and the time grows by roughly the same factor for the larger problem sizes.
+The time spent in the assembly of the stiffness matrix $A^{(h)}$ and the right-hand side vector $\boldsymbol{b}^{(h)}$ increases in proportion to the number of unknowns: incrementing $n_{\text{ref}}$ by one results is an increase of the problem size by a factor of approximately 4 and the time grows by roughly the same factor for the larger problem sizes.
 
 The growth in the time spent in the linear solve is much more rapid: changing $n_{\text{dof}} = 1089 \rightarrow 4225$ results in a $62$-fold increase in runtime while increasing the problem size further to $n_{\text{dof}}=16641$ results in a growth in the runtime by a factor of $72$. Since $62$ and $72$ are close to $64=4^3$, it is reasonable to conjecture that the time spent in the linear solve grows in proportion to the third power of the problem size:
 $t_{\text{solve}}\propto n_{\text{dof}}^3$.

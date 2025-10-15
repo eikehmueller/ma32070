@@ -719,7 +719,7 @@ Changing variables to integrate over the reference cell $\widehat{K}$ this leads
 
 $$
 \begin{aligned}
-\|e_h\|_{L_2(\Omega)}^2 &= \sum_{K\in\Omega_h} \int_{\widehat{K}} \left(\widehat{u}_{K,\text{exact}}(\widehat{x}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_{\ell}(\widehat{x})\right)^2\left|\det{J(\widehat{x})}\right|\;d\widehat{x}
+\|e_h\|_{L_2(\Omega)}^2 &= \sum_{K\in\Omega_h} \int_{\widehat{K}} \left(\widehat{u}_{K,\text{exact}}(\widehat{x}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}(\alpha,\ell)} \phi_{\ell}(\widehat{x})\right)^2\left|\det{J(\widehat{x})}\right|\;d\widehat{x}
 \end{aligned}
 $$
 
@@ -730,7 +730,7 @@ Finally, we approximate the integration by numerical quadrature to obtain
 $$
 \begin{aligned}
 \|e_h\|_{L_2(\Omega)}^2 &\approx 
-\sum_{K\in\Omega_h}\sum_{q=0} ^{N_q-1} w_q \left(\widehat{u}_{K,\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}} \phi_\ell(\zeta^{(q)})\right)^2 \left|\det{J(\zeta^{(q)})}\right|.
+\sum_{K\in\Omega_h}\sum_{q=0} ^{N_q-1} w_q \left(\widehat{u}_{K,\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_{\ell_{\text{global}}(\alpha,\ell)} \phi_\ell(\zeta^{(q)})\right)^2 \left|\det{J(\zeta^{(q)})}\right|.
 \end{aligned}
 $$
 

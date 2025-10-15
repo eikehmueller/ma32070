@@ -8,7 +8,41 @@
 # PETSc solver options
 
 ## Implementation
-The source code is available in [`linear_solve.py`](linear_solve.py).
+The full source code is available in [linear_solve.py](linear_solve.py).
+
+The matrix $A$ is constructed by using the [`createAIJWithArrays()` function](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.createAIJWithArrays):
+
+```Python
+A = PETSc.Mat().createAIJWithArrays(size=(n, n), csr=(row_start, col_indices, values))
+```
+
+Next, we set up the KSP object, set its operator and call `setFromOptions()` to parse the command line options
+```Python
+ksp = PETSc.KSP().create()
+ksp.setOperators(A)
+ksp.setFromOptions()
+```
+For this to work, it is important that
+
+```Python
+import sys
+import petsc4py
+petsc4py.init(sys.argv)
+```
+has been called at the beginning of the script.
+
+The vectors $\boldsymbol{b}, \boldsymbol{u}\in\mathbb{R}^n$ are created with
+
+```Python
+rng = np.random.default_rng(seed=1241773)
+b = PETSc.Vec().createWithArray(rng.normal(size=n))
+u = PETSc.Vec().createWithArray(np.zeros(n))
+```
+Finally, we solve the linear system by calling
+```Python
+with measure_time("solve"):
+    ksp.solve(b, u)
+```
 
 ## Numerical experiments
 

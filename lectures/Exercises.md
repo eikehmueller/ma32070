@@ -868,7 +868,7 @@ $$
 for some constant $C$, which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
-* Save your implementation of `error_nrm()`in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
+* Save your implementation of `error_nrm()` in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
 * Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
 * Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
@@ -916,10 +916,10 @@ More generally, an upper triangular matrix satisfies $A_{ij} = 0$ for all $i>j$;
 
 ## Tasks
 ### Pseudocode
-Write down the algorithm for solving $A\boldsymbol{u}=\boldsymbol{b}$
+Write down the algorithm for solving $A\boldsymbol{u}=\boldsymbol{b}$ by using suitable for-loops.
 
 ### Computational complexity
-Show that the solution of an $n\times n$ upper triangular system requires $n^2$ arithmetic operations.
+Show that the solution of an $n\times n$ upper triangular system requires $\mathcal{O}(n^2)$ arithmetic operations.
 
 ### Tridiagonal matrix
 Now let $A$ be a **triangular** matrix with $A_{ij}=0$ for $|i-j|>1$. Here is an example for $n=5$:
@@ -935,14 +935,18 @@ A &=  \begin{pmatrix}
 \end{aligned}
 $$
 
-* How many operations are required to reduce this to an upper triangular system and modify the right hand side vector $\boldsymbol{b}$ accordingly if the procedure in the lecture is followed, but the zeros are taken into account?
+Write a brief report (no more than 2 pages) in which you answer the following questions: 
+
+* How many operations are required to reduce this to an upper triangular system and modify the right hand side vector $\boldsymbol{b}$ accordingly if the procedure in the lecture is followed, but the special structure of the matrix is exploited?
 * What is the structure of the resulting upper triangular system?
 * How many operations are required to solve this system?
 * What is the computational complexity for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ is $A$ if a triangular matrix?
 
+Justify your answers and explain your reasoning.
+
 ## Practicalities
+
 * Write down your solution and save it as a `.pdf` file `solution_exercise6.pdf`. You do not have to typeset your solution and can also submit scans of handwritten workings, provided they are legible.
-* Make sure you explain your thinking.
 * Upload the file `solution_exercise6.pdf` to the submission point on moodle
 
 # Exercise 7: PETSc sparse matrices and linear solvers

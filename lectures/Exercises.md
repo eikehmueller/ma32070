@@ -703,6 +703,7 @@ As for the simplified case where the domain $\Omega$ is the reference triangle $
 $$
 e_h(x) = u_{\text{exact}}(x) - \sum_{\ell_{\text{global}}=0}^{n_{\text{dof}}-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
 $$
+where $\boldsymbol{u}^{(h)}$ is the global dof-vector.
 
 The square of the $L_2$ norm of the error can be computed by summing over all cells $K$ in the mesh
 

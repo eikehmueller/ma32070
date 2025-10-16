@@ -1854,7 +1854,7 @@ $$
 \nabla \Phi^{(h)}_{\ell_{\text{global}}}(x) &= J^{-\top}(\widehat{x}) \widehat{\nabla}\phi_\ell(\widehat{x})
 \end{aligned}
 $$
-Here $\ell_{\text{global}}$ is the global dof-index that is associated with the local dof-index $\ell$ in the cell with index $i$. The second identity can be easily verified by using the chain rule. With this we find
+Here $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ is the global dof-index that is associated with the local dof-index $\ell$ in the cell with index $\alpha$. The second identity can be easily verified by using the chain rule. With this we find
 $$
 \begin{aligned}
 A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \sum_{K\in \Omega_h}\int_K \left(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla} \phi_\ell (\widehat{x})\cdot J^{-\top}(\widehat{x})\widehat{\nabla}\phi_k(\widehat{x}) + \omega\phi_\ell(\widehat{x})\phi_k(\widehat{x})\right)|\det{J}(\widehat{x})|d\widehat{x}.

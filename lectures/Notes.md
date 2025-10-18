@@ -508,7 +508,7 @@ where now only the left hand side depends on the unknown function $u$.
 
 Let us define the symmetric *bilinear form* $a(\cdot,\cdot): \mathcal{V}\times \mathcal{V} \rightarrow \mathbb{R}$ with
 $$
-a(u,v) := \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx\qquad:eqn:definition_bilinear_a
+a(u,v) := \int_\Omega \left(\kappa \nabla u(x) \cdot \nabla  v(x) + \omega\; u(x) v(x)\right)\;dx\qquad:eqn:definition_bilinear_a
 $$
 and the linear form $b(\cdot):\mathcal{V}\rightarrow \mathbb{R}$ with
 $$
@@ -575,9 +575,9 @@ $$
 The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h$. Below we will sometimes write $n_{\text{dof}}$ instead of $n$ for the total number of degrees of freedom. Picking $v_h=\Phi^{(h)}_\ell$ and inserting the expansion of $u_h$ in @eqn:linear_algebra_problem into @eqn:weak_problem_discretised we obtain
 $$
 b^{(h)}_\ell:=b(\Phi^{(h)}_\ell) = a\left(\sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k,\Phi^{(h)}_\ell\right) = 
-\sum_{k=0}^{n-1} u^{(h)}_k a\left( \Phi^{(h)}_\ell,\Phi^{(h)}_k\right),
+\sum_{k=0}^{n-1} u^{(h)}_k a\left( \Phi^{(h)}_k,\Phi^{(h)}_\ell\right),
 $$
-where we used the symmetry and bi-linearity of $a(\cdot,\cdot)$. Defining the vector $\boldsymbol{b}^{(h)} := \left(b(\Phi^{(h)}_0),b(\Phi^{(h)}_1),\dots,b(\Phi^{(h)}_{n-1})\right)^\top$ and the $n\times n$ *stiffness matrix* $A^{(h)}$ with $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_\ell,\Phi^{(h)}_k\right)$ we arrive at the following linear system for the dof-vector $\boldsymbol{u}^{(h)}$:
+where we used the bi-linearity of $a(\cdot,\cdot)$. Defining the vector $\boldsymbol{b}^{(h)} := \left(b(\Phi^{(h)}_0),b(\Phi^{(h)}_1),\dots,b(\Phi^{(h)}_{n-1})\right)^\top$ and the $n\times n$ *stiffness matrix* $A^{(h)}$ with $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_k,\Phi^{(h)}_\ell\right)$ we arrive at the following linear system for the dof-vector $\boldsymbol{u}^{(h)}$:
 $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.\qquad:eqn:linear_system_Aub
 $$
@@ -1015,11 +1015,11 @@ We can now implement a simple finite element method on the domain $\Omega=\wideh
 To assemble the stiffness matrix $A^{(h)}$, observe that the entries of this matrix are given by:
 $$
 \begin{aligned}
-A^{(h)}_{\ell k} = a(\phi_\ell,\phi_k) &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_\ell}{\partial x_a}(x) \frac{\partial\phi_k}{\partial x_a}(x) + \omega\; \phi_\ell(x) \phi_k(x)\right)\;dx\\
+A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(x) \frac{\partial\phi_\ell}{\partial x_a}(x) + \omega\; \phi_k(x) \phi_\ell(x)\right)\;dx\\
 &\approx 
-\sum_{q=0}^{N_q-1} w_q\left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(q)}) \frac{\partial\phi_k}{\partial x_a}(\zeta^{(q)}) + \omega\; \phi_\ell(\zeta^{(q)}) \phi_k(\zeta^{(q)})\right)\\
-&= \kappa \sum_{q=0}^{N_q-1}\sum_{a=0}^{d-1} w_q  T^\partial_{q\ell a} (\boldsymbol{\zeta})T^\partial_{qka} (\boldsymbol{\zeta})
-+\omega \sum_{q=0}^{N_q-1} w_qT_{q\ell}(\boldsymbol{\zeta})T_{qk}(\boldsymbol{\zeta})
+\sum_{q=0}^{N_q-1} w_q\left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(\zeta^{(q)}) \frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(q)}) + \omega\; \phi_k(\zeta^{(q)}) \phi_\ell(\zeta^{(q)})\right)\\
+&= \kappa \sum_{q=0}^{N_q-1}\sum_{a=0}^{d-1} w_q  T^\partial_{qk a} (\boldsymbol{\zeta})T^\partial_{q\ell a} (\boldsymbol{\zeta})
++\omega \sum_{q=0}^{N_q-1} w_qT_{qk}(\boldsymbol{\zeta})T_{q\ell}(\boldsymbol{\zeta})
 \end{aligned}
 $$
 Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. We used the tabulation matrix $T$ of the basis function given in @eqn:tabulation_basis and the corresponding matrix $T^\partial$ given in @eqn:tabulation_basis_gradients for the partial derivatives.
@@ -1764,7 +1764,7 @@ We are now ready to assemble the stiffness matrix $A^{(h)}$ and the right hand s
 $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
 $$
-With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution $u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)$. Recall that the entries of the right hand side vector and stiffness matrix are given by $b^{(h)}_{\ell_{\text{global}}}:=b(\Phi^{(h)}_{\ell_{\text{global}}})$ and $A^{(h)}_{{\ell_{\text{global}}}{k_{\text{global}}}}:= a\left(\Phi^{(h)}_{\ell_{\text{global}}},\Phi^{(h)}_{k_{\text{global}}}\right)$. We now discuss the assembly of these two quantities.
+With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution $u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)$. Recall that the entries of the right hand side vector and stiffness matrix are given by $b^{(h)}_{\ell_{\text{global}}}:=b(\Phi^{(h)}_{\ell_{\text{global}}})$ and $A^{(h)}_{{\ell_{\text{global}}}{k_{\text{global}}}}:= a\left(\Phi^{(h)}_{k_{\text{global}}},\Phi^{(h)}_{\ell_{\text{global}}}\right)$. We now discuss the assembly of these two quantities.
 
 ## Assembly of RHS vector
 Since $b(v) = \int_\Omega f(x)v(x)\;dx$ we compute the entries of the vector $b^{(h)}$ by splitting the integral over the domain $\Omega$ into the sum of integrals over the cells $K$:
@@ -1843,8 +1843,8 @@ In this expression `fs` is a `FunctionSpace` object and `ndof` is the number of 
 To assemble the stiffness matrix, we again split the integral into a sum of integrals over grid cells $K$:
 $$
 \begin{aligned}
-A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \int_\Omega \left(\kappa \nabla \Phi^{(h)}_{\ell_{\text{global}}}(x) \cdot\nabla\Phi^{(h)}_{k_{\text{global}}}(x)+\omega \Phi^{(h)}_{\ell_{\text{global}}}(x)\Phi^{(h)}_{k_{\text{global}}}(x)\right)dx\\
-&= \sum_{K\in\Omega_h}\int_K \left(\kappa \nabla \Phi^{(h)}_{\ell_{\text{global}}}(x) \cdot\nabla\Phi^{(h)}_{k_{\text{global}}}(x)+\omega \Phi^{(h)}_{\ell_{\text{global}}}(x)\Phi^{(h)}_{k_{\text{global}}}(x)\right)dx
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \int_\Omega \left(\kappa \nabla \Phi^{(h)}_{k_{\text{global}}}(x) \cdot\nabla\Phi^{(h)}_{\ell_{\text{global}}}(x)+\omega \Phi^{(h)}_{k_{\text{global}}}(x)\Phi^{(h)}_{\ell_{\text{global}}}(x)\right)dx\\
+&= \sum_{K\in\Omega_h}\int_K \left(\kappa \nabla \Phi^{(h)}_{k_{\text{global}}}(x) \cdot\nabla\Phi^{(h)}_{\ell_{\text{global}}}(x)+\omega \Phi^{(h)}_{k_{\text{global}}}(x)\Phi^{(h)}_{\ell_{\text{global}}}(x)\right)dx
 \end{aligned}
 $$
 Next, we change variables in each cell to convert the integrals into integrals over the reference cell $K$. For this, note that the global basis functions and their derivatives transform as follows:
@@ -1857,14 +1857,14 @@ $$
 Here $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ is the global dof-index that is associated with the local dof-index $\ell$ in the cell with index $\alpha$. The second identity can be easily verified by using the chain rule. With this we find
 $$
 \begin{aligned}
-A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \sum_{K\in \Omega_h}\int_K \left(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla} \phi_\ell (\widehat{x})\cdot J^{-\top}(\widehat{x})\widehat{\nabla}\phi_k(\widehat{x}) + \omega\phi_\ell(\widehat{x})\phi_k(\widehat{x})\right)|\det{J}(\widehat{x})|d\widehat{x}.
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \sum_{K\in \Omega_h}\int_K \left(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla} \phi_k (\widehat{x})\cdot J^{-\top}(\widehat{x})\widehat{\nabla}\phi_\ell(\widehat{x}) + \omega\phi_k(\widehat{x})\phi_\ell(\widehat{x})\right)|\det{J}(\widehat{x})|d\widehat{x}.
 \end{aligned}
 $$
 Next, approximate the integrals by numerical quadrature and use the tabulated basis functions $T_{q\ell} = \phi_\ell(\xi^{(q)})$, $T^\partial_{q\ell a} = \frac{\partial\phi_\ell}{\partial \widehat{x}_a}(\xi^{(q)})$ to obtain
 $$
 \begin{aligned}
-A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &\approx \sum_{K\in \Omega_h}\int_K  w_q \left(\kappa \widehat{\nabla} \phi_\ell(\xi^{(q)})(J^{\top}(\xi^{(q)}) J(\xi^{(q)}))^{-1}\phi_k(\xi^{(q)}) + \omega\phi_\ell(\xi^{(q)})\phi_k(\xi^{(q)})\right)|\det{J}(\xi^{(q)})|d\widehat{x} \\
-&= \sum_{K\in \Omega_h} \sum_q w_q  \left(\kappa T^\partial_{q\ell a}(J^{(-2)}_q)_{ab} T^\partial_{qkb} +\omega T_{q\ell}T_{qk}\right)|\det{J}(\xi^{(q)})|
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &\approx \sum_{K\in \Omega_h}\int_K  w_q \left(\kappa \widehat{\nabla} \phi_k(\xi^{(q)})(J^{\top}(\xi^{(q)}) J(\xi^{(q)}))^{-1}\phi_\ell(\xi^{(q)}) + \omega\phi_k(\xi^{(q)})\phi_\ell(\xi^{(q)})\right)|\det{J}(\xi^{(q)})|d\widehat{x} \\
+&= \sum_{K\in \Omega_h} \sum_q w_q  \left(\kappa T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} +\omega T_{qk}T_{q\ell}\right)|\det{J}(\xi^{(q)})|
 \end{aligned}
 $$
 with the $2\times 2$ matrix
@@ -1885,7 +1885,7 @@ Putting everything together we arrive at the following procedure:
 7. $~~~~~~~~$ Compute the matrix $J^{(2)}_q = J^{\top}(\xi^{(q)}) J(\xi^{(q)})$ with $J^{(2)}_{qab} = \sum_{c} J_{qca}J_{qcb}$ and invert it to obtain $J^{(-2)}_{q} = \left(J^{(2)}_q\right)^{-1}$
 8. $~~~~$ **end do**
 9. $~~~~$ Construct the local stiffness matrix $A^{(h),\text{local}}$ with
-$$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{q\ell a}(J^{(-2)}_q)_{ab} T^\partial_{qkb} D_q + \omega \sum_{q} w_q  T_{q\ell}T_{qk} D_q$$
+$$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} D_q + \omega \sum_{q} w_q  T_{qk}T_{q\ell} D_q$$
 1. $~~~~$ For all local dof-indices $\ell$ **do**:
 2.  $~~~~~~~~$ For all local dof-indices $k$ **do**:
 3.  $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$ and $k_{\text{global}} = k_{\text{global}}(\alpha,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $\alpha$

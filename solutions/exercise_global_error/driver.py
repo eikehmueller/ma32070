@@ -7,9 +7,9 @@ from fem.linearelement import LinearElement
 from fem.utilities import measure_time
 from fem.functionspace import FunctionSpace
 from fem.function import Function, CoFunction
-from fem.algorithms import assemble_rhs, assemble_lhs
+from fem.assembly import assemble_rhs, assemble_lhs
 from fem.quadrature import GaussLegendreQuadratureReferenceTriangle
-from algorithms import error_nrm
+from error import error_norm
 
 
 def f(x):
@@ -70,7 +70,7 @@ with measure_time("assemble_lhs()"):
 with measure_time("solve()"):
     u_h.data[:] = np.linalg.solve(stiffness_matrix, b_h.data)
 
-error_norm = error_nrm(u_h, u_exact, quad)
+error_nrm = error_norm(u_h, u_exact, quad)
 
 print()
-print(f"error = {error_norm}")
+print(f"error = {error_nrm}")

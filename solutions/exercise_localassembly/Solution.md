@@ -4,7 +4,7 @@
 
 ----
 ## Implementation
-The complete code for assembling the stiffness matrix, right hand side vector and $L_2$ error can be found in [algorithms.py](algorithms.py). The main program has been implemented in [driver.py](driver.py).
+The complete code for assembling the stiffness matrix and right hand side vector can be found in [assembly.py](assembly.py) and the code for computing the $L_2$ error can be found in [error.py](error.py) in the directory `ma32070/exercise3`. The main program has been implemented in [driver.py](driver.py).
 
 As the following discussion shows, the implementation can be made very compact by implementing tensor contractions with the [`np.einsum()` method](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html).
 
@@ -13,8 +13,8 @@ First consider the assembly of the stiffness matrix $A^{(h)}_{\ell k}$ in `assem
 
 $$
 \begin{aligned}
-A^{(h)}_{\ell k} &=  \kappa \sum_{q=0}^{N_q-1}\sum_{a=0}^{d-1} w_q  T^\partial_{q\ell a} T^\partial_{qka} 
-+\omega \sum_{q=0}^{N_q-1} w_qT_{q\ell} T_{qk}\qquad\text{where $d=2$}
+A^{(h)}_{\ell k} &=  \kappa \sum_{q=0}^{N_q-1}\sum_{a=0}^{d-1} w_q  T^\partial_{qk a} T^\partial_{q\ell a} 
++\omega \sum_{q=0}^{N_q-1} w_qT_{qk} T_{q\ell}\qquad\text{where $d=2$}
 \end{aligned}
 $$
 

@@ -7,11 +7,12 @@ import numpy as np
 from fem.polynomialelement import PolynomialElement
 from fem.utilities import plot_solution
 
-from algorithms import (
+from assembly import (
     assemble_rhs,
     assemble_lhs,
-    error_nrm,
 )
+
+from error import error_norm
 
 
 def u_exact(x, sigma, x0):
@@ -88,7 +89,7 @@ rhs = assemble_rhs(
 u_numerical = np.linalg.solve(stiffness_matrix, rhs)
 
 # Compute the L2 norm of the error ||u - u_exact||_L2
-nrm = error_nrm(
+nrm = error_norm(
     u_numerical, functools.partial(u_exact, sigma=sigma, x0=x0), element, n_q
 )
 

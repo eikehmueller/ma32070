@@ -753,7 +753,7 @@ This leads to the following procedure:
 11. **end for**
 
 ### Implementation
-Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algorithm. Your method should accept the following arguments:
+Write a method `error_norm(u_h, u_exact, quad)` which implements the above algorithm. Your method should accept the following arguments:
 
 * An object `u_h` of class `Function` which represents the numerical solution $u_h$
 * A Python function `u_exact` which represents the exact solution $u_{\text{exact}}(x)$ and which be evaluated at arbitrary points $x\in \Omega$ 
@@ -775,9 +775,9 @@ from fem.linearelement import LinearElement
 from fem.utilities import measure_time
 from fem.functionspace import FunctionSpace
 from fem.function import Function, CoFunction
-from fem.algorithms import assemble_rhs, assemble_lhs
+from fem.assembly import assemble_rhs, assemble_lhs
 from fem.quadrature import GaussLegendreQuadratureReferenceTriangle
-from algorithms import error_nrm
+from error import error_norm
 
 def f(x):
     """Right hand side
@@ -836,10 +836,10 @@ with measure_time("assemble_lhs()"):
 with measure_time("solve()"):
     u_h.data[:] = np.linalg.solve(stiffness_matrix, b_h.data)
 
-error_norm = error_nrm(u_h, u_exact, quad)
+error_nrm = error_norm(u_h, u_exact, quad)
 
 print()
-print(f"error = {error_norm}")
+print(f"error = {error_nrm}")
 ```
 
 ### Numerical experiments
@@ -868,8 +868,8 @@ $$
 for some constant $C$, which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
-* Save your implementation of `error_nrm()` in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
-* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
+* Save your implementation of `error_norm()` in the file `error.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
+* Zip the directory which contains `error.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
 * Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
 python -m code2pdf --path ./exercise5/ --output code_exercise5

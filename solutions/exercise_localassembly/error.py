@@ -14,11 +14,15 @@ def error_norm(u_numerical, u_exact, element, n_q):
     :arg element: finite element
     :arg n_q: number of quadrature points
     """
+    # quadrature rule
     quad = GaussLegendreQuadratureReferenceTriangle(n_q)
+    # extract quadrature points and weights
     zeta_q = np.asarray(quad.nodes)
     w_q = quad.weights
-    phi = element.tabulate(zeta_q)
-    u_q = u_exact(zeta_q.T)
-    e_q = u_q - phi @ u_numerical
+    # tabulation of basis functions
+    T = element.tabulate(zeta_q)
+    # evaulation of exact solution at quadrature nodes
+    u_exact_q = u_exact(zeta_q.T)
+    e_q = u_exact_q - T @ u_numerical
     nrm2 = np.sum(w_q * e_q**2)
     return np.sqrt(nrm2)

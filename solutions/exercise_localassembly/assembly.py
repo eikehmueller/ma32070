@@ -19,17 +19,19 @@ def assemble_lhs(element, n_q, kappa, omega):
     :arg omega: coefficient kappa of zero-order term
     """
     quad = GaussLegendreQuadratureReferenceTriangle(n_q)
+    # extract quadrature points and weights
     zeta_q = np.asarray(quad.nodes)
     w_q = quad.weights
-    grad_phi = element.tabulate_gradient(zeta_q)
-    phi = element.tabulate(zeta_q)
+    # tabulation of basis functions and their gradients at quadrature points
+    T = element.tabulate(zeta_q)
+    T_grad = element.tabulate_gradient(zeta_q)
     stiffness_matrix = kappa * np.einsum(
-        "q,qik,qjk->ij", w_q, grad_phi, grad_phi
+        "q,qka,qla->lk", w_q, T_grad, T_grad
     ) + omega * np.einsum(
-        "q,qi,qj->ij",
+        "q,qk,ql->lk",
         w_q,
-        phi,
-        phi,
+        T,
+        T,
     )
     return stiffness_matrix
 
@@ -43,16 +45,22 @@ def assemble_rhs(f, g, element, n_q):
     :arg n_q: number of quadrature points
     """
     quad = GaussLegendreQuadratureReferenceTriangle(n_q)
+    # extract quadrature points and weights
     zeta_q = np.asarray(quad.nodes)
     w_q = quad.weights
     f_q = f(zeta_q.T)
-    phi = element.tabulate(zeta_q)
-    r = np.einsum("q,q,qi->i", w_q, f_q, phi)
+    # tabulation of basis functions at quadrature points
+    T = element.tabulate(zeta_q)
+    r = np.einsum("q,q,ql->l", w_q, f_q, T)
     for v_a, v_b in [[(1, 0), (0, 1)], [(0, 1), (0, 0)], [(0, 0), (1, 0)]]:
+        # quadrature rule on facet
         quad_facet = GaussLegendreQuadratureLineSegment(v_a, v_b, n_q)
+        # extract quadrature points and weights
         w_facet_q = quad_facet.weights
         zeta_facet_q = np.asarray(quad_facet.nodes)
+        # evaluation of function g at quadrature points
         g_q = g(zeta_facet_q.T)
-        phi_facet = element.tabulate(zeta_facet_q)
-        r += np.einsum("q,q,qi->i", w_facet_q, g_q, phi_facet)
+        # tabulation of basis functions at (facet) quadrature points
+        T_facet = element.tabulate(zeta_facet_q)
+        r += np.einsum("q,q,ql->l", w_facet_q, g_q, T_facet)
     return r

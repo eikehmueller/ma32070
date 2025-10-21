@@ -29,15 +29,15 @@ The quadrature points are stored in an array `zeta_q` of shape $(N_q,2)$, which 
 
 ```Python
 zeta_q = np.asarray(quad.nodes)
-phi = element.tabulate(zeta_q)
-grad_phi = element.tabulate_gradient(zeta_q)
+T = element.tabulate(zeta_q)
+T_grad = element.tabulate_gradient(zeta_q)
 ```
 
-As a result, we obtain an array `phi` of shape $(N_q,\nu)$ which stores the rank-2 tensor $T$ and an array `grad_phi` of shape $(N_q,\nu,2)$ which stores the rank-3 tensor $T^\partial$. The stiffness matrix $A^{(h)}_{\ell k}$ is then constructed with two suitable tensor contractions involving `phi`, `grad_phi` and `w_q` and using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html):
+As a result, we obtain an array `T` of shape $(N_q,\nu)$ which stores the rank-2 tensor $T$ and an array `T_grad` of shape $(N_q,\nu,2)$ which stores the rank-3 tensor $T^\partial$. The stiffness matrix $A^{(h)}_{\ell k}$ is then constructed with two suitable tensor contractions involving `T`, `T_grad` and `w_q` and using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html):
 
 ```Python
-stiffness_matrix = kappa * np.einsum("q,qik,qjk->ij", w_q, grad_phi, grad_phi) 
-                 + omega * np.einsum("q,qi,qj->ij", w_q, phi, phi)
+stiffness_matrix = kappa * np.einsum("q,qka,qla->lk", w_q, T_grad, T_grad)
+                 + omega * np.einsum("q,qk,ql->lk", w_q, T, T)
 ```
 
 ### Right hand side vector
@@ -71,10 +71,10 @@ x_sq = (x[0,...] - x0[0]) ** 2 + (x[1,...] - x0[1]) ** 2
 ```
 If `x` represents a tensor $X$ of shape $(2,n)$, `x[0]` or `x[0,...]` will return the vector $\widetilde{\boldsymbol{X}}\in\mathbb{R}^n$ with $\widetilde{X}_j = X_{0,j}$. Hence, depending on whether `x` has shape $(2,)$ or $(2,n)$, the result `x_sq` will either be a scalar $S = \sqrt{(x_0-x^{(0)}_0)^2+(x_1-x^{(0)}_1)^2}$ or a vector $\boldsymbol{S}\in\mathbb{R}^n$ with $S_j=\sqrt{(X_{0,j}-x^{(0)}_0)^2+(X_{1,j}-x^{(0)}_1)^2}$.
 
-After tabulating the basis functions and storing the matrix $T$ as `phi`, we can compute the contribution $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ to $b^{(h)}_\ell$ as
+After tabulating the basis functions and storing the matrix $T$ as `T`, we can compute the contribution $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ to $b^{(h)}_\ell$ as
 ```Python
-phi = element.tabulate(zeta_q)
-r = np.einsum("q,q,qi->i", w_q, f_q, phi)
+T = element.tabulate(zeta_q)
+r = np.einsum("q,q,ql->l", w_q, f_q, T)
 ```
 and store the result in the variable `r`.
 
@@ -83,13 +83,13 @@ The other term in the expression for $b^{(h)}_\ell$ has contributions from the t
 for v_a, v_b in [[(1, 0), (0, 1)], [(0, 1), (0, 0)], [(0, 0), (1, 0)]]:
     quad_facet = GaussLegendreQuadratureLineSegment(v_a, v_b, n_q)
 ```
-For each facet $F_\rho$ we then compute $\sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\boldsymbol{\zeta}_{F_\rho})T_{q\ell}(\boldsymbol{\zeta}_{F_\rho})$ with [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). The code for this has the same structure as the above code for computing $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ in the interior of the cell but with $\boldsymbol{w}\mapsto \boldsymbol{w}_{F_{\rho}}$ (=`w_facet_q`), $\boldsymbol{\zeta} \mapsto \boldsymbol{\zeta}_{F_{\rho}}$ (=`zeta_facet_q`), $\boldsymbol{f}\mapsto \boldsymbol{g}$ (=`g_q`) with components $g_q=q(\zeta_{F_\rho}^{(q)})$. We also tabulate the basis functions at the quadrature points $\boldsymbol{w}_{F_\rho}$ to obtain $T(\boldsymbol{\zeta}_{F_{\rho}})$ (=`phi_facet`).
+For each facet $F_\rho$ we then compute $\sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\boldsymbol{\zeta}_{F_\rho})T_{q\ell}(\boldsymbol{\zeta}_{F_\rho})$ with [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html). The code for this has the same structure as the above code for computing $\sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta})$ in the interior of the cell but with $\boldsymbol{w}\mapsto \boldsymbol{w}_{F_{\rho}}$ (=`w_facet_q`), $\boldsymbol{\zeta} \mapsto \boldsymbol{\zeta}_{F_{\rho}}$ (=`zeta_facet_q`), $\boldsymbol{f}\mapsto \boldsymbol{g}$ (=`g_q`) with components $g_q=q(\zeta_{F_\rho}^{(q)})$. We also tabulate the basis functions at the quadrature points $\boldsymbol{w}_{F_\rho}$ to obtain $T(\boldsymbol{\zeta}_{F_{\rho}})$ (=`T_facet`).
 ```Pythom
     w_facet_q = quad_facet.weights
     zeta_facet_q = np.asarray(quad_facet.nodes)
     g_q = g(zeta_facet_q.T)
-    phi_facet = element.tabulate(zeta_facet_q)
-    r += np.einsum("q,q,qi->i", w_facet_q, g_q, phi_facet)
+    T_facet = element.tabulate(zeta_facet_q)
+    r += np.einsum("q,q,ql->l", w_facet_q, g_q, T_facet)
 ```
 Again, the function $g$ has been implemented to accept both a single two-dimensional vector or a rank 2 tensor of shape $(n,2)$.
 ### $\boldsymbol{L_2}$-error
@@ -101,23 +101,23 @@ $$
 \end{aligned}
 $$
 
-is straightforward. Again, we start by constructing quadrature points `zeta_q` and weights `w_q` and tabulate the basis functions at the quadrature points in `phi`:
+is straightforward. Again, we start by constructing quadrature points `zeta_q` and weights `w_q` and tabulate the basis functions at the quadrature points in `T`:
 
 ```Python
 quad = GaussLegendreQuadratureReferenceTriangle(n_q)
 zeta_q = np.asarray(quad.nodes)
 w_q = quad.weights
-phi = element.tabulate(zeta_q)
+T = element.tabulate(zeta_q)
 ```
 
 We also construct the vector $\boldsymbol{u}^{(\text{exact})}$ (=`u_q`) by evaluating the function $u_{\text{exact}}$ at the quadrature points
 
 ```Python
-u_q = u_exact(zeta_q.T)
+u_exact_q = u_exact(zeta_q.T)
 ```
 The vector $\boldsymbol{e}$ (=`e_q`) is then given by $\boldsymbol{e}=\boldsymbol{u}^{(\text{exact})}-T \boldsymbol{u}^{(h)}$:
 ```Python
-e_q = u_q - phi @ u_numerical
+e_q = u_exact_q - T @ u_numerical
 ```
 To compute the $L_2$ error, we need to square the components of this vector, multiply elementwise with $\boldsymbol{w}$ and sum over the resulting vector before taking the square root:
 ```Python

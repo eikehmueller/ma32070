@@ -59,20 +59,20 @@ class CubicElement(FiniteElement):
 
         If grad=False, compute the Vandermonde matrix V(zeta)
 
-            V_{i,j}(zeta) = x_i^a(j)*y_i^b(j)
+            V_{r,m}(zeta) = x_r^a(m)*y_r^b(m)
 
-        where the row i corresponds to the index of the point zeta_i = (x_i,y_i) and
-        the column j to the power (a(j),b(j)) that the point zeta_i is raised to.
-        The resulting matrix has the shape (npoints, ndof) where npoints is the number of points
+        where the row r corresponds to the index of the point zeta_r = (x_r,y_r) and
+        the column m to the power (a(m),b(m)) that the point zeta_r is raised to.
+        The resulting matrix has the shape (n, ndof) where npoints is the number of points
         in zeta.
 
         If grad=True, compute the gradient grad V(zeta) of the Vandermonde matrix with
 
-            grad V_{i,j,k} = d V_{i,j}(zeta) / dx_k
+            grad V_{r,m,a} = d V_{r,m}(zeta) / dx_a
 
-        The resulting tensor has the shape (npoints, ndof,2).
+        The resulting tensor has the shape (n, ndof,2).
 
-        :arg zeta: array of shape (npoints, 2) containing the points for which the Vandermonde matrix
+        :arg zeta: array of shape (n, 2) containing the points for which the Vandermonde matrix
                  is to be calculated
         :arg grad: compute gradient?
         """
@@ -163,7 +163,7 @@ class CubicElement(FiniteElement):
         _zeta = np.asarray(zeta)
         mat = np.squeeze(
             np.einsum(
-                "imk,mj->ijk",
+                "rma,mj->rja",
                 self._vandermonde_matrix(
                     np.expand_dims(_zeta, axis=list(range(2 - _zeta.ndim))),
                     grad=True,

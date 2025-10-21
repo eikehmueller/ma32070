@@ -90,7 +90,7 @@ $$
 While this could be done with `np.einsum()` as well, multiplying the vectors component-wise and then adding everything up with `np.sum()` makes the code somewhat easier to read:
 
 ```Python
-error_nrm_2 += np.sum(w_q * error_K**2 * det_J)
+error_nrm_2 += np.sum(w_q * error_q**2 * det_J)
 ```
 
 ## Numerical experiments

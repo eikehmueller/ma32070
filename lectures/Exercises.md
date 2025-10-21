@@ -683,11 +683,12 @@ def test_threepoint_quadrature_monomial(s, expected):
     # Add your own test code here
 ```
 Here the tuple $s=(s_0,s_1)$ represents the two powers $s_0$ and $s_1$ of the monomial and `expected` is the expected result according to the above formula.
+
 ### Theory
 Confirm that the quadrature rule is exact for polynomials of degree less than or equal 2, i.e. that
 
 $$
-\sum_{q=0}^{2} w_q (\xi_0^{(q)})^{s_0}(\xi_1^{(q)})^{s_1}= \int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1\qquad \text{for $s_0,s_1\ge 0$ and $s_0+s_1\le 2$}.
+\sum_{q=0}^{2} w_q (\zeta_0^{(q)})^{s_0}(\zeta_1^{(q)})^{s_1}= \int_{\widehat{K}} x_0^{s_0} x_1^{s_1}\;dx_0\;dx_1\qquad \text{for $s_0,s_1\ge 0$ and $s_0+s_1\le 2$}.
 $$
 
 ## Practicalities

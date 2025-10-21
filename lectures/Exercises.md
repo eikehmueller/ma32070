@@ -55,7 +55,7 @@ $ cd ma32070
 $ ls
 exercise3
 $ ls exercise3
-algorithms.py  driver.py
+assembly.py  error.py  driver.py
 ```
 
 #### Step 2: Zip the source code
@@ -63,7 +63,8 @@ Create a zip file from the source code with the `tar` command:
 ```
 $ tar czvf exercise3.tgz exercise3
 exercise3/
-exercise3/algorithms.py
+exercise3/assembly.py
+exercise3/error.py
 exercise3/driver.py
 ```
 
@@ -83,7 +84,8 @@ Double check that the zip-file has the right content:
 ```
 $ tar tzvf exercise3.tgz
 drwxrwxr-x eike/eike         0 2025-09-28 14:36 exercise3/
--rw-rw-r-- eike/eike      6389 2025-09-28 14:36 exercise3/algorithms.py
+-rw-rw-r-- eike/eike      6389 2025-09-28 14:36 exercise3/assembly.py
+-rw-rw-r-- eike/eike      6432 2025-09-28 14:36 exercise3/error.py
 -rw-rw-r-- eike/eike      5779 2025-09-28 14:36 exercise3/driver.py
 ```
 
@@ -510,21 +512,21 @@ $$
 
 ## Tasks
 ### Implementation
-* Implement a method `assemble_lhs(element, n_q)` which assembles the stiffness matrix $A^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
+* In a file `assembly.py` implement a method `assemble_lhs(element, n_q)` which assembles the stiffness matrix $A^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Implement a method `assemble_rhs(f, g, element, n_q)` which assembles the right-hand side vector $\boldsymbol{b}^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
+* In the same file, implement a method `assemble_rhs(f, g, element, n_q)` which assembles the right-hand side vector $\boldsymbol{b}^{(h)}$ using the Gauss-Legendre quadrature rule. The method should be passed:
   - The function `f` which describes the right-hand side function $f$
   - The function `g` which describes the Neumann boundary function $g$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
-* Implement a method `error_nrm(u_numerical, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e_h\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
+* In the file `error.py` implement a method `error_norm(u_numerical, u_exact, element, n_q)` which computes the $L_2$ error norm $\|e_h\|_{L_2(\widehat{K})}$ by using the approximation from the lecture. The method should be passed:
   - The vector `u_numerical` which is the dof-vector $\boldsymbol{u}^{(h)}$ that represents the function $u_h$ 
   - A function `u_exact` which represents the exact solution $u_{\text{exact}}$ and which can be evaluated at arbitrary points $\zeta\in \widehat{K}$
   - An instance `element` of a subclass of `FiniteElement`
   - The number of points `n_q` used for the Gauss-Legendre quadrature
 
-Use the methods `assemble_lhs()`, `assemble_lhs()` and `error_nrm()` in a main program which
+Use the methods `assemble_lhs()`, `assemble_lhs()` and `error_norm()` in a main program which
 
 * assembles the matrix $A^{(h)}$ and right hand $\boldsymbol{b}^{(h)}$,
 * solves the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ for the vector $\boldsymbol{u}^{(h)}$ by using [`numpy.linalg.solve()`](https://numpy.org/doc/2.0/reference/generated/numpy.linalg.solve.html)
@@ -623,7 +625,7 @@ f_star(x)
 ```
 python -m code2pdf --path ./exercise3/ --output code_exercise3
 ```
-* Create a file `solution_exercise3.pdf` file with the following content:
+* Create a file `solution_exercise3.pdf` with the following content:
     - a brief description of how you implemented and tested your code
     - a table which lists $\|e_h\|_{L_2(\widehat{K})}$ for $p=1$ and $p=3$
     - plots of the solution and error for $p=1$ and $p=3$
@@ -642,9 +644,9 @@ Consider the following three-point quadrature on the reference triangle $\wideha
 $$
 \begin{aligned}
 w_0 &= \frac{1}{6}, & w_1 &= \frac{1}{6}, & w_2 &= \frac{1}{6}\\
-\xi^{(0)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
-\xi^{(1)} &= \begin{pmatrix}\frac{2}{3} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
-\xi^{(2)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{2}{3}\end{pmatrix}
+\zeta^{(0)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
+\zeta^{(1)} &= \begin{pmatrix}\frac{2}{3} \\[1.5ex] \frac{1}{6}\end{pmatrix}, &
+\zeta^{(2)} &= \begin{pmatrix}\frac{1}{6} \\[1.5ex] \frac{2}{3}\end{pmatrix}
 \end{aligned}
 $$
 
@@ -990,9 +992,8 @@ $$
 for a given right hand side $\boldsymbol{b}$.
 
 ### Implementation
-Write a Python script `linear_solver.py` which constructs the matrix $A$ in PETSc CSR format. The required arrays $I$ (= `row_start`), $J$ (= `col_indices`) and $V$ (= `values`) can be constructed as follows:
+Write a Python script `linear_solve.py` which constructs the matrix $A$ in PETSc CSR format. The required arrays $I$ (= `row_start`), $J$ (= `col_indices`) and $V$ (= `values`) can be constructed as follows:
 ```Python
-
 h_sq = 1 / n**2
 
 col_indices = list(

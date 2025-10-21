@@ -5,7 +5,7 @@
 ----
 
 ## Implementation
-The complete code for computing the global $L_2$ error can be found in [algorithms.py](algorithms.py). The main program has been implemented in [driver.py](driver.py). Obviously, there is an outer loop over all cells $K$ of the mesh. In each cell we perform the following operations:
+The complete code for computing the global $L_2$ error can be found in [error.py](error.py). The main program has been implemented in [driver.py](driver.py). Obviously, there is an outer loop over all cells $K$ of the mesh. In each cell we perform the following operations:
 
 #### Extract coordinate dof-vector
 Let $\nu^{\times}$ be the number of local basis functions of the finite element used for discretising the coordinate field. To extract the cell-local dof-vector $\overline{\boldsymbol{X}}\in \mathbb{R}^{\nu^{\times}}$ from the global coordinate dof-vector $\boldsymbol{X}$ in the cell with index $\alpha$, we first need to work out the $\nu^{\times}$ indices $\ell^\times_\text{global}(\alpha,0),\ell^\times_\text{global}(\alpha,1),\dots,\ell^\times_\text{global}(\alpha,\nu^\times-1)$. This is done by using the `local2global()` method of the coordinate function space `fs_coord` in the current cell. If we pass the list $[0,1,2,\dots,\nu^{\times}-1]$ to this method it will return the list of global indices $\boldsymbol{\ell}^\times_\text{global}$ which is stored in `ell_g_coord`. Since the global coordinate dof-vector $\boldsymbol{X}$ is stored in the function `mesh.coordinates`, we can obtain $\overline{\boldsymbol{X}}$ by indexing the `data` attribute of `mesh.coordinates` with `ell_g_coord`, i.e. $\boldsymbol{\ell}^\times_\text{global}$:
@@ -22,7 +22,7 @@ The same approach can be used to extract the cell-local dof-vector $\overline{\b
 ```Python
 ell = range(element.ndof)
 ell_g = fs.local2global(alpha, ell)
-u_numerical_K = u_numerical.data[ell_g]
+u_numerical_dof_vector = u_numerical.data[ell_g]
 ```
 
 #### Evaluate exact solution
@@ -34,16 +34,16 @@ $$
 For this, we first use the `tabulate()` method of the coordinate element and then use `np.einsum()` to carry out the contraction.
 
 ```Python
-zeta = np.asarray(quad.nodes)
+zeta_q = np.asarray(quad.nodes)
 w_q = quad.weights
-T_coord = element_coord.tabulate(zeta)
-x_global = np.einsum("qla,l->qa", T_coord, x_dof_vector)
+T_coord = element_coord.tabulate(zeta_q)
+x_q = np.einsum("qla,l->qq", T_coord, x_dof_vector)
 ```
 
-We can now evaluate the function $u_{\text{exact}}$ at the $n_q$ positions $x_K^{(q)}$ by passing the tensor `x_global` to the function $u_{\text{exact}}$. Since `u_exact` accepts two-dimensional vectors or rank 2 tensors of shape $(2,n)$, we need to transpose `x_global` first:
+We can now evaluate the function $u_{\text{exact}}$ at the $n_q$ positions $x_K^{(q)}$ by passing the tensor `x_q` to the function $u_{\text{exact}}$. Since `u_exact` accepts two-dimensional vectors or rank 2 tensors of shape $(2,n)$, we need to transpose `x_q` first:
 
 ```Python
-u_exact_K = u_exact(x_global.T)
+u_exact_q = u_exact(x_q.T)
 ```
 
 The result is a vector $\boldsymbol{u}^{\text{(exact)}}\in \mathbb{R}^{n_q}$.
@@ -58,8 +58,8 @@ $$
 such that the entry $e_q$ is the error at quadrature point $q$.
 
 ```Python
-T = element.tabulate(zeta)
-error_K = u_exact_K - T @ u_numerical_K
+T = element.tabulate(zeta_q)
+error_q = u_exact_q - T @ u_numerical_dof_vector
 ```
 #### Jacobian
 The Jacobian as the quadrature points is represented as a $n_q\times 2\times 2$ tensor $J$ with
@@ -71,13 +71,13 @@ $$
 After extracting the tabulation tensor $T^{\times\partial}$ with `tabulate_gradient()`, the required contraction is implemented with `np.einsum()` as
 
 ```Python
-T_coord_partial = element_coord.tabulate_gradient(zeta)
-jac = np.einsum("l,qlab->qab", x_dof_vector, T_coord_partial)
+T_coord_grad = element_coord.tabulate_gradient(zeta_q)
+J = np.einsum("l,qlab->qab", x_dof_vector, T_coord_grad)
 ```
-We can also compute the determinant $\boldsymbol{D}\in \mathbb{R}^{n_q}$ (=`det_jac`) at the quadrature points with $D_q = \text{det}(J(\xi^{(q)}))$ by applying the [`np.linalg.det()` method](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.det.html), which automatically vectorises over all but the last two dimensions.
+We can also compute the determinant $\boldsymbol{D}\in \mathbb{R}^{n_q}$ at the quadrature points with $D_q = \text{det}(J(\xi^{(q)}))$ by applying the [`np.linalg.det()` method](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.det.html), which automatically vectorises over all but the last two dimensions.
 
 ```Python
-det_jac = np.abs(np.linalg.det(J))
+det_J = np.abs(np.linalg.det(J))
 ```
 
 #### Final result
@@ -90,7 +90,7 @@ $$
 While this could be done with `np.einsum()` as well, multiplying the vectors component-wise and then adding everything up with `np.sum()` makes the code somewhat easier to read:
 
 ```Python
-error_nrm_2 += np.sum(w_q * error_K**2 * det_jac)
+error_nrm_2 += np.sum(w_q * error_K**2 * det_J)
 ```
 
 ## Numerical experiments

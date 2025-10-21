@@ -499,7 +499,7 @@ $$
 which arises in the finite element discretisation on the reference triangle $\widehat{K}$. Recall that
 $$
 \begin{aligned}
-A^{(h)}_{\ell k} &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_\ell}{\partial x_a}(x) \frac{\partial\phi_k}{\partial x_a}(x) + \omega\; \phi_\ell(x) \phi_k(x)\right)\;dx\\
+A^{(h)}_{\ell k} &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(x) \frac{\partial\phi_\ell}{\partial x_a}(x) + \omega\; \phi_k(x) \phi_\ell(x)\right)\;dx\\
 b^{(h)}_\ell  &= \int_{\widehat{K}} f(x)\phi_\ell(x)\;dx + \int_{\partial \widehat{K}} g(x)\phi_\ell(x)\;dx
 \end{aligned}
 $$
@@ -539,7 +539,7 @@ u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}\left\|\boldsymbol{x}-\bolds
 $$
 with a peak of width $\sigma = 0.5$ centred at $x_0 = (0.6, 0.25)^\top$.
 
-In the weak form which defines the PDE $-\nabla (\kappa \nabla u) + \omega u = f$, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
+In the weak form which defines the PDE $-\nabla\cdot(\kappa \nabla u) + \omega u = f$, use the parameters $\kappa = 0.9$ and $\omega = 0.4$.
 
 Compute the error norm $\|e_h\|_{L_2(\widehat{K})}$ and visualise the solution and error for polynomial degrees $p=1$ and $p=3$.
 
@@ -616,9 +616,9 @@ f_star(x)
 
 ## Practicalities
 
-* Implement the methods `assemble_lhs()`, `assemble_rhs()` and `error_nrm()` in the file `algorithms.py` in the directory `ma32070/exercise3`
-* Use these methods in the file `driver.py` in the same directory
-* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
+* Implement the methods `assemble_lhs()` and `assemble_rhs()`in the file `assembly.py` in the directory `ma32070/exercise3`. Implement the method `error_norm()` in a file `error.py` in the same directory.
+* Use these methods in the file `driver.py` in the directory `ma32070/exercise3`.
+* Zip the directory which contains `assembly.py`, `error.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
 * Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
 python -m code2pdf --path ./exercise3/ --output code_exercise3
@@ -753,13 +753,13 @@ This leads to the following procedure:
 11. **end for**
 
 ### Implementation
-Write a method `error_nrm(u_h, u_exact, quad)` which implements the above algorithm. Your method should accept the following arguments:
+Write a method `error_norm(u_h, u_exact, quad)` which implements the above algorithm. Your method should accept the following arguments:
 
 * An object `u_h` of class `Function` which represents the numerical solution $u_h$
 * A Python function `u_exact` which represents the exact solution $u_{\text{exact}}(x)$ and which be evaluated at arbitrary points $x\in \Omega$ 
 * A suitable quadrature rule `quad`
 
-Try to avoid implementing an explicit for-loop over the quadrature points and instead use numpy's vectorisation capabilities. The determinant of a matrix can be computed with the [`np.linalg.det()` function](https://numpy.org/doc/stable/reference/generated/numpy.linalg.det.html). You can use the following main program, which solves the PDE $-\nabla(\kappa\nabla) u + \omega u=f$ for $\kappa=0.9$, $\omega=0.4$ with the right hand side $f(x)$ chosen such that the exact solution is
+Try to avoid implementing an explicit for-loop over the quadrature points and instead use numpy's vectorisation capabilities. The determinant of a matrix can be computed with the [`np.linalg.det()` function](https://numpy.org/doc/stable/reference/generated/numpy.linalg.det.html). You can use the following main program, which solves the PDE $-\nabla\cdot(\kappa\nabla) u + \omega u=f$ for $\kappa=0.9$, $\omega=0.4$ with the right hand side $f(x)$ chosen such that the exact solution is
 
 $$
 u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)
@@ -775,9 +775,9 @@ from fem.linearelement import LinearElement
 from fem.utilities import measure_time
 from fem.functionspace import FunctionSpace
 from fem.function import Function, CoFunction
-from fem.algorithms import assemble_rhs, assemble_lhs
+from fem.assembly import assemble_rhs, assemble_lhs
 from fem.quadrature import GaussLegendreQuadratureReferenceTriangle
-from algorithms import error_nrm
+from error import error_norm
 
 def f(x):
     """Right hand side
@@ -836,10 +836,10 @@ with measure_time("assemble_lhs()"):
 with measure_time("solve()"):
     u_h.data[:] = np.linalg.solve(stiffness_matrix, b_h.data)
 
-error_norm = error_nrm(u_h, u_exact, quad)
+error_nrm = error_norm(u_h, u_exact, quad)
 
 print()
-print(f"error = {error_norm}")
+print(f"error = {error_nrm}")
 ```
 
 ### Numerical experiments
@@ -868,8 +868,8 @@ $$
 for some constant $C$, which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
-* Save your implementation of `error_nrm()` in the file `algorithms.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
-* Zip the directory which contains `algorithms.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
+* Save your implementation of `error_norm()` in the file `error.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
+* Zip the directory which contains `error.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
 * Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
 ```
 python -m code2pdf --path ./exercise5/ --output code_exercise5

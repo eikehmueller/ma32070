@@ -8,7 +8,7 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
 from fem.polynomialelement import PolynomialElement
-from fem.utilitymeshes import RectangleMesh
+from fem.utilitymeshes import rectangle_mesh
 from fem.quadrature import GaussLegendreQuadratureReferenceTriangle
 
 
@@ -307,7 +307,7 @@ def to_latex(matrix):
     return s
 
 
-mesh = RectangleMesh(Lx=1.0, Ly=1.0, nref=1)
+mesh = rectangle_mesh(Lx=1.0, Ly=1.0, nref=1)
 
 print("cell2facet:")
 print(to_latex(np.asarray(mesh.cell2facet).T))

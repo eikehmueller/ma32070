@@ -176,9 +176,9 @@ This will create a subdirectory `ma32070/finitelements`.
 If everything worked correctly, you can use functionality from this library in your own code. For example, you could write the following Python script (in any directory):
 
 ```Python
-from fem.utilitymeshes import RectangleMesh
+from fem.utilitymeshes import rectangle_mesh
 
-mesh = RectangleMesh(Lx=1.0, Ly=2.0, nref=2)
+mesh = rectangle_mesh(Lx=1.0, Ly=2.0, nref=2)
 print (f"number of cells    = {mesh.ncells}")
 print (f"number of vertices = {mesh.nvertices}")
 ```

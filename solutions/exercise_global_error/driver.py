@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from fem.utilitymeshes import RectangleMesh
+from fem.utilitymeshes import rectangle_mesh
 from fem.linearelement import LinearElement
 from fem.utilities import measure_time
 from fem.functionspace import FunctionSpace
@@ -44,7 +44,7 @@ element = LinearElement()
 # element = PolynomialElement(3)
 
 # Mesh
-mesh = RectangleMesh(Lx=1, Ly=1, nref=nref)
+mesh = rectangle_mesh(Lx=1, Ly=1, nref=nref)
 # Function space
 fs = FunctionSpace(mesh, element)
 print(f"nref = {nref}")

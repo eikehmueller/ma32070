@@ -59,6 +59,8 @@ w.createWithArray([0, 0, 0.3, 2.8])
 print("vector w")
 print_as_dense(w)
 print()
+print("------------------------------------")
+print()
 
 # Compute matrix-matrix product A B
 C = A.matMult(B)
@@ -69,31 +71,40 @@ C = A @ B
 print("matrix A B (using @ operator)")
 print_as_dense(C)
 print()
+print("------------------------------------")
+print()
 
 # Compute matrix-matrix product A B^T
+C = A @ PETSc.Mat().createTranspose(B)
+print("matrix A B^T (using @ operator )")
+print_as_dense(C)
+print()
 C = A.matTransposeMult(B)
 print("matrix A B^T (using matTransposeMult() )")
 print_as_dense(C)
 print()
-C = A @ B.transpose()
-print("matrix A B^T (using @ operator )")
-print_as_dense(C)
+print("------------------------------------")
 print()
 
 # Compute matrix-matrix product A^T B
-C = A.transposeMatMult(B)
-print("matrix A B^T (using transposeMatMult() )")
+C = PETSc.Mat().createTranspose(A) @ B
+print("matrix A^T B (using @ operator )")
 print_as_dense(C)
 print()
-C = A @ B.transpose()
-print("matrix A B^T (using @ operator)")
+C = A.transposeMatMult(B)
+print("matrix A^T B (using transposeMatMult() )")
 print_as_dense(C)
+print()
+print("------------------------------------")
 print()
 
+
 # Compute sum A + B^T
-C = A + B.transpose()
+C = A + PETSc.Mat().createTranspose(B)
 print("matrix A + B^T")
 print_as_dense(C)
+print()
+print("------------------------------------")
 print()
 
 # Compute matrix-vector product Av + w
@@ -107,6 +118,8 @@ r = A @ v + w
 print("vector A v + w (using @ operator)")
 print_as_dense(r)
 print()
+print("------------------------------------")
+print()
 
 # Compute matrix-vector product B^T w
 r = PETSc.Vec()
@@ -115,7 +128,7 @@ B.multTranspose(w, r)
 print("vector B^T w (using multTranspose() )")
 print_as_dense(r)
 print()
-r = B.transpose() @ w
+r = PETSc.Mat().createTranspose(B) @ w
 print("vector B^T w (using @ operator)")
 print_as_dense(r)
 print()

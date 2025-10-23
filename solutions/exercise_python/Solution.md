@@ -250,7 +250,8 @@ A B =\begin{pmatrix}
 \end{pmatrix}
 $$
 
-The product $AB^\top$ can be computed with [`matTransposeMult()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.matTransposeMult) as `C = A.matTransposeMult(B)` or by using the `@` operator and [`transpose()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.transpose) as `C = A @ B.transpose()`.
+The product $AB^\top$ can be computed with [`matTransposeMult()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.matTransposeMult) as `C = A.matTransposeMult(B)` or by using the `@` operator and [`createTranspose()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.createTranspose) as `C = A @ PETSc.Mat().createTranspose(B)`.
+
 $$ 
 A B^T = \begin{pmatrix}
  4.6 & 14.8 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
@@ -259,7 +260,10 @@ A B^T = \begin{pmatrix}
  0.9 & -11.3 & \textcolor{lightgray}{0} & 14.4\\
 \end{pmatrix}
 $$
-Similarly, the product $A^\top B$ can be computed with [`transposeMatMult()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.transposeMatMult) as `C = A.transposeMatMult(B)` or as `C = A.transpose() @ B`.
+
+Observe that `PETSc.Mat().createTranspose(B)` creates a new matrix to represent $B^\top$, whereas [`transpose()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.transpose) performs the transition in-place, i.e. overwrites $B$ with its transpose. Hence, `C = A @ B.transpose()` would also work, but after executing this line the variable `B` will store $B^\top$ so care needs to be taken if this matrix is used for further calculations.
+
+Similarly, the product $A^\top B$ can be computed with [`transposeMatMult()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.transposeMatMult) as `C = A.transposeMatMult(B)` or as `C = PETSc.Mat().createTranspose(A) @ B`.
 $$
 A^T B = \begin{pmatrix}
 -1.2 &  4.2 & \textcolor{lightgray}{0} & -15.6\\
@@ -268,7 +272,7 @@ A^T B = \begin{pmatrix}
 39.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 14.4\\
 \end{pmatrix}
 $$
-To add the transpose of matrix the matrix $B$ to the matrix $A$ we can use `A + B.transpose()`.
+To add the transpose of matrix the matrix $B$ to the matrix $A$ we can use `A + PETSc.Mat().createTranspose(B)`.
 $$
 A + B^T = \begin{pmatrix}
  1.0 & 11.0 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0}\\
@@ -289,7 +293,7 @@ A \boldsymbol{v} + \boldsymbol{w} = \begin{pmatrix}
 10.8 \\ 16.8 \\  0.3 \\ -2.9
 \end{pmatrix}
 $$
-Similarly, to compute $B^T\boldsymbol{w}$ we can use either [`multTranspose()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.multTranspose) as `B.multTranspose(w, r)` or simply `B.transpose() @ w`.
+Similarly, to compute $B^T\boldsymbol{w}$ we can use either [`multTranspose()`](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.multTranspose) as `B.multTranspose(w, r)` or simply `PETSc.Mat().createTranspose(B) @ w`.
 $$
 B^T \boldsymbol{w} = \begin{pmatrix}
 \textcolor{lightgray}{0} \\ \textcolor{lightgray}{0} \\  1.0 \\ 33.6

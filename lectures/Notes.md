@@ -109,8 +109,6 @@ A = np.array([[4.3, -1.2, 2.8],[0.7, 7.3, 1.1], [-0.4, 0.2, 9.7]], dtype=float)
 ```
 Usually we can leave out the keyword argument `dtype=float` which explicitly specifies the data type. However, since without this keyword Python will infer the data type automatically, it is required in cases like `z = np.array([1,2,4])` which by default will create an integer-valued array (in contrast, `v = np.array([1.2,7.6,2.1])` will result in an array whose entries are of type `float` since Python interprets `1.2` as a real number).
 
-Recall also that there is a subtle difference between [`np.array()`](https://numpy.org/doc/stable/reference/generated/numpy.array.html) and [`np.asarray()`](https://numpy.org/doc/stable/reference/generated/numpy.asarray.html): the latter will try to only create a reference to the data while the former will create a new copy.
-
 ### Special matrices
 It is possible to create special matrices such as the identity or a matrix containing only zeros:
 
@@ -298,7 +296,7 @@ For this, we need to specify the rows and columns in the target matrix and use t
 ```python
 rows = [0, 1]
 cols = [0, 1]
-local_matrix = np.asarray([1.3, 2.4, 4.5, 6.1])
+local_matrix = np.array([1.3, 2.4, 4.5, 6.1])
 A.setValues(rows, cols, local_matrix)
 ```
 Blocks do not have to be contiguous but they have to have a tensor-product index structure defined by `rows` $\otimes$ `cols`. We could, for example, to set the 6 non-zero values highlighted in red here:
@@ -315,7 +313,7 @@ The indices of these values are described by the tensor product $(2,4)\otimes(1,
 ```python
 rows = [2, 4]
 cols = [1, 2, 4]
-A_local = np.asarray([2.1, 8.3, 9.4, 3.7, 1.1, 7.7])
+A_local = np.array([2.1, 8.3, 9.4, 3.7, 1.1, 7.7])
 A.setValues(rows, cols, A_local)
 ```
 Finally, before we can use the matrix for any computations, we need to assemble it:
@@ -380,7 +378,7 @@ T = np.zeros(shape=[2,3,4],dtype=float)
 or construct the $2\times 3$ matrix $\begin{pmatrix}1.8 & 2.2 & 3.4 \\ 4.2 & 5.1 & 6.7\end{pmatrix}$ of shape $[2,3]$ like this:
 
 ```Python
-A = np.asarray([[1.8,2.2,3.4],[4.2,5.1,6.7]],dtype=float)
+A = np.array([[1.8,2.2,3.4],[4.2,5.1,6.7]],dtype=float)
 ```
 
 The shapes are given by `T.shape` and `A.shape` respectively.

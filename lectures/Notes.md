@@ -705,7 +705,7 @@ This now leads to the following definition, originally due to Ciarlet (*"Numeric
 
 * the **domain** $\widehat{K}$ (which we will always choose to be the reference triangle in this course),
 * a **function space** $\widehat{\mathcal{V}}=\widehat{\mathcal{V}}(\widehat{K})$ of real-valued functions on $\widehat{K}$,
-* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda_\ell\}_{\ell=0}^{\nu-1}$ and which is a basis for $\widehat{\mathcal{V}}^*$, the dual of $\widehat{\mathcal{V}}$.
+* the **degrees of freedom** (or **nodes**) $\mathcal{L} = \{\lambda_\ell\}_{\ell=0}^{\nu-1}$ which is a basis for $\widehat{\mathcal{V}}^*$, the dual of $\widehat{\mathcal{V}}$.
 
 Crucially, we define the finite element by choosing a basis of the *dual* space $\widehat{\mathcal{V}}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$ by requiring that
 $$

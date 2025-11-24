@@ -724,7 +724,7 @@ $$
 \lambda_\ell (w) = \frac{\partial^{\ell_a}w}{\partial x_0^{\ell_b} \partial x_1^{\ell_a-\ell_b}}(\mathring{\xi}) \qquad\text{for $0\le \ell_b \le \ell_a\le p$ and $\ell=\frac{1}{2}\ell_a(\ell_a-1) + \ell_b$}
 $$
 
-The **Argyris finite element** ([[Arg68]](https://www.cambridge.org/core/journals/aeronautical-journal/article/tuba-family-of-plate-elements-for-the-matrix-displacement-method/2E7280F506997FC8A8357C30B5334D9D); see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
+The two-dimensional **Argyris finite element** ([[Arg68]](https://www.cambridge.org/core/journals/aeronautical-journal/article/tuba-family-of-plate-elements-for-the-matrix-displacement-method/2E7280F506997FC8A8357C30B5334D9D); see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
 
 * $\widehat{K}$ the reference triangle
 * $\widehat{\mathcal{V}} = \mathcal{P}_5(\widehat{K})$, the space of quintic bi-variate polynomials
@@ -734,7 +734,7 @@ The **Argyris finite element** ([[Arg68]](https://www.cambridge.org/core/journal
   - $\lambda_{9+3\rho+2a+b}(w) = \frac{\partial^2 w}{\partial x_a \partial x_b}(v_\rho)$ with $0\le a\le b\le 1$ (Hessian evaluation at each vertex $v_\rho$ $\Rightarrow$ 9 nodes)
   - $\lambda_{18+\rho}(w) = n_\rho\cdot \nabla w(m_\rho)$ (normal derivative evaluation at the midpoints $m_\rho$ of each facet $F_\rho$ $\Rightarrow$ 3 nodes)
 
-Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative. We will not use the Argyris element in this course.
+Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative. We will not use the Argyris element in this course, and it is included here as an example of a finite element with non-trivial nodes.
 
 ### Node numbering
 As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom. For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$ in @fig:reference_triangle. These entities are

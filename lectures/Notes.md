@@ -965,7 +965,7 @@ $$
 \end{aligned}
 $$
 
-(see fig:quadrature_points)
+(see @fig:quadrature_points)
 
 ### Integration over $\boldsymbol{S}$
 Since $S=[-1,+1]\times[-1,+1]$ is the product of two intervals, we can integrate functions over $S$ by picking quadrature points and weights $\mathcal{Q}_{n_q}^{(\text{GL},S)}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{N_q-1}$ with $N_q = n_q(n_q+1)$ and

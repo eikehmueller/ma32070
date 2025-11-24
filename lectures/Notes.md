@@ -611,7 +611,7 @@ We start by considering the weak form of the PDE for a special case, namely a do
 ## Reference triangle
 Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $\textcolor{red}{v_0=(0,0)}$, $\textcolor{red}{v_1=(1,0)}$ and $\textcolor{red}{v_2=(0,1)}$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $\textcolor{blue}{F_0 = \overrightarrow{v_1v_2}}$, $\textcolor{blue}{F_1 = \overrightarrow{v_2v_0}}$ and $\textcolor{blue}{F_2 = \overrightarrow{v_0v_1}}$. This ordering and the orientation of the edges will be important later.
 
-![:fig:reference_triangle: reference triangle](figures/reference_triangle.svg)
+![:fig:reference_triangle: reference triangle $\widehat{K}$](figures/reference_triangle.svg)
 
 In the following we will also refer to this domain as the *reference triangle* $\widehat{K}$.
 

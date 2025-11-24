@@ -24,14 +24,14 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="1.1893044"
-     inkscape:cx="413.68719"
-     inkscape:cy="91.650212"
-     inkscape:window-width="1443"
-     inkscape:window-height="853"
+     inkscape:zoom="4.7572176"
+     inkscape:cx="347.26181"
+     inkscape:cy="147.56525"
+     inkscape:window-width="1614"
+     inkscape:window-height="981"
      inkscape:window-x="1666"
      inkscape:window-y="32"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
     <inkscape:grid
        type="xygrid"
@@ -284,5 +284,14 @@
          y="37.041664">x<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan8017">1</tspan></tspan></text>
+    <path
+       style="fill:#000003;stroke-width:0.529"
+       d="m 64.822917,56.885416 1.322916,-1.322917"
+       id="path593" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.529;stroke-opacity:1"
+       d="m 64.38062,56.804237 1.789233,-0.917068 1.660423,0.817369"
+       id="path595"
+       sodipodi:nodetypes="ccc" />
   </g>
 </svg>

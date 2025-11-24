@@ -561,15 +561,17 @@ $$b(v) \le C_+ \|v\|_{\mathcal{V}} \qquad\text{for all $u,v\in \mathcal{V}$}.$$
 $$ 
 a(u,u) \ge C_- \|u\|_{\mathcal{V}}^2 \qquad\text{for all $u\in \mathcal{V}$}.$$
 
-This is the famous Lax-Milgram theorem. It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cdot)$ defined above. Furthermore, the solutions satisfy $\|u\|_{\mathcal{V}},\|u_h\|_{\mathcal{V}}\le C:=C_+/C_-$ and the difference between the solution $u_h$ of @eqn:weak_problem_discretised and C\'{e}a's Lemma states that the solution $u$ of @eqn:weak_problem_continuum can be bounded as follows:
+This is the famous Lax-Milgram theorem. It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cdot)$ defined above. Furthermore, the solutions satisfy $\|u\|_{\mathcal{V}},\|u_h\|_{\mathcal{V}}\le C:=C_+/C_-$ and Cea's Lemma states that the difference between the solution $u_h$ of @eqn:weak_problem_discretised and the solution $u$ of @eqn:weak_problem_continuum can be bounded as follows:
 $$
 \|u_h - u\|_{\mathcal{V}} \le C \min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}.
 $$
-The constant $C$ on the right-hand side is problem specific since it depends on $a(\cdot,\cdot)$ and $b(\cdot)$. In contrast, the term $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}$ only depends on the choice of function spaces $\mathcal{V}$, $\mathcal{V}_h$ and describes how well the function $u \in \mathcal{V}$ can be approximated by a function $v_h\in \mathcal{V}_h$. For a suitable choice of $\mathcal{V}_h$, which we will discuss later, one can show that $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}\le C' h^{\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Here $h$ is the grid-spacing of the mesh on which the problem is formulated. Hence, the finite element solution $u_h$ converges to the "true" solution $u$ as the mesh is refined ($h\rightarrow 0$):
+The constant $C$ on the right-hand side is problem specific since it depends on $a(\cdot,\cdot)$ and $b(\cdot)$. In contrast, the term $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}$ only depends on the choice of function spaces $\mathcal{V}$, $\mathcal{V}_h$ and describes how well the function $u \in \mathcal{V}$ can be approximated by a function $v_h\in \mathcal{V}_h$. For a suitable choice of $\mathcal{V}_h$, which we will discuss later, one can show that $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}\le C' h^{\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Here $h$ is the grid-spacing of the mesh on which the problem is formulated. The constant $\mu$ depends on how well we can approximate the true solution in each grid cell. For example, if $\mathcal{V}_h$ is chosen such that it can be represented by a polynomial in each grid cell, then $\mu$ will increase with the degree of this polynomial. Hence, the finite element solution $u_h$ converges to the "true" solution $u$ as the mesh is refined ($h\rightarrow 0$):
 $$
 \|u_h - u\|_{\mathcal{V}} \le C C' h^{\mu}.
 $$
 This is why the finite element works: it can be used to systematically approximate the true solution of the PDE and the discretisation error can be made arbitrarily small by choosing a sufficiently fine mesh.
+
+For this unit, this is all we need to know about the existence and convergence of solutions in $\mathcal{V}$ and $\mathcal{V}_h$. For further details please see the discussion in MA32066 and in the excellent lecture notes by [Patrick Farrell](https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf) and [Colin Cotter](https://finite-element.github.io/).
 
 ## Reduction to linear algebra problem
 We now discuss how $u_h$ can be found in practice. Since $\mathcal{V}_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_k\}_{k=0}^{n-1}$ such that every function $u_h \in \mathcal{V}_h$ can be written as a linear combination of the basis functions $\Phi^{(h)}_k\in \mathcal{V}_h$:

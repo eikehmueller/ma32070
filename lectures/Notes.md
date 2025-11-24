@@ -443,7 +443,7 @@ $$
 v_i = \sum_j A_{ij}w_j
 $$
 
-Innumpy, this can be implemented as
+In numpy, this can be implemented as
 
 ```Python
 v = np.einsum("ij,j->i",A,w)

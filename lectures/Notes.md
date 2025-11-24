@@ -571,7 +571,7 @@ $$
 $$
 This is why the finite element works: it can be used to systematically approximate the true solution of the PDE and the discretisation error can be made arbitrarily small by choosing a sufficiently fine mesh.
 
-For this unit, this is all we need to know about the existence and convergence of solutions in $\mathcal{V}$ and $\mathcal{V}_h$. For further details please see the discussion in MA32066 and in the excellent lecture notes by [Patrick Farrell](https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf) and [Colin Cotter](https://finite-element.github.io/).
+For this unit, this is all we need to know about the existence and convergence of solutions in $\mathcal{V}$ and $\mathcal{V}_h$. For further details please see the discussion in MA32066 and in [[Far21]](https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf) and [[CH24]](https://finite-element.github.io/).
 
 ## Reduction to linear algebra problem
 We now discuss how $u_h$ can be found in practice. Since $\mathcal{V}_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_k\}_{k=0}^{n-1}$ such that every function $u_h \in \mathcal{V}_h$ can be written as a linear combination of the basis functions $\Phi^{(h)}_k\in \mathcal{V}_h$:
@@ -737,7 +737,7 @@ The two-dimensional **Argyris finite element** ([[Arg68]](https://www.cambridge.
 Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative. We will not use the Argyris element in this course, and it is included here as an example of a finite element with non-trivial nodes.
 
 ### Node numbering
-As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom. For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$ in @fig:reference_triangle. These entities are
+As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom, and here we use the same ordering as in [Colin Cotter's lectures](https://finite-element.github.io/2_finite_elements.html). For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$ in @fig:reference_triangle. These entities are
 
 * the vertices $v_0$, $v_1$, $v_2$ in this order
 * the facets $F_0$, $F_1$, $F_2$ in this order
@@ -793,7 +793,7 @@ $$
 $$
 
 ## Vandermonde matrix
-Having picked the nodes, how can we construct the nodal basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$ for a given set of nodes $\{\lambda_\ell\}_{\ell=0}^{\nu-1}$? For this, assume that we know some set of basis functions $\{\theta_m(x)\}_{m=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_m(x)\}_{m=0}^{\nu-1}$ is a basis of $\widehat{\mathcal{V}}$, we can write for each $k=0,1,\dots,\nu-1$
+Having picked the nodes, how can we construct the nodal basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$ for a given set of nodes $\{\lambda_\ell\}_{\ell=0}^{\nu-1}$? Here we follow the same procedure as in [[CH24]](https://finite-element.github.io/2_finite_elements.html#solving-for-basis-functions), using slightly different notation. For this, assume that we know some set of basis functions $\{\theta_m(x)\}_{m=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_m(x)\}_{m=0}^{\nu-1}$ is a basis of $\widehat{\mathcal{V}}$, we can write for each $k=0,1,\dots,\nu-1$
 
 $$
 \phi_k(x) = \sum_{m=0}^{\nu-1} c_m^{(k)} \theta_m(x)

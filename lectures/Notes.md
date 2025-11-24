@@ -351,6 +351,9 @@ We can now multiply the matrix that we created above with this vector to compute
 w = PETSc.Vec()
 n = 5
 w.createSeq(n)
+```
+With this, the [`mult()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.mult) can be used to multiply $A$ and $\boldsymbol{v}$:
+```python
 A.mult(v, w)
 ```
 Instead of the [`mult()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.mult) we can also just use the `@` operator, as for numpy matrices/vectors:

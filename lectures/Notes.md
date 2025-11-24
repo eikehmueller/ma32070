@@ -549,7 +549,7 @@ Now, obviously it is not possible to solve @eqn:weak_problem_continuum on a comp
 $$
 a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h \in \mathcal{V}_h$ }.\qquad:eqn:weak_problem_discretised
 $$
-Observe that this only has to hold for all test functions $v_h\in\mathcal{V}_h$.
+Observe that this only has to hold for a finite number of test functions $v_h\in\mathcal{V}_h$.
 
 ### Existence and convergence of the solution
 It can be shown that @eqn:weak_problem_continuum and @eqn:weak_problem_discretised have unique solutions provided the linear form $b(\cdot)$ and the bilinear form $a(\cdot,\cdot)$ satisfy the following two conditions:

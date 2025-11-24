@@ -878,7 +878,7 @@ Any concrete implementations of finite elements are obtained by subclassing the 
 The [`finiteelements`](https://github.com/eikehmueller/finiteelements) library provides the following implementations:
 
 * The bi-linear element is implemented as the class `LinearElement` in [`fem/linearelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py)
-* The general polynomial element is implemented as the class `PolynomialElement` in [`fem/polynomialelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/polynomialelement.py)
+* The general polynomial element is implemented as the class `PolynomialElement` in [`fem/polynomialelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/polynomialelement.py) (this class will be made available later in the semester)
 
 If the [`finiteelements`](https://github.com/eikehmueller/finiteelements) library has been installed, these elements can be imported as follows:
 ```python

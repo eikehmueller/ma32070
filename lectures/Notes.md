@@ -724,7 +724,7 @@ $$
 \lambda_\ell (w) = \frac{\partial^{\ell_a}w}{\partial x_0^{\ell_b} \partial x_1^{\ell_a-\ell_b}}(\mathring{\xi}) \qquad\text{for $0\le \ell_b \le \ell_a\le p$ and $\ell=\frac{1}{2}\ell_a(\ell_a-1) + \ell_b$}
 $$
 
-The **Argyris finite element** (see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
+The **Argyris finite element** ([[Arg68]](https://www.cambridge.org/core/journals/aeronautical-journal/article/tuba-family-of-plate-elements-for-the-matrix-displacement-method/2E7280F506997FC8A8357C30B5334D9D); see Section 3.7.1 in [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf)) is given by
 
 * $\widehat{K}$ the reference triangle
 * $\widehat{\mathcal{V}} = \mathcal{P}_5(\widehat{K})$, the space of quintic bi-variate polynomials

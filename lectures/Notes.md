@@ -682,7 +682,7 @@ see @fig:lagrange_nodes. These functions are visualised in the following figure:
 It turns out that it is advantageous to define finite elements in a more general sense. Mirroring this more abstract mathematical definition in the Python code will help us to structure the code in a sensible way that will allow its easy adaptation to specific cases. For this we first need to introduce the notion of the dual $\mathcal{V}^*$ of a given function space $\mathcal{V}$.
 
 ### Dual spaces
-Consider a domain $K$ and the space $\mathcal{V}=\mathcal{V}(K)$ of real-valued functions $w:K\rightarrow \mathbb{R}$ on $K$. A linear *functional* $\lambda$ maps a function $w\in \mathcal{V}$ to a real value $\lambda(w)\in\mathbb{R}$ such that
+Consider a domain $\Omega$ and the space $\mathcal{V}=\mathcal{V}(\Omega)$ of real-valued functions $w:\Omega\rightarrow \mathbb{R}$ on $\Omega$. A linear *functional* $\lambda$ maps a function $w\in \mathcal{V}$ to a real value $\lambda(w)\in\mathbb{R}$ such that
 
 $$
 \lambda(c_1 w^{(1)}+c_2 w^{(2)}) = c_1\lambda(w^{(1)})+c_2 \lambda(w^{(2)}) \qquad\text{for all $c_1,c_2\in\mathbb{R}$, $w^{(1)}, w^{(2)} \in \mathcal{V}$}.\qquad:eqn:linear_functional

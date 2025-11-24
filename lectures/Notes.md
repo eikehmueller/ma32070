@@ -890,7 +890,7 @@ from fem.polynomialelement import PolynomialElement
 The weak form of the PDE is defined via suitable integrals such as $\int_\Omega v(x)f(x)\;dx$. In general, it is not possible to evaluate these integrals exactly. Furthermore, since the finite element discretisation (replacing $\mathcal{V}\mapsto \mathcal{V}_h$ and solving the associated linear algebra problem) already introduces an error, exact integration is not necessary, provided we can find an approximate integration method with errors that are of the same order of magnitude as the discretisation.
 
 ## Gauss-Legendre quadrature in one dimension
-Numerical quadrature aims to approximate the integral of a function with a finite sum:
+Numerical quadrature aims to approximate the integral of a function $f$ with a finite sum:
 
 $$
 \int_{-1}^{+1} f(z)\;dz \approx \sum_{q=0}^{n_q-1} \widetilde{w}_q f(\widetilde{\zeta}^{(q)})

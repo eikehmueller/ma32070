@@ -356,7 +356,7 @@ With this, the [`mult()` method](https://petsc.org/release/petsc4py/reference/pe
 ```python
 A.mult(v, w)
 ```
-Instead of the [`mult()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Mat.html#petsc4py.PETSc.Mat.mult) we can also just use the `@` operator, as for numpy matrices/vectors:
+Instead, we can also just use the `@` operator, as for numpy matrices/vectors:
 ```python
 w = A @ v
 ```

@@ -817,7 +817,7 @@ V = V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}) = \begin{pmatrix}
 1 & \xi^{(2)}_0 & \xi^{(2)}_1 & (\xi^{(2)}_0)^2 & \xi^{(2)}_0 \xi^{(2)}_1 & (\xi^{(2)}_1)^2 & \dots \\[1ex]
 \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots\\
 1 & \xi^{(\nu-1)}_0 & \xi^{(\nu-1)}_1 & (\xi^{(\nu-1)}_0)^2 & \xi^{(\nu-1)}_0 \xi^{(\nu-1)}_1 & (\xi^{(\nu-1)}_1)^2 & \dots
-\end{pmatrix}.
+\end{pmatrix}.\qquad:eqn:vandermonde_matrix
 $$
 In fact, for *any* given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, which do not have to coincide with the nodal points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$, we can construct the $n\times\nu$ matrix $V(\boldsymbol{\zeta})$ with $V_{rm}(\boldsymbol{\zeta}) = \theta_m(\zeta^{(r)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
 
@@ -840,7 +840,7 @@ $$
 T(\boldsymbol{\zeta}) = V(\boldsymbol{\zeta}) C
 $$
 
-where $C=V^{-1}$ is obtained by inverting the matrix $V$.
+where $C=V^{-1}$ is obtained by inverting the matrix $V$ in @eqn:vandermonde_matrix.
 
 Furthermore, we have for the derivatives
 

@@ -674,9 +674,9 @@ $$
 \phi_5(x) &= 4x_0(1-x_0-x_1),
 \end{aligned}
 $$
-see @fig:lagrange_nodes. These functions are visualised in the following figure (red arrows indicate gradients):
+see @fig:lagrange_nodes. These functions are visualised in the following figure:
 
-![:fig:basis_functions_quadratic: Basis functions for quadratic finite element](figures/quadratic_element.png)
+![:fig:basis_functions_quadratic: Basis functions for quadratic finite element (red arrows indicate gradients)](figures/quadratic_element.png)
 
 ## Formal definition of finite elements
 It turns out that it is advantageous to define finite elements in a more general sense. Mirroring this more abstract mathematical definition in the Python code will help us to structure the code in a sensible way that will allow its easy adaptation to specific cases. For this we first need to introduce the notion of the dual $\mathcal{V}^*$ of a given function space $\mathcal{V}$.

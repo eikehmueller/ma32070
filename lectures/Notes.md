@@ -229,7 +229,7 @@ We have the following arrays:
 
 Note that one of the rows contains only zero entries.
 
-### Matrix-vector multiplication
+### vectors and matrix-vector multiplication
 Clearly, matrices stored in the CSR format are only useful if they can be used in linear algebra operations such as the computation of the matrix-vector product $\boldsymbol{v}=A\boldsymbol{u}$. This can be realised with the following algorithm:
 
 **Algorithm: Matrix-vector multiplication $\boldsymbol{v} = \boldsymbol{v} + A\boldsymbol{u}$ in CSR storage**

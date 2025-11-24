@@ -609,7 +609,7 @@ In the rest of this course we will discuss how each of these steps can be implem
 We start by considering the weak form of the PDE for a special case, namely a domain $\Omega$ consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
 
 ## Reference triangle
-Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $\textcolor{red}{v_0=(0,0)}$, $\textcolor{red}{v_1=(1,0)}$ and $\textcolor{red}{v_2=(0,1)}$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $\textcolor{blue}{F_0 = \overrightarrow{v_1v_2}}$, $\textcolor{blue}{F_1 = \overrightarrow{v_2v_0}}$ and $\textcolor{blue}{F_2 = \overrightarrow{v_0v_1}}$. This ordering will be important later.
+Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $\textcolor{red}{v_0=(0,0)}$, $\textcolor{red}{v_1=(1,0)}$ and $\textcolor{red}{v_2=(0,1)}$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $\textcolor{blue}{F_0 = \overrightarrow{v_1v_2}}$, $\textcolor{blue}{F_1 = \overrightarrow{v_2v_0}}$ and $\textcolor{blue}{F_2 = \overrightarrow{v_0v_1}}$. This ordering and the orientation of the edges will be important later.
 
 ![:fig:reference_triangle: reference triangle](figures/reference_triangle.svg)
 

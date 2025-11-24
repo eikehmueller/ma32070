@@ -229,7 +229,7 @@ We have the following arrays:
 
 Note that one of the rows contains only zero entries.
 
-### vectors and matrix-vector multiplication
+### Matrix-vector multiplication
 Clearly, matrices stored in the CSR format are only useful if they can be used in linear algebra operations such as the computation of the matrix-vector product $\boldsymbol{v}=A\boldsymbol{u}$. This can be realised with the following algorithm:
 
 **Algorithm: Matrix-vector multiplication $\boldsymbol{v} = \boldsymbol{v} + A\boldsymbol{u}$ in CSR storage**
@@ -334,7 +334,7 @@ Obviously, this only makes sense for relatively small matrices.
 
 PETSc provides a lot of additional functionality for manipulating matrices, see the [documentation of `petsc4py.PETSc.Mat`](https://petsc.org/main/petsc4py/reference/petsc4py.PETSc.Mat.html#) for further details. 
 
-### Matrix-vector multiplication
+### Vectors and matrix-vector multiplication
 PETSc also provides a vector class. To create vectors such as the five-dimensional $\boldsymbol{v}\in\mathbb{R}^5$ with
 $$
 \boldsymbol{v} = \begin{pmatrix}
@@ -346,7 +346,7 @@ we can do this:
 v = PETSc.Vec()
 v.createWithArray([8.1, 0, 9.3, -4.3, 5.2])
 ```
-We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$. For this, we first need to create an empty five-dimensional vector $\boldsymbol{v}$, which can be done with the [`createSeq()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Vec.html#petsc4py.PETSc.Vec.createSeq).
+We can now multiply the matrix that we created above with this vector to compute $\boldsymbol{w}=A\boldsymbol{v}$. For this, we first need to create an empty five-dimensional vector $\boldsymbol{w}$ to hold the result, which can be done with the [`createSeq()` method](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.Vec.html#petsc4py.PETSc.Vec.createSeq).
 ```python
 w = PETSc.Vec()
 n = 5

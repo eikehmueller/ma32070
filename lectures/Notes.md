@@ -868,7 +868,7 @@ More specifically, each finite element should provide the following functionalit
 It is crucial to observe that we carefully avoided including specific functionality (such as assuming that the basis functions are Lagrange polynomials and the degrees of freedom are point-evaluations): the base class is consistent with Ciarlet's abstract definition of the finite element and the code mirrors the mathematical structure.
 
 ### Concrete implementations
-Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class. These concrete classes have to provide concrete implementations of the following methods/properties:
+Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class. These classes have to provide concrete implementations of the following methods/properties:
 
 * `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior`
 * `tabulate_dofs(fhat)` to evaluate the degrees of freedom for a given function

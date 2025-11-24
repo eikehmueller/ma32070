@@ -166,9 +166,9 @@ u = np.linalg.inv(A) @ b # Don't do this!
 For more information please refer to the [numpy documentation](https://numpy.org/doc/stable/index.html), in particular the [documentation of Linear Algebra routines](https://numpy.org/doc/stable/reference/routines.linalg.html).
 
 ## Sparse matrices
-Many matrices that arise in Scientific Computing contain a lot of zero entries. Examples can be found in the [SuiteSparse Matrix Collection](https://sparse.tamu.edu/): clicking on the names of individual matrices will provide more details and a visualisation of their structure.
+Many matrices that arise in Scientific Computing contain a lot of zero entries. Examples can be found in the [SuiteSparse Matrix Collection](https://sparse.tamu.edu/): clicking on the names of individual matrices will provide more details and show a visualisation of their structure.
 
-@fig:stiffness_matrix shows a spy-plot of the $81\times 81$ matrix that is obtained from a finite element discretisation; we will discuss how this matrix is constructed in more detail later, for now we are only interested in how it can be stored and used.
+@fig:stiffness_matrix shows the spy-plot of the $81\times 81$ matrix that is obtained from a finite element discretisation; we will discuss how this matrix is constructed in more detail later, for now we are only interested in how it can be stored and used.
 
 ![:fig:stiffness_matrix: Stiffness matrix](figures/stiffness_matrix.png)
 

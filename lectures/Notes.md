@@ -225,7 +225,7 @@ We have the following arrays:
 
 1. Values: $V=[1.3, 2.4, 8.7, 4.5, 6.1, 2.1, 8.3, 9.4, 3.7, 1.1, 7.7]$
 2. Column indices: $J=[0,1,3,0,1,1,2,4,1,2,4]$
-3. Row pointers: $R=[0,3,6,8,8,11]$
+3. Row pointers: $R=[0,3,5,8,8,11]$
 
 Note that one of the rows contains only zero entries.
 
@@ -233,6 +233,7 @@ Note that one of the rows contains only zero entries.
 Clearly, matrices stored in the CSR format are only useful if they can be used in linear algebra operations such as the computation of the matrix-vector product $\boldsymbol{v}=A\boldsymbol{u}$. This can be realised with the following algorithm:
 
 **Algorithm: Matrix-vector multiplication $\boldsymbol{v} = \boldsymbol{v} + A\boldsymbol{u}$ in CSR storage**
+
 1. Set $\ell\gets 0$
 2. **for** $i=0,1,2,\dots,n-1$ **do**
 3. $~~~~$ **for** $j=R_i,R_i+1,\dots,R_{i+1}-1$ **do**

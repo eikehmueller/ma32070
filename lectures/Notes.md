@@ -698,10 +698,10 @@ Let $\Omega\subset \mathbb{R}^2$ and $\mathcal{V}=H^1(\Omega)$ be the space of f
 * integration: $\lambda(w) := \int_\Omega f(x)w(x)\;dx$ for some function $f \in L_2(\Omega)$
 
 #### Exercise
-Convince yourself that these $\lambda$ indeed satisfy @eqn:linear_functional
+Convince yourself that these $\lambda$ indeed satisfy @eqn:linear_functional.
 
 ### Ciarlet's definition of the finite element
-This now leads to the following definition, originally due to Ciarlet (see [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) for the version used here): a finite element is a triple $(\widehat{K},\widehat{\mathcal{V}},\mathcal{L})$ which consists of
+This now leads to the following definition, originally due to Ciarlet (*"Numerical Analysis of the Finite Element Method.*" Les Presses de l'Universite de Montreal, 1976; see [[Log11]](http://launchpad.net/fenics-book/trunk/final/+download/fenics-book-2011-10-27-final.pdf) for the version used here): a finite element is a triple $(\widehat{K},\widehat{\mathcal{V}},\mathcal{L})$ which consists of
 
 * the **domain** $\widehat{K}$ (which we will always choose to be the reference triangle in this course),
 * a **function space** $\widehat{\mathcal{V}}=\widehat{\mathcal{V}}(\widehat{K})$ of real-valued functions on $\widehat{K}$,

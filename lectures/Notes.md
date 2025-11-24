@@ -495,7 +495,7 @@ Note that in the case $\kappa=1$, $\omega=0$ the problem would reduce to the Poi
 ## Weak solutions
 To solve @eqn:pde_continuum, we seek solutions $u$ in some function space $\mathcal{V}$; we will discuss suitable choices for $\mathcal{V}$ below. In a finite element setting we usually only aim to determine the solution in the **weak sense**: Find $u\in \mathcal{V}$ such that
 $$
-\int_\Omega \left(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\right)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v \in \mathcal{V}$}.
+\int_\Omega \Big(-v(x)\nabla \cdot(\kappa \nabla  u(x)) + \omega\; v(x) u(x)\Big)\;dx = \int_\Omega f(x) v(x)\;dx \qquad \text{for all $v \in \mathcal{V}$}.
 $$
 The function $v$ is often called a *test function*. Observe that in contrast to @eqn:pde_continuum we no longer require that the equation is satisfied at every point $x$. Discussing in which sense these weak solutions are equivalent to solutions of @eqn:pde_continuum (which is sometimes also referred to as the **"strong"** form of the equation) is beyond the scope of this course.
  

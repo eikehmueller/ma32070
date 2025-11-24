@@ -7,7 +7,7 @@
    viewBox="0 0 314.25833 60.81395"
    version="1.1"
    id="svg5"
-   inkscape:version="1.3 (0e150ed, 2023-07-21)"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    sodipodi:docname="lagrange_nodes.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,14 +24,14 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="1.3724185"
-     inkscape:cx="1003.3383"
-     inkscape:cy="117.31116"
-     inkscape:window-width="1312"
-     inkscape:window-height="713"
-     inkscape:window-x="54"
-     inkscape:window-y="25"
-     inkscape:window-maximized="0"
+     inkscape:zoom="0.97044643"
+     inkscape:cx="905.7687"
+     inkscape:cy="98.923544"
+     inkscape:window-width="1600"
+     inkscape:window-height="863"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
     <inkscape:grid
        type="xygrid"
@@ -326,14 +326,14 @@
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#0006ff;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
-       x="176.73108"
-       y="31.686499"
+       x="183.35187"
+       y="38.200981"
        id="text1629"><tspan
          sodipodi:role="line"
          id="tspan1627"
          style="font-size:6.35px;stroke-width:0.705556"
-         x="176.73108"
-         y="31.686499">ν<tspan
+         x="183.35187"
+         y="38.200981">ν<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan2357">facet</tspan> = 3</tspan></text>
     <text
@@ -350,14 +350,14 @@
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
-       x="182.02275"
-       y="38.364582"
+       x="178.97186"
+       y="31.396009"
        id="text2365"><tspan
          sodipodi:role="line"
          id="tspan2363"
          style="fill:#ff0000;fill-opacity:1;stroke-width:0.705556"
-         x="182.02275"
-         y="38.364582">ν<tspan
+         x="178.97186"
+         y="31.396009">ν<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan2473">vertex</tspan> = 1</tspan></text>
     <text
@@ -499,27 +499,27 @@
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#0006ff;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
-       x="13.747736"
-       y="31.421913"
+       x="20.354435"
+       y="38.775444"
        id="text2679"><tspan
          sodipodi:role="line"
          id="tspan2677"
          style="font-size:6.35px;stroke-width:0.705556"
-         x="13.747736"
-         y="31.421913">ν<tspan
+         x="20.354435"
+         y="38.775444">ν<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan2675">facet</tspan> = 1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
-       x="19.039404"
-       y="38.099995"
+       x="15.28585"
+       y="30.910381"
        id="text2685"><tspan
          sodipodi:role="line"
          id="tspan2683"
          style="fill:#ff0000;fill-opacity:1;stroke-width:0.705556"
-         x="19.039404"
-         y="38.099995">ν<tspan
+         x="15.28585"
+         y="30.910381">ν<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan2681">vertex</tspan> = 1</tspan></text>
     <text
@@ -731,28 +731,29 @@
          y="59.950348">9</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:6.35px;fill:#0006ff;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
-       x="96.297737"
-       y="31.686504"
-       id="text2793"><tspan
+       style="font-size:6.85881px;fill:#0006ff;fill-opacity:1;stroke:none;stroke-width:0.76209;stroke-dasharray:none;stroke-opacity:1"
+       x="110.71994"
+       y="35.981133"
+       id="text2793"
+       transform="scale(0.92581679,1.0801273)"><tspan
          sodipodi:role="line"
          id="tspan2791"
-         style="font-size:6.35px;stroke-width:0.705556"
-         x="96.297737"
-         y="31.686504">ν<tspan
-   style="font-size:65%;baseline-shift:sub"
+         style="font-size:6.85881px;stroke-width:0.76209"
+         x="110.71994"
+         y="35.981133">ν<tspan
+   style="font-size:4.45823px;baseline-shift:sub;stroke-width:0.76209"
    id="tspan2789">facet</tspan> = 2</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
-       x="101.58939"
-       y="38.364586"
+       x="97.421448"
+       y="31.372408"
        id="text2799"><tspan
          sodipodi:role="line"
          id="tspan2797"
          style="fill:#ff0000;fill-opacity:1;stroke-width:0.705556"
-         x="101.58939"
-         y="38.364586">ν<tspan
+         x="97.421448"
+         y="31.372408">ν<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan2795">vertex</tspan> = 1</tspan></text>
     <text
@@ -840,27 +841,27 @@
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#0006ff;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
-       x="-69.331429"
-       y="31.686495"
+       x="-63.498116"
+       y="37.584248"
        id="text2853"><tspan
          sodipodi:role="line"
          id="tspan2851"
          style="font-size:6.35px;stroke-width:0.705556"
-         x="-69.331429"
-         y="31.686495">ν<tspan
+         x="-63.498116"
+         y="37.584248">ν<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan2551">facet</tspan> = 0</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:6.35px;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none;stroke-opacity:1"
-       x="-64.039764"
-       y="38.364578"
+       x="-68.678902"
+       y="30.253597"
        id="text2859"><tspan
          sodipodi:role="line"
          id="tspan2857"
          style="fill:#ff0000;fill-opacity:1;stroke-width:0.705556"
-         x="-64.039764"
-         y="38.364578">ν<tspan
+         x="-68.678902"
+         y="30.253597">ν<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan2855">vertex</tspan> = 1</tspan></text>
     <text

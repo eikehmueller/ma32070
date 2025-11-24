@@ -957,7 +957,7 @@ $$
 
 
 ## Two-dimensional quadrature for the reference triangle
-To numerically integrate functions over the reference triangle $\widehat{K}$ we used the same approach as in [[CH24]](https://finite-element.github.io/1_quadrature.html#extending-legendre-gausz-quadrature-to-two-dimensions). For this, first observe that $\widehat{K}$ is the image of the square $S=[-1,+1]\times [-1,+1]$ under the Duffy transform $\tau$ which maps a point $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$ to
+To numerically integrate functions over the reference triangle $\widehat{K}$ we used the same approach as in [[CH24]](https://finite-element.github.io/1_quadrature.html#extending-legendre-gausz-quadrature-to-two-dimensions). For this, first observe that $\widehat{K}$ is the image of the square $S=[-1,+1]\times [-1,+1]$ under the [Duffy transform](https://epubs.siam.org/doi/10.1137/0719090) $\tau$ which maps a point $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$ to
 
 $$
 \begin{aligned}

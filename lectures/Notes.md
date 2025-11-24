@@ -182,7 +182,7 @@ To store sparse matrices, we proceed as follows:
 1. Store all non-zero entries in a long array $V$ of length $n_{\text{nz}}$, going throw the matrix row by row
 2. For each non-zero entry also store the corresponding column index in an array $J$ of the same length as $V$
  
-We could now also store the corresponding row-indices in an array $I$ of the same length. With this, it would then be possible to reconstruct all non-zero entries of $A$:
+We could now also store the corresponding row-indices in an array $I$ of the same length. With this, it would then be possible to reconstruct all non-zero entries of $A$ from the three arrays $V$, $I$ and $J$:
 
 **Algorithm: Reconstruction of matrix from arrays $\boldsymbol{V}$, $\boldsymbol{J}$ and $\boldsymbol{I}$**
 

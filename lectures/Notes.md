@@ -198,6 +198,7 @@ However, there is a more efficient way of doing this: Since the arrays $V$ and $
 The resulting storage format, consisting of the arrays $V$ (values), $J$ (column indices) and $R$ (row pointers) is known as Compressed Sparse Row storage (CSR). Given $V,J,R$ it is possible to reconstruct the matrix $A$ as follows:
 
 **Algorithm: Reconstruction of matrix in CSR format from arrays $\boldsymbol{V}$, $\boldsymbol{J}$ and $\boldsymbol{R}$**
+
 1. Set $A\gets 0$
 2. Set $\ell\gets 0$
 3. **for** $i=0,1,2,\dots,n-1$ **do**

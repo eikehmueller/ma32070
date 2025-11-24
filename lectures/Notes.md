@@ -218,7 +218,7 @@ $$
 \textcolor{lightgray}{0} & 2.1 & 8.3 & \textcolor{lightgray}{0} & 9.4 \\
 \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
 \textcolor{lightgray}{0} & 3.7 & 1.1 & \textcolor{lightgray}{0} & 7.7
-\end{pmatrix}
+\end{pmatrix}\qquad:eqn:matrix_5x5
 $$
 
 We have the following arrays:
@@ -255,7 +255,7 @@ We can now create an (empty) matrix with
 A = PETSc.Mat()
 ```
 
-To create the $5\times 5$ matrix above we first need to set up the sparsity structure, i.e. the arrays $J$ (called `col_indices`) and $R$ (called `row_start`). This is done with the `createAIJ()` method, which gets passed the number of rows and columns and the keyword argument `csr` which is a tuple of the form $(R,J)$:
+To create the $5\times 5$ matrix in @eqn:matrix_5x5 above, we first need to set up the sparsity structure, i.e. the arrays $J$ (called `col_indices`) and $R$ (called `row_start`). This is done with the `createAIJ()` method, which gets passed the number of rows and columns and the keyword argument `csr` which is a tuple of the form $(R,J)$:
 ```python
 n_row = 5
 n_col = 5

@@ -1021,7 +1021,8 @@ We can now implement a simple finite element method on the domain $\Omega=\wideh
 To assemble the stiffness matrix $A^{(h)}$, observe that the entries of this matrix are given by:
 $$
 \begin{aligned}
-A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(x) \frac{\partial\phi_\ell}{\partial x_a}(x) + \omega\; \phi_k(x) \phi_\ell(x)\right)\;dx\\
+A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) &= \int_{\widehat{K}} \left(\kappa \nabla \phi_k(x) \cdot\nabla\phi_\ell(x) + \omega\; \phi_k(x) \phi_\ell(x)\right)\;dx\\
+&= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(x) \frac{\partial\phi_\ell}{\partial x_a}(x) + \omega\; \phi_k(x) \phi_\ell(x)\right)\;dx\\
 &\approx 
 \sum_{q=0}^{N_q-1} w_q\left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(\zeta^{(q)}) \frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(q)}) + \omega\; \phi_k(\zeta^{(q)}) \phi_\ell(\zeta^{(q)})\right)\\
 &= \kappa \sum_{q=0}^{N_q-1}\sum_{a=0}^{d-1} w_q  T^\partial_{qk a} (\boldsymbol{\zeta})T^\partial_{q\ell a} (\boldsymbol{\zeta})

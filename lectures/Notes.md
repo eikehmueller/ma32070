@@ -185,6 +185,7 @@ To store sparse matrices, we proceed as follows:
 We could now also store the corresponding row-indices in an array $I$ of the same length. With this, it would then be possible to reconstruct all non-zero entries of $A$:
 
 **Algorithm: Reconstruction of matrix from arrays $\boldsymbol{V}$, $\boldsymbol{J}$ and $\boldsymbol{I}$**
+
 1. Set $A\gets 0$
 2. **for** $\ell=0,1,2,\dots,n_{\text{nz}}-1$ **do**
 3. $~~~~$ Set $A_{I_\ell,J_\ell} \gets V_{\ell}$

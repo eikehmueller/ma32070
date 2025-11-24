@@ -503,7 +503,7 @@ After integrating the first term under the integral on the left-hand side by par
 $$
 \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx - \int_{\partial \Omega } v(x)\;\kappa\;n\cdot \nabla u(x)\;ds = \int_\Omega f(x) v(x)\;dx.\qquad:eqn:weak_form_ibp
 $$
-Crucially, in contrast to @eqn:pde_continuum, only first derivatives of the solution $u$ and test function $v$ are required now. This has the advantage that functions in $\mathcal{V}$ only need to be differentiable once. Using the boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial\Omega$, we can rewrite @eqn:weak_form_ibp this as
+Crucially, in contrast to @eqn:pde_continuum, only first derivatives of the solution $u$ and test function $v$ are required now. This has the advantage that functions in $\mathcal{V}$ only need to be differentiable once. Using the boundary condition $\kappa\; n\cdot \nabla u(x)=g(x)$ for $x\in\partial\Omega$, we can rewrite @eqn:weak_form_ibp as
 $$
 \int_\Omega \left(\kappa \nabla v(x) \cdot \nabla  u(x) + \omega\; v(x) u(x)\right)\;dx  = \int_\Omega f(x) v(x)\;dx + \int_{\partial \Omega} g(x) v(x)\;ds.\qquad:eqn:weak_form_explicit
 $$

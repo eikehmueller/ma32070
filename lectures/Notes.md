@@ -1930,6 +1930,7 @@ The value $J(\xi^{(q)})$ of the Jacobian at the quadrature points can be compute
 Putting everything together we arrive at the following procedure:
 
 **Algorithm: assembly of stiffness matrix $A^{(h)}$**
+
 1. Initialise $A^{(h)} \gets 0$
 2. **For** all cells $K$ **do**:
 3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,\ell^\times)}$ with $\alpha$ the index of cell $K$
@@ -1940,12 +1941,12 @@ Putting everything together we arrive at the following procedure:
 8. $~~~~$ **end do**
 9. $~~~~$ Construct the local stiffness matrix $A^{(h),\text{local}}$ with
 $$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} D_q + \omega \sum_{q} w_q  T_{qk}T_{q\ell} D_q$$
-1. $~~~~$ **For** all local dof-indices $\ell$ **do**:
-2.  $~~~~~~~~$ **For** all local dof-indices $k$ **do**:
-3.  $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$ and $k_{\text{global}} = k_{\text{global}}(\alpha,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $\alpha$
-4.  $~~~~~~~~$ **end do**
-5.  $~~~~$ **end do**
-6.  **end do**
+10. $~~~~$ **For** all local dof-indices $\ell$ **do**:
+11.  $~~~~~~~~$ **For** all local dof-indices $k$ **do**:
+12.  $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$ and $k_{\text{global}} = k_{\text{global}}(\alpha,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $\alpha$
+13.  $~~~~~~~~$ **end do**
+14.  $~~~~$ **end do**
+15.  **end do**
 
 #### Illustration
 @fig:global_assembly_stiffness visualises the assembly of the stiffness matrix $A^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global matrix entry $A^{(h)}_{8,8}$.

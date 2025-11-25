@@ -1432,7 +1432,7 @@ $$
 \frac{\|\delta A\|_\infty}{\|A\|_\infty} \le n \varepsilon_{\text{mach}} G(A),
 $$
 
-where $G(A)$ is a "well-behaved" number that depends on the matrix $A$ and $\varepsilon_{\text{mach}}$ is the machine-epsilon defined in @eqn:machine_epsilon. Although it is possible to construct pathological examples for which $G(A)$ is large, it is reasonable to assume that for the matrices that we consider here $G(A)$ is small and only depends weakly on $A$. Putting everything together, we find that
+where $G(A)$ is a "well-behaved" number that depends on the matrix $A$ and $\varepsilon_{\text{mach}}$ is the machine epsilon defined in @eqn:machine_epsilon. Although it is possible to construct pathological examples for which $G(A)$ is large, it is reasonable to assume that for the matrices that we consider here $G(A)$ is small and only depends weakly on $A$. Putting everything together, we find that
 
 ### Theorem 2
 Under the conditions of Theorem 1 and if Gaussian elimination is used to solve the linear system, the error $\delta \boldsymbol{u}$ can be bounded
@@ -1444,12 +1444,16 @@ $$
 ### Summary
 Although this is only an upper bound which does not necessarily have to be tight, this result implies that the (relative) error $\|\delta\boldsymbol{u}\|_\infty/\|\boldsymbol{u}\|_\infty$
 
-* is proportional to the machine epsilon $\varepsilon_{\text{mach}}$,
+* is proportional to the machine epsilon $\varepsilon_{\text{mach}}$ defined in @eqn:machine_epsilon,
 * increases with problem size $n$,
 * and grows with the condition number $\text{cond}(A)$ of the matrix.
 
+These observations explain the behaviour seen in @fig:relative_error: the size of the matrix and its condition number increase for higher polynomial degrees. The error can be reduced by using double precision ($\varepsilon_{\text{mach}}\sim 10^{-16}$) instead of single precision ($\varepsilon_{\text{mach}}\sim 10^{-7}$).
+
+Unfortunately, the problems that are generally encountered in Scientific Computing are usually large ($n\gg 1$) and characterised by ill-conditioned matrices. Observe further that while in the examples above we were able to quantify the error by comparing the numerical solution to the exact solution, this is usually not possible: in most cases we do not even know how large the error is!
+
 ### Estimating the error
-In general it is not possible to compute the error $\delta\boldsymbol{u}$. However, since $\boldsymbol{b}-A\boldsymbol{u}=\boldsymbol{0}$, it is natural to consider the residual $\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'$ which measures to which degree the numerical solution $\boldsymbol{u}'$ fails to satisfy the linear system. Unfortunately, if $\|\boldsymbol{r}\|_\infty$ is small this does not necessarily imply the smallness of $\|\boldsymbol{u}\|_\infty$. To see this, first observe that $\boldsymbol{r}=A\delta\boldsymbol{u}$. Then note that since
+In general it is not possible to compute the error $\delta\boldsymbol{u}$. However, since $\boldsymbol{b}-A\boldsymbol{u}=0$, it is natural to consider the residual $\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'$ which measures to which degree the numerical solution $\boldsymbol{u}'$ fails to satisfy the linear system. Unfortunately, if $\|\boldsymbol{r}\|_\infty$ is small this does not necessarily imply the smallness of $\|\boldsymbol{u}\|_\infty$. To see this, first observe that $\boldsymbol{r}=A\delta\boldsymbol{u}$. Then note that since
 $\|\boldsymbol{b}\|_\infty \le \|A\|_\infty \|\boldsymbol{u}\|_\infty$ and $\|\delta\boldsymbol{u}\|_\infty \le \|A^{-1}\|_\infty \|\boldsymbol{r}\|_\infty$
 
 $$

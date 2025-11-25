@@ -1078,7 +1078,7 @@ $$
 f(x) &= \left(\left(2\frac{\kappa}{\sigma^2}+\omega\right)-\frac{\kappa}{\sigma^4}(x-x_0)^2\right) u_{\text{exact}}(x)
 \\
 g(x) &= -\frac{\kappa}{\sigma^2}n\cdot(x-x_0)u_{\text{exact}}(x)
-\end{aligned}\qquad\:eqn:fg_manufactured
+\end{aligned}\qquad:eqn:fg_manufactured
 $$
 In the expression for $g$ the normal vector $n$ is given as follows on each of the three facets $F_0$, $F_1$ and $F_2$:
 $$
@@ -1089,10 +1089,9 @@ n = \begin{cases}
 \end{cases}
 $$
 
-After assembling $A^{(h)}$ and $\boldsymbol{b}^{(h)}$ based on the $f$, $g$ in @eqn:fg_manufactured above, we solve $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$. In the next section we will look at how the $L_2$ norm of the error depends on the polynomial degree.
+After assembling $A^{(h)}$ and $\boldsymbol{b}^{(h)}$ based on the $f$, $g$ in @eqn:fg_manufactured above, we solve $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$. In the next section we will look at how the $L_2$ norm of the error depends on the polynomial degree $p$.
 
 # Error analysis
-We now discuss different sources of error that can arise in a numerical calculation.
 
 ## Sources of error
 When solving a problem in Scientific Computing, there are several sources of error:

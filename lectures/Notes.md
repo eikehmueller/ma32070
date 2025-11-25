@@ -1424,9 +1424,10 @@ then $A+\delta A$ is non-singular and
 
 $$
 \frac{\|\delta\boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} \le 2\text{cond}(A) \frac{\|\delta A\|_\infty}{\|A\|_\infty}.
+\qquad:eqn:relative_error_bound
 $$
 
-Furthermore, it can be shown that if Gaussian elimination is used to solve the linear system (and this is the method used by [numpy.linalg.solve](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.solve.html)), then the effect of roundoff errors is
+The bound in @eqn:relative_error_bound is derived below. Furthermore, it can be shown that if Gaussian elimination is used to solve the linear system (and this is the method used by [numpy.linalg.solve](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.solve.html)), then the effect of roundoff errors is
 
 $$
 \frac{\|\delta A\|_\infty}{\|A\|_\infty} \le n \varepsilon_{\text{mach}} G(A),
@@ -1453,7 +1454,7 @@ These observations explain the behaviour seen in @fig:relative_error: the size o
 Unfortunately, the problems that are generally encountered in Scientific Computing are usually large ($n\gg 1$) and characterised by ill-conditioned matrices. Observe further that while in the examples above we were able to quantify the error by comparing the numerical solution to the exact solution, this is usually not possible: in most cases we do not even know how large the error is!
 
 ### Estimating the error
-In general it is not possible to compute the error $\delta\boldsymbol{u}$. However, since $\boldsymbol{b}-A\boldsymbol{u}=0$, it is natural to consider the residual $\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'$ which measures to which degree the numerical solution $\boldsymbol{u}'$ fails to satisfy the linear system. Unfortunately, if $\|\boldsymbol{r}\|_\infty$ is small this does not necessarily imply the smallness of $\|\boldsymbol{u}\|_\infty$. To see this, first observe that $\boldsymbol{r}=A\delta\boldsymbol{u}$. Then note that since
+In general it is not possible to compute the error $\delta\boldsymbol{u}$. However, since $\boldsymbol{b}-A\boldsymbol{u}=0$, it is natural to consider the residual $\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'$ which measures to which degree the numerical solution $\boldsymbol{u}'$ fails to satisfy the linear system. Unfortunately, if $\|\boldsymbol{r}\|_\infty$ is small this does not necessarily imply the smallness of the error $\|\delta\boldsymbol{u}\|_\infty$. To see this, first observe that $\boldsymbol{r}=A\delta\boldsymbol{u}$. Then note that since
 $\|\boldsymbol{b}\|_\infty \le \|A\|_\infty \|\boldsymbol{u}\|_\infty$ and $\|\delta\boldsymbol{u}\|_\infty \le \|A^{-1}\|_\infty \|\boldsymbol{r}\|_\infty$
 
 $$
@@ -1462,7 +1463,7 @@ $$
 = \text{cond}(A)\frac{\|\boldsymbol{r}\|_\infty}{\|\boldsymbol{b}\|_\infty}
 $$
 
-Hence, the smallness of $\|\boldsymbol{r}\|_\infty/\|\boldsymbol{b}\|_\infty$ only implies the smallness of the relative error if the condition number of $A$ is small.
+Hence, the smallness of $\|\boldsymbol{r}\|_\infty/\|\boldsymbol{b}\|_\infty$ only implies the smallness of the relative error $\|\delta \boldsymbol{u}\|_\infty/\|\boldsymbol{u}\|_\infty$ if the condition number of $A$ is small. Nevertheless, in the absence of any other information on the error, the residual $\|\boldsymbol{r}\|_\infty$ is a very useful quantity to measure.
 
 ### Proof of Theorem 1 (not examinable)
 Observe first that if $X$ is any $n\times n$ real-valued matrix with $\|X\|_\infty<1$ then $\|X^n\|_\infty\le \|X\|_\infty^n\rightarrow 0$ as $n\rightarrow\infty$. Thus
@@ -1516,7 +1517,7 @@ $$
 \end{aligned}
 $$
 
-To finish the proof, divide both sides of this inequality by $\|\boldsymbol{u}\|_\infty$.
+To finish the proof, divide both sides of this inequality by $\|\boldsymbol{u}\|_\infty$ to obtain @eqn:relative_error_bound.
 
 # Unstructured meshes
 So far, we have only solved our model PDE on a single reference triangle. We now discuss how to extend the finite element approach to arbirtrary domains. Assume that we want to solve the PDE on a $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ that is embedded in $D$ dimensional space. For example, we might want to solve it in a rectangular domain or on the surface of a sphere. The manifold is then approximated by a *mesh*, which can be described as a collection of topological entities. For example, if $d=2$, the mesh will consist of zero-dimensional vertices, one-dimensional edges and two-dimensional triangular cells (although it is also possible to use more general polygonal cells we do not consider this here). In general, the co-dimension $c$ of a $d'$-dimensional mesh entity is given by $c=d-d'$. In the following we will only consider the case $d=D=2$, but the central ideas that are developed in the following also apply to more complicated setups. For $d=D=2$ we have:

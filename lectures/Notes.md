@@ -1161,10 +1161,16 @@ The most commonly used floating point systems on modern computers are single- an
 #### Single precision
 `np.float32`: One binary digit (=bit) is used to store the sign, 8 for the exponent and 23 for the mantissa $\Rightarrow$ 32 bits (4 bytes) in total.
 
-![:fig:bit_single_precision: bits single precision](figures/bits_single_precision.svg)
+![:fig:bit_single_precision: Usage of bits in single precision arithmetic](figures/bits_single_precision.svg)
+
+For single precision numbers in the [IEEE 754 standard](https://standards.ieee.org/ieee/754/6210/) we have that
 
 * $p=24$
-* $L=-126$, $U=127$
+* $L=-126$
+* $U=127$
+
+which results in
+
 * Underfloat threshold = $2^{-126} \approx 10^{-38}$
 * Overflow threshold = $2^{128} \approx 10^{38}$
 
@@ -1172,10 +1178,16 @@ The most commonly used floating point systems on modern computers are single- an
 #### Double precision
 `np.float64`: One binary digit is used to store the sign, 11 for the exponent and 52 for the mantissa $\Rightarrow$ 64 bits (8 bytes) in total.
 
-![:fig:bit_double_precision: bits double precision](figures/bits_double_precision.svg)
+![:fig:bit_double_precision: Usage of bits in double precision arithmetic](figures/bits_double_precision.svg)
+
+For double precision numbers in the [IEEE 754 standard](https://standards.ieee.org/ieee/754/6210/) we have that
 
 * $p=53$
-* $L=-1022$, $U=1023$.
+* $L=-1022$
+* $U=1023$
+
+which results in
+
 * Underfloat threshold = $2^{-1022} \approx 10^{-308}$
 * Overflow threshold = $2^{1024} \approx 10^{308}$
 
@@ -1183,7 +1195,7 @@ The most commonly used floating point systems on modern computers are single- an
 Since $d_0=1$ it appears that we can not store the number zero. To represent this number and some other special cases, several dedicated bit patterns are reserved:
 
 * The number zero is stored as `s000 0000 0000 0000 0000 0000 0000 0000` where $s$ is the sign bit. Note that there is both $+0$ ($s=1$) and $-0$ ($s=0$).
-* `NaN` ("not a number") is stored as `s111 1111 1xxx xxxx xxxx xxxx xxxx xxxx` where the sequence denotes with $x$ stands for any non-zero number and the sign $s$ is usually ignored. The result of mathematically invalid operations (such as taking the square root of a negative number) is stored as a `NaN`
+* `NaN` ("not a number") is stored as `s111 1111 1xxx xxxx xxxx xxxx xxxx xxxx` where the sequence denoted with $x$ stands for any non-zero number and the sign $s$ is usually ignored. The result of mathematically invalid operations (such as taking the square root of a negative number) is stored as a `NaN`
 * Infinity ($\pm\infty$) is stored as `s111 1111 1000 0000 0000 0000 0000 0000` where again $s$ denotes the sign. This result can arise from division by zero.
 
 ### Machine epsilon

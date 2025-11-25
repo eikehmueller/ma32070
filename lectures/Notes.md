@@ -1212,13 +1212,13 @@ $$
 \end{cases}
 $$
 
-This quantity is also known as the **machine** epsilon $\varepsilon_{\text{mach}}$. It is the smallest positive number in $\mathbb{x}$ that can be added to $1$ such that (after rounding to $\mathbb{F}$) the result is different from $1$:
+This quantity is also known as the **machine** epsilon $\varepsilon_{\text{mach}}$. It is the smallest positive number $\mathbb{x}\in \mathbb{F}$ that can be added to $1$ such that (after rounding to $\mathbb{F}$) the result is different from $1$:
 
 $$
-\varepsilon_{\text{mach}} := \min_{x\in\mathbb{F},x>0}\{x: \mathcal{R}_{\mathbb{F}}(1+x)\neq 1\}
+\varepsilon_{\text{mach}} := \min_{x\in\mathbb{F},x>0}\{x: \mathcal{R}_{\mathbb{F}}(1+x)\neq 1\} \qquad:eqn:machine_epsilon
 $$
 
-Put differently, the machine epsilon is the relative size of rounding errors or the relative size of floating point operations. If $z$ is the result of some arithmetic operation involving numbers from $\mathbb{F}$ then
+Put differently, the machine epsilon is the relative size of rounding errors or the relative accuracy of floating point operations. If $z$ is the result of some arithmetic operation involving numbers from $\mathbb{F}$ then
 
 $$
 \frac{|\mathcal{R}_{\mathbb{F}}(z)-z|}{|z|} \sim \varepsilon_{\text{mach}}.
@@ -1228,16 +1228,16 @@ $$
 As the following examples show, rounding errors can have serious consequences
 
 ### Example 1 (harmless)
-Consider the two numbers $x=4.7\cdot 10^{-16}$ and $x=2.9\cdot 10^{-16}$. Both can be represented exactly as floating point numbers. The same is true for their difference $z=x-y=1.8\cdot 10^{-16}$, i.e. $\widetilde{z}=\mathcal{G}_{\mathbb{F}}(z)=z$ and as a consequence the rounding error is zero of this operation is zero:
+Consider the two numbers $x=4.7\cdot 10^{-16}$ and $x=2.9\cdot 10^{-16}$. Both can be represented exactly as floating point numbers. The same is true for their difference $z=x-y=1.8\cdot 10^{-16}$, i.e. $\widetilde{z}=\mathcal{G}_{\mathbb{F}}(z)=z$ and as a consequence the rounding error of this operation is zero:
 
 $$
 \frac{\mathcal{R}_{\mathbb{F}}(z)-z}{z} = \frac{\mathcal{R}_{\mathbb{F}}(x)-\mathcal{R}_{\mathbb{F}}(y)-z}{z} = \frac{(4.7 -2.9 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} = 0.
 $$
-In general, adding or subtracting numbers leads to small relative errors provided both the numbers and the result of the computation are of comparable size. As the following example shows, the final point is crucial.
+In general, adding or subtracting numbers leads to small relative errors provided both the numbers and the result of the computation are of **comparable size**. As the following example shows, the final point is crucial.
 
 ### Example 2 (subtracting two numbers that are very close)
-Now assume that we compute the difference of the two numbers by first adding $x$ and $y$ to one and then subtract the resulting numbers:
-$x'=1+x$, $y'=1+y$, $z'=x'-y'$. Although in exact arithmetic $z'$ will be identical to $x-y$, this is not true in floating point arithmetic. First observe that $x'$ will be rounded to $\mathcal{R}_{\mathbb{F}}(x')=1.00000000000000044$ and $y'$ will be rounded to $\mathcal{R}_{\mathbb{F}}(x')=1.00000000000000022$. The relative error of $z'$ is:
+Now assume that we compute the difference of the two numbers $x=4.7\cdot 10^{-16}$, $x=2.9\cdot 10^{-16}$ by first adding $x$ and $y$ to one and then subtract the resulting numbers:
+$x'=1+x$, $y'=1+y$, $z'=x'-y'$. Although in exact arithmetic $z'$ will be identical to $x-y$, this is not true in floating point arithmetic. First observe that in double precision arithmetic $x'$ will be rounded to $\mathcal{R}_{\mathbb{F}}(x')=1.00000000000000044$ and $y'$ will be rounded to $\mathcal{R}_{\mathbb{F}}(y')=1.00000000000000022$. The relative error of $z'$ is:
 
 $$
 \frac{\mathcal{R}_{\mathbb{F}}(z')-z}{z} = \frac{\mathcal{R}_{\mathbb{F}}(x')-\mathcal{R}_{\mathbb{F}}(y')-z}{z} = \frac{(4.4 - 2.2 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} = \frac{0.4}{1.8} \approx 23\%
@@ -1255,7 +1255,7 @@ x_0 \\ x_1
 =
 \begin{pmatrix}
 1 \\ 0
-\end{pmatrix}
+\end{pmatrix}.
 $$
 The solution is $x_0=-1$, $x_1=+1$. Now consider a small perturbation of this problem, namely
 $$
@@ -1287,7 +1287,7 @@ $$
 (1+10^{20}) x_1 &= 10^{20}
 \end{aligned}
 $$
-Now, since $10^{20}\gg 1$, we can replace $1+10^{20}$ by $10^{20}$ to obtain
+Now, since $10^{20}\gg 1$, we can replace $1+10^{20}$ by $10^{20}$ (and this is what will happen in double precision arithmetic) to obtain
 $$
 \begin{aligned}
 -10^{-20} x_0 + x_1 &= 1\\
@@ -1351,7 +1351,7 @@ Hence, we would expect that if we solve the linear system with a numerical metho
 ```
 u = np.linalg.solve(A,b)
 ```
-for different values of $\epsilon$. The final column shows the relative error $\|\boldsymbol{u}-\boldsymbol{u}_{\text{exact}}\|_2|/\|\boldsymbol{u}_{\text{exact}}\|_2$
+for different values of $\epsilon$. The pen-ultimate column shows the relative error $\|\boldsymbol{u}-\boldsymbol{u}_{\text{exact}}\|_2|/\|\boldsymbol{u}_{\text{exact}}\|_2$ and the final column shows the condition number $\kappa = \text{cond}(A) = \lambda_+/\lambda_-$, which is the ratio of the largest and smallest eigenvalue of $A$.
 
 | $\epsilon$        | solution $\boldsymbol{u}$                                                | relative error $\|\|\boldsymbol{u}-\boldsymbol{u}_{\text{exact}}\|\|_2/\|\|\boldsymbol{u}_{\text{exact}}\|\|_2$ | condition number $\kappa$ |
 | ----------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------- |
@@ -1363,17 +1363,19 @@ for different values of $\epsilon$. The final column shows the relative error $\
 | $8\cdot 10^{-16}$ | $\begin{pmatrix} 0.2919799363037854 \\1.1428571428571428\end{pmatrix}$   | $2.3702\cdot 10^{-1}$                                                                                           | $5\cdot 10^{15}$          |
 | $4\cdot 10^{-16}$ | $\begin{pmatrix} -0.0630602600160104 \\ 2.0000000000000000\end{pmatrix}$ | $1.1648$                                                                                                        | $10^{16}$                 |
 
-Clearly, the errors increase for smaller values of $\epsilon$. This is related to the fact that the condition number of the matrix increases: The eigenvalues of $A$ are
+Clearly, the errors increase for smaller values of $\epsilon$. This is related to the growth of condition number of the matrix. The two eigenvalues of $A$ are
 
 $$
 \lambda_{\pm} = 1+\frac{\epsilon}{2}\pm\sqrt{1-\frac{\epsilon^2}{4}} \approx \{2,\frac{\epsilon}{2}\} \qquad\text{for $\epsilon\ll 1$}
 $$
 
-and hence the condition number, which is the ratio of the largest and smallest eigenvalue, is
+and hence the condition number is
 
 $$
 \kappa = \frac{\lambda_+}{\lambda_-} = \frac{1+\frac{\epsilon}{2}+\sqrt{1-\frac{\epsilon^2}{4}}}{1+\frac{\epsilon}{2}-\sqrt{1-\frac{\epsilon^2}{4}}} \approx \frac{4}{\epsilon}
 $$
+
+It appears that matrices with large condition numbers cause problems.
 
 ## Backward error analysis
 In general, when solving linear systems with $n$ equations we are interested in quantifying the error on the solution.
@@ -1384,7 +1386,7 @@ $$
 A\boldsymbol{u} = \boldsymbol{b}
 $$
 
-where $A$ is a $n\times n$ matrix. However, due to rounding errors, the solution $\boldsymbol{u}'=\boldsymbol{u}+\delta\boldsymbol{u}$ that we actually compute corresponds to the system
+where $A$ is a $n\times n$ matrix. However, due to rounding errors, the solution $\boldsymbol{u}'=\boldsymbol{u}+\delta\boldsymbol{u}$ that we actually compute corresponds to the solution of the perturbed system
 
 $$
 (A+\delta A)(\boldsymbol{u}+\delta\boldsymbol{u}) = \boldsymbol{b} + \delta\boldsymbol{b}
@@ -1430,7 +1432,7 @@ $$
 \frac{\|\delta A\|_\infty}{\|A\|_\infty} \le n \varepsilon_{\text{mach}} G(A),
 $$
 
-where $G(A)$ is a "well-behaved" number that depends on the matrix $A$. Although it is possible to construct pathological examples for which $G(A)$ is large, it is reasonable to assume that for the matrices that we consider here $G(A)$ is small and only depends weakly on $A$. Putting everything together, we find that
+where $G(A)$ is a "well-behaved" number that depends on the matrix $A$ and $\varepsilon_{\text{mach}}$ is the machine-epsilon defined in @eqn:machine_epsilon. Although it is possible to construct pathological examples for which $G(A)$ is large, it is reasonable to assume that for the matrices that we consider here $G(A)$ is small and only depends weakly on $A$. Putting everything together, we find that
 
 ### Theorem 2
 Under the conditions of Theorem 1 and if Gaussian elimination is used to solve the linear system, the error $\delta \boldsymbol{u}$ can be bounded

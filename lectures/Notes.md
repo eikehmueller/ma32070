@@ -1972,7 +1972,7 @@ in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies
 
 For the numerical experiments we choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `rectangle_mesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
 
-We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$.
+We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$; as pointed out above, both functions are defined in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py).
 
 ### Visualisation of solution and error
 To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u^{(h)}$ which is evaluated at the points of a structured rectangular grid which covers the domain. The $(n_x+1)(n_y+1)$ vertices of this grid are given by
@@ -1981,7 +1981,7 @@ $$
 x_{i,j} = \begin{pmatrix}
 x^{(0)}_0+h_x i \\ x^{(0)}_1 + h_y j
 \end{pmatrix}\in\mathbb{R}^2
-\qquad\text{for $i=0,1,2,\dots,n_x$, $j=0,1,2,\dots,x_y$}
+\qquad\text{for $i=0,1,2,\dots,n_x$, $j=0,1,2,\dots,n_y$}
 $$
 where $x^{(0)}\in\mathbb{R}^2$ is some suitable offset and $h_x,h_y$ are the grid spacings. The method `grid_function()` returns three arrays $X$, $Y$, $Z$ of shape $(n_x+1,n_y+1)$:
 
@@ -1997,7 +1997,7 @@ X, Y, Z = grid_function(u_h)
 plt.contourf(X, Y, Z)
 ```
 
-With this, it is also easy to compare the numerical solution $u^{(h)}(x)$ to the exact solution $u_{\text{exact}}(x) = cos(2\pi x_0)\cos(4\pi x_1)$:
+With this, it is also easy to compare the numerical solution $u^{(h)}(x)$ to the exact solution $u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)$:
 
 ```Python
 Z_exact = np.cos(2*np.pi*X)*np.cos(4*np.pi*Y)

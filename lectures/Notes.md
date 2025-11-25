@@ -709,7 +709,7 @@ This now leads to the following definition, originally due to Ciarlet (*"Numeric
 
 Crucially, we define the finite element by choosing a basis of the *dual* space $\widehat{\mathcal{V}}^*$. However, we can always construct a so-called *nodal* basis $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$ by requiring that
 $$
-\lambda_\ell (\phi_k) = \delta_{\ell k} \qquad\text{for all $\ell,k=0,1,\dots,\nu-1$}.
+\lambda_\ell (\phi_k) = \delta_{\ell k} \qquad\text{for all $\ell,k=0,1,\dots,\nu-1$}.\qquad:eqn:nodal_basis_definition
 $$
 
 #### Examples
@@ -1456,7 +1456,7 @@ These observations explain the behaviour seen in @fig:relative_error: the size o
 Unfortunately, the problems that are generally encountered in Scientific Computing are usually large ($n\gg 1$) and characterised by ill-conditioned matrices. Observe further that while in the examples above we were able to quantify the error by comparing the numerical solution to the exact solution, this is usually not possible: in most cases we do not even know how large the error is!
 
 ### Estimating the error
-In general it is not possible to compute the error $\delta\boldsymbol{u}$. However, since $\boldsymbol{b}-A\boldsymbol{u}=0$, it is natural to consider the residual $\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'$ which measures to which degree the numerical solution $\boldsymbol{u}'$ fails to satisfy the linear system. Unfortunately, if $\|\boldsymbol{r}\|_\infty$ is small this does not necessarily imply the smallness of the error $\|\delta\boldsymbol{u}\|_\infty$. To see this, first observe that $\boldsymbol{r}=A\delta\boldsymbol{u}$. Then note that since
+In general it is not possible to compute the error $\delta\boldsymbol{u}$. However, since $\boldsymbol{b}-A\boldsymbol{u}=0$, it is natural to consider the residual $\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'$ which measures to which degree the numerical solution $\boldsymbol{u}'=\boldsymbol{u}+\delta\boldsymbol{u}$ fails to satisfy the linear system. Unfortunately, if $\|\boldsymbol{r}\|_\infty$ is small this does not necessarily imply the smallness of the error $\|\delta\boldsymbol{u}\|_\infty$. To see this, first observe that $\boldsymbol{r}=A\delta\boldsymbol{u}$. Then note that since
 $\|\boldsymbol{b}\|_\infty \le \|A\|_\infty \|\boldsymbol{u}\|_\infty$ and $\|\delta\boldsymbol{u}\|_\infty \le \|A^{-1}\|_\infty \|\boldsymbol{r}\|_\infty$
 
 $$
@@ -1522,13 +1522,13 @@ $$
 To finish the proof, divide both sides of this inequality by $\|\boldsymbol{u}\|_\infty$ to obtain @eqn:relative_error_bound.
 
 # Unstructured meshes
-So far, we have only solved our model PDE on a single reference triangle. We now discuss how to extend the finite element approach to arbirtrary domains. Assume that we want to solve the PDE on a $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ that is embedded in $D$ dimensional space. For example, we might want to solve it in a rectangular domain or on the surface of a sphere. The manifold is then approximated by a *mesh*, which can be described as a collection of topological entities. For example, if $d=2$, the mesh will consist of zero-dimensional vertices, one-dimensional edges and two-dimensional triangular cells (although it is also possible to use more general polygonal cells we do not consider this here). In general, the co-dimension $c$ of a $d'$-dimensional mesh entity is given by $c=d-d'$. In the following we will only consider the case $d=D=2$, but the central ideas that are developed in the following also apply to more complicated setups. For $d=D=2$ we have:
+So far, we have only solved our model PDE on a very simple domain, consisting of a single reference triangle. We now discuss how to extend the finite element approach to more general domains, using the concepts introduced in [[CH24]](https://finite-element.github.io/3_meshes.html#mesh-entities). Assume that we want to solve the PDE on a $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ that is embedded in $D$ dimensional space. For example, we might want to solve it in a rectangular domain or on the surface of a sphere. The manifold is then approximated by a *mesh*, which can be described as a collection of topological entities. For example, if $d=2$, the mesh will consist of zero-dimensional vertices, one-dimensional edges and two-dimensional triangular cells (although it is also possible to use more general polygonal cells we do not consider this here). In general, the co-dimension $c$ of a $d'$-dimensional mesh entity is given by $c=d-d'$. In the following we will only consider the case $d=D=2$, but the central ideas that are developed in the following also apply to more complicated setups. For $d=D=2$ we have:
 
 | topological entity  | dimension $d'$ | co-dimension $c$ |
 | ------------------- | -------------- | ---------------- |
 | cell (triangle) $K$ | $2$            | $0$              |
 | facet (edge) $F$    | $1$            | $1$              |
-| vertex $v$          | $0$            | $2$              |
+| vertex (point) $v$  | $0$            | $2$              |
 
  @fig:triangular_mesh shows a two-dimensional mesh with $n_{\text{vertex}}=6$ vertices, $n_{\text{facet}}=10$ facets and $n_{\text{cell}}=5$ cells in which all topological entities are labelled by their co-dimension and a unique number that can later be used to identify the entity.
 
@@ -1549,12 +1549,12 @@ $$
 I^{F\rightarrow v}_{\beta\gamma} = \text{index of $\gamma$-th vertex of facet $\beta$}.
 $$
 
-Note that there is some freedom as to how we number the facets associated each cell; the numbering we adopt here is one in which for each cell $\alpha$ the facets with indices $I^{K\rightarrow F}_{\alpha0}$, $I^{K\rightarrow F}_{\alpha1}$ and $I^{K\rightarrow F}_{\alpha2}$ are arranged in a counter-clockwise fashion (note that there are three possible orderings that satisfy this condition). Similarly, we adapt an ordering of the vertices associated with each facet such that for each facet $\beta$ we have that $I^{F\rightarrow v}_{\beta0} < I^{F\rightarrow v}_{\beta1}$.
+Note that there is some freedom as to how we number the facets associated each cell; the numbering we adopt here is one in which for each cell $\alpha$ the facets with indices $I^{K\rightarrow F}_{\alpha0}$, $I^{K\rightarrow F}_{\alpha1}$ and $I^{K\rightarrow F}_{\alpha2}$ are arranged in a counter-clockwise fashion (note that there are three possible orderings that satisfy this condition, so we have to pick one). Similarly, we adapt an ordering of the vertices associated with each facet such that for each facet $\beta$ we have that $I^{F\rightarrow v}_{\beta0} < I^{F\rightarrow v}_{\beta1}$; in @fig:triangular_mesh this is indicated by the arrows on the edges.
 
 For convenience, we can also use $I^{K\rightarrow F}$ and $I^{F\rightarrow v}$ to construct the $n_{\text{cell}}\times 3$ matrix $I^{K\rightarrow v}$ which describes the vertices of a given cell
 
 $$
-I^{K\rightarrow v}_{\alpha\gamma} = \text{index of $\gamma$-th vertex of cell $\alpha$}
+I^{K\rightarrow v}_{\alpha\gamma} = \text{index of $\gamma$-th vertex of cell $\alpha$}.
 $$
 
 In each cell $\alpha$, we number the vertices in a counter-clockwise fashion such that the $\gamma$-th vertex lies opposite the $\gamma$-the facet of the cell. Mathematically, this can be expressed as
@@ -1565,7 +1565,7 @@ I^{K\rightarrow v}_{\alpha\gamma} \not\in \{I^{F\rightarrow v}_{\beta0},I^{F\rig
 \end{aligned}.
 $$
 
-Note that the counter-clockwise numbering of the facets and vertices in each cell is consistent with the numbering of unknowns on the reference triangle.
+Note that the counter-clockwise numbering of the facets and vertices in each cell is consistent with the numbering of unknowns on the reference triangle in @fig:reference_triangle.
 
 For example, the matrices $I^{K\rightarrow F}$, $I^{F\rightarrow v}$ and $I^{K\rightarrow v}$ for the simple mesh shown above are given by
 
@@ -1588,9 +1588,11 @@ I^{K\rightarrow v} &= \begin{pmatrix}
 \end{aligned}
 $$
 
- @fig:rectangle_mesh shows another example (created with `rectangle_mesh(Lx=1.0, Ly=1.0, nref=1)`, see below). The global indices of vertices, facets and cells are plotted separatedly.
+You should convince yourself that these matrices satisfy the conditions outlined above.
 
-![:fig:rectangle_mesh: Rectangle mesh](figures/rectangle_mesh.svg)
+ @fig:rectangle_mesh shows another example (created with `rectangle_mesh(Lx=1.0, Ly=1.0, nref=1)`, see below). The global indices of vertices, facets and cells are plotted separatedly. The figure in the lower right corner illustrates how the global indices are related to the local indices of the reference cell.
+
+![:fig:rectangle_mesh: Numbering of topological entities on a rectangle mesh](figures/rectangle_mesh.svg)
 
 Referring to the local numbering of facets and vertices in the lower right plot we read off:
 
@@ -1615,25 +1617,30 @@ I^{K\rightarrow v} &= \begin{pmatrix}
 \end{aligned}
 $$
 
+Again, convince yourself that these matrices are consistent with the conditions we imposed on the numbering.
+
 ### Implementation
-The abstract class `Mesh` encodes the mesh topology. It has the following members:
+The abstract class `Mesh` in [fem/mesh.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/mesh.py) encodes the mesh topology. It has the following members:
 
 * properties `ncells`, `nfacets` and `nvertices` which give the total number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$) and vertices ($=n_{\text{vertex}}$) respectively
-* `cell2facet`: a list such that `cell2facet[alpha][beta]` $= I^{K\rightarrow F}_{\alpha\beta}$
-* `facet2vertex`: a list such that `facet2vertex[beta][gamma]` $= I^{F\rightarrow v}_{\beta\gamma}$
-* `cell2vertex`: a list such that `cell2vertex[alpha][gamma]` $= I^{K\rightarrow v}_{\alpha\gamma}$. Since $I^{K\rightarrow v}_{ik}$ can be derived from $I^{K\rightarrow F}_{\alpha\beta}$ and $I^{F\rightarrow v}_{\beta\gamma}$, `cell2vertex` is implemented as a [`@functools.cached_property`](https://docs.python.org/3/library/functools.html#functools.cached_property).
+* `cell2facet`: a nested list such that `cell2facet[alpha][beta]` $= I^{K\rightarrow F}_{\alpha\beta}$
+* `facet2vertex`: a nested list such that `facet2vertex[beta][gamma]` $= I^{F\rightarrow v}_{\beta\gamma}$
+* `cell2vertex`: a nested list such that `cell2vertex[alpha][gamma]` $= I^{K\rightarrow v}_{\alpha\gamma}$. Since $I^{K\rightarrow v}_{ik}$ can be derived from $I^{K\rightarrow F}_{\alpha\beta}$ and $I^{F\rightarrow v}_{\beta\gamma}$, `cell2vertex` is implemented as a [`@functools.cached_property`](https://docs.python.org/3/library/functools.html#functools.cached_property).
 * an array `coordinates` of shape $(n_{\text{vertex}},2)$ whose columns contain the two-dimensional coordinates of the mesh vertices
 
 The class also contains a method `refine(nref)` which can be used to construct a refined mesh from a given mesh by sub-dividing each triangle into four smaller triangles.
 
-Two concrete classes are derived from this abstract base class:
+In [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py) two concrete classes are derived from this abstract base class:
 
 * `rectangle_mesh(Lx=1.0, Ly=1.0, nref=0)` is a triangulation of the domain $[0,L_x]\times[0,L_y]$ with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}+1}$
 * `triangle_mesh(corners=None, nref=0)` is a triangulation of the domain triangle defined by the array `corners` (if this is `None`, the reference triangle us used) with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}}$
 
+## Geometry
+Observe that so far we have only discussed the **topology** of the mesh and we have not said anything about its **geometry**, i.e. where exactly the topological entities are located in space. To do this, we first discuss how we can associate data with the mesh and then use this to encode its geometry.
+
 # Function spaces
 ## Grid cells and reference elements
-We can now construct a function space $\mathcal{V}_h\subset H^1(\Omega_h)$ on the domain $\Omega_h$ defined by the mesh as follows. First, we assume that each cell $K$ of the mesh is the image of the reference cell $\widehat{K}$ under a map $X_K:\widehat{K}\rightarrow \Omega\subset \mathbb{R}^2$. For an arbitrary real-valued function $f:K\rightarrow \mathbb{R}$ we define the *pullback* $\widehat{f}:\widehat{K}\rightarrow \mathbb{R}$ under $X_K$ as
+We now construct a function space $\mathcal{V}_h\subset H^1(\Omega_h)$ on the domain $\Omega_h$ defined by the mesh as follows. First, we assume that each cell $K$ of the mesh is the image of the reference cell $\widehat{K}$ under a bijective map $X_K:\widehat{K}\rightarrow K\subset \Omega\subset \mathbb{R}^2$: for each $\widehat{x}\in\widehat{K}$ there is exactly one point $x=X_K(\widehat{x})\in K$ and vice versa. For an arbitrary real-valued function $f:K\rightarrow \mathbb{R}$ we define the *pullback* $\widehat{f}:\widehat{K}\rightarrow \mathbb{R}$ under $X_K$ as
 
 $$
 \widehat{f} = f\circ X_K
@@ -1648,20 +1655,20 @@ $$
 
 Next, assume that in each grid cell $K$ the pullback of the function $u|_K$ under the map $X_K$ is a polynomial. More specifically we define
 $$
-\mathcal{V}_h := \{u\in H^1(\Omega_h): u|_K(x) = \widehat{u}_K(\widehat{x})\quad \text{for some $\widehat{u}_K\in\mathcal{P}_p(\widehat{K})$ with $x=X_K(\widehat{x})$ for all cells $K\in\Omega_h$}\}
+\mathcal{V}_h := \{u\in H^1(\Omega_h): u|_K(x) = \widehat{u}_K(\widehat{x})\quad \text{for some $\widehat{u}_K\in\mathcal{P}_p(\widehat{K})$ with $x=X_K(\widehat{x})$ for all cells $K\in\Omega_h$}\}.
 $$
 
 ![:fig:pullback: pullback to reference element](figures/reference_mapping.svg)
 
 We can now use the basis of $\mathcal{P}_p(\widehat{K})$ that we constructed in one of the previous lectures to represent the functions $\widehat{u}_K$. However, care has to be taken to ensure that the function $u\in\mathcal{V}_h$ defined on the entire domain is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
 
-For this, recall that any function $u_h(x)$ in the function space $\mathcal{V}_h$ can be written as
+For this, recall that any function $u_h$ in the function space $\mathcal{V}_h$ can be written as
 
 $$
 u_h(x) = \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
 $$
 
-where the $\Phi^{(h)}_{\ell_{\text{global}}}$ are the *global* basis functions and $u^{(h)}_{\ell_{\text{global}}}$ are entries of the *global* dof-vector $\boldsymbol{u}^{(h)}$. We need to think about how the indices $\ell_{\text{global}}$ are associated with the mesh entities.
+where the $\Phi^{(h)}_{\ell_{\text{global}}}$ are the *global* basis functions and $u^{(h)}_{\ell_{\text{global}}}$ are entries of the *global* dof-vector $\boldsymbol{u}^{(h)}$. To ensure continuity of $u_h$ we need to associate the indices $\ell_{\text{global}}$ with the correct mesh entities.
 
 ### Arrangement of unknowns
 Assume that we have a finite element with $\nu_{\text{vertex}}$ unknowns per vertex, $\nu_{\text{facet}}$ unknowns per facet and $\nu_{\text{interior}}$ unknowns per cell. 
@@ -1669,9 +1676,9 @@ Let $N_{\text{vertex}} = n_{\text{vertex}}\cdot \nu_{\text{vertex}}$, $N_{\text{
 
 We number the unknowns by using the first $N_{\text{vertex}}$ indices for unknowns associated with vertices, the next $N_{\text{facet}}$ indices for unknowns associated with facets and the remaining $N_{\text{interior}}$ indices for unknowns associated with cell interiors. More specifically:
 
-* unknowns with indices $\gamma\cdot \nu_{\text{vertex}},\dots,(\gamma+1)\cdot \nu_{\text{vertex}}-1$ are associated with the $\gamma$-th vertex
-* unknowns with indices $N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}},\dots,N_{\text{vertex}}+(\beta+1)\cdot \nu_{\text{facet}}-1$ are associated with the $\beta$-th facet
-* unknowns with indices $N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}},\dots,N_{\text{vertex}}+N_{\text{facet}}+(\alpha+1)\cdot \nu_{\text{interior}}-1$ are associated with the $\alpha$-th cell
+* unknowns with indices $\ell_{\text{global}}\in\{\gamma\cdot \nu_{\text{vertex}},\dots,(\gamma+1)\cdot \nu_{\text{vertex}}-1\}$ are associated with the $\gamma$-th vertex
+* unknowns with indices $\ell_{\text{global}}\in\{N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}},\dots,N_{\text{vertex}}+(\beta+1)\cdot \nu_{\text{facet}}-1\}$ are associated with the $\beta$-th facet
+* unknowns with indices $\ell_{\text{global}}\in\{N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}},\dots,N_{\text{vertex}}+N_{\text{facet}}+(\alpha+1)\cdot \nu_{\text{interior}}-1\}$ are associated with the $\alpha$-th cell
 
 The facet-unknowns are ordered along the orientation of each edge.
 
@@ -1690,9 +1697,12 @@ The map $(\alpha,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
 2. Next, we map the tuple $(E,\rho,j)$ to the global dof index $\ell_{\text{global}}$ taking into account the arrangement of unknowns described above:
    1. If $E=\text{vertex}$: $\ell_{\text{global}} = \gamma\cdot \nu_{\text{vertex}}+j$ where $\gamma=I^{K\rightarrow v}_{\alpha\rho}$ is the global index of the vertex with local index $\rho$.
    2. If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}}+\widetilde{j}$ where $\beta=I^{K\rightarrow F}_{\alpha\rho}$ is the global index of the facet with local index $\rho$. Note that the orientation of the facet does not necessarily match the orientation on the reference element $\widehat{K}$. To take this into account, set $\widetilde{j}=j$ if the orientations agree and set $\widetilde{j} = \nu_{\text{facet}}-1-j$ otherwise.
-   3. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+j$
+   3. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+j$ ($\rho$ is ignored in this case)
 
 ## Implementation in Python
+
+### Function spaces
+
 The necessary functionality is implemented in the `FunctionSpace` class in [`fem/functionspace.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/functionspace.py). The initialiser is passed a `mesh` and a `finiteelement` and the class provides the following functionality:
 
 * The property `ndof` contains the total number of unknowns in the function space
@@ -1718,11 +1728,12 @@ b^{(h)}_{\ell_{\text{global}}} = b\left(\Phi^{(h)}_{\ell_{\text{global}}}\right)
 $$
 
 ## Encoding geometry information
-The geometry of the mesh is encoded in the functions $X_K$. We can combine the $X_K$ in each cell into a function $X$ which is defined on the entire mesh. The crucial observation is now that each component of $X_K$ can be represented by a function in a finite element space $\mathcal{W}_h$ which is defined in the same way as $\mathcal{V}_h$ (but possibly with a different polynomial degree). Hence, we can define a coordinate function 
+The geometry of the mesh is encoded in the functions $X_K$ which describe the mapping from the reference element $\widehat{K}$ to a particular cell $K$. We can combine the $X_K$ in each cell into a global function $X$ which is defined on the entire mesh. The crucial observation is now that each component of $X_K$ can be represented by a function in a finite element space $\mathcal{W}_h$ which is defined in the same way as $\mathcal{V}_h$ (but possibly with a different polynomial degree). Hence, we can define a coordinate function 
 
 $$
 X \in \mathcal{W}_h^{\times} = \mathcal{W}_h \times \mathcal{W}_h
 $$
+which encodes the mesh geometry.
 
 The space $\mathcal{W}_h^{\times}$ is a vector function space. Let $w=(w_0,w_1):\widehat{K}\rightarrow \mathbb{R}^2$ be a vector-valued function. Then the degrees of freedom $\lambda^\times$ of $\mathcal{W}^\times_h$ are given by:
 
@@ -1733,7 +1744,7 @@ $$
 \end{cases}
 $$
 
-The corresponding vector-valued basis functions $\phi^\times_\ell$ are
+The corresponding vector-valued nodal basis functions $\phi^\times_\ell$ which satisfy $\lambda^{\times}_{\ell^\times}(\phi^\times_{k^\times})=\delta_{\ell^\times k^\times}$ (recall @eqn:nodal_basis_definition) are
 $$
 \phi^\times_{\ell^\times}(x) = 
 \begin{cases}

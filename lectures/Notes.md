@@ -1068,7 +1068,7 @@ where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a
 To test this procedure, we use the method of manufactured solutions. For this, we pick a right-hand side $f$ and boundary condition $g$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
 
 $$
-u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]
+u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]\qquad:eqn:u_exact_manufactured
 $$
 
 A straightforward calculation (which you might want to verify) shows that
@@ -1094,21 +1094,21 @@ After assembling $A^{(h)}$ and $\boldsymbol{b}^{(h)}$ based on the $f$, $g$ in @
 # Error analysis
 
 ## Sources of error
-When solving a problem in Scientific Computing, there are several sources of error:
+Recall that when solving a problem in Scientific Computing, there are several sources of error:
 
 #### Modelling error
-When modelling a physical phenomenon, we need to pick a set of equations. For example, we might want to use the Navier-Stokes equations to model fluid flow in the atmosphere. Since most equations are an approximation of the real physics, this will inevitably introduce modelling errors.
+To model a particular physical phenomenon, we need to pick a set of equations. For example, we might want to use the Navier-Stokes equations to model fluid flow in the atmosphere. However these equations will break down at the top of the atmosphere where the density is very low and they might be based on an approximate equation of state. Since most equations are an approximation of the real physics, this will inevitably introduce modelling errors.
 
 #### Discretisation error
-To solve the chosen system of equations they need to be discretised so that they can be solved on a computer. The finite element discretisation will introduce errors that are typically of the form $Ch^\alpha$ for some positive constants $C$, $\alpha$ where $h$ is the grid spacing. The error can be reduced by refining the compututational grid or by choosing a better discretisation which might lead to smaller $C$ and larger $\alpha$.
+To solve the chosen system of equations they need to be discretised so that they can be solved on a computer. The finite element discretisation will introduce errors that are typically of the form $Ch^\mu$ for some positive constants $C$, $\mu$ where $h$ is the grid spacing. This error can be reduced by refining the compututational grid or by choosing a better discretisation (higher polynomial degree) which might lead to smaller $C$ and larger $\mu$.
 
 #### Computational (or rounding) error
 Since a computer can only perform inexact arithmetic for real numbers, the results will only be accurate up to rounding errors.
 
-Obviously, it is crucial to minimise the total error, which is made up of the three components above. Modelling errors are discussed elsewhere and beyond the scope of this course, in which we will concentrate on the PDE $-\kappa \Delta u + \omega u = f$. A detailled analysis of finite element discretisation errors is presented in the course on "Numerical solution of elliptic PDEs". In the following we focus on rounding errors.
+Obviously, it is crucial to minimise the total error, which is made up of the three components above. Modelling errors are discussed elsewhere and beyond the scope of this course, in which we will concentrate on the PDE $-\kappa \Delta u + \omega u = f$. A detailled theoretical analysis of finite element discretisation errors is presented in MA32066. In this section we will investigate how the error depends on the polynomial degree $p$ of our finite element base. As we will see, we need to take rounding errors into account and we will use this opportunity to discuss the implementation of floating point arithmetic in more detail here.
 
 ## Results from numerical experiment
-As a motivation, consider the solution of our model equation $-\kappa \Delta u + \omega u = f$ on the reference triangle for $\kappa = 0.9$, $\omega = 0.4$. The boundary conditions and right-hand side were chosen such that the exact solution is given by $u_{\text{exact}}(x) = \exp[-\frac{1}{2\sigma^2}(x-x_0)^2]$ with $\sigma = 0.5$, $x_0 = (0.6, 0.25)$. The following figure shows the squared error $\|u_{\text{exact}}-u\|^2_{L_2(\widehat{K})}$ as a function of the polynomial degree $p$:
+As a motivation, consider the solution of our model equation $-\kappa \Delta u + \omega u = f$ on the reference triangle for $\kappa = 0.9$, $\omega = 0.4$. The boundary conditions and right-hand side were chosen such that the exact solution is chosen to be $u_{\text{exact}}(x) = \exp[-\frac{1}{2\sigma^2}(x-x_0)^2]$ as in @eqn:u_exact_manufactured with $\sigma = 0.5$, $x_0 = (0.6, 0.25)$. The following figure shows the squared error $\|u_{\text{exact}}-u\|^2_{L_2(\widehat{K})}$ as a function of the polynomial degree $p$:
 
 ![:fig:relative_error: Relative error](figures/error_reference_triangle.png)
 

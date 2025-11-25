@@ -1706,7 +1706,7 @@ The map $(\alpha,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
 The necessary functionality is implemented in the `FunctionSpace` class in [`fem/functionspace.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/functionspace.py). The initialiser is passed a `mesh` and a `finiteelement` and the class provides the following functionality:
 
 * The property `ndof` contains the total number of unknowns in the function space
-* The method `local2global(self, alpha, ell)` implements the map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ described above. If the parameter `ell` is a single integer index in the range $0,1,\dots,\nu-1$, the method returns a single number $\ell_{\text{global}}$. If `ell` is an iterable (such as a list `[0,3,4]` or `range(1,6,2)`) the global index will be computed for each local index and the method returns a list.
+* The method `local2global(self, alpha, ell)` implements the map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ described above. If the parameter `ell` is a single integer index in the range $0,1,\dots,\nu-1$, the method returns a single number $\ell_{\text{global}}$. If `ell` is an [iterable](https://docs.python.org/3/glossary.html#term-iterable) (such as a list `[0,3,4]` or `range(1,6,2)`) the global index will be computed for each local index and the method returns a list.
 
 ### Functions
 To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a numpy array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h \in \mathcal{V}_h$ given by
@@ -1733,7 +1733,7 @@ The geometry of the mesh is encoded in the functions $X_K$ which describe the ma
 $$
 X \in \mathcal{W}_h^{\times} = \mathcal{W}_h \times \mathcal{W}_h
 $$
-which encodes the mesh geometry.
+which encodes the mesh geometry. This idea is used in successful finite element libraries such as [Firedrake](https://www.firedrakeproject.org/).
 
 The space $\mathcal{W}_h^{\times}$ is a vector function space. Let $w=(w_0,w_1):\widehat{K}\rightarrow \mathbb{R}^2$ be a vector-valued function. Then the degrees of freedom $\lambda^\times$ of $\mathcal{W}^\times_h$ are given by:
 
@@ -1776,19 +1776,19 @@ T^{\times\partial}_{r\ell^\times ab}(\boldsymbol{\zeta}) := \frac{(\partial \phi
 $$
 
 ### Construction of global coordinates
-We can now evaluate the value of $X_K(\zeta^{(r)})$, i.e. the global coordinate for some point $\zeta^{(r)}$ inside the reference cell when mapped to the cell $K$. For this, assume that the coordinate field is represented by the global dof-vector $\boldsymbol{X}$. Then 
+We can now evaluate the value of $X_K(\zeta^{(r)})$, i.e. the global coordinate for some point $\zeta^{(r)}$ inside the reference cell when mapped to the cell $K$. For this, assume that the coordinate field $X\in\mathcal{W}_h^\times$ is represented by the global dof-vector $\boldsymbol{X}$. Then 
 
 $$
-(X_K(\zeta^{(r)}))_a = \sum_{\ell^\times} \overline{X}_{\ell^\times} \phi_{\ell^\times}^\times(\zeta^{(r)}) = \sum_j \overline{X}_{\ell^\times} T^\times_{r\ell^\times a} 
+(X_K(\zeta^{(r)}))_a = \sum_{\ell^\times} \overline{X}_{\ell^\times} \left(\phi_{\ell^\times}^\times(\zeta^{(r)})\right)_a = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^\times_{r\ell^\times a} 
 $$
 
 where $\overline{\boldsymbol{X}}$ is the local coordinate vector with
 
 $$
-\overline{X}_{\ell^\times} = X_{\ell^\times_{\text{global}}(\alpha,\ell^\times)}
+\overline{X}_{\ell^\times} = X_{\ell^\times_{\text{global}}(\alpha,\ell^\times)}.
 $$
 
-in this expression $\ell^\times_{\text{global}}(\alpha,\ell^\times)$ is the global dof-index that corresponds to the local dof-index $\ell^\times$ in the cell with index $\alpha$.
+In this expression $\ell^\times_{\text{global}}(\alpha,\ell^\times)$ is the global dof-index that corresponds to the local dof-index $\ell^\times$ in the cell with index $\alpha$.
 
 ## Implementation in Python
 Vector-valued finite elements are implemented in the class `VectorElement` in [`fem/vectorelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/vectorelement.py). This is a subclass of the abstract base class `FiniteElement` (recall [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py)). In its constructor it gets passed a `FiniteElement` which is used to represent each of its components. The class `VectorElement` then uses the underlying scalar-valued finite element to implement the appropriate methods for tabulating the degrees of freedom and (gradients of) the basis functions:
@@ -1804,7 +1804,19 @@ We are now ready to assemble the stiffness matrix $A^{(h)}$ and the right hand s
 $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
 $$
-With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution $u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)$. Recall that the entries of the right hand side vector and stiffness matrix are given by $b^{(h)}_{\ell_{\text{global}}}:=b(\Phi^{(h)}_{\ell_{\text{global}}})$ and $A^{(h)}_{{\ell_{\text{global}}}{k_{\text{global}}}}:= a\left(\Phi^{(h)}_{k_{\text{global}}},\Phi^{(h)}_{\ell_{\text{global}}}\right)$. We now discuss the assembly of these two quantities.
+With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution
+$$
+u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
+$$
+Recall that the entries of the right hand side vector and stiffness matrix are given by
+$$
+b^{(h)}_{\ell_{\text{global}}}:=b(\Phi^{(h)}_{\ell_{\text{global}}})
+$$
+and
+$$
+A^{(h)}_{{\ell_{\text{global}}}{k_{\text{global}}}}:= a\left(\Phi^{(h)}_{k_{\text{global}}},\Phi^{(h)}_{\ell_{\text{global}}}\right).
+$$
+We now discuss the assembly of these two quantities.
 
 ## Assembly of RHS vector
 Since $b(v) = \int_\Omega f(x)v(x)\;dx$ we compute the entries of the vector $b^{(h)}$ by splitting the integral over the domain $\Omega$ into the sum of integrals over the cells $K$:
@@ -1820,7 +1832,7 @@ $$
 b^{(h)}_{\ell_{\text{global}}} &= \sum_{K\in \Omega_h}\int_{\widehat{K}} \widehat{f}_K(\widehat{x}) \phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}
 \end{aligned}
 $$
-where $\widehat{f}_K = f\circ X_K$ is the pullback of $f$ to the cell $K$, i.e. $\widehat{f}_K(\widehat{x}) := f(x)$. Note that for degrees of freedom which are shared between neighbouring cells, there can be contributions from different cells since several $(\alpha,\ell)$ can correspond to the same $\ell_{\text{global}}$.
+where $\widehat{f}_K = f\circ X_K$ is the pullback of $f$ to the cell $K$, i.e. $\widehat{f}_K(\widehat{x}) :=  f(x) = f(X_K(\widehat{x}))$ for all $\widehat{x}\in\widehat{K}$. Note that for degrees of freedom which are shared between neighbouring cells, there can be contributions from different cells since several $(\alpha,\ell)$ can correspond to the same $\ell_{\text{global}}$.
 
 Next, replace the integration by numerical quadrature and use the tabulated basis functions $T_{q\ell}=\phi_\ell(\xi^{(q)})$ to obtain
 $$
@@ -1831,13 +1843,13 @@ b^{(h)}_{\ell_{\text{global}}} &\approx \sum_{K\in \Omega_h} \sum_q w_q \widehat
 $$
 To evaluate the cell-local function $\widehat{f}_K$ at the quadrature point $\xi^{(q)}$ we need to work out the global coordinate $x_K^{(q)}=X_K(\xi^{(q)})$ which corresponds to this point and use
 $$
-\widehat{f}_K(\xi^{(q)}) = f(x_K^{(q)})
+\widehat{f}_K(\xi^{(q)}) = f(x_K^{(q)}).
 $$
 In each cell $x_K$ can be expanded in terms of vector-valued basis functions as
 $$
 (x_K^{(q)})_a = (X_K(\xi^{(q)}))_a = \sum_{\ell^\times} (\phi^\times_{\ell^\times}(\xi^{(q)}))_a X_{\ell^\times_{\text{global}}} = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}
 $$
-where $\ell^\times_{\text{global}}$ is the global dof-index of the coordinate field which corresponds to the cell index $i$ and the local dof-index $\ell^\times$. $\overline{\boldsymbol{X}}$ is the cell-local dof-vector with $\overline{X}_{\ell^\times} = X_{\ell_{\text{global}}^\times(\alpha,\ell^\times)}$.
+where $\ell^\times_{\text{global}}=\ell_{\text{global}}^\times(\alpha,\ell^\times)$ is the global dof-index of the coordinate field which corresponds to the cell index $i$ and the local dof-index $\ell^\times$. As before, $\overline{\boldsymbol{X}}$ is the cell-local dof-vector with $\overline{X}_{\ell^\times} = X_{\ell_{\text{global}}^\times}$.
 
 The Jacobian is given by
 $$
@@ -1848,16 +1860,16 @@ $$
 Putting everything together, we arrive at the following procedure:
 
 **Algorithm: assembly of right-hand-side vector $\boldsymbol{b}^{(h)}$**
-1. Initialise $\boldsymbol{b}^{(h)} \gets \boldsymbol{0}$
-2. For all cells $K$ **do**:
+1. Initialise $\boldsymbol{b}^{(h)} \gets 0$
+2. **For** all cells $K$ **do**:
 3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
-4. $~~~~$ For all quadrature points $q$ **do**:
+4. $~~~~$ **For** all quadrature points $q$ **do**:
 5. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
-6. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = \widehat{f}_K(\xi^{(q)})$
+6. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = \widehat{f}_K(\xi^{(q)})=f(x_K^{(q)})$
 7. $~~~~$ **end do**
 8. $~~~~$ Construct the local dof-vector $\boldsymbol{b}^{(h),\text{local}}$ with
 $$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$$
-1. $~~~~$ For all local dof-indices $\ell$ **do**:
+1. $~~~~$ **For** all local dof-indices $\ell$ **do**:
 2. $~~~~~~~~$ Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$
 3. $~~~~$ **end do**
 4. **end do**
@@ -1875,9 +1887,11 @@ b_h[ell_global] += b_h_local[:]
 ```
 where `ell_global` is the list of global dof-indices that correspond to the local dof-indices in the cell. In the code, this list can be constructed as
 ```
-ell_global = fs.local2global(i,range(ndof))
+ell_global = fs.local2global(alpha,range(ndof))
 ```
-In this expression `fs` is a `FunctionSpace` object and `ndof` is the number of local unknowns in each cell.
+In this expression `fs` is a `FunctionSpace` object and `ndof` is the number $\nu$ of local unknowns in each cell.
+
+Global assembly of the right hand side vector $\boldsymbol{b}^{(h)}$ is implemented in the function `assemble_rhs(f, r, quad)` in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). This method gets passed a Python function $f$, a `CoFunction` object `r` to hold the result and a quadrature rule `quad`.
 
 ## Assembly of LHS matrix
 To assemble the stiffness matrix, we again split the integral into a sum of integrals over grid cells $K$:
@@ -1894,7 +1908,7 @@ $$
 \nabla \Phi^{(h)}_{\ell_{\text{global}}}(x) &= J^{-\top}(\widehat{x}) \widehat{\nabla}\phi_\ell(\widehat{x})
 \end{aligned}
 $$
-Here $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ is the global dof-index that is associated with the local dof-index $\ell$ in the cell with index $\alpha$. The second identity can be easily verified by using the chain rule. With this we find
+Here $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ is again the global dof-index that is associated with the local dof-index $\ell$ in the cell with index $\alpha$. The second identity can be easily verified by using the chain rule since $x=X_K(\widehat{x})$. With this we find
 $$
 \begin{aligned}
 A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \sum_{K\in \Omega_h}\int_K \left(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla} \phi_k (\widehat{x})\cdot J^{-\top}(\widehat{x})\widehat{\nabla}\phi_\ell(\widehat{x}) + \omega\phi_k(\widehat{x})\phi_\ell(\widehat{x})\right)|\det{J}(\widehat{x})|d\widehat{x}.
@@ -1903,13 +1917,13 @@ $$
 Next, approximate the integrals by numerical quadrature and use the tabulated basis functions $T_{q\ell} = \phi_\ell(\xi^{(q)})$, $T^\partial_{q\ell a} = \frac{\partial\phi_\ell}{\partial \widehat{x}_a}(\xi^{(q)})$ to obtain
 $$
 \begin{aligned}
-A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &\approx \sum_{K\in \Omega_h}\int_K  w_q \left(\kappa \widehat{\nabla} \phi_k(\xi^{(q)})(J^{\top}(\xi^{(q)}) J(\xi^{(q)}))^{-1}\phi_\ell(\xi^{(q)}) + \omega\phi_k(\xi^{(q)})\phi_\ell(\xi^{(q)})\right)|\det{J}(\xi^{(q)})|d\widehat{x} \\
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &\approx \sum_{K\in \Omega_h}\int_K  w_q \left(\kappa \widehat{\nabla} \phi_k(\xi^{(q)})(J^{\top}(\xi^{(q)}) J(\xi^{(q)}))^{-1}\phi_\ell(\xi^{(q)}) + \omega\phi_k(\xi^{(q)})\phi_\ell(\xi^{(q)})\right)|\det{J}(\xi^{(q)})| \\
 &= \sum_{K\in \Omega_h} \sum_q w_q  \left(\kappa T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} +\omega T_{qk}T_{q\ell}\right)|\det{J}(\xi^{(q)})|
 \end{aligned}
 $$
 with the $2\times 2$ matrix
 $$
-J^{(-2)}_{q} =  \left(J^{\top}(\xi^{(q)}) J(\xi^{(q)})\right)^{-1} = \left(J^{(2)}\right)^{-1}.
+J^{(-2)}_{q} =  \left(J^{\top}(\xi^{(q)}) J(\xi^{(q)})\right)^{-1} =: \left(J^{(2)}\right)^{-1}.
 $$
 The value $J(\xi^{(q)})$ of the Jacobian at the quadrature points can be computed as above.
 
@@ -1917,17 +1931,17 @@ Putting everything together we arrive at the following procedure:
 
 **Algorithm: assembly of stiffness matrix $A^{(h)}$**
 1. Initialise $A^{(h)} \gets 0$
-2. For all cells $K$ **do**:
-3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(i,\ell^\times)}$
-4. $~~~~$ For all quadrature points $q$ **do**:
+2. **For** all cells $K$ **do**:
+3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,\ell^\times)}$ with $\alpha$ the index of cell $K$
+4. $~~~~$ **For** all quadrature points $q$ **do**:
 5. $~~~~~~~~$ Compute the Jacobian $J(\xi^{(q)})$ with $J_{qab} = J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^{\times}ab}$
 6. $~~~~~~~~$ Compute the determinant $D_q$ of $J(\xi^{(q)})$
 7. $~~~~~~~~$ Compute the matrix $J^{(2)}_q = J^{\top}(\xi^{(q)}) J(\xi^{(q)})$ with $J^{(2)}_{qab} = \sum_{c} J_{qca}J_{qcb}$ and invert it to obtain $J^{(-2)}_{q} = \left(J^{(2)}_q\right)^{-1}$
 8. $~~~~$ **end do**
 9. $~~~~$ Construct the local stiffness matrix $A^{(h),\text{local}}$ with
 $$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} D_q + \omega \sum_{q} w_q  T_{qk}T_{q\ell} D_q$$
-1. $~~~~$ For all local dof-indices $\ell$ **do**:
-2.  $~~~~~~~~$ For all local dof-indices $k$ **do**:
+1. $~~~~$ **For** all local dof-indices $\ell$ **do**:
+2.  $~~~~~~~~$ **For** all local dof-indices $k$ **do**:
 3.  $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$ and $k_{\text{global}} = k_{\text{global}}(\alpha,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $\alpha$
 4.  $~~~~~~~~$ **end do**
 5.  $~~~~$ **end do**
@@ -1940,10 +1954,12 @@ $$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{qka}(J^{(-2)
 #### Implementation
 Again, the summation $\sum_{c} J_{qca}J_{qcb}$ to compute the matrix entries of $J^{(2)}_q$ and the sums $\sum_{qab}w_q  T^\partial_{q\ell a}(J^{(2)}_q)_{ab} T^\partial_{qkb} D_q$, $\sum_{q}w_q  T_{q\ell}T_{qk} D_q$ required for the construction of the local matrix entries can be realised with numpy's [`einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) method.
 
-To insert the entries of the local stiffness matrix $A^{(h),\text{local}}$ into the global stiffness matrix $A^{(h)}$ we can again use slicing notation. Naively, one would expect to be able to do this with `A_h[ell_global, ell_global] += A_h_local[:,:]` where `ell_global = fs.local2global(i,range(ndof))` as above. however this does not work since we first need to construct the "product" $\ell_{\text{global}}\times \ell_{\text{global}}$ before we can use this to slice a matrix. This can be done with the numpy [`ix_()`](https://numpy.org/doc/2.2/reference/generated/numpy.ix_.html) method, i.e. write
+To insert the entries of the local stiffness matrix $A^{(h),\text{local}}$ into the global stiffness matrix $A^{(h)}$ we can again use slicing notation. Naively, one would expect to be able to do this with `A_h[ell_global, ell_global] += A_h_local[:,:]` where `ell_global = fs.local2global(i,range(ndof))` as above. however this does not work since we first need to construct the "product" $\ell_{\text{global}}\times \ell_{\text{global}}$ before we can use this to slice a matrix. As pointed out in [[CH24]](https://finite-element.github.io/6_finite_element_problems.html#a-note-on-matrix-insertion) this can be done with the numpy [`ix_()`](https://numpy.org/doc/2.2/reference/generated/numpy.ix_.html) method, i.e. we can write
 ```
 A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 ```
+
+Global assembly of the stiffness matrix $A^{(h)}$ is implemented in the function `assemble_lhs(fs, quad, kappa, omega)` in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function gets passed a function space `fs`, quadrature rule `quad` and values of the constants $\kappa$ and $\omega$.
 
 ## Numerical experiments
 We consider the following manufactured solution
@@ -1952,7 +1968,7 @@ $$
 u(x) = \cos(\pi s_0 x_0) \cos(\pi s_1 x_1) \qquad\text{for $s_0, s_1\in \mathbb{N}$}
 $$
 
-in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation if the right hand side is chosen to be $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$ and $s_0=2$, $s_1=4$.
+in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation in @eqn:pde_continuum if the right hand side is chosen to be $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$ and $s_0=2$, $s_1=4$.
 
 For the numerical experiments we choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `rectangle_mesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
 

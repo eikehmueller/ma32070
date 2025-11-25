@@ -737,7 +737,7 @@ The two-dimensional **Argyris finite element** ([[Arg68]](https://www.cambridge.
 Note that the Argyris element and the quintic Lagrange element only differ in the choice of nodes. It turns out that the Argyris allows the construction of function spaces that have a bounded second derivative. We will not use the Argyris element in this course, and it is included here as an example of a finite element with non-trivial nodes.
 
 ### Node numbering
-As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom, and here we use the same ordering as in [Colin Cotter's lectures](https://finite-element.github.io/2_finite_elements.html). For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$ in @fig:reference_triangle. These entities are
+As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom, and here we use the same ordering as in [[CH24]](https://finite-element.github.io/2_finite_elements.html). For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$ in @fig:reference_triangle. These entities are
 
 * the vertices $v_0$, $v_1$, $v_2$ in this order
 * the facets $F_0$, $F_1$, $F_2$ in this order

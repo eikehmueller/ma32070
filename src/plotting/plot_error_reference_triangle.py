@@ -58,6 +58,29 @@ rel_error_norm_squared = {
     },
 }
 
+condition_number = {
+    1: 20.50000000000002,
+    2: 132.29717461240412,
+    3: 490.9053014732179,
+    4: 1353.5364303993297,
+    5: 3540.0042929515253,
+    6: 9620.383349672371,
+    7: 27688.708734093445,
+    8: 84905.26933463394,
+    9: 274533.2695542549,
+    10: 926297.2982223562,
+    11: 3221906.0005568536,
+    12: 11462411.711292647,
+    13: 41442441.35018524,
+    14: 151715174.92217693,
+    15: 560713932.5821387,
+    16: 2088876768.1209428,
+    17: 7830494218.344533,
+    18: 29218311962.73611,
+    19: 79471534108.5321,
+    20: 118793192661.2284,
+}
+
 plt.clf()
 color = {"double": "blue", "single": "red"}
 for precision, data in rel_error_norm_squared.items():
@@ -78,4 +101,28 @@ ax.set_xlabel("polynomial degree $p$")
 ax.set_ylabel(r"error $\|u-u_{\text{exact}}\|^2_{L_2(\widehat{K})}$")
 ax.set_xticks(range(1, 21), labels=[str(j) for j in range(1, 21)], rotation=15)
 plt.legend(loc="lower left")
-plt.savefig("../lectures/figures/error_reference_triangle.png", bbox_inches="tight")
+plt.savefig("../../lectures/figures/error_reference_triangle.png", bbox_inches="tight")
+
+plt.clf()
+color = {"double": "blue", "single": "red"}
+X = np.asarray(list(condition_number.keys()))
+Y = np.asarray(list(condition_number.values()))
+epsilon = {"single": 1.19e-7, "double": 2.22e-16}
+N_dof = (X + 1) * (X + 2) / 2
+plt.plot(
+    X,
+    N_dof * Y,
+    linewidth=2,
+    color="blue",
+    marker="o",
+    markersize=4,
+)
+
+ax = plt.gca()
+ax.set_yscale("log")
+ax.set_xlabel("polynomial degree $p$")
+ax.set_ylabel(r"$n_{\text{dof}}\cdot \text{cond}(A^{(h)})$")
+ax.set_xticks(range(1, 21), labels=[str(j) for j in range(1, 21)], rotation=15)
+plt.savefig(
+    "../../lectures/figures/conditioning_reference_triangle.png", bbox_inches="tight"
+)

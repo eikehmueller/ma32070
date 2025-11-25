@@ -1449,7 +1449,9 @@ Although this is only an upper bound which does not necessarily have to be tight
 * increases with problem size $n$,
 * and grows with the condition number $\text{cond}(A)$ of the matrix.
 
-These observations explain the behaviour seen in @fig:relative_error: the size of the matrix and its condition number increase for higher polynomial degrees. The error can be reduced by using double precision ($\varepsilon_{\text{mach}}\sim 10^{-16}$) instead of single precision ($\varepsilon_{\text{mach}}\sim 10^{-7}$).
+These observations explain the behaviour seen in @fig:relative_error: the size of the matrix and its condition number increase for higher polynomial degrees, as shown in @fig:condition_number_localassembly. The error can be reduced by using double precision ($\varepsilon_{\text{mach}}\sim 10^{-16}$) instead of single precision ($\varepsilon_{\text{mach}}\sim 10^{-7}$).
+
+![:fig:condition_number_localassembly: Product of problem size $n_{\text{dof}}$ and condition number $\text{cond}(A^{(h)}$](figures/conditioning_reference_triangle.png)
 
 Unfortunately, the problems that are generally encountered in Scientific Computing are usually large ($n\gg 1$) and characterised by ill-conditioned matrices. Observe further that while in the examples above we were able to quantify the error by comparing the numerical solution to the exact solution, this is usually not possible: in most cases we do not even know how large the error is!
 

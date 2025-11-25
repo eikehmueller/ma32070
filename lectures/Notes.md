@@ -948,7 +948,7 @@ where the Gauss-Legendre quadrature rule on $\mathcal{C}$ is given by $\mathcal{
 
 $$
 \zeta_{\mathcal{C}}^{(q)} = \gamma(\widetilde{\zeta}^{(q)}) = \frac{1}{2}(1-\widetilde{\zeta}^{(q)})a + \frac{1}{2}(1+\widetilde{\zeta}^{(q)})b,\qquad
-w_q = \|\gamma'(\zeta^{(q)})\| \widetilde{w}_{\mathcal{C},q} = \frac{\|b-a\|}{2} \widetilde{w}_q
+w_{\mathcal{C},q} = \|\gamma'(\zeta^{(q)})\| \widetilde{w}_{q} = \frac{\|b-a\|}{2} \widetilde{w}_q
 $$
 and
 $$
@@ -957,7 +957,7 @@ $$
 
 
 ## Two-dimensional quadrature for the reference triangle
-To numerically integrate functions over the reference triangle $\widehat{K}$ we used the same approach as in [[CH24]](https://finite-element.github.io/1_quadrature.html#extending-legendre-gausz-quadrature-to-two-dimensions). For this, first observe that $\widehat{K}$ is the image of the square $S=[-1,+1]\times [-1,+1]$ under the [Duffy transform](https://epubs.siam.org/doi/10.1137/0719090) $\tau$ which maps a point $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$ to
+To numerically integrate functions over the reference triangle $\widehat{K}$ we use the same approach as in [[CH24]](https://finite-element.github.io/1_quadrature.html#extending-legendre-gausz-quadrature-to-two-dimensions). For this, first observe that $\widehat{K}$ is the image of the square $S=[-1,+1]\times [-1,+1]$ under the [Duffy transform](https://epubs.siam.org/doi/10.1137/0719090) $\tau$ which maps a point $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$ to
 
 $$
 \begin{aligned}
@@ -1021,7 +1021,7 @@ We can now implement a simple finite element method on the domain $\Omega=\wideh
 To assemble the stiffness matrix $A^{(h)}$, observe that the entries of this matrix are given by:
 $$
 \begin{aligned}
-A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) &= \int_{\widehat{K}} \left(\kappa \nabla \phi_k(x) \cdot\nabla\phi_\ell(x) + \omega\; \phi_k(x) \phi_\ell(x)\right)\;dx\\
+A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) &= \int_{\widehat{K}} \Big(\kappa \nabla \phi_k(x) \cdot\nabla\phi_\ell(x) + \omega\; \phi_k(x) \phi_\ell(x)\Big)\;dx\\
 &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(x) \frac{\partial\phi_\ell}{\partial x_a}(x) + \omega\; \phi_k(x) \phi_\ell(x)\right)\;dx\\
 &\approx 
 \sum_{q=0}^{N_q-1} w_q\left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(\zeta^{(q)}) \frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(q)}) + \omega\; \phi_k(\zeta^{(q)}) \phi_\ell(\zeta^{(q)})\right)\\
@@ -1031,7 +1031,7 @@ A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) &= \int_{\widehat{K}} \left(\kappa \nabla
 $$
 Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. We used the tabulation matrix $T$ of the basis function given in @eqn:tabulation_basis and the corresponding matrix $T^\partial$ given in @eqn:tabulation_basis_gradients for the partial derivatives.
 
-If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$.
+If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is at least $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$ with $\text{dop}(\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})})=2p+1$.
 
 ### Right hand side vector
 The entries of the right-hand side vector $\boldsymbol{b}^{(h)}$ are computed like this:
@@ -1042,13 +1042,13 @@ b^{(h)}_\ell = b(\phi_\ell) &= \int_{\widehat{K}} f(x)\phi_\ell(x)\;dx + \int_{\
 &= \sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta}) + \sum_{\text{facets}\;F_\rho} \sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\boldsymbol{\zeta}_{F_\rho})T_{q\ell}(\boldsymbol{\zeta}_{F_\rho})
 \end{aligned}
 $$
-with $f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$ and $g_{q}(\boldsymbol{\zeta}_{F_\rho}) := g(\zeta_{F_\rho}^{(q)})$. We choose the quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},F_\rho)} = \{w_{F_\rho,q},\zeta^{(q)}_{F_\rho}\}_{q=0}^{n_q-1}$ with $n_q=p+1$ on the facets $F_\rho$.
+with $f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$ and $g_{q}(\boldsymbol{\zeta}_{F_\rho}) := g(\zeta_{F_\rho}^{(q)})$. As for the stiffness matrix, we choose the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$ for the interior. The rule $\mathcal{Q}_{p+1}^{(\text{GL},F_\rho)} = \{w_{F_\rho,q},\zeta^{(q)}_{F_\rho}\}_{q=0}^{n_q-1}$ with $n_q=p+1$ is used on each of the facets $F_\rho$.
 
 ### Error
-The error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact and numerical solution. Expanding $u_h$ in terms of the basis functions $\phi_\ell(x)$, can write $e_h$ as
+The error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact and numerical solution. Expanding $u_h$ in terms of the basis functions $\phi_\ell$, can write $e_h$ as
 
 $$
-e_h(x) = u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x).
+e_h(x) = u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\qquad\text{for all $x\in\widehat{K}$}.
 $$
 
 The square of the $L_2$ norm of the error is given by
@@ -1065,29 +1065,31 @@ $$
 where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$.
 
 ### Numerical experiment
-To test this procedure, we use the method of manufactured solutions. For this, we pick a right-hand side $f(x)$ and boundary condition $g(x)$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
+To test this procedure, we use the method of manufactured solutions. For this, we pick a right-hand side $f$ and boundary condition $g$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
 
 $$
 u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]
 $$
 
-A straightforward calculation shows that
+A straightforward calculation (which you might want to verify) shows that
 
 $$
 \begin{aligned}
 f(x) &= \left(\left(2\frac{\kappa}{\sigma^2}+\omega\right)-\frac{\kappa}{\sigma^4}(x-x_0)^2\right) u_{\text{exact}}(x)
 \\
 g(x) &= -\frac{\kappa}{\sigma^2}n\cdot(x-x_0)u_{\text{exact}}(x)
-\\
-n &= \begin{cases}
+\end{aligned}\qquad\:eqn:fg_manufactured
+$$
+In the expression for $g$ the normal vector $n$ is given as follows on each of the three facets $F_0$, $F_1$ and $F_2$:
+$$
+n = \begin{cases}
 \frac{1}{\sqrt{2}}\begin{pmatrix}1 \\ 1\end{pmatrix} & \text{for $x\in F_0$, i.e. $0\le x_0\le 1$, $x_0+x_1=1$}\\[3ex]
 \begin{pmatrix}0 \\ -1\end{pmatrix} & \text{for $x\in F_1$, i.e. $0\le x_0\le 1$, $x_1=0$}\\[3ex]
 \begin{pmatrix}-1 \\ 0\end{pmatrix} & \text{for $x\in F_2$, i.e. $x_0=0$, $0\le x_1\le 1$}
 \end{cases}
-\end{aligned}
 $$
 
-After assembling $A^{(h)}$ and $\boldsymbol{b}^{(h)}$ based on the $f(x)$, $g(x)$ given above, we solve $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$. In the next section we will look at how the $L_2$ norm of the error depends on the polynomial degree.
+After assembling $A^{(h)}$ and $\boldsymbol{b}^{(h)}$ based on the $f$, $g$ in @eqn:fg_manufactured above, we solve $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$. In the next section we will look at how the $L_2$ norm of the error depends on the polynomial degree.
 
 # Error analysis
 We now discuss different sources of error that can arise in a numerical calculation.

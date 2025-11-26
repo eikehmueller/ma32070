@@ -2178,18 +2178,18 @@ Finally, we need to solve the upper triangular system that is obtained by follow
 We conclude that the cost of the linear solve is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$: for very large values of $n$ the cost will grow with the third power of the problem size, exactly as observed in @fig:runtime_and_error (left).
 
 ## Cost of floating point operations
-Based on the discussion in the previous section we can also work out the time  $t_{\text{flop}}$ it takes to carry out a single floating point operation (FLOP). This is a useful exercise, since knowing this number will allow us to predict the runtime of a given algorithm: if this algorithm requires $n_{\text{flop}}$ FLOPs, then the predicted runtime is simply
+Based on the discussion in the previous section and the data in @fig:runtime_and_error (left), we can also work out the time  $t_{\text{flop}}$ it takes to carry out a single floating point operation (FLOP). This is a useful exercise, since knowing this number will allow us to construct a simple performance model for predicting the runtime of any other given algorithm: if the algorithm requires $n_{\text{flop}}$ FLOPs, then the predicted runtime is
 
 $$
-T = n_{\text{flop}}\cdot t_{\text{flop}}
+T = n_{\text{flop}}\cdot t_{\text{flop}}.
 $$
 
-Note in particular that the total time can be separated into the product of two factors:
+In particular, the total time can be separated into the product of two factors:
 
 * the number of FLOPs $n_{\text{flop}}$ which depends on the algorithm, but is independent of the computer the code is run on and
 * the machine dependent time $t_{\text{flop}}$
 
-Looking at the measured data, we observed that we measured $T_{\text{solve}}= 48.4\text{s}$ for $n=16641\gg 1$, and therefore:
+Looking at the measured data, we observe that we measured $T_{\text{solve}}= 48.4\text{s}$ for $n=166411$. Since $n\gg 1$ we can ignore the $\mathcal{O}(n^2)$ terms in the expression for the number of flops and therefore:
 
 $$
 t_{\text{flop}} = \frac{T_{\text{solve}}}{n_{\text{solve}}} \approx \frac{48.4\text{s}}{\frac{2}{3}\cdot 16641^3} \approx 1.6\cdot 10^{-11}\text{s}

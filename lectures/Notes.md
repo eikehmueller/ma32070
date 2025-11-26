@@ -2038,7 +2038,7 @@ The right plot confirms that the $L_2$ error decreases in proportion to $h^2\pro
 
 In contrast, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
 
-In the next section we will discuss methods for overcoming this difficulty. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
+In the next section we will discuss methods for overcoming this difficulty. For this, we will need to go back to the sparse matrix storage format in PETSc. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
 
 ## Complexity analysis
 Let us assume that we want to solve a linear system $A\boldsymbol{u}=\boldsymbol{b}$ where $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$ and $A$ is a $n\times n$ matrix. The [`numpy.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html) method uses Gaussian elimination for this (in fact, it uses a slightly different method called $LU$ factorisation, but the central idea is the same). To illustrate this method, consider the following $5\times 5$ system (the rationale behind the colouring will become evident below):
@@ -2090,11 +2090,11 @@ $$
 \end{aligned}
 $$
 
-Note that the first row remains unchanged. For this transformation we need to do the following operations for each of the $n-1$ rows $i=1,2,\dots,n-1$
+Note that the first row remains unchanged. To implement this transformation we need to carry out the following operations for each of the $n-1$ rows $i=1,2,\dots,n-1$:
 
 * compute $\rho_i = -A_{i0}/A_{00}$ $\Rightarrow$ **$\boldsymbol{1}$ division**
 * scale the first row by the factor $\rho_i$ and add the scaled first row to row $i$ $\Rightarrow$ **$\boldsymbol{n-1}$ multiplications** and **$\boldsymbol{n-1}$ additions**, since we can ignore the first entry which will be set to zero by construction
-* update $b_i \gets b_i - \rho_i b_0$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ subtraction**
+* update $b_i \gets b_i - \rho_i \cdot b_0$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ subtraction**
 
 Hence, the total number of operations for processing all $n-1$ rows is $(3+2(n-1))(n-1)$.
 
@@ -2162,7 +2162,7 @@ A &=  \begin{pmatrix}
 $$
 
 ### Total computational cost
-The number of operations to carry out this procedure is:
+The number of operations to carry out this procedure is obtained by summing the number of iterations for all $n-1$ steps:
 
 $$
 \begin{aligned}
@@ -2175,7 +2175,7 @@ $$
 
 Finally, we need to solve the upper triangular system that is obtained by following this algorithm. As can be shown (see exercise), the cost of this is $\mathcal{O}(n^2)$.
 
-We conclude that the cost of the linear solve is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$: for very large values of $n$ the cost will grow with the third power of the problem size.
+We conclude that the cost of the linear solve is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$: for very large values of $n$ the cost will grow with the third power of the problem size, exactly as observed in @fig:runtime_and_error (left).
 
 ## Cost of floating point operations
 Based on the discussion in the previous section we can also work out the time  $t_{\text{flop}}$ it takes to carry out a single floating point operation (FLOP). This is a useful exercise, since knowing this number will allow us to predict the runtime of a given algorithm: if this algorithm requires $n_{\text{flop}}$ FLOPs, then the predicted runtime is simply

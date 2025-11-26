@@ -1975,6 +1975,8 @@ For the numerical experiments we choose the piecewise linear element implemented
 
 We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$; as pointed out above, both functions are defined in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py).
 
+The full code can be found in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
+
 ### Visualisation of solution and error
 To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u^{(h)}$ which is evaluated at the points of a structured rectangular grid which covers the domain. The $(n_x+1)(n_y+1)$ vertices of this grid are given by
 
@@ -2014,18 +2016,27 @@ As @fig:solution_and_error_cubic demonstrates, using cubic elements on the same 
 
 
 ## Performance
+To obtain a more accurate solution we need to increase the resolution, which will make the computation more expensive. To expore this, let us now have a closer look at how the runtime of the code changes with the problem size. Usually, most of the time is spent executing a small number of lines.
+
 To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows
 
 ```Python
 with measure_time("some_code"):
     # Code to measure
 ```
+Have a look at [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py) where the time spent in the following components is measured:
 
-@fig:runtime_and_error shows the time spent in different parts of the code (left) and the reduction of the $L_2$ error with increasing resolution. In both cases the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
+* Assembly of right hand side $\boldsymbol{b}^{(h)}$ with `assemble_rhs()`
+* Assembly of stiffness matrix $A^{(h)}$ with `assemble_lhs()`
+* Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ with `np.linalg.solve()`
+
+@fig:runtime_and_error (left) shows the time spent in these parts of the code for increasing problem size. To confirm that the increase in resolution results in a more accurate solution, we also show the decrease of the $L_2$ error in @fig:runtime_and_error (right). In both plots the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
 
 ![:fig:runtime_and_error: Runtime (left) and $L_2$ error (right)](figures/runtime_dense.svg)
 
-The right plot demonstrates that the $L_2$ error decreases in proportion to $h^2\propto n_{\text{dof}}^{-1}$. As can be seen from the left plot, for larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. However, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
+The right plot confirms that the $L_2$ error decreases in proportion to $h^2\propto n_{\text{dof}}^{-1}$. As can be seen from the left plot, for larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. This is not very surprising since (for fixed polynomial degree) the amount of work required in each grid cell remains approximately constant while the number of grid cells is directly proportional to the number of unknowns $n_{\text{dof}}$.
+
+In contrast, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
 
 In the next section we will discuss methods for overcoming this difficulty. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
 

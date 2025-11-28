@@ -2527,6 +2527,12 @@ The code for assembly of the stiffness matrix can be found in [fem/assembly.py](
 
 The full code for solving the finite element problem with PETSc matrices and solvers can be found in [driver_sparse.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver_sparse.py), which should be compared to the non-PETSc version in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
 
+To run the code for a specific solver and preconditioner we again pass PETSc solver options via the command line, for example:
+
+```
+python driver_sparse.py -ksp_type richardson -pc_type jacobi -ksp_rtol 1.0E-6 -ksp_monitor -ksp_view :ksp_view.txt
+```
+
 # Performance analysis
 Let us try to understand the performance of the iterative solver algorithm. We start with the simplest version, namely the Richardson iteration with Jacobi preconditioner. Recall that this requires the following operations:
 

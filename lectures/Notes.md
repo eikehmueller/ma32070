@@ -2413,7 +2413,7 @@ PC Object: 1 MPI process
     total: nonzeros=25, allocated nonzeros=25
     total number of mallocs used during MatSetValues calls=0
 ```
-It is a good idea to double check the `log_view` output since it is very easy to inadvertedly use incorrect solver settings. The PETSc documentation contains further details on the available  [solvers](https://petsc.org/main/manual/ksp/) and [preconditioners](https://petsc.org/main/manualpages/PC/). For example, the Richardson iteration is described under [KSPRICHARDSON](https://petsc.org/main/manualpages/KSP/KSPRICHARDSON/) and the Jacobi preconditioner is described under [PCJACOBI](https://petsc.org/main/manualpages/PC/PCJACOBI/). Can you work out how to use the additional damping factor? Does choosing a value which differs from the default of $1.0$ improved convergence? 
+It is a good idea to double check the `log_view` output since it is very easy to inadvertedly use incorrect solver settings. The PETSc documentation contains further details on the available  [solvers](https://petsc.org/main/manual/ksp/) and [preconditioners](https://petsc.org/main/manualpages/PC/). For example, the Richardson iteration is described under [KSPRICHARDSON](https://petsc.org/main/manualpages/KSP/KSPRICHARDSON/) and the Jacobi preconditioner is described under [PCJACOBI](https://petsc.org/main/manualpages/PC/PCJACOBI/). Can you work out how to use the additional damping factor `scale`? Does choosing a value for this parameter which differs from the default of $1.0$ improve convergence? 
 
 ### Direct solvers
 PETSc also supports direct solvers, which are implemented as preconditioners. For example, to use Gaussian elimination, we would set `-pc_type lu`. In this case, PETSc computes the factorisation $P=A=LU$, where $L$ and $U$ and lower- and upper-triangular matrices. Knowing $L$ and $U$ we can solve $A\boldsymbol{z}=LU\boldsymbol{z}=\boldsymbol{r}$ by solving $L\boldsymbol{z}'=\boldsymbol{r}$ and then $U\boldsymbol{z}=\boldsymbol{z}'$. In this case, the iterative solver will converge in a single iteration:
@@ -2421,12 +2421,12 @@ PETSc also supports direct solvers, which are implemented as preconditioners. Fo
   0 KSP Residual norm 1.752245775437e+00
   1 KSP Residual norm 9.063045098981e-17
 ```
-We can request that PETSc only applies the preconditioner, i.e. computes $\boldsymbol{u}^{(1)} = P^{-1}\boldsymbol{b}$ directly. Be careful with using `-ksp_type preonly`: if the preconditioner is not a direct solver, the iteration will simply stop after one iteration and return an incorrect result. For example, `-ksp_type preonly -pc_type richardson` will print out
+We can request that PETSc only applies the preconditioner, i.e. computes $\boldsymbol{u}^{(1)} = P^{-1}\boldsymbol{b}$ directly, which is sensible if the preconditioner is a direct solver. For this we set `-ksp_type preonly`. Be careful with using this option: if the preconditioner is not a direct solver, the iteration will simply stop after one iteration and return an incorrect result. For example, `-ksp_type preonly -pc_type richardson` will print out
 ```
   0 KSP Residual norm 1.405809375413e+01
   1 KSP Residual norm 2.181187602316e+00
 ```
-and it is up to us to recognise that the computed solution does not solve $A\boldsymbol{u}=\boldsymbol{b}$.
+and it is up to the user to recognise that the computed solution does in fact not solve $A\boldsymbol{u}=\boldsymbol{b}$.
 
 ## Conjugate Gradient method
 The (preconditioned) Richardson iteration is not very efficient. A better alternative for symmetric positive definite (SPD) $A$ is the Conjugate Gradient algorithm, which is given as follows:
@@ -2466,16 +2466,18 @@ we get the following output:
   2 KSP Residual norm 2.631059255681e-02
   3 KSP Residual norm 2.056954907970e-17
 ```
-i.e. the solver converges in substantially fewer iterations that for the Richardson iteration.
+i.e. the solver converges in substantially fewer iterations than the Richardson iteration. We will compare different solver and preconditioner settings for the finite element stiffness matrix below.
 
 ## Other Krylov subspace methods
-This is an example of a so-called Krylov subspace method. While the Conjugate Gradient iteration only works for SPD matrices, there are other Krylov subspace methods that can be used for more general matrices. The most important one is the [Generalised Minimal Residual (GMRES) method](https://mathworld.wolfram.com/GeneralizedMinimalResidualMethod.html), which can be invoked with `-ksp_type gmres`. The details are not relevant for this course, but it should be pointed out that GMRES only requires the same fundamental linear algebra operations as CG and the Richardson iteration.
+The Conjugate Gradient (CG) algorithm is an example of a so-called *Krylov subspace method*. While the CG iteration only works for SPD matrices, there are other Krylov subspace methods that can be used for more general matrices. The most important one is the [Generalised Minimal Residual (GMRES) method](https://mathworld.wolfram.com/GeneralizedMinimalResidualMethod.html), which can be invoked with `-ksp_type gmres`. The details are not relevant for this course, but it should be pointed out that GMRES only requires the same fundamental linear algebra operations as CG and the Richardson iteration.
+
+Having introduced PETSc solvers, let us now go back to the solution of the linear problem $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ that arises in the finite element discretisation.
 
 # Assembly of stiffness matrix
 To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work out the sparsity structure, i.e. build the lists containing the column indices $J$ and row-pointers $R$.
 
 ## Sparsity structure
-For this observe that for each row $\ell_{\text{global}}$ of $A^{(h)}$ we need to find the set of indices $\mathcal{J}_{\ell_{\text{global}}}$ such that $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $k_{\text{global}}\in \mathcal{J}_{\ell_{\text{global}}}$. To achieve this, observe that all unknowns associated with a given cell with index $\alpha$ couple to each other, i.e. $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$ the set of global unknowns associated with cell $K$. We can therefore construct the sets $\mathcal{J}_{\ell_{\text{global}}}$ by iterating over all cells of the mesh. Once we have done this, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to construct the column index array $J$ and the row-pointer array $R$ as shown in the following procedure:
+For this observe that for the row of $A^{(h)}$ with index $\ell_{\text{global}}$ we need to find the set of indices $\mathcal{J}_{\ell_{\text{global}}}$ such that $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $k_{\text{global}}\in \mathcal{J}_{\ell_{\text{global}}}$. To construct this set, observe that all unknowns associated with a given cell with index $\alpha$ couple to each other, i.e. $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$ the set of global indices of unknowns associated with cell $K$. We can therefore construct the sets $\mathcal{J}_{\ell_{\text{global}}}$ by visiting all cells of the mesh and inserting the correct indices. Once we have done this, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to construct the column index array $J$ and the row-pointer array $R$ as shown in the following procedure:
 
 **Algorithm: create sparsity structure**
 1. Set $\mathcal{J}_{\ell_{\text{global}}} = \emptyset$ for all $\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$
@@ -2485,8 +2487,8 @@ For this observe that for each row $\ell_{\text{global}}$ of $A^{(h)}$ we need t
 5. $~~~~~~~~$ Update $\mathcal{J}_{\ell_{\text{global}}} \gets \mathcal{J}_{\ell_{\text{global}}} \cup \mathcal{L}^{(K)}$
 6. $~~~~$ **end do** 
 7. **end do** 
-8. Initialise $R = [0,0,\dots,0]\in \mathbb{R}^{n+1}$
-9. Initialise $J = []$
+8. Initialise row pointer array $R = [0,0,\dots,0]\in \mathbb{R}^{n+1}$
+9. Initialise column index array $J = []$
 10. **for** $\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$ **do**
 11. $~~~~$ Append $\mathcal{J}_{\ell_{\text{global}}}$ to $J$
 12. $~~~~$ Set $R_{\ell_{\text{global}}+1} = R_{\ell_{\text{global}}} +\left|\mathcal{J}_{\ell_{\text{global}}}\right|$ 

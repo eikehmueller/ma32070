@@ -1975,6 +1975,8 @@ For the numerical experiments we choose the piecewise linear element implemented
 
 We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$; as pointed out above, both functions are defined in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain the dof-vector $\boldsymbol{u}^{(h)}$ which defines the numerical solution $u_h\in \mathcal{V}_h$ according to @eqn:linear_algebra_problem.
 
+The full code can be found in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
+
 ### Visualisation of solution and error
 To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u_h$, i.e. an instance `u_h` of the `Function` class, which is evaluated at the points of a structured rectangular grid which covers the domain (this grid is only used for visualisation, it has nothing to do with the underlying mesh that defines the finite element space). The $(n_x+1)(n_y+1)$ vertices of this grid are given by
 
@@ -2013,21 +2015,30 @@ As @fig:solution_and_error_cubic demonstrates, using cubic elements on the same 
 ![:fig:solution_and_error_cubic: Visualisation of finite element solution and error for piecewise cubic  finite elements](figures/solution_cubic.png)
 
 
-## Performance
+# Performance
+To obtain a more accurate solution we need to increase the resolution, which will make the computation more expensive. To expore this, let us now have a closer look at how the runtime of the code changes with the problem size. Usually, most of the time is spent executing a small number of lines.
+
 To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows
 
 ```Python
 with measure_time("some_code"):
     # Code to measure
 ```
+Have a look at [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py) where the time spent in the following components is measured:
 
-@fig:runtime_and_error shows the time spent in different parts of the code (left) and the reduction of the $L_2$ error with increasing resolution. In both cases the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
+* Assembly of right hand side $\boldsymbol{b}^{(h)}$ with `assemble_rhs()`
+* Assembly of stiffness matrix $A^{(h)}$ with `assemble_lhs()`
+* Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ with `np.linalg.solve()`
+
+@fig:runtime_and_error (left) shows the time spent in these parts of the code for increasing problem size. To confirm that the increase in resolution results in a more accurate solution, we also show the decrease of the $L_2$ error in @fig:runtime_and_error (right). In both plots the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
 
 ![:fig:runtime_and_error: Runtime (left) and $L_2$ error (right)](figures/runtime_dense.svg)
 
-The right plot demonstrates that the $L_2$ error decreases in proportion to $h^2\propto n_{\text{dof}}^{-1}$. As can be seen from the left plot, for larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. However, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
+The right plot confirms that the $L_2$ error decreases in proportion to $h^2\propto n_{\text{dof}}^{-1}$. As can be seen from the left plot, for larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. This is not very surprising since (for fixed polynomial degree) the amount of work required in each grid cell remains approximately constant while the number of grid cells is directly proportional to the number of unknowns $n_{\text{dof}}$.
 
-In the next section we will discuss methods for overcoming this difficulty. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
+In contrast, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
+
+In the next section we will discuss methods for overcoming this difficulty. For this, we will need to go back to the sparse matrix storage format in PETSc. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
 
 ## Complexity analysis
 Let us assume that we want to solve a linear system $A\boldsymbol{u}=\boldsymbol{b}$ where $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$ and $A$ is a $n\times n$ matrix. The [`numpy.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html) method uses Gaussian elimination for this (in fact, it uses a slightly different method called $LU$ factorisation, but the central idea is the same). To illustrate this method, consider the following $5\times 5$ system (the rationale behind the colouring will become evident below):
@@ -2079,11 +2090,11 @@ $$
 \end{aligned}
 $$
 
-Note that the first row remains unchanged. For this transformation we need to do the following operations for each of the $n-1$ rows $i=1,2,\dots,n-1$
+Note that the first row remains unchanged. To implement this transformation we need to carry out the following operations for each of the $n-1$ rows $i=1,2,\dots,n-1$:
 
 * compute $\rho_i = -A_{i0}/A_{00}$ $\Rightarrow$ **$\boldsymbol{1}$ division**
 * scale the first row by the factor $\rho_i$ and add the scaled first row to row $i$ $\Rightarrow$ **$\boldsymbol{n-1}$ multiplications** and **$\boldsymbol{n-1}$ additions**, since we can ignore the first entry which will be set to zero by construction
-* update $b_i \gets b_i - \rho_i b_0$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ subtraction**
+* update $b_i \gets b_i - \rho_i \cdot b_0$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ subtraction**
 
 Hence, the total number of operations for processing all $n-1$ rows is $(3+2(n-1))(n-1)$.
 
@@ -2151,7 +2162,7 @@ A &=  \begin{pmatrix}
 $$
 
 ### Total computational cost
-The number of operations to carry out this procedure is:
+The number of operations to carry out this procedure is obtained by summing the number of iterations for all $n-1$ steps:
 
 $$
 \begin{aligned}
@@ -2164,21 +2175,21 @@ $$
 
 Finally, we need to solve the upper triangular system that is obtained by following this algorithm. As can be shown (see exercise), the cost of this is $\mathcal{O}(n^2)$.
 
-We conclude that the cost of the linear solve is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$: for very large values of $n$ the cost will grow with the third power of the problem size.
+We conclude that the cost of the linear solve is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$: for very large values of $n$ the cost will grow with the third power of the problem size, exactly as observed in @fig:runtime_and_error (left).
 
 ## Cost of floating point operations
-Based on the discussion in the previous section we can also work out the time  $t_{\text{flop}}$ it takes to carry out a single floating point operation (FLOP). This is a useful exercise, since knowing this number will allow us to predict the runtime of a given algorithm: if this algorithm requires $n_{\text{flop}}$ FLOPs, then the predicted runtime is simply
+Based on the discussion in the previous section and the data in @fig:runtime_and_error (left), we can also work out the time  $t_{\text{flop}}$ it takes to carry out a single floating point operation (FLOP). This is a useful exercise, since knowing this number will allow us to construct a simple performance model for predicting the runtime of any other given algorithm: if the algorithm requires $n_{\text{flop}}$ FLOPs, then the predicted runtime is
 
 $$
-T = n_{\text{flop}}\cdot t_{\text{flop}}
+T = n_{\text{flop}}\cdot t_{\text{flop}}.
 $$
 
-Note in particular that the total time can be separated into the product of two factors:
+In particular, the total time can be separated into the product of two factors:
 
 * the number of FLOPs $n_{\text{flop}}$ which depends on the algorithm, but is independent of the computer the code is run on and
 * the machine dependent time $t_{\text{flop}}$
 
-Looking at the measured data, we observed that we measured $T_{\text{solve}}= 48.4\text{s}$ for $n=16641\gg 1$, and therefore:
+Looking at the measured data, we observe that we measured $T_{\text{solve}}= 48.4\text{s}$ for $n=166411$. Since $n\gg 1$ we can ignore the $\mathcal{O}(n^2)$ terms in the expression for the number of flops and therefore:
 
 $$
 t_{\text{flop}} = \frac{T_{\text{solve}}}{n_{\text{solve}}} \approx \frac{48.4\text{s}}{\frac{2}{3}\cdot 16641^3} \approx 1.6\cdot 10^{-11}\text{s}

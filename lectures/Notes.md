@@ -2266,13 +2266,15 @@ ksp.solve(b, u)
 Next, let us look in more detail at what the `ksp.solve()` method actually does.
 
 # Solvers and Preconditioners
-Although PETSc also supports direct solvers such as Gaussian elimination (which we used above) to solve problems of the form $A\boldsymbol{u}=\boldsymbol{b}$, the design philosophy of the library assumes that all solvers are *iterative methods*. This means that, starting from an initial guess, $\boldsymbol{u}^{(0)}$, the solution is updated iteratively as $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$ such that (hopefully) $\boldsymbol{u}^{(k)}$ converges to the true solution $\boldsymbol{u}$. Direct solvers can be considered as a special case in which this iteration converges in a single step. At this point it is worth remembering that (in addition to possible modelling errors) the finite element method has introduced a discretisation error. This implies that there is little point in solving the equation $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ exactly, it is usally sufficient to iterate until we have a good approximate solution which differs from the exact solution by no more than the discretisation error. This can lead to significant savings in runtime.
+Although PETSc also supports direct solvers such as Gaussian elimination (which we used above), the design philosophy of the library assumes that all solvers are *iterative methods*. This means that to solve problems of the form $A\boldsymbol{u}=\boldsymbol{b}$ we start from some initial guess, $\boldsymbol{u}^{(0)}$. Based on this, the solution is updated iteratively as $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$ such that (hopefully) $\boldsymbol{u}^{(k)}$ converges to the true solution $\boldsymbol{u}$. Direct solvers can be considered as a special case in which this iteration converges in a single step.
+
+At this point it is worth remembering that (in addition to possible modelling errors) the finite element method has introduced a discretisation error. This implies that there is little point in solving the equation $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ exactly, it is usally sufficient to iterate until we have a good approximate solution which differs from the exact solution by no more than the discretisation error. This can lead to significant savings in runtime.
 
 ## PETSc solver architecture
 PETSc solvers are separated into two components:
 
-1. an *iterative solver* or [`KSP` object](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.KSP.html) which describes how to perform the update $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$; we have already seen this in the previous lecture.
-2. a *preconditioner* or [`PC` object](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.PC.html) which accelerates the iteration.
+1. an *iterative solver* or [`KSP` object](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.KSP.html) which describes how to perform the update $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$
+2. a *preconditioner* or [`PC` object](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.PC.html) which accelerates the iteration
 
 To motivate this architecture and explain what a preconditioner is, let us consider a very simple iterative method. For this, we multiply the linear equation $A\boldsymbol{u}=\boldsymbol{b}$ by a matrix $P^{-1}$ to obtain the equivalent system
 
@@ -2280,15 +2282,15 @@ $$
 P^{-1} A \boldsymbol{u} = P^{-1} \boldsymbol{b}
 $$
 
-The matrix $P$, which we assume to be full rank and invertible, is the preconditioner. More precisely, in PETSc a `PC` object provides a way of inverting $P$, i.e. solving $P\boldsymbol{z}=\boldsymbol{r}$ for a given vector $\boldsymbol{r}$. In principle, we could choose any matrix such as $P=\mathbb{I}$ the identity matrix or $P=D$ the diagonal of $A$. A good preconditioner has two properties:
+The matrix $P$, which we assume to be full rank and invertible, is the preconditioner. More precisely, in PETSc a `PC` object provides a way of inverting $P$, i.e. solving $P\boldsymbol{z}=\boldsymbol{r}$ for a given vector $\boldsymbol{r}$. In principle, we could choose any matrix such as $P=\mathbb{I}$ (the identity matrix) or $P=D$ (the diagonal of $A$). A good preconditioner has two properties:
 
-1. It should be "close" to $A$, i.e. $P\approx A$ (in some sense which can be made mathematically more rigorous)
+1. It should be "close" to $A$, i.e. $P\approx A$ (in some sense which can be made mathematically rigorous)
 2. Multiplication by $P^{-1}$ should be inexpensive, i.e. solving the linear system $P\boldsymbol{z}=\boldsymbol{r}$ for a given vector $\boldsymbol{r}$ should be cheap.
 
-Naturally, these requirements often contradict each other and a compromise has to be found. The construction of a good preconditioner is an art in itself and we will not discuss it further in this unit.
+Naturally, these requirements often contradict each other and a compromise has to be found. The construction of a good preconditioner is an art in itself and the topic of active research.
 
 ## Richardson iteration with Jacobi preconditioner
-As an example, we now construct a very simple iterative procedure. Assume that we know the approximate solution $\boldsymbol{u}^{(k)}$. If we knew the error $\boldsymbol{e}^{(k)} := \boldsymbol{u}-\boldsymbol{u}^{(k)}$, it would be possible to compute the solution by simply adding $\boldsymbol{e}^{(k)}$ to $\boldsymbol{u}^{(k)}$ since $\boldsymbol{u}^{(k)} + \boldsymbol{e}^{(k)} = \boldsymbol{u}$. Unfortunately, this is not possible since knowledge of $\boldsymbol{e}^{(k)}$ would require knowledge of the exact solution! Instead, let's try to construct an approximation $\boldsymbol{z}^{(k)}$ to the true error, namely
+As an example, we now construct a very simple iterative procedure. Assume that we know the approximate solution $\boldsymbol{u}^{(k)}$. If we knew the error $\boldsymbol{e}^{(k)} := \boldsymbol{u}-\boldsymbol{u}^{(k)}$ (where $\boldsymbol{u}$ is the exact solution of $A\boldsymbol{u}=\boldsymbol{b}$), it would be possible to compute the solution by simply adding $\boldsymbol{e}^{(k)}$ to $\boldsymbol{u}^{(k)}$ since $\boldsymbol{u}^{(k)} + \boldsymbol{e}^{(k)} = \boldsymbol{u}$. Unfortunately, this is not possible since knowledge of $\boldsymbol{e}^{(k)}$ would require knowledge of the exact solution which we are trying to find in the first place! Instead, let us try to construct an approximation $\boldsymbol{z}^{(k)}$ to the true error, namely
 $$
 \boldsymbol{z}^{(k)} = P^{-1} A \boldsymbol{e}^{(k)}
 $$
@@ -2302,26 +2304,28 @@ $$
 $$
 The quantity $\boldsymbol{z}^{(k)}$ is also known as the *preconditioned residual*, since the *residual* $\boldsymbol{b}-A\boldsymbol{u}^{(k)}$ itself measures by how much the approximate solution violates the equation $A\boldsymbol{u}=\boldsymbol{b}$.
 
-This leads to the preconditioned Richardson iteration:
-$$
+This leads to the so-called preconditioned Richardson iteration: starting from some initial guess $\boldsymbol{u}^{(0)}$ (which could for example be chosen to be $\boldsymbol{u}^{(0)}=0$) update the approximate solution $\boldsymbol{u}^{(k)}\rightarrow \mapsto{u}^{(k+1)}$ accroding to the rule
+$$ 
 \begin{aligned}
 \boldsymbol{u}^{(k+1)} &= \boldsymbol{u}^{(k)} + \boldsymbol{z}^{(k)}\\
 &= \boldsymbol{u}^{(k)} + P^{-1}(\boldsymbol{b}-A\boldsymbol{u}^{(k)})
 \end{aligned}
 $$
-Which can be written as follows:
+This can be written as follows:
 
 **Algorithm: preconditioned Richardson iteration**
-1. **for** $k=0,1,\dots,k_{\text{max}}-1$ **do**
-2. $~~~~$ Compute $\boldsymbol{r}^{(k)} = \boldsymbol{b} - A\boldsymbol{u}^{(k)}$
-3. $~~~~$ Solve $P\boldsymbol{z}^{(k)} = \boldsymbol{r}^{(k)}$ for $\boldsymbol{z}^{(k)}$
-4. $~~~~$ Check for convergence
-5. $~~~~$ Update $\boldsymbol{u}^{(k+1)} = \boldsymbol{u}^{(k)} + \boldsymbol{z}^{(k)}$
-6. **end for**
+
+1. Pick some initial guess $\boldsymbol{u}^{(0)}$
+2. **for** $k=0,1,\dots,k_{\text{max}}-1$ **do**
+3. $~~~~$ Compute the residual $\boldsymbol{r}^{(k)} = \boldsymbol{b} - A\boldsymbol{u}^{(k)}$
+4. $~~~~$ Solve $P\boldsymbol{z}^{(k)} = \boldsymbol{r}^{(k)}$ for the preconditioned residual $\boldsymbol{z}^{(k)}$
+5. $~~~~$ Test for convergence, for example by checking whether $\|\boldsymbol{z}^{(k)}\|\le \epsilon$ for some tolerance $\epsilon$
+6. $~~~~$ Update $\boldsymbol{u}^{(k+1)} = \boldsymbol{u}^{(k)} + \boldsymbol{z}^{(k)}$
+7. **end for**
 
 It can be shown that
 $$
-\boldsymbol{e}^{(k+1)} = \left(\mathbb{I} - P^{-1} A\right)\boldsymbol{e}^{(k)}
+\boldsymbol{e}^{(k+1)} = \left(\mathbb{I} - P^{-1} A\right)\boldsymbol{e}^{(k)}.
 $$
 Hence, if the spectral radius of $\mathbb{I} - P^{-1} A$ is smaller than $1$, the iteration will converge to the true solution.
 
@@ -2337,19 +2341,19 @@ $$
 This matrix is very simple to invert: to solve $P\boldsymbol{z}=\boldsymbol{r}$ we can compute $z_i = r_i/A_{ii}$ for all $i=0,1,2,\dots,n-1$. The choice $P=D$ is also known as the *Jacobi* preconditioner.
 
 ### PETSc options
-To use a particular solver/preconditioner combination in PETSc, we need to specify solver options via the command line. For this, we need to add the following at the beginning of our Python script:
+To use a particular solver/preconditioner combination in PETSc, we can specify solver options via the command line. For this, we need to add the following at the beginning of our Python script:
 ```python
 import sys
 import petsc4py
 
 petsc4py.init(sys.argv)
 ```
-This will ensure than any options passed to the script are parsed by PETSc. Then, when setting up the `KSP` object, we pass these options by calling 
+This will ensure than any options passed to the script are parsed by PETSc. Then, when setting up the `KSP` object, we instruct PETSc to use the command line options with 
 
 ```python
 ksp.setFromOptions()
 ```
-For example, to use the Richardson iteration with Jacobi preconditioner, we call our script like this:
+For example, to use the Richardson iteration with Jacobi preconditioner, we would call our script like this:
 
 ```bash
 python script.py -ksp_type richardson -pc_type jacobi
@@ -2409,7 +2413,7 @@ PC Object: 1 MPI process
     total: nonzeros=25, allocated nonzeros=25
     total number of mallocs used during MatSetValues calls=0
 ```
-It is a good idea to double check the `log_view` output since it is very easy to inadvertedly use incorrect solver settings.
+It is a good idea to double check the `log_view` output since it is very easy to inadvertedly use incorrect solver settings. The PETSc documentation contains further details on the available  [solvers](https://petsc.org/main/manual/ksp/) and [preconditioners](https://petsc.org/main/manualpages/PC/). For example, the Richardson iteration is described under [KSPRICHARDSON](https://petsc.org/main/manualpages/KSP/KSPRICHARDSON/) and the Jacobi preconditioner is described under [PCJACOBI](https://petsc.org/main/manualpages/PC/PCJACOBI/). Can you work out how to use the additional damping factor? Does choosing a value which differs from the default of $1.0$ improved convergence? 
 
 ### Direct solvers
 PETSc also supports direct solvers, which are implemented as preconditioners. For example, to use Gaussian elimination, we would set `-pc_type lu`. In this case, PETSc computes the factorisation $P=A=LU$, where $L$ and $U$ and lower- and upper-triangular matrices. Knowing $L$ and $U$ we can solve $A\boldsymbol{z}=LU\boldsymbol{z}=\boldsymbol{r}$ by solving $L\boldsymbol{z}'=\boldsymbol{r}$ and then $U\boldsymbol{z}=\boldsymbol{z}'$. In this case, the iterative solver will converge in a single iteration:

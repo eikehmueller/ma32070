@@ -2495,7 +2495,7 @@ For this observe that for the row of $A^{(h)}$ with index $\ell_{\text{global}}$
 12. $~~~~$ Set $R_{\ell_{\text{global}}+1} = R_{\ell_{\text{global}}} +\left|\mathcal{J}_{\ell_{\text{global}}}\right|$ 
 13. **end do**
 
-In [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py#L57) this is implemented as the function `sparsity_lhs(fs)` which gets passed an instance `fs` of the `FunctionSpace` class and returns the arrays $J$ and $R$.
+In [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py) this is implemented as the function `sparsity_lhs(fs)` which gets passed an instance `fs` of the `FunctionSpace` class and returns the arrays $J$ and $R$.
 
 ## CSR matrix assembly in PETSc
 When using PETSc, the stiffness matrix $A^{(h)}$ can be assembled as follows. First, before iterating over the mesh, we need to work out the sparsity structure and construct the row-pointers `row_start` and column indices `col_indices` with the above algorithm. Assuming that the function space object is `fs`, this can be done with the method `sparsity_lhs(fs)`. We also need to construct the `stiffness_matrix` as a `PETSc.Mat()` object in CSR format which is initialised with the `row_start` and `col_indices` arrays returned by `sparsity_lhs(fs)`:
@@ -2523,7 +2523,9 @@ Finally, after iterating over the mesh, we need to instruct PETSc to assemble th
 stiffness_matrix.assemble()
 ```
 
-The full code can be found in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py#L146). The function `assemble_lhs_sparse(fs, quad, kappa, omega)` gets passed an instance `fs` of the `FunctionSpace` class, a quadrature rule and the constants $\kappa$, $\omgea$ that define the PDE. It returns the assembled stiffness matrix $A^{(h)}$ as a PETSc CSR matrix.
+The code for assembly of the stiffness matrix can be found in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function `assemble_lhs_sparse(fs, quad, kappa, omega)` gets passed an instance `fs` of the `FunctionSpace` class, a quadrature rule and the constants $\kappa$, $\omgea$ that define the PDE. It returns the assembled stiffness matrix $A^{(h)}$ as a PETSc CSR matrix.
+
+The full code for solving the finite element problem with PETSc matrices and solvers can be found in [driver_sparse.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver_sparse.py), which should be compared to the non-PETSc version in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
 
 # Performance analysis
 Let us try to understand the performance of the iterative solver algorithm. We start with the simplest version, namely the Richardson iteration with Jacobi preconditioner. Recall that this requires the following operations:

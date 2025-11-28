@@ -2523,7 +2523,7 @@ Finally, after iterating over the mesh, we need to instruct PETSc to assemble th
 stiffness_matrix.assemble()
 ```
 
-The code for assembly of the stiffness matrix can be found in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function `assemble_lhs_sparse(fs, quad, kappa, omega)` gets passed an instance `fs` of the `FunctionSpace` class, a quadrature rule and the constants $\kappa$, $\omgea$ that define the PDE. It returns the assembled stiffness matrix $A^{(h)}$ as a PETSc CSR matrix.
+The code for assembly of the stiffness matrix can be found in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function `assemble_lhs_sparse(fs, quad, kappa, omega)` gets passed an instance `fs` of the `FunctionSpace` class, a quadrature rule and the constants $\kappa$, $\omega$ that define the PDE. It returns the assembled stiffness matrix $A^{(h)}$ as a PETSc CSR matrix.
 
 The full code for solving the finite element problem with PETSc matrices and solvers can be found in [driver_sparse.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver_sparse.py), which should be compared to the non-PETSc version in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
 

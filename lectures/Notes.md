@@ -1963,7 +1963,7 @@ A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 Global assembly of the stiffness matrix $A^{(h)}$ is implemented in the function `assemble_lhs(fs, quad, kappa, omega)` in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function gets passed a function space `fs`, quadrature rule `quad` and values of the constants $\kappa$ and $\omega$.
 
 ## Numerical experiments
-We consider the following manufactured solution
+Let us now use the code we have written for far to solve @eqn:pde_continuum with the finite element method. We consider the following manufactured solution
 
 $$
 u(x) = \cos(\pi s_0 x_0) \cos(\pi s_1 x_1) \qquad\text{for $s_0, s_1\in \mathbb{N}$}
@@ -1973,24 +1973,24 @@ in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies
 
 For the numerical experiments we choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `rectangle_mesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
 
-We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$. Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain $\boldsymbol{u}^{(h)}$; as pointed out above, both functions are defined in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py).
+We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$; as pointed out above, both functions are defined in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain the dof-vector $\boldsymbol{u}^{(h)}$ which defines the numerical solution $u_h\in \mathcal{V}_h$ according to @eqn:linear_algebra_problem.
 
 ### Visualisation of solution and error
-To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u^{(h)}$ which is evaluated at the points of a structured rectangular grid which covers the domain. The $(n_x+1)(n_y+1)$ vertices of this grid are given by
+To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u_h$, i.e. an instance `u_h` of the `Function` class, which is evaluated at the points of a structured rectangular grid which covers the domain (this grid is only used for visualisation, it has nothing to do with the underlying mesh that defines the finite element space). The $(n_x+1)(n_y+1)$ vertices of this grid are given by
 
 $$
 x_{i,j} = \begin{pmatrix}
-x^{(0)}_0+h_x i \\ x^{(0)}_1 + h_y j
+x^{(0)}_0+H_x i \\ x^{(0)}_1 + H_y j
 \end{pmatrix}\in\mathbb{R}^2
 \qquad\text{for $i=0,1,2,\dots,n_x$, $j=0,1,2,\dots,n_y$}
 $$
-where $x^{(0)}\in\mathbb{R}^2$ is some suitable offset and $h_x,h_y$ are the grid spacings. The method `grid_function()` returns three arrays $X$, $Y$, $Z$ of shape $(n_x+1,n_y+1)$:
+where $x^{(0)}\in\mathbb{R}^2$ is some suitable offset and $H_x,H_y$ are the grid spacings. The method `grid_function()` returns three arrays $X$, $Y$, $Z$ of shape $(n_x+1,n_y+1)$:
 
-* The $x$- coordinates of the grid vertices, i.e. $X_{i,j} = x^{(0)}_0+h_x i$
-* The $y$- coordiantes of the grid vertices, i.e. $Y_{i,j} = x^{(0)}_1+h_y j$
-* The values of the function $u^{(h)}$ evaluated at the grid vertices, i.e. $Z_{i,j} = u^{(h)}(x_{i,j})$
+* The $x$- coordinates of the grid vertices, i.e. $X_{i,j} = x^{(0)}_0+H_x i$
+* The $y$- coordiantes of the grid vertices, i.e. $Y_{i,j} = x^{(0)}_1+H_y j$
+* The values of the function $u_h$ evaluated at the grid vertices, i.e. $Z_{i,j} = u_h(x_{i,j})$
 
-This allows plotting the function for example with [matplotlib's `contourf()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contourf.html):
+This then allows plotting the function for example with [matplotlib's `contourf()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contourf.html):
 
 ```Python
 from matplotlib import pyplot as plt
@@ -1998,14 +1998,14 @@ X, Y, Z = grid_function(u_h)
 plt.contourf(X, Y, Z)
 ```
 
-With this, it is also easy to compare the numerical solution $u^{(h)}(x)$ to the exact solution $u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)$:
+With this, it is also easy to compare the numerical solution $u_h(x)$ to the exact solution $u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)$:
 
 ```Python
 Z_exact = np.cos(2*np.pi*X)*np.cos(4*np.pi*Y)
 plt.contourf(X, Y, Z-Z_exact)
 ```
 
-@fig:solution_and_error_linear visualises the numerical solution $u^{(h)}$ (left), the exact solution $u_{\text{exact}}$ (right) and their difference $u^{(h)} - u_{\text{exact}}$ (centre) for a rectangle mesh with $n_{\text{ref}}=4$ refinements and piecewise linear finite elements.
+@fig:solution_and_error_linear visualises the numerical solution $u_h$ (left), the exact solution $u_{\text{exact}}$ (right) and their difference $u_h - u_{\text{exact}}$ (centre) for a rectangle mesh with $n_{\text{ref}}=4$ refinements and piecewise linear finite elements.
 
 ![:fig:solution_and_error_linear: Visualisation of finite element solution and error for piecewise linear finite elements](figures/solution_linear.png)
 

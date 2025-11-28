@@ -2204,18 +2204,21 @@ $$
 floating point operations per second. Obviously, this number will be machine dependent, but on modern computers it is usually in the same ballpark.
 
 # Sparse matrix representations
-The stiffness matrices we obtain from out finite element discretisation contain a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid:
+To reduce the cost spent in solving the linear system $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ we will devise more efficient algorithms which are tailored to the particular structure of the problem. In particular, we will exploit the fact that the stiffness matrix $A^{(h)}$ of our finite element discretisation contains a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid (plots like this can be generated with [matplotlib's `spy()` function](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.spy.html)):
 
-![:fig:stiffness_matrix: Stiffness matrix](figures/stiffness_matrix.png)
+![:fig:stiffness_matrix: Spy plot of the stiffness matrix $A^{(h)}$](figures/stiffness_matrix.png)
 
 Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or $7.6\%$ are nonzero, which corresponds to an average number of around $\overline{n}_{\text{nz}} = 6.14$ nonzeros per row. For large $n$, the number of non-zeros per row will remain roughly the same, leading to an even poorer fill-ratio.
 
-Clearly, it is very inefficient to store all these zero entries if only $\mathcal{O}(n)$ entries are in fact required to encode the data stored in the matrix. We therefore introduce a storage format which is more suitable for matrices like this.
-
+Clearly, it is very inefficient to store all these zero entries if only $\mathcal{O}(n)$ entries are in fact required to encode the data stored in the matrix. It is much more efficient to use the compressed sparse row (CSR) storage format introduced at the beginning of this course. For a matrix of size $n\times n$ with $n_{\text{nz}}$ nonzero entries this only requires the storage of $2n_{\text{nz}}+(n+1)$ numbers. If the number $n_{\text{nz}}/n\le C$ of non-zeros per row is bounded by some constant $C$ (as it is for the finite element stiffness matrices), then the total storage required is
+$$
+2n_{\text{nz}}+(n+1) = \left(2n_{\text{nz}}/n+1+\frac{1}{n}\right)\cdot n \le (C+2)\cdot n = \mathcal{O}(n)
+$$
+However, in addition to changing the matrix storage format we also need to adapt our solver.
 # Solving linear systems in PETSc
 
 ## Solving linear systems
-The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $A\boldsymbol{u}=\boldsymbol{b}$. We will discuss this in more detail in the next lecture, but for now let us just look at a simple example:
+The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $A\boldsymbol{u}=\boldsymbol{b}$. Let us just look at a simple example:
 
 Consider the following $5\times 5$ matrix
 $$
@@ -2260,10 +2263,10 @@ ksp = PETSc.KSP().create()
 ksp.setOperators(A)
 ksp.solve(b, u)
 ```
-We will discuss `KSP`s and how to configure them to use efficient solver in more detail in the next section.
+Next, let us look in more detail at what the `ksp.solve()` method actually does.
 
 # Solvers and Preconditioners
-We now consider methods for solving the linear system $A\boldsymbol{u}=\boldsymbol{b}$ with PETSc. Although PETSc also supports direct solvers such as Gaussian elimination (which we used above), the design philosophy of the library assumes that all solvers are *iterative methods*. This means that, starting from an initial guess, $\boldsymbol{u}^{(0)}$, the solution is updated iteratively as $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$ such that (hopefully) $\boldsymbol{u}^{(k)}$ converges to the true solution $\boldsymbol{u}$. Direct solvers can be considered as a special case in which this iteration converges in a single step.
+Although PETSc also supports direct solvers such as Gaussian elimination (which we used above) to solve problems of the form $A\boldsymbol{u}=\boldsymbol{b}$, the design philosophy of the library assumes that all solvers are *iterative methods*. This means that, starting from an initial guess, $\boldsymbol{u}^{(0)}$, the solution is updated iteratively as $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$ such that (hopefully) $\boldsymbol{u}^{(k)}$ converges to the true solution $\boldsymbol{u}$. Direct solvers can be considered as a special case in which this iteration converges in a single step. At this point it is worth remembering that (in addition to possible modelling errors) the finite element method has introduced a discretisation error. This implies that there is little point in solving the equation $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ exactly, it is usally sufficient to iterate until we have a good approximate solution which differs from the exact solution by no more than the discretisation error. This can lead to significant savings in runtime.
 
 ## PETSc solver architecture
 PETSc solvers are separated into two components:

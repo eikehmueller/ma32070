@@ -2212,7 +2212,7 @@ Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or 
 
 Clearly, it is very inefficient to store all these zero entries if only $\mathcal{O}(n)$ entries are in fact required to encode the data stored in the matrix. It is much more efficient to use the compressed sparse row (CSR) storage format introduced at the beginning of this course. For a matrix of size $n\times n$ with $n_{\text{nz}}$ nonzero entries this only requires the storage of $2n_{\text{nz}}+(n+1)$ numbers. If the number $n_{\text{nz}}/n\le C$ of non-zeros per row is bounded by some constant $C$ (as it is for the finite element stiffness matrices), then the total storage required is
 $$
-2n_{\text{nz}}+(n+1) = \left(2n_{\text{nz}}/n+1+\frac{1}{n}\right)\cdot n \le (C+2)\cdot n = \mathcal{O}(n)
+2n_{\text{nz}}+(n+1) = \left(2\frac{n_{\text{nz}}}{n}+1+\frac{1}{n}\right)\cdot n \le 2(C+1)\cdot n = \mathcal{O}(n)
 $$
 However, in addition to changing the matrix storage format we also need to adapt our solver.
 

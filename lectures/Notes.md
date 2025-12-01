@@ -2565,7 +2565,7 @@ python driver_sparse.py -ksp_type richardson -pc_type jacobi -ksp_rtol 1.0E-6 -k
 and inspect the generated file `log_view.txt`. The matrix-vector product `MatMult` is executed $37049$ times, and in total $2.734\text{s}$ are spent in this part of the code. This implies $73.7\mu\text{s}$ per matrix-vector product, compared to the theoretical prediction $T_{\text{MatMult}} = 2n_{\text{nz}}t_{\text{flop}}=2\cdot 115457\cdot 1.6\cdot 10^{-11}\text{s} = 3.7\mu\text{s}$. Again, our performance model is off by more than order of magnitude!
 
 ### Memory references
-The reason is that reading data from memory and writing it back is not free: To compute the matrix-vector product $\boldsymbol{v} = A\boldsymbol{u}$ we need to read the vector $\boldsymbol{u}$, write back the vector $\boldsymbol{v}$ and read the arrays $I$, $R$ and $V$ which represent the matrix $A$ is CSR format. The total amount of data transferred between the CPU and main memory is:
+The reason for the mismatch between the model and the measurements is that reading data from memory and writing it back is not free: To compute the matrix-vector product $\boldsymbol{v} = A\boldsymbol{u}$ we need to read the vector $\boldsymbol{u}$, write back the vector $\boldsymbol{v}$ and read the arrays $I$, $R$ and $V$ which represent the matrix $A$ in CSR format. The total amount of data transferred between the CPU and main memory is:
 
 * Read $\boldsymbol{u}$: $n$ double precision (64 bit) floating point numbers
 * Write $\boldsymbol{v}$: $n$ double precision floating point numbers
@@ -2588,13 +2588,13 @@ T_{\text{MatMult}} &= M_{\text{MatMult}} t_{\text{mem}} + N_{\text{MatMult}} t_{
 \end{aligned}
 $$
 
-Plugging in the measured value of $T_{\text{MatMult}}=73.7\mu\text{s}$ we find
+Plugging in the measured value of $T_{\text{MatMult}}=73.7\mu\text{s}$ and solving for the unknown $t_{\text{mem}}$ we find
 
 $$
-t_{\text{mem}} = 3.2\cdot 10^{-10} \text{s}= 20\times t_{\text{flop}}
+t_{\text{mem}} = 3.2\cdot 10^{-10} \text{s}= 20\times t_{\text{flop}}.
 $$
 
-From this we conclude that it is about an order of magnitude more expensive to transfer a double precision variable from memory than doing the actual computation.
+From this we conclude that it is about an order of magnitude more expensive to transfer a double precision variable from memory than doing the actual computation!
 
 We can also define the **memory bandwidth**, i.e. the number of double precision numbers of bytes that can be transferred per second as
 
@@ -2602,7 +2602,7 @@ $$
 BW = t_{\text{mem}}^{-1} = 3.12 \cdot 10^9 \text{double}/\text{s} = 2.5\cdot 10^{10} \text{byte}/\text{s}
 $$
 
-Why did this not matter for the Gaussian elimination solver? The reason is simply that the number of floating point operations is much larger than the number of memory references: recall the that number of operations is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$, where we can neglect the $\mathcal{O}(n^2)$ correction for $n\gg 1$. In addition we need to read the matrix ($n^2$ double precision numbers), read the vector $\boldsymbol{u}$ ($n$ double precision numbers) and write $\boldsymbol{v}$ (also $n$ double precision numbers). Including this we find:
+Why did this not matter for the Gaussian elimination solver? The reason is that the number of floating point operations is much larger than the number of memory references in this case: recall the that number of operations to solve a system with Gaussian elimination is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$, where we can neglect the $\mathcal{O}(n^2)$ correction for $n\gg 1$. In addition we need to read the matrix ($n^2$ double precision numbers), read the vector $\boldsymbol{u}$ ($n$ double precision numbers) and write $\boldsymbol{v}$ (also $n$ double precision numbers). Including the cost of memory transfers we find:
 
 $$
 \begin{aligned}
@@ -2612,15 +2612,15 @@ T_{\text{Gauss}} &= \left(n^2 + 2n\right)t_{\text{mem}} + \frac{2}{3}n^3 t_{\tex
 \end{aligned}
 $$
 
-For $n\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}\approx 20$ we can safely ignore the second term in the bracket.
+For $n\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}\approx 20$ we can safely ignore the second term in the bracket and recover the previously used performance model.
 
-We also say that the Gaussian elemination if *FLOP-bound* whereas the CSR matrix-vector product and hence the iterative solve with the Richardson+Jacobi iteration is *memory bandwidth-bound*.
+We also say that Gaussian elemination if *FLOP-bound* whereas the CSR matrix-vector product and hence the iterative solve with the Richardson+Jacobi iteration is *memory bandwidth-bound*.
 
 ### Roofline model
-More generally, consider an algorithm with $N$ FLOPs and $M$ memory references and define the **arithmetic intensity**
+More generally, consider an algorithm with $N$ FLOPs and $M$ (double precision) memory references and define the **arithmetic intensity**
 
 $$
-q = \frac{N}{M},
+q := \frac{N}{M},
 $$
 
 i.e. the number of floating point operations carried out for each double precision number read from memory. Then the runtime is
@@ -2632,7 +2632,7 @@ T &= N\cdot t_{\text{flop}} + M\cdot t_{\text{mem}} \\
 \end{aligned}
 $$
 
-We can also define the effective performance, i.e. the number of floating point operations carried out per second as
+We can also define the *effective performance*, i.e. the number of floating point operations carried out per second as
 
 $$
 R = \frac{N}{T} = R_{\text{flop}} \frac{1}{1 + \frac{1}{q} \frac{t_{\text{mem}}}{t_{\text{flop}}}} \approx \begin{cases}
@@ -2652,6 +2652,8 @@ In reality, the true number of memory references will be larger than what we get
 The roofline model is an important graphical tool to assess the optimisation potential of a given piece of computer code.
 
 ## Comparison of different solvers
+From the discussion in the previous section we conclude that the cost of one iteration of the Richardson+Jacobi solver is $\mathcal{O}(n)$, whereas a solve with Gaussian elimination is $\mathcal{O}(n^3)$. Hence, if we can ensure that the number of Richardson iterations is small, the iterative solver will be more efficient.
+
 In addition to optimising the code, it is equally important to pick the most efficient algorithm. In @fig:runtime_solver we compare the time spent in the linear solve for four different solver configurations:
 
 * **Gaussian elimination**

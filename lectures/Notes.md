@@ -1962,7 +1962,7 @@ A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 
 Global assembly of the stiffness matrix $A^{(h)}$ is implemented in the function `assemble_lhs(fs, quad, kappa, omega)` in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function gets passed a function space `fs`, quadrature rule `quad` and values of the constants $\kappa$ and $\omega$.
 
-## Numerical experiments
+# Numerical experiments
 Let us now use the code we have written for far to solve @eqn:pde_continuum with the finite element method. We consider the following manufactured solution
 
 $$
@@ -1977,7 +1977,7 @@ We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h
 
 The full code can be found in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
 
-### Visualisation of solution and error
+## Visualisation of solution and error
 To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u_h$, i.e. an instance `u_h` of the `Function` class, which is evaluated at the points of a structured rectangular grid which covers the domain (this grid is only used for visualisation, it has nothing to do with the underlying mesh that defines the finite element space). The $(n_x+1)(n_y+1)$ vertices of this grid are given by
 
 $$
@@ -2015,7 +2015,7 @@ As @fig:solution_and_error_cubic demonstrates, using cubic elements on the same 
 ![:fig:solution_and_error_cubic: Visualisation of finite element solution and error for piecewise cubic  finite elements](figures/solution_cubic.png)
 
 
-# Performance
+## Performance
 To obtain a more accurate solution we need to increase the resolution, which will make the computation more expensive. To expore this, let us now have a closer look at how the runtime of the code changes with the problem size. Usually, most of the time is spent executing a small number of lines.
 
 To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows
@@ -2203,7 +2203,7 @@ $$
 
 floating point operations per second. Obviously, this number will be machine dependent, but on modern computers it is usually in the same ballpark.
 
-# Sparse matrix representations
+# Solving sparse linear systems
 To reduce the cost spent in solving the linear system $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ we will devise more efficient algorithms which are tailored to the particular structure of the problem. In particular, we will exploit the fact that the stiffness matrix $A^{(h)}$ of our finite element discretisation contains a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid (plots like this can be generated with [matplotlib's `spy()` function](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.spy.html)):
 
 ![:fig:stiffness_matrix: Spy plot of the stiffness matrix $A^{(h)}$](figures/stiffness_matrix.png)
@@ -2215,7 +2215,6 @@ $$
 2n_{\text{nz}}+(n+1) = \left(2n_{\text{nz}}/n+1+\frac{1}{n}\right)\cdot n \le (C+2)\cdot n = \mathcal{O}(n)
 $$
 However, in addition to changing the matrix storage format we also need to adapt our solver.
-# Solving linear systems in PETSc
 
 ## Solving linear systems
 The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $A\boldsymbol{u}=\boldsymbol{b}$. Let us just look at a simple example:
@@ -2473,7 +2472,7 @@ The Conjugate Gradient (CG) algorithm is an example of a so-called *Krylov subsp
 
 Having introduced PETSc solvers, let us now go back to the solution of the linear problem $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ that arises in the finite element discretisation.
 
-# Assembly of stiffness matrix
+# Assembly of sparse stiffness matrix
 To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work out the sparsity structure, i.e. build the lists containing the column indices $J$ and row-pointers $R$.
 
 ## Sparsity structure
@@ -2540,7 +2539,7 @@ Let us try to understand the performance of the iterative solver algorithm. We s
 2. Application of the diagonal preconditioner $\boldsymbol{z} = D^{-1} \boldsymbol{r}$
 3. Update of the solution vector $\boldsymbol{u}\mapsto \boldsymbol{u} + \boldsymbol{z}$
 
-We count the number of operations as follows: firstly, when computing the residual $\boldsymbol{r} = \boldsymbol{b} - A\boldsymbol{u}$ we need to apply one subtraction and one multiplication for each non-zero matrix element $A_{ij}$ when computing $r_i \mapsto r_i - A_{ij} u_j$. Applying the matrix, i.e. computing $\boldsymbol{v} = A\boldsymbol{u}$ requires the same number of operations. The application of the preconditioner requires one division per vector element and finally the update of the solution requires one addition for each vector element. Hence, the total number of floating point operations for a single Richardson update with Jacobi preconditioner requires
+We count the number of operations as follows: firstly, when computing the residual $\boldsymbol{r} = \boldsymbol{b} - A\boldsymbol{u}$ we need to apply one subtraction and one multiplication for each non-zero matrix element $A_{ij}$ when computing $r_i \mapsto r_i - A_{ij} u_j$ (applying the matrix, i.e. computing $\boldsymbol{v} = A\boldsymbol{u}$ requires the same number of operations). The application of the preconditioner $\boldsymbol{z} = D^{-1} \boldsymbol{r}$ requires one division per vector element and finally the update $\boldsymbol{u}\mapsto \boldsymbol{u} + \boldsymbol{z}$ of the solution requires one addition for each vector element. Hence, the total number of floating point operations for a single Richardson update with Jacobi preconditioner requires
 
 $$
 N_{\text{Ric+Jac}} = 2n_{\text{nz}} + 2n
@@ -2556,7 +2555,14 @@ T_{\text{Ric+Jac}} &= (2n_{\text{nz}} + 2n)t_{\text{flop}}\\
 \end{aligned}
 $$
 
-However, in fact we measure $T_{\text{Ric+Jac}} = 85.6\mu\text{s}$, i.e. a number which is more than an order of magnitude larger than expected! Alternatively, we could also pass the option `-log_view` to PETSc to get more information on the performance of the matrix-vector product `MatMult`: this is executed $37049$ times, and in total $2.734\text{s}$ are spent in this part of the code. This implies $73.7\mu\text{s}$ per matrix-vector product, compared to the theoretical prediction $T_{\text{MatMult}} = 2n_{\text{nz}}t_{\text{flop}}=2\cdot 115457\cdot 1.6\cdot 10^{-11}\text{s} = 3.7\mu\text{s}$. Again, we are off by more than order of magnitude.
+However, in fact we measure $T_{\text{Ric+Jac}} = 85.6\mu\text{s}$, i.e. a number which is more than an order of magnitude larger than expected!
+
+Instead of using the `measure_time` decorator, we could also pass the option `-log_view` to PETSc to get more information on the performance of individual components of the code. For this, we run the code with 
+
+```
+python driver_sparse.py -ksp_type richardson -pc_type jacobi -ksp_rtol 1.0E-6 -ksp_monitor -ksp_view :ksp_view.txt -log_view :log_view.txt
+```
+and inspect the generated file `log_view.txt`. The matrix-vector product `MatMult` is executed $37049$ times, and in total $2.734\text{s}$ are spent in this part of the code. This implies $73.7\mu\text{s}$ per matrix-vector product, compared to the theoretical prediction $T_{\text{MatMult}} = 2n_{\text{nz}}t_{\text{flop}}=2\cdot 115457\cdot 1.6\cdot 10^{-11}\text{s} = 3.7\mu\text{s}$. Again, our performance model is off by more than order of magnitude!
 
 ### Memory references
 The reason is that reading data from memory and writing it back is not free: To compute the matrix-vector product $\boldsymbol{v} = A\boldsymbol{u}$ we need to read the vector $\boldsymbol{u}$, write back the vector $\boldsymbol{v}$ and read the arrays $I$, $R$ and $V$ which represent the matrix $A$ is CSR format. The total amount of data transferred between the CPU and main memory is:

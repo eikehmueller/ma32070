@@ -2703,9 +2703,9 @@ The analysis of the AMG preconditioner is more complicated and beyond the scope 
 # Parallel computing
 
 ## The need for parallel computing
-To solve larger and larger problems in Scientific Computing, we need ever stronger computers. For example, the Met Office routinely solves sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$ unknowns to simulate the evolution of the Earth's atmospheric state. Thousands of these solves are required for a typical forecast of tomorrow's weather. Extrapolating the results in @fig:runtime_solver, a single solve with $n_{\text{dof}}=10^9$ unknowns will take about 15 minutes, so the total time to generate the forecast would exceed $1000\times 15\text{min} = 10.4\text{days}$! Clearly, this is not very useful.
+To solve larger and larger problems in Scientific Computing, we need ever stronger computers. For example, the Met Office routinely solves sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$ unknowns to simulate the evolution of the state of the atmospheric. Thousands of these solves are required for a typical forecast of tomorrow's weather. Extrapolating the results in @fig:runtime_solver, a single solve with $n_{\text{dof}}=10^9$ unknowns will take about 15 minutes even if the optimal solver/preconditioner configuration is used, so the total time to generate the forecast would exceed $1000\times 15\text{min} = 10.4\text{days}$! Clearly, this is not very useful.
 
-So far, we have implicitly assumed that all calculations performed by a single processor. We can speed up our code significantly if it possible to somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $P$ processors would then make it $P$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is also known as one *ExaFLOP* of performance). Have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/), which is updated twice a year and ranks the fastest computers across the world.
+So far, we have implicitly assumed that all calculations are performed by a single processor. We can speed up our code significantly if it is possible to somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $P$ processors would then make it $P$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is also known as one *ExaFLOP* of performance). Recall that we estimated that our computer can do $R=6.3\cdot 10^{10}$ FLOPs per second, so an exascale is several million times faster! Have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/), which is updated twice a year and ranks the fastest computers across the world.
 
 Even desktop computers and mobile phones now typically have multiple processing units, so it is imperative to exploit this additional computing power in our implementation.
 
@@ -2724,25 +2724,29 @@ Conceptually, we end up with the following approach to parallelisation:
 
 ![:fig:message_passing: Message passing model](figures/communication.svg)
 
-Clearly we need to adapt the algorithms we have encountered so far. Mathematically, the technique of sub-dividing the domain into several sub-domains is also known as **domain-decomposition** and developing algorithms based on this idea is an active area of research. Computationally, the approach is also known as **distributed memory parallelisation**, since the global problem is distributed between the processors, each of which stores only its local part of the problem in memory.
+Clearly we need to adapt the algorithms we have encountered so far to account for this. Mathematically, the technique of sub-dividing the domain into several sub-domains is also known as **domain-decomposition** and developing algorithms based on this idea is an active area of research. Computationally, the approach is known as **distributed memory parallelisation**, since the global problem is distributed between the processors, each of which stores only its local part of the problem in memory. This means that much larger problems can be solved.
 
 ### Message passing interface
-To implement the exchange of messages in our code, we can use the Message Passing Interface (MPI), which is implemented as [mpi4py](https://mpi4py.readthedocs.io/en/stable/) in Python. This provides a set of routines that can be used to send and receive messages between processes.
+To implement the exchange of messages in our code, we can use the [Message Passing Interface (MPI)](https://www.mpi-forum.org/), which is implemented as [mpi4py](https://mpi4py.readthedocs.io/en/stable/) in Python. This provides a set of routines that can be used to send and receive messages between processes.
 
-Here is a simple Python code, which shows how to send an array from processor 0 to processor 1:
+Here is a simple Python code, which shows how to send an array called `data` from processor 0 to processor 1:
 
 ```Python
 import numpy as np
 from mpi4py import MPI
 
+# global communicator
 comm = MPI.COMM_WORLD
+# work out rank
 rank = comm.Get_rank()
 
+# initialise data
 data = np.zeros(4, dtype=int)
 data[:] = rank + 1
 
 print(f"BEFORE: rank {rank} has data", data)
 
+# exchange data
 if rank == 0:
     comm.Send(data, 1)
 else:
@@ -2766,7 +2770,7 @@ AFTER: rank 0 has data [1 1 1 1]
 AFTER: rank 1 has data [1 1 1 1]
 ```
 
-To illustrate the design of a parallel program we consider a very simple mathematical operation which arises in many applications in scientific computing: recall that the iterative solver algorithms we discussed above require the frequent evaluation of matrix-vector products.
+To illustrate the design of a parallel program we consider a very simple mathematical operation which arises in many applications in scientific computing: recall that the iterative solver algorithms we discussed above require the frequent evaluation of matrix-vector products $\boldsymbol{y}=A\boldsymbol{x}$, so let us look at how a slighlty more general form of this operation can be parallelised in MPI.
 
 ## Parallel matrix-matrix product
 Assume that we want to compute the matrix-matrix product
@@ -2871,11 +2875,15 @@ $$
 For $n=m=r$ and $P\gg 1$ the total cost simplifies to
 
 $$
-T(P) = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{P} + n^2 t_{\text{word}} + P t_{\text{lat}}\qquad\qquad:eqn:parallel_performance_model
+T(P) = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{P} + n^2 t_{\text{word}} + P t_{\text{lat}}.\qquad\qquad:eqn:parallel_performance_model
 $$
 
+While for fixed problem size $n$ the first term in the expression on the right hand side of @eqn:parallel_performance_model decreases for larger processor counts $P$, the final term will increase in proportion to $P$. The amount of speedup that can be achieved on a parallel machine with $P>1$ depends on the machine-dependent constants $t_{\text{flop}}$, $t_{\text{mem}}$, $t_{\text{word}}$ and $t_{\text{lat}}$.
+
 ### Performance indicators
-How can we assess how well our code parallelised? If $T(P)$ is the time it takes to run the code on $P$ processors, then we can plot this time as a function of $P$. In the ideal case, we would expect that $T(P) = T(1)/P$, i.e. running the code on $P$ processors will make it $P$ times faster. This is most easily confirmed in a log-log-plot. In practice, the **parallel speedup**
+While @eqn:parallel_performance_model provides a simple performance model for our specific application, for more complicated algorithms it might not be possible to write down a simple expression like this. It is therefore natural to derive a set of performance indicators which can be used the assess how well a code parallelised based on empirical measurements.
+ 
+ If $T(P)$ is the time it takes to run the code on $P$ processors, then we can plot this time as a function of $P$. In the ideal case, we would expect that $T(P) = T(1)/P$, i.e. running the code on $P$ processors will make it $P$ times faster. This is most easily confirmed in a log-log-plot. In practice, the **parallel speedup**
 
 $$
 S(P) := \frac{T(1)}{T(P)}
@@ -2887,13 +2895,13 @@ $$
 E(P) := \frac{S(P)}{S^\star(P)} = \frac{T(1)}{P\cdot T(P)},
 $$
 
-which is a number between 0 and 1 that compares the achieved speedup to the ideal speedup. A code which has a parallel efficiency of $100\%$ parallelises perfectly, while smaller values indicate that the code achieves only a fraction of its potential. The following @fig:parallel_scaling_measured shows the runtime $T(P)$ (left), speedup $S(P)$ (centre) and parallel efficiency $E(P)$ (right) for a Python implementation of the parallel matrix-matrix product for square matrices of different sizes:
+which is a number between 0 and 1 that compares the achieved speedup to the ideal speedup. A code which has a parallel efficiency of $100\%$ parallelises perfectly, while smaller values indicate that the code achieves only a fraction of its parallel potential. The following @fig:parallel_scaling_measured shows the runtime $T(P)$ (left), speedup $S(P)$ (centre) and parallel efficiency $E(P)$ (right) for a Python implementation of the parallel matrix-matrix product for square matrices of different sizes:
 
 ![:fig:parallel_scaling_measured: Parallel scaling of matrix-matrix product for different problem sizes (measured)](figures/parallel_scaling_measured.svg)
 
-While for all problem sizes the runtime initially increases as the problem is solved with more processors, scaling detiorates for the smaller problems. For larger problems, decent speedup can be achieved on more processors, but even there scaling eventually brreaks down.
+While for all problem sizes the runtime initially increases as the problem is solved with more processors, scaling detiorates for smaller problem sizes. For larger problems, decent speedup can be achieved on more processors, but even there scaling eventually breaks down.
 
-It is instructive to compare the measured results in @fig:parallel_scaling_measured with the corresponding theoretical values in @fig:parallel_scaling_theory, which were obtained with the performance model in @eqn:parallel_performance_model. While the details differ, we observe good quanitative agreement.
+It is instructive to compare the measured results in @fig:parallel_scaling_measured with the corresponding theoretical values in @fig:parallel_scaling_theory, which were obtained with the performance model in @eqn:parallel_performance_model. While the details differ, we observe good quantitative agreement. In particular, the performance model also predicts earlier breakdown of scaling for smaller problem sizes.
 
 ![:fig:parallel_scaling_theory: Parallel scaling of matrix-matrix product for different problem sizes (theory)](figures/parallel_scaling_theory.svg)
 

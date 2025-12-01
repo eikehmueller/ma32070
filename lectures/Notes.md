@@ -2652,31 +2652,31 @@ In reality, the true number of memory references will be larger than what we get
 The roofline model is an important graphical tool to assess the optimisation potential of a given piece of computer code.
 
 ## Comparison of different solvers
-From the discussion in the previous section we conclude that the cost of one iteration of the Richardson+Jacobi solver is $\mathcal{O}(n)$, whereas a solve with Gaussian elimination is $\mathcal{O}(n^3)$. Hence, if we can ensure that the number of Richardson iterations is small, the iterative solver will be more efficient.
+In addition to optimising the code, i.e. getting as close as possible to the roofline in @fig:roofline_model:, it is equally important to pick the most efficient algorithm. From the discussion in the previous section we conclude that the cost of one iteration of the Richardson+Jacobi solver is $\mathcal{O}(n)$, whereas a solve with Gaussian elimination is $\mathcal{O}(n^3)$. Hence, if we can ensure that the number of Richardson iterations is small, the iterative solver will be (significantly) more efficient. The number of iterations might also be reduced by using a different algorithm such as the Conjugate Gradient (CG) method or by applying a more efficient preconditioner. While in the latter case the cost for a single iteration might increase, the reduction in the total number of iterations can still lead to better performance overall.
 
-In addition to optimising the code, it is equally important to pick the most efficient algorithm. In @fig:runtime_solver we compare the time spent in the linear solve for four different solver configurations:
+In @fig:runtime_solver we compare the time spent in the linear solve for four different solver configurations:
 
 * **Gaussian elimination**
 * **Richardson + Jacobi** (`-ksp_type richardson -pc_type jacobi`)
 * **CG + Jacobi** (`-ksp_type cg -pc_type jacobi`)
 * **CG + AMG** (`-ksp_type cg -pc_type hypre`)
 
-The last setup uses a so-called algebraic multigrid method, which a particularly efficient preconditioner for elliptic problem such as the one in @eqn:pde_continuum. As @fig:runtime_solver shows, the performance differs significantly between the different setups:
+For the iterative solvers the preconditioned residual was reduced by nine orders of magnitude (`-ksp_rtol 1E-9`). The final setup uses a so-called algebraic multigrid (AMG) method, which a particularly efficient preconditioner for elliptic problem such as the one in @eqn:pde_continuum. More specifically, the [BoomerAMG method](https://hypre.readthedocs.io/en/latest/solvers-boomeramg.html#boomeramg) from the [hypre library](https://computing.llnl.gov/projects/hypre-scalable-linear-solvers-multigrid-methods) is used. As @fig:runtime_solver shows, the performance differs significantly between the different setups.
 
 ![:fig:runtime_solver: Runtime for solver](figures/runtime_sparse.svg)
 
-While it is efficient for very small problems, Gaussian elimination incurs a cost that grows in proportion to $n_{\text{dof}}^3$, so the method in not competitive for very large problems. Using the Richardson iteration or CG with the Jacobi preconditioner leads to much better performance, but the runtime increases slightly faster than linear in the problem size. CG is much more efficient than the Richardson iteration. The optimal preconditioner for large problem sizes is AMG: here the cost grows in proportion to $n_{\text{dof}}$.
+While it is extremely efficient for small problems, Gaussian elimination incurs a cost that grows in proportion to $n_{\text{dof}}^3$, so the method in not competitive for very large problems. Using the Richardson iteration or CG with the Jacobi preconditioner leads to much better performance, but the runtime increases slightly faster than linear in the problem size for both preconditioners. CG is much more efficient than the Richardson iteration. The optimal preconditioner for large problem sizes is AMG: here the cost grows in proportion to $n_{\text{dof}}$, which is typical for multigrid methods.
 
 ### Number of solver iterations
-The total time is given the product of the number of iterations and the time per iteration,
+To understand the performance of the different iterative solver setups in @fig:runtime_solver, observe that the total time is given the product of the number of iterations $n_{\text{iter}}$ and the time per iteration $t_{\text{iter}}, i.e.
 
 $$
-T_{\text{solve}} = n_{\text{iter}}\cdot t_{\text{iter}}
+T_{\text{solve}} = n_{\text{iter}}\cdot t_{\text{iter}}.
 $$
 
-To understand the growth in runtime shown in @fig:runtime_solver, let us look at the number $n_{\text{iter}}$ of solver iterations, as shown in the following table:
+To understand the growth in runtime shown in @fig:runtime_solver, let us look at the number $n_{\text{iter}}$ of solver iterations required to reduce the (preconditioned) residual by a factor $10^{-9}$, as shown in the following table:
 
-| $n_{\text{dof}}$ | richardson + jacobi |cg + jacobi |cg + hypre |
+| $n_{\text{dof}}$ | richardson + jacobi |cg + jacobi |cg + AMG (hypre) |
 | :----: | :----: | :----: | :----: |
 | 25 | 3101 | 11 | 3 |
 | 81 | 7959 | 23 | 5 |
@@ -2687,18 +2687,18 @@ To understand the growth in runtime shown in @fig:runtime_solver, let us look at
 | 66049 | 129815 | 450 | 6 |
 | 263169 | 447667 | 876 | 6 |
 
-For the Richardson method, the number of iterations grows extremely rapidly, approximately in proportion to the problem size. This growth is much weaker for the CG iteration with the same Jacobi preconditioner.
+For the Richardson method, the number of iterations grows extremely rapidly, approximately in proportion to the problem size. This growth is much weaker for the CG iteration with the same Jacobi preconditioner. For the hypre AMG preconditioner the number of iterations remains constant for larger problems.
 
 ### Time per iteration
 The time per iteration $t_{\text{iter}}$ is shown in the following figure:
 
 ![:fig:time_per_iteration: Time per iteration](figures/time_per_iteration_sparse.svg)
 
-In all cases $t_{\text{iter}}$ is proportional to the problem size. Although one iteration with the AMG preconditioner is more than one magnitude larger that for the Jacobi preconditioner, this is more than compensated by the fact that CG with the AMG preconditioner requires substantially fewer iterations to converge.
+In all cases $t_{\text{iter}}$ is proportional to the problem size. Although one iteration with the AMG preconditioner is more than one magnitude larger that for the Jacobi preconditioner, this is more than compensated by the fact that CG with the AMG preconditioner requires substantially fewer iterations to converge. This explains the superior performance of CG+AMG observed in @fig:runtime_solver.
 
 For the Richardson iteration and CG with Jacobi preconditioner it is also very easy to understand why $t_{\text{iter}}\propto n_{\text{dof}}$: the fundamental operations required in these algorithms are sparse matrix-vector products, scaling and addition of vectors and dot-product; the Jacobi preconditioner also requires one FLOP per vector entry. The cost of each of these operations is proportional to the problem size $n_{\text{dof}}$.
 
-
+The analysis of the AMG preconditioner is more complicated and beyond the scope of this course.
 
 # Parallel computing
 

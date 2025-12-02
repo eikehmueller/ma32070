@@ -1,5 +1,5 @@
 FIGURES=$(patsubst %.svg,%.pdf,$(wildcard figures/*.svg))
-SVG_RESOLUTION= # -density 600
+SVG_RESOLUTION=-density 600
 
 all: Notes
 	
@@ -9,3 +9,7 @@ figures/%.pdf: figures/%.svg
 
 Notes: Notes.tex $(FIGURES)
 	pdflatex Notes
+
+.phony: clean
+clean:
+	rm -f ${FIGURES}

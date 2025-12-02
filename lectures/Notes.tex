@@ -633,7 +633,7 @@ $$
 \frametitle{Weak solutions}
 \textbf{Strong form of PDE}
 $$
--\nabla \cdot (\kappa \nabla  u) + \omega\; u = f
+-\nabla \cdot (\kappa \nabla  u(x)) + \omega\; u(x) = f(x)\qquad\text{for all $x\in \Omega$}
 $$
 \textbf{Weak form}\\
 Find $u\in \mathcal{V}$ such that
@@ -879,13 +879,14 @@ $$
 
 \begin{frame}
 \frametitle{Lagrange polynomials}
+\textbf{Nodal points}\\[-3ex]
 $$
 \{\xi^{(\ell)}\}_{\ell=0}^{\nu-1} = \left\{\left(\frac{\ell_0}{p},\frac{\ell_1}{p}\right) \quad \text{for $\ell_0,\ell_1\in\mathbb{N}$ with $0\le \ell_0\le \ell_1 \le p$}\right\}
 $$
 \begin{center}
-\includegraphics[width=\linewidth]{figures/lagrange_nodes.pdf}
+\includegraphics[width=0.9\linewidth]{figures/lagrange_nodes.pdf}
 \end{center}
-\textbf{Ordering of points}
+\textbf{Ordering of points}\\[1ex]
 \begin{minipage}{0.75\linewidth}
 \begin{itemize}
   \item $\nu_{\text{vertex}}=1$ point associated with each vertex \textcolor{red}{$v_0$}, \textcolor{red}{$v_1$}, \textcolor{red}{$v_2$} (in this order); 

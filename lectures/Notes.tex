@@ -472,7 +472,7 @@ $$
 Shape $S = [s_0,s_1,\dots,s_{d-1}]$\\[2ex]
 \textbf{Special cases}
 \begin{description}
-\item[rank 0 = scalars] real numbers $s\in\mathbb{R}$\\
+\item[rank 0 = scalars] (real numbers) $\sigma\in\mathbb{R}$\\
 $S = [\;]$
 \item[rank 1 = vectors] $\boldsymbol{v}\in \mathbb{R}^n$, $v_i$ for $0\le i< n$\\
 $S = [n]$ = dimension of the vector
@@ -696,104 +696,216 @@ $$
 \end{itemize}
 \end{frame}
 
-\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-## Finite element solutions
-Now, obviously it is not possible to solve @eqn:weak_problem_continuum on a computer since $\mathcal{V}$ contains infinitely many functions. Instead, we try to find solutions in a finite-dimensional subspace $\mathcal{V}_h\subset \mathcal{V}$. This could for example be the space of all functions that are piecewise linear on a given mesh with spacing $h$. We will be more precise about what that means later in this course. In this case the problem becomes: find $u_h \in \mathcal{V}_h$ such that 
+\begin{frame}
+\frametitle{Finite element solutions}
+  
+Finite-dimensional subspace $\mathcal{V}_h\subset \mathcal{V}$\\
+{\footnotesize(e.g. piecewise linear functions on mesh with spacing $h$)}\\[2ex]
+\textbf{Discretised weak problem}\\
+Find solution $u_h \in \mathcal{V}_h$ such that 
 $$
-a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h \in \mathcal{V}_h$ }.\qquad:eqn:weak_problem_discretised
+a(u_h,v_h) = b(v_h) \qquad \text{for all $v_h \in \mathcal{V}_h$}
 $$
-Observe that this only has to hold for a finite number of test functions $v_h\in\mathcal{V}_h$.
 
-### Existence and convergence of the solution
-It can be shown that @eqn:weak_problem_continuum and @eqn:weak_problem_discretised have unique solutions provided the linear form $b(\cdot)$ and the bilinear form $a(\cdot,\cdot)$ satisfy the following two conditions:
-
-* **Boundedness**: there exists some positive constant $C_+ > 0$ such that 
-$$a(u,v) \le C_+ \|u\|_{\mathcal{V}} \|v\|_{\mathcal{V}} \qquad\text{and}$$
-$$b(v) \le C_+ \|v\|_{\mathcal{V}} \qquad\text{for all $u,v\in \mathcal{V}$}.$$
-* **Coercivity**: there exists some positive constant $C_- > 0$ such that
+\textbf{Existence of the solution} (Lax-Milgram)
+\begin{itemize}
+\item \textit{Boundedness}: $\exists C_+ > 0$ such that for all $u,v\in \mathcal{V}$
+\begin{xalignat*}{2}
+a(u,v) &\le C_+ \|u\|_{\mathcal{V}} \|v\|_{\mathcal{V}}&\text{and}\qquad b(v) &\le C_+ \|v\|_{\mathcal{V}}
+\end{xalignat*}
+\item \textit{Coercivity}: $\exists C_- > 0$ such that
 $$ 
-a(u,u) \ge C_- \|u\|_{\mathcal{V}}^2 \qquad\text{for all $u\in \mathcal{V}$}.$$
+a(u,u) \ge C_- \|u\|_{\mathcal{V}}^2 \qquad\text{for all $u\in \mathcal{V}$}
+$$
+\end{itemize}
+$\Rightarrow$ $\|u\|_{\mathcal{V}},\|u_h\|_{\mathcal{V}}\le C:=C_+/C_-$
+\end{frame}
 
-This is the famous Lax-Milgram theorem. It turns out that both conditions are satisfied for the $a(\cdot,\cdot)$, $b(\cdot)$ defined above. Furthermore, the solutions satisfy $\|u\|_{\mathcal{V}},\|u_h\|_{\mathcal{V}}\le C:=C_+/C_-$ and Cea's Lemma states that the difference between the solution $u_h$ of @eqn:weak_problem_discretised and the solution $u$ of @eqn:weak_problem_continuum can be bounded as follows:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Finite element solutions}
+\textbf{Accuracy} of finite element approximation
+\begin{itemize}
+\item Exact solution $u\in \mathcal{V}$ solves $a(u,v)=b(v)\; \forall v\in\mathcal{V}$ 
+\item FE solution $u_h\in \mathcal{V}_h$ solves $a(u_h,v_h)=b(v_h)\; \forall v_h\in\mathcal{V}_h$
+\end{itemize}
+\textbf{Cea's Lemma}
 $$
 \|u_h - u\|_{\mathcal{V}} \le C \min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}.
 $$
-The constant $C$ on the right-hand side is problem specific since it depends on $a(\cdot,\cdot)$ and $b(\cdot)$. In contrast, the term $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}$ only depends on the choice of function spaces $\mathcal{V}$, $\mathcal{V}_h$ and describes how well the function $u \in \mathcal{V}$ can be approximated by a function $v_h\in \mathcal{V}_h$. For a suitable choice of $\mathcal{V}_h$, which we will discuss later, one can show that $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}\le C' h^{\mu}$ for some positive integer $\mu\ge 1$ and positive constant $C'>0$. Here $h$ is the grid-spacing of the mesh on which the problem is formulated. The constant $\mu$ depends on how well we can approximate the true solution in each grid cell. For example, if $\mathcal{V}_h$ is chosen such that functions in $\mathcal{V}_h$ can be represented by a polynomial in each grid cell, then $\mu$ will increase with the degree of this polynomial. Hence, the finite element solution $u_h$ converges to the "true" solution $u$ as the mesh is refined ($h\rightarrow 0$):
-$$
-\|u_h - u\|_{\mathcal{V}} \le C C' h^{\mu}.
-$$
-This is why the finite element works: it can be used to systematically approximate the true solution of the PDE and the discretisation error can be made arbitrarily small by choosing a sufficiently fine mesh.
 
-For this unit, this is all we need to know about the existence and convergence of solutions in $\mathcal{V}$ and $\mathcal{V}_h$. For further details please see the discussion in MA32066 and in [[Far21]](https://people.maths.ox.ac.uk/farrellp/femvideos/notes.pdf) and [[CH24]](https://finite-element.github.io/).
+\begin{itemize}
+\item Problem specific $C$ depends on $a(\cdot,\cdot)$ and $b(\cdot)$
+\item $\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}$ only depends on $\mathcal{V}$, $\mathcal{V}_h$
+\end{itemize}
+Suitable $\mathcal{V}_h$ on mesh with grid spacing $h$
+$$
+\Rightarrow \quad\min_{v_h\in \mathcal{V}_h}\|u-v_h\|_{\mathcal{V}}\le C' h^{\mu} \qquad\text{for integer $\mu\ge 1$}
+$$
+$\Rightarrow$ \textbf{Convergence} to true solution for $h\rightarrow 0$
+$$
+\|u_h - u\|_{\mathcal{V}} \le C C' h^{\mu}
+$$
+\end{frame}
 
-## Reduction to linear algebra problem
-We now discuss how $u_h$ can be found in practice. Since $\mathcal{V}_h$ is finite dimensional, we can choose a basis $\{\Phi^{(h)}_k\}_{k=0}^{n-1}$ such that every function $u_h \in \mathcal{V}_h$ can be written as a linear combination of the basis functions $\Phi^{(h)}_k\in \mathcal{V}_h$:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Reduction to linear algebra problem}
+Basis $\{\Phi^{(h)}_k\}_{k=0}^{n-1}$ of $\mathcal{V}_h$
 $$
-u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k(x) \qquad\text{for all $x\in\Omega$.}\qquad:eqn:linear_algebra_problem
+u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k(x) \qquad\text{for all $x\in\Omega$.}
 $$
-The vector $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$ is often referred to as the degrees-of-freedom vector (short: dof-vector) since its knowledge determines $u_h$. Below we will sometimes write $n_{\text{dof}}$ instead of $n$ for the total number of degrees of freedom. Picking $v_h=\Phi^{(h)}_\ell$ and inserting the expansion of $u_h$ in @eqn:linear_algebra_problem into @eqn:weak_problem_discretised we obtain
+\textbf{degrees-of-freedom vector} (short: dof-vector)
 $$
-b^{(h)}_\ell:=b(\Phi^{(h)}_\ell) = a\left(\sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k,\Phi^{(h)}_\ell\right) = 
+\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n
+$$
+ 
+Set $v_h=\Phi^{(h)}_\ell$ in $a(u_h,v_h) = b(v_h)$
+$$
+b(\Phi^{(h)}_\ell) = a\left(\sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k,\Phi^{(h)}_\ell\right) = 
 \sum_{k=0}^{n-1} u^{(h)}_k a\left( \Phi^{(h)}_k,\Phi^{(h)}_\ell\right),
 $$
-where we used the bi-linearity of $a(\cdot,\cdot)$. Defining the vector $\boldsymbol{b}^{(h)} := \left(b(\Phi^{(h)}_0),b(\Phi^{(h)}_1),\dots,b(\Phi^{(h)}_{n-1})\right)^\top$ and the $n\times n$ *stiffness matrix* $A^{(h)}$ with $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_k,\Phi^{(h)}_\ell\right)$ we arrive at the following linear system for the dof-vector $\boldsymbol{u}^{(h)}$:
+{\footnotesize(bi-linearity of $a(\cdot,\cdot)$)}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Linear algebra problem}
 $$
-A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.\qquad:eqn:linear_system_Aub
+\begin{aligned}
+b^{(h)}_\ell:=b(\Phi^{(h)}_\ell) = \sum_{k=0}^{n-1} u^{(h)}_k a\left( \Phi^{(h)}_k,\Phi^{(h)}_\ell\right)\\
+\Leftrightarrow\quad A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}
+\end{aligned}
 $$
-
-Although $\boldsymbol{u}^{(h)}$ and $\boldsymbol{b}^{(h)}$ are both vectors in $\mathbb{R}^n$, they are constructed in a fundamentally different way:
-
-* The dof-vector $\boldsymbol{u}^{(h)}$ is a so-called **primal** vector: its components $u_\ell^{(h)}$ are the expansion coefficients of the function $u_h$ in @eqn:linear_algebra_problem.
-* In contrast, the right-hand-side vector $\boldsymbol{b}^{(h)}$ is a so-called **dual** vector: its components $b_\ell^{(h)}=b(\Phi_\ell^{(h)})$ are obtained by evaluating the linear functional $b(\cdot)$ for the basis functions.
-
-The reason for this is that $b(\cdot)$ is an element of the dual space $\mathcal{V}^*$, which consists of all linear functionals defined on the space $\mathcal{V}$. We will discuss dual spaces in more detail below.
-
-### Solution procedure
-In summary, the solution procedure for @eqn:weak_problem_discretised is this:
-
-1. Assemble the matrix $A^{(h)}$.
-2. Assemble the right-hand-side vector $\boldsymbol{b}^{(h)}$.
-3. Solve the linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ in @eqn:linear_system_Aub for $\boldsymbol{u}^{(h)}$.
-4. Reconstruct the solution $u_h$ from the dof-vector $\boldsymbol{u}^{(h)}$ according to the expansion in @eqn:linear_algebra_problem.
-
-In the rest of this course we will discuss how each of these steps can be implemented in Python. The focus will be on structuring the code such that the mathematical objects are mapped to the corresponding Python objects in the source code. For the solution of the linear algebra problem in @eqn:linear_system_Aub we will use the [PETSc](https://petsc.org/) library.
-
-# Finite Elements
-We start by considering the weak form of the PDE for a special case, namely a domain $\Omega$ consisting of a single triangle. By doing this, we will develop the fundamental concepts and techniques of finite element analysis and discuss their implementation in Python. As we will see later, the solution of the PDE on more complicated domains can be reduced to this case.
-
-## Reference triangle
-Let us consider a very simple domain $\widehat{K}=\Omega$ which consists of the right-angled triangle with vertices $\textcolor{red}{v_0=(0,0)}$, $\textcolor{red}{v_1=(1,0)}$ and $\textcolor{red}{v_2=(0,1)}$, shown in red in @fig:reference_triangle. We label the edges (or facets), shown in blue, in a counter-clockwise fashion as $\textcolor{blue}{F_0 = \overrightarrow{v_1v_2}}$, $\textcolor{blue}{F_1 = \overrightarrow{v_2v_0}}$ and $\textcolor{blue}{F_2 = \overrightarrow{v_0v_1}}$. This ordering and the orientation of the edges will be important later.
-
-![:fig:reference_triangle: reference triangle $\widehat{K}$](figures/reference_triangle.svg)
-
-In the following we will also refer to this domain as the *reference triangle* $\widehat{K}$.
-
-Recall that the finite element approach starts with the choice of a suitable function space $\mathcal{V}_h$. For this, consider the space of bi-variate polynomials of degree $p$ on $\widehat{K}$:
-
+\begin{itemize}
+\item Right-hand-side vector (dual vector\footnote{$b(\cdot) \in \mathcal{V}^*$ dual space $\Rightarrow$ later})
 $$
-\mathcal{V}_h := \mathcal{P}_p(\widehat{K}) = \{q:q(x) = \sum_{\substack{s_0,s_1\\s_0+s_1\le p}} a_{s_0,s_1} x_0^{s_0}x_1^{s_1}\;\text{for all $x\in \widehat{K}$ with $a_{s_0,s_1}\in\mathbb{R}$}\}\subset H^1(\widehat{K})
+\boldsymbol{b}^{(h)} := \left(b(\Phi^{(h)}_0),b(\Phi^{(h)}_1),\dots,b(\Phi^{(h)}_{n-1})\right)^\top\in\mathbb{R}^n
 $$
+\item $n\times n$ stiffness matrix $A^{(h)}$ with $A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_k,\Phi^{(h)}_\ell\right)$
+\item dof-vector (primal vector) $\boldsymbol{u}^{(h)}=(u^{(h)}_0,u^{(h)}_1,\dots,u^{(h)}_{n-1})\in\mathbb{R}^n$
+$$
+u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k(x) \qquad\text{for all $x\in\Omega$.}
+$$
+\end{itemize}
+\end{frame}
 
-The space $\mathcal{P}_p(\widehat{K})$ is spanned by $n_{\text{dof}}=\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$ basis functions $\{\phi_\ell\}_{\ell=0}^{\nu-1}$. These can be chosen to be the monomials $\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$\}, but a better choice is to pick [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html). Recall that in one dimension a Lagrange interpolating polynomial is the unique polynomial of degree $m$ which passes through $m+1$ points $\{(t_k,z_k)\}_{k=0}^{m}$, i.e. $p(t_k)=z_k$ for all $k=0,1,\dots,m$. This will later allow us to construct $H^1(\Omega)$ functions on a mesh for a more general domain $\Omega$ that consists of little triangles by "glueing together" the functions on neighbouring triangles. To construct Lagrange polynomials in two dimensions, we choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Solution procedure}
+\textbf{Algorithm} Solution of FE problem $a(u_h,v_h)=b(v_h)\;\forall v_h\in\mathcal{V}_h$
+\begin{algorithmic}[1]
+\State{Assemble stiffness matrix $A^{(h)}$ with $$A^{(h)}_{\ell k}:= a\left(\Phi^{(h)}_k,\Phi^{(h)}_\ell\right)$$}
+\State{Assemble right-hand-side vector $\boldsymbol{b}^{(h)}$ with $$b^{(h)}_\ell:=b(\Phi^{(h)}_\ell)$$}
+\State{Solve linear system $A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ for  $\boldsymbol{u}^{(h)}$}
+\State{Reconstruct solution $u_h$ from dof-vector $\boldsymbol{u}^{(h)}$ as
+$$u_h(x) = \sum_{k=0}^{n-1} u^{(h)}_k \Phi^{(h)}_k(x)$$
+}
+\end{algorithmic}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Construction of Finite Elements}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Reference triangle}
+Simple domain $\widehat{K}=\Omega$ = right-angled triangle 
+\begin{description}
+\item[vertices] $\textcolor{red}{v_0=(0,0)}$, $\textcolor{red}{v_1=(1,0)}$ and $\textcolor{red}{v_2=(0,1)}$
+\item[facets] (edges) $\textcolor{blue}{F_0 = \overrightarrow{v_1v_2}}$, $\textcolor{blue}{F_1 = \overrightarrow{v_2v_0}}$ and $\textcolor{blue}{F_2 = \overrightarrow{v_0v_1}}$
+\end{description}
+{\footnotesize (counter-clockwise ordering)}
+\begin{center}
+\includegraphics[width=1\linewidth]{figures/reference_triangle.pdf}
+{\footnotesize reference triangle}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Function space}
+Polynomials of degree $p$
+$$
+\begin{aligned}
+\mathcal{V}_h &= \mathcal{P}_p(\widehat{K})\subset H^1(\widehat{K})\\
+&= \Big\{q:q(x) = \sum_{\substack{s_0,s_1\\s_0+s_1\le p}} a_{s_0,s_1} x_0^{s_0}x_1^{s_1}\;\text{$\forall\;x\in \widehat{K}$ with $a_{s_0,s_1}\in\mathbb{R}$}\Big\}
+\end{aligned}
+$$
+\textbf{Basis functions}
+$$
+\{\phi_\ell\}_{\ell=0}^{\nu-1}\qquad\text{with $n_{\text{dof}}=\nu = {p+2 \choose 2} = \frac{1}{2}(p+2)(p+1)$}
+$$
+Naive choice: monomials
+$$
+\{\phi_\ell\}_{\ell=0}^{\nu-1} = \{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots\}
+$$
+Better choice: \textbf{Lagrange polynomials}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Lagrange polynomials}
+\textbf{One dimension}\\
+Lagrange polynomial $p$ = unique polynomial of degree $m$ which passes through $m+1$ points $\{(t_k,z_k)\}_{k=0}^{m}$:
+$$
+p(t_k)=z_k\qquad\text{for all $k=0,1,\dots,m$}
+$$
+\textbf{Two dimensions}\\
+Choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
 $$
 \phi_\ell(\xi^{(k)}) = \delta_{\ell k} = \begin{cases}
     1 & \text{for $\ell=k$}\\
     0 & \text{otherwise}.
 \end{cases}
 $$
-A possible choice of points is given by (see @fig:lagrange_nodes below for some examples)
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Lagrange polynomials}
 $$
-\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1} = \left\{\left(\frac{\ell_0}{p},\frac{\ell_1}{p}\right) \quad \text{for $\ell_0,\ell_1\in\mathbb{N}$ with $0\le \ell_0\le \ell_1 \le p$}\right\}.\qquad:eqn:nodal_points
+\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1} = \left\{\left(\frac{\ell_0}{p},\frac{\ell_1}{p}\right) \quad \text{for $\ell_0,\ell_1\in\mathbb{N}$ with $0\le \ell_0\le \ell_1 \le p$}\right\}
 $$
+\begin{center}
+\includegraphics[width=\linewidth]{figures/lagrange_nodes.pdf}
+\end{center}
+\textbf{Ordering of points}
+\begin{minipage}{0.75\linewidth}
+\begin{itemize}
+  \item points associated with vertices $v_0$, $v_1$, $v_2$ (in this order); $\nu_{\text{vertex}}=1$
+  \item points associated with facets $F_0$, $F_1$, $F_2$ (in this order); $\nu_{\text{facet}}=p-1$, ordered according to arrows
+  \item points associated with the interior $K^0$ of the cell $\widehat{K}$; $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.2\linewidth}
+  \begin{center}
+  \includegraphics[width=2\linewidth]{figures/reference_triangle_small.pdf}
+  \end{center}
+\end{minipage}
+\end{frame}
+
+\end{document}
+
 
 We order these points (and the associated basis functions $\phi_\ell$) as follows:
 
-1. Points associated with the three vertices $v_0$, $v_1$, $v_2$ (in this order); there is $\nu_{\text{vertex}}=1$ point per vertex,
-2. points associated with the facets $F_0$, $F_1$, $F_2$ (in this order); there are $\nu_{\text{facet}}=p-1$ points per facet and on each facet these points are ordered according to the arrows in @fig:reference_triangle and finally
-3. points associated with the interior $K^0$ of the cell $\widehat{K}$; there are $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$ points of this type.
 
 This is illustrated in @fig:lagrange_nodes, which shows the ordering of the points for $p=1,2,3,4$:
 

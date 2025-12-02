@@ -2,3 +2,15 @@
 src/plotting/*svg
 src/plotting/*pdf
 src/plotting/*png
+*.aux
+*.dvi
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+lectures/Notes.pdf
+*.snm
+*.synctex.gz
+*.toc
+*.vrb

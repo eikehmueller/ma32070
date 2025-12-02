@@ -888,35 +888,25 @@ $$
 \textbf{Ordering of points}
 \begin{minipage}{0.75\linewidth}
 \begin{itemize}
-  \item points associated with vertices $v_0$, $v_1$, $v_2$ (in this order); $\nu_{\text{vertex}}=1$
-  \item points associated with facets $F_0$, $F_1$, $F_2$ (in this order); $\nu_{\text{facet}}=p-1$, ordered according to arrows
-  \item points associated with the interior $K^0$ of the cell $\widehat{K}$; $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$
+  \item $\nu_{\text{vertex}}=1$ point associated with each vertex \textcolor{red}{$v_0$}, \textcolor{red}{$v_1$}, \textcolor{red}{$v_2$} (in this order); 
+  \item $\nu_{\text{facet}}=p-1$ points associated with each facet \textcolor{blue}{$F_0$}, \textcolor{blue}{$F_1$}, \textcolor{blue}{$F_2$} (in this order), numbered following arrows
+  \item $\nu_{\text{interior}}=\frac{1}{2}(p-1)(p-2)$ points associated with interior $K^0$
 \end{itemize}
 \end{minipage}
 \hfill
-\begin{minipage}{0.2\linewidth}
+\begin{minipage}{0.225\linewidth}
   \begin{center}
-  \includegraphics[width=2\linewidth]{figures/reference_triangle_small.pdf}
+  \includegraphics[width=\linewidth]{figures/reference_triangle_small.pdf}
   \end{center}
 \end{minipage}
 \end{frame}
 
-\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+\frametitle{Examples}
 
-We order these points (and the associated basis functions $\phi_\ell$) as follows:
-
-
-This is illustrated in @fig:lagrange_nodes, which shows the ordering of the points for $p=1,2,3,4$:
-
-![:fig:lagrange_nodes: Nodes of Lagrange elements](figures/lagrange_nodes.svg)
-
-The associated finite elements are known as **Lagrange elements**.
-
-### Examples
-
-#### Linear finite element
-For $p=1$ we obtain the (bi-)linear finite element with the following basis three functions, each of which is associated with a vertex:
+\textbf{Linear finite element} $p=1$
 $$
 \begin{aligned}
 \phi_0(x) &= 1-x_0-y_0\\
@@ -924,27 +914,46 @@ $$
 \phi_2(x) &= x_1
 \end{aligned}
 $$
+$\nu_{\text{vertex}}=1$, $\nu_{\text{facet}}=\nu_{\text{interior}}=0$
+\end{frame}
 
-#### Quadratic finite element
-For $p=2$ there are six basis functions, three associated with vertices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Examples}
+\textbf{Quadratic element} $p=2$\qquad ($\nu_{\text{interior}}=0$)\\[1ex]
+\begin{minipage}{0.475\linewidth}
+vertices ($\nu_{\text{vertex}}=1$)
 $$
+{\footnotesize
 \begin{aligned}
 \phi_0(x) &= (1-x_0-x_1)(1-2x_0-2x_1),\\
 \phi_1(x) &= x_0(2x_0-1),\\
 \phi_2(x) &= x_1(2x_1-1),
 \end{aligned}
+}
 $$
-and three associated with facets
+\end{minipage}
+\hfill
+\begin{minipage}{0.475\linewidth}
+facets ($\nu_{\text{facet}}=1$)
 $$
+{\footnotesize
 \begin{aligned}
 \phi_3(x) &= 4x_0x_1,\\
 \phi_4(x) &= 4x_1(1-x_0-x_1),\\
 \phi_5(x) &= 4x_0(1-x_0-x_1),
-\end{aligned}
+\end{aligned}}
 $$
-see @fig:lagrange_nodes. These functions are visualised in the following figure:
+\end{minipage}
+\begin{center}
+\includegraphics[width=0.9\linewidth]{figures/quadratic_element.png}
+\end{center}
+\end{frame}
 
-![:fig:basis_functions_quadratic: Basis functions for quadratic finite element (red arrows indicate gradients)](figures/quadratic_element.png)
+
+\end{document}
+
 
 ## Formal definition of finite elements
 It turns out that it is advantageous to define finite elements in a more general sense. Mirroring this more abstract mathematical definition in the Python code will help us to structure the code in a sensible way that will allow its easy adaptation to specific cases. For this we first need to introduce the notion of the dual $\mathcal{V}^*$ of a given function space $\mathcal{V}$.

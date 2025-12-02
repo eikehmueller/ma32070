@@ -370,7 +370,7 @@ For more information on PETSc vectors see the [documentation of `petsc4py.PETSc.
 ## Tensors
 Tensors are generalisations vectors and matrices: they can be understood as $d$-dimensional arrays. A tensor $T$ of rank $d$ is an object which can be indexed with $d$ integers $i_0,i_1,\dots,i_{d-1}$ where $0\le i_k < s_k$ for $k=0,1,2,\dots,d-1$, i.e. we can write $T_{i_0,i_1,\dots,i_{d-1}}\in \mathbb{R}$ for the tensor elements. The list $[s_0,s_1,\dots,s_{d-1}]$ is known as the **shape** of the tensor. We are already familiar with three special cases:
 
-* rank 0 tensors are **scalars**, i.e. real numbers $s\in\mathbb{R}$. In this case the shape is the empty list $[\;]$.
+* rank 0 tensors are **scalars**, i.e. real numbers $\sigma\in\mathbb{R}$. In this case the shape is the empty list $[\;]$.
 * rank 1 tensors are **vectors** $\boldsymbol{v}\in \mathbb{R}^n$ with elements $v_i$ for $0\le i< n$. The shape of a vector is the single number $[n]$, i.e. the dimension of the vector.
 * rank 2 tensors are $n\times m$ **matrices** $A\in \mathbb{R}^{n\times m}$ with elements $A_{ij}$ for $0\le i<n$ and $0\le j <m$. The shape is the tuple $[n,m]$, where $n$ is the number of rows and $m$ is the number of columns of the matrix.
 

@@ -1386,68 +1386,77 @@ $$
 $$
 \end{frame}
 
-\end{document}
-  
- 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-## Two-dimensional quadrature for the reference triangle
-To numerically integrate functions over the reference triangle $\widehat{K}$ we use the same approach as in [[CH24]](https://finite-element.github.io/1_quadrature.html#extending-legendre-gausz-quadrature-to-two-dimensions). For this, first observe that $\widehat{K}$ is the image of the square $S=[-1,+1]\times [-1,+1]$ under the [Duffy transform](https://epubs.siam.org/doi/10.1137/0719090) $\tau$ which maps a point $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$ to
+\begin{frame}[fragile]
+\frametitle{Two-dimensional quadrature for the reference triangle}
+Duffy transform $\tau$: $S=[-1,+1]\times [-1,+1]\mapsto \widehat{K} = \tau(S)$
 
 $$
 \begin{aligned}
-\tau(\widetilde{x}) = \left(\frac{1}{2}(1+\widetilde{x}_0),\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\right)^\top \in \widehat{K}\qquad:eqn:duffy_transform
+\tau(\widetilde{x}) = \begin{pmatrix}\frac{1}{2}(1+\widetilde{x}_0)\\[1ex]\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\end{pmatrix} \in \widehat{K}\qquad\text{for $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$}
 \end{aligned}
 $$
 
-(see @fig:quadrature_points)
+\begin{center}
+\includegraphics[width=0.5\linewidth]{figures/quadrature.pdf}
+\end{center}
 
-### Integration over $\boldsymbol{S}$
-Since $S=[-1,+1]\times[-1,+1]$ is the product of two intervals, we can integrate functions over $S$ by picking quadrature points and weights $\mathcal{Q}_{n_q}^{(\text{GL},S)}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{N_q-1}$ with $N_q = n_q(n_q+1)$ and
+\textbf{Quadrature on} $\boldsymbol{S}=[-1,+1]\times[-1,+1]$ $\Rightarrow$ product of 1d rules\\$\mathcal{Q}_{n_q+1}^{(\text{GL})} = \{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}$, $\mathcal{Q}_{n_q}^{(\text{GL})} =\{(\widetilde{\zeta}^{(q_1)}_1,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}$\\[1ex]
+2d quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},S)}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{N_q-1}$, $N_q = n_q(n_q+1)$
 
 $$
-\widetilde{\zeta}^{(q)} = \left(\widetilde{\zeta}^{(q_0)}_0,\widetilde{\zeta}^{(q_1)}_1\right)^\top\in\mathbb{R}^2,\quad \widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1} \qquad \text{where $q=n_q q_0+q_1$}.
+\widetilde{\zeta}^{(q)} = \left(\widetilde{\zeta}^{(q_0)}_0,\widetilde{\zeta}^{(q_1)}_1\right)^\top\in\mathbb{R}^2,\quad \widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1} \qquad \text{$q=n_q q_0+q_1$}.
 $$
+\end{frame}
 
-Here $\mathcal{Q}_{n_q+1}^{(\text{GL})} = \{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}$ and $\mathcal{Q}_{n_q}^{(\text{GL})} =\{(\widetilde{\zeta}^{(q_1)}_1,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}$ are Gauss-Legendre quadrature rules with $n_q+1$ and $n_q$ points respectively (we need to integrate more accurately in the $0$-direction since an additional factor of $\widetilde{x}_0$ will be introduced by the Duffy-transform). 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Integration over $\boldsymbol{\widehat{K}}$
-Using the Duffy transform in @eqn:duffy_transform, the quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},\widehat{K})} = \{(\zeta^{(q)},w_q)\}_{q=0}^{N_q-1} = \tau(\mathcal{Q}^{(S)}_{n_q})$ over $\widehat{K}$ is then obtained as
+\begin{frame}[fragile]
+\frametitle{Two-dimensional quadrature for the reference triangle}
+\textbf{Integration over $\boldsymbol{\widehat{K}}$}\\
+Duffy transform $\tau$ $\Rightarrow$ quadrature rule on $\widehat{K}$ $\mathcal{Q}_{n_q}^{(\text{GL},\widehat{K})} = \{(\zeta^{(q)},w_q)\}_{q=0}^{N_q-1} = \tau(\mathcal{Q}^{(S)}_{n_q})$ over $\widehat{K}$:
 
 $$
 \begin{aligned}
-\zeta^{(q)} &= \tau(\widetilde{\zeta}^{(q)}) = \left(\frac{1}{2}(1+\widetilde{\zeta}^{(q_0)}_0),\frac{1}{4}(1-\widetilde{\zeta}^{(q_0)}_0)(1+\widetilde{\zeta}^{(q_1)}_1)\right)^\top,\\
-w_q &= \widetilde{w}_q \left|\det\left(\frac{\partial \tau}{\partial \widetilde{x}}\right)\right|_{\widetilde{x}=\widetilde{\zeta}^{(q)}} = \frac{1}{8}\widetilde{w}_{0,q_0}\widetilde{w}_{1,q_1}(1-\widetilde{\zeta}^{(q_0)}_0)
- \qquad \text{where $q=n_qq_0+q_1$.}
+\zeta^{(q)} &= \tau(\widetilde{\zeta}^{(q)}) = \begin{pmatrix}(\frac{1}{2}(1+\widetilde{\zeta}^{(q_0)}_0)\\[1ex]\frac{1}{4}(1-\widetilde{\zeta}^{(q_0)}_0)(1+\widetilde{\zeta}^{(q_1)}_1)\end{pmatrix}\qquad \text{where $q=n_qq_0+q_1$}\\
+w_q &= \widetilde{w}_q \left|\det\left(\frac{\partial \tau}{\partial \widetilde{x}}\right)\right|_{\widetilde{x}=\widetilde{\zeta}^{(q)}}= \frac{1}{8}\widetilde{w}_{0,q_0}\widetilde{w}_{1,q_1}(1-\widetilde{\zeta}^{(q_0)}_0)
 \end{aligned}
 $$
-
-The following figure shows the quadrature points on $S$ and $\widehat{K}$ for $n_q=2$.
-
-![:fig:quadrature_points: Quadrature points on $S$ and $\widehat{K}$](figures/quadrature.svg)
-
-Based on this construction we find that
+\begin{center}
+\includegraphics[width=0.5\linewidth]{figures/quadrature.pdf}
+\end{center}
 $$
 \text{dop}(\mathcal{Q}^{(\text{GL},\widehat{K})}_{n_q}) = \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1.
 $$
+\end{frame}
 
-## Implementation in Python
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Abstract base class
-All quadrature rules are characterised by their weights and points. We therefore implement them as subclasses of an abstract base class `Quadrature` (in [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py)) which has the following abstract properties: 
+\begin{frame}[fragile]
+\frametitle{Implementation in Python}
+\textbf{Abstract base class} \lstinline{Quadrature}
+\begin{itemize}
+\item Points $\{\zeta^{(q)}\}_{q=0}^{n_q-1}$ $\Rightarrow$ array \lstinline{nodes} of shape $n_q\times 2$
+\item Weights $\{w_q\}_{q=0}^{n_q-1}$ $\Rightarrow$ array \lstinline{weights} of length $n_q$
+\item degree of precision $\Rightarrow$ property \lstinline{degree_of_precision}
+\end{itemize}
+\\[2ex]
+Concrete implementations in \textbf{subclasses}
+\begin{itemize}
+  \item Quadrature rule $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}$ over line segment $\mathcal{C}$: \lstinline{GaussLegendreQuadratureLineSegment(v_a, v_b, npoints)}
+  \begin{itemize}
+    \item \lstinline{v_a} start point $a$
+    \item \lstinline{v_b} end point $b$
+    \item \lstinline{npoints} number of points $n_q$
+  \end{itemize}
+  \item Quadrature rule $\mathcal{Q}^{(\text{GL},\widehat{K})}_{n_q}$ over the reference triangle $\widehat{K}$: \lstinline{GaussLegendreQuadratureReferenceTriangle(npoints)}
+\end{itemize}
+\end{frame}
 
-* `nodes` the quadrature nodes $\{\zeta^{(q)}\}_{q=0}^{n_q-1}$, represented by an array of shape $n_q\times 2$
-* `weights` the quadrature weights $\{w_q\}_{q=0}^{n_q-1}$, represented by an array of length $n_q$
-* `degree_of_precision` degree of precision, i.e. the highest polynomial degree that can be integrated exactly
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Concrete implementations
-The file [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py) also contains specific subclasses
-
-* A quadrature rule $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}$ over line segments based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureLineSegment(v_a, v_b, npoints)`. The following parameters are passed to the constructor:
-    - `v_a` the start point $a$ of the line segment
-    - `v_b` the end point $b$ of the line segment
-    - `npoints` the number of points $n_q$
-* A quadrature rule $\mathcal{Q}^{(\text{GL},\widehat{K})}_{n_q}$ over the reference triangle $\widehat{K}$ based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureReferenceTriangle(npoints)`. The constructor is passed the number of points $n_q$.
+\end{document}
 
 # Local assembly
 We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle. For this we need to be able to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$.

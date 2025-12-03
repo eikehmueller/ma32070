@@ -1,9 +1,7 @@
 import numpy as np
 import pytest
 
-from solutions.exercise_quadrature.threepointquadrature import (
-    ThreePointQuadratureReferenceTriangle,
-)
+from threepointquadrature import ThreePointQuadratureReferenceTriangle
 
 
 @pytest.mark.parametrize(

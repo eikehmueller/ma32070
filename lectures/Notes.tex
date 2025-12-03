@@ -1294,79 +1294,101 @@ from fem.polynomialelement import PolynomialElement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
-\frametitle{}
-\end{frame}
-
-\end{document}
-  
-# Numerical quadrature
-The weak form of the PDE is defined via suitable integrals such as $\int_\Omega v(x)f(x)\;dx$. In general, it is not possible to evaluate these integrals exactly. Furthermore, since the finite element discretisation (replacing $\mathcal{V}\mapsto \mathcal{V}_h$ and solving the associated linear algebra problem) already introduces an error, exact integration is not necessary, provided we can find an approximate integration method with errors that are of the same order of magnitude as the discretisation.
-
-## Gauss-Legendre quadrature in one dimension
-Numerical quadrature aims to approximate the integral of a function $f$ with a finite sum:
-
+\frametitle{Numerical quadrature}
+The weak form of PDE requires \textbf{integration} over domain $\Omega$
+$$
+a(u,v) = \int_\Omega \left(\kappa \nabla u \cdot \nabla  v + \omega\; u v\right)\;dx
+$$
+\textbf{Numerical integration in 1d}
 $$
 \int_{-1}^{+1} f(z)\;dz \approx \sum_{q=0}^{n_q-1} \widetilde{w}_q f(\widetilde{\zeta}^{(q)})
 $$
+\textbf{Qudrature\footnote{often called ``cubature'' in more than one dimension} rule} $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$
+\begin{itemize}
+\item points $\widetilde{\zeta}^{(q)}$, $q=0,1,2,\dots,n_q-1$
+\item corresponding weights $\widetilde{w}_q$
+\end{itemize}
+\end{frame}
 
-A particular quadrature rule $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ is defined by the sets of points $\widetilde{\zeta}^{(q)}$ and corresponding weights $\widetilde{w}_q$. Here we will consider Gauss-Legendre quadrature $\mathcal{Q}^{(\text{GL})}_{n_q}$, for which the points are the roots of the [Legendre polynomial](https://mathworld.wolfram.com/LegendrePolynomial.html) $P_{n_q}$ and the weights are given by $\widetilde{w}_q = \frac{2}{(1-(\widetilde{\zeta}^{(q)})^2)(P_{n_q}'(\widetilde{\zeta}^{(q)}))^2}$. The points and weights can be constructed with [numpy.polynomial.legendre.leggauss](https://numpy.org/doc/stable/reference/generated/numpy.polynomial.legendre.leggauss.html):
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-```
+\begin{frame}[fragile]
+\frametitle{Numerical quadrature}
+\textbf{Gauss-Legendre quadrature} $\mathcal{Q}^{(\text{GL})}_{n_q}$
+\begin{itemize}
+ \item points $\widetilde{\zeta}^{(q)}$ = roots of the Legendre polynomial $P_{n_q}$
+ \item weights $\widetilde{w}_q = \frac{2}{(1-(\widetilde{\zeta}^{(q)})^2)(P_{n_q}'(\widetilde{\zeta}^{(q)}))^2}$
+\end{itemize}
+
+\begin{lstlisting}
 points, weights = numpy.polynomial.legendre.leggauss(n_q)
-```
-The details of this construction are irrelevant for this course, but we need to have some understanding of how well the numerical scheme approximates the true value of the integral. Naturally one would expect that the quadrature approximates the integral better for larger numbers of points $n_q$. Crucially, Gauss-Legendre quadrature is exact if the function to be integrated is a polynomial of degree $2n_q-1$:
+\end{lstlisting}
+\textbf{Exact} for polynomials of degree $2n_q-1$:
 
 $$
 \int_{-1}^{+1} p(z)\;dz = \sum_{q=0}^{n_q-1} \widetilde{w}_q p(\widetilde{\zeta}^{(q)})\qquad\text{for $p\in\mathcal{P}_{2n_q-1}$}
 $$
-
-We also call the degree of the highest polynomial that can be integrated exactly with a given quadrature rule the **degree of precision** or short "dop":
+\textbf{degree of precision} (dop)
 $$
 \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1
 $$
+\end{frame}
 
-The first three Gauss-Legendre quadrature rules are shown in the following table:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-| number of points $n_q$ | quadrature points $\widetilde{\zeta}^{(q)}$ | weights $\widetilde{w}_q$ | degree of precision $\text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q})$ |
-| :---: | :---: | :---: | :---:  |
-| 1   | $0$ | $2$ | $1$ |
-| 2   | $-\frac{1}{\sqrt{3}}, +\frac{1}{\sqrt{3}}$ | $1$ | $3$ |
-| 3   | $-\sqrt{\frac{3}{5}},0,+\sqrt{\frac{3}{5}}$ | $\frac{5}{9},\frac{8}{9},\frac{5}{9}$ | $5$ |
+\begin{frame}[fragile]
+\frametitle{Numerical quadrature}
+\textbf{Lowest order Gauss-Legendre} quadrature rules
+\begin{center}
+  \renewcommand{\arraystretch}{2.5}
+  \begin{tabular}{cccc}
+    \hline
+    \# points $n_q$ & points $\widetilde{\zeta}^{(q)}$ & weights $\widetilde{w}_q$ & $\text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q})$\\
+    \hline\hline
+ 1   & $0$ & $2$ & $1$\\
+ 2   & $-\sqrt{\frac{1}{3}}, +\sqrt{\frac{1}{3}}$ & $1$ & $3$\\
+ 3   & $-\sqrt{\frac{3}{5}},0,+\sqrt{\frac{3}{5}}$ & $\frac{5}{9},\frac{8}{9},\frac{5}{9}$ & $5$\\
+ \hline
+  \end{tabular}
+\end{center}
+\end{frame}
 
-The cases $n_q=1$ and $n_q=2$ were derived in your Numerical Analysis lecture.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-While so far we have only considered integration over the interval $[-1,+1]$, it turns out that integration over more general domains and higher-dimensional can be reduced to this case.
-
-## Integration along a line
-Next, imagine that we want to integrate a function along a straight line $\mathcal{C}\subset \mathbb{R}^2$ connecting two points $a,b\in \mathbb{R}^2$. To achieve this, pick a parametrisation $\gamma: [-1,1] \rightarrow \mathbb{R}^2$ of this line with $\gamma(-1)=a$, $\gamma(1)=b$
-
+\begin{frame}[fragile]
+\frametitle{Integration along a line}
+\textbf{Integrate function along a straight line} $\mathcal{C}\subset \mathbb{R}^2$ connecting two points $a,b\in \mathbb{R}^2$\\[1ex]
+\begin{minipage}{0.6\linewidth}
+Parametrisation $\gamma: [-1,1] \rightarrow \mathbb{R}^2$ 
+\end{minipage}
+\hfill
+\begin{minipage}{0.25\linewidth}
+  \begin{center}
+  \includegraphics[width=\linewidth]{figures/straight_line.pdf}
+  \end{center}
+\end{minipage}
 $$
-\gamma(z) = \frac{1-z}{2}a+\frac{1+z}{2}b
+\gamma(z) = \frac{1-z}{2}a+\frac{1+z}{2}b\qquad\text{\footnotesize note: $\gamma(-1)=a$, $\gamma(1)=b$}
+$$
+$$
+\begin{aligned}
+\Rightarrow\quad \int_{\mathcal{C}} f(x)\;ds &= \frac{\|b-a\|}{2} \int_{-1}^{+1} f(\gamma(z))\;dz \approx \sum_{q=0}^{n_q-1} w_{\mathcal{C},q} f(\zeta_{\mathcal{C}}^{(q)})
+\end{aligned}
 $$
 
-then
-
-$$
-\int_{\mathcal{C}} f(x)\;ds = \frac{\|b-a\|}{2} \int_{-1}^{+1} f(\gamma(z))\;dz
-$$
-where $\|\cdot\|$ is the Euclidean norm with $\|x\| = \sqrt{x_0^2+x_1^2}$ for $x\in\mathbb{R}^2$.
-
-Let $\mathcal{Q}_{n_q}^{(\text{GL})}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$ be the Gauss-Legendre quadrature rule for the interval $[-1,+1]$. Then we obtain
-
-$$
- \int_{\mathcal{C}} f(x)\;ds \approx \sum_{q=0}^{n_q-1} w_{\mathcal{C},q} f(\zeta_{\mathcal{C}}^{(q)})
-$$
-
-where the Gauss-Legendre quadrature rule on $\mathcal{C}$ is given by $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}=\{(\zeta^{(q)}_{\mathcal{C}},w_{\mathcal{C},q})\}_{q=0}^{n_q-1}$ with
-
+\textbf{GL quadrature rule on $\mathcal{C}$}: $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}=\{(\zeta^{(q)}_{\mathcal{C}},w_{\mathcal{C},q})\}_{q=0}^{n_q-1}$
 $$
 \zeta_{\mathcal{C}}^{(q)} = \gamma(\widetilde{\zeta}^{(q)}) = \frac{1}{2}(1-\widetilde{\zeta}^{(q)})a + \frac{1}{2}(1+\widetilde{\zeta}^{(q)})b,\qquad
-w_{\mathcal{C},q} = \|\gamma'(\zeta^{(q)})\| \widetilde{w}_{q} = \frac{\|b-a\|}{2} \widetilde{w}_q
+w_{\mathcal{C},q} = \frac{\|b-a\|}{2} \widetilde{w}_q
 $$
-and
 $$
 \text{dop}(\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}) = \text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q}) = 2n_q-1.
 $$
+\end{frame}
+
+\end{document}
+  
+ 
 
 
 ## Two-dimensional quadrature for the reference triangle

@@ -195,7 +195,7 @@ The trace $\text{trace}(AB)$ can be computed with
 
 1. `np.sum(A * B.T)`
 2. `np.einsum("ij,ji->", A, B)`
-3. `np.linalg.trace(A@B)`
+3. `np.trace(A@B)`
 
 Finally, the specified triple-product of $T$, $S$ and $Q$ can be computed with
 `np.einsum("aji,bjk,kjii->ab", T, S, Q)`.

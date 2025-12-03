@@ -36,7 +36,7 @@ print()
 print("trace(A B)")
 print(np.einsum("ij,ji->", A, B))
 print(np.sum(A * B.T))
-print(np.linalg.trace(A @ B))
+print(np.trace(A @ B))
 print()
 
 print("T S Q")

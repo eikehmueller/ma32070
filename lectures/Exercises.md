@@ -255,7 +255,7 @@ In a file `linear_algebra_numpy.py` add the above code for creating the required
 * Compute the trace of $AB$ in three different ways:
     - with the [`@` operator](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html), the [`.T` property](https://numpy.org/doc/stable/reference/generated/numpy.transpose.html) (to transpose a matrix) and [`np.sum()`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)
     - by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
-    - by using [`np.linalg.trace()`](https://numpy.org/doc/stable/reference/generated/numpy.trace.html)
+    - by using [`np.trace()`](https://numpy.org/doc/stable/reference/generated/numpy.trace.html)
 * Compute the tensor $R$ with $R_{ab} = \sum_{ijk} T_{aji}S_{bjk} Q_{kjii}$ by using [`np.einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html)
 
 ## Linear algebra with PETSc

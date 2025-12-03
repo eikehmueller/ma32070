@@ -26,6 +26,17 @@
 
 \begin{document}
 
+\begin{frame}
+  \begin{center}
+  \Large{MA32070/MA40177 Scientific Computing}
+  \end{center}
+  \vfill
+  \footnotesize{
+  These notes are copyright of Eike Mueller, University of Bath 2025. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.}
+\end{frame}
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
@@ -865,6 +876,9 @@ Lagrange polynomial $p$ = unique polynomial of degree $m$ which passes through $
 $$
 p(t_k)=z_k\qquad\text{for all $k=0,1,\dots,m$}
 $$
+\begin{center}
+\includegraphics[width=0.55\linewidth]{figures/lagrange_polynomials_1d.png}
+\end{center}
 \textbf{Two dimensions}\\
 Choose $\nu$ points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$ in $\widehat{K}$ and define $\phi_\ell(x)\in\mathcal{P}_p(K)$ such that
 $$
@@ -1037,40 +1051,70 @@ Two-dimensional \textbf{Argyris finite element}
 Only differs from $p=5$ polynomial element in choice of nodes
 \end{frame}
 
-\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Node numbering
-As we will see later, it is crucial to establish a consistent ordering of the degrees of freedom, and here we use the same ordering as in [[CH24]](https://finite-element.github.io/2_finite_elements.html). For this, assume that each node is associated with a topological entity of the reference triangle $\widehat{K}$ in @fig:reference_triangle. These entities are
-
-* the vertices $v_0$, $v_1$, $v_2$ in this order
-* the facets $F_0$, $F_1$, $F_2$ in this order
-* the interior $K^0$ of $\widehat{K}$
-  
-We further assume that $0\le \nu_{\text{vertex}}$ nodes are associated with each vertex, $0\le \nu_{\text{facet}}$ nodes are associated with each facet and $0\le \nu_{\text{interior}}$ nodes are associated with the interior $K^0$. Then obviously
+\begin{frame}
+\frametitle{Ordering of degrees of freedom}
+Node $\leftrightarrow$ topological entity of $\widehat{K}$
+\begin{minipage}{0.6\linewidth}
+\textbf{topological entities}
+\begin{itemize}
+\item \textcolor{red}{vertices $v_0$, $v_1$, $v_2$} (in this order)
+\item \textcolor{blue}{facets $F_0$, $F_1$, $F_2$} (in this order)
+\item interior $K^0$
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.3\linewidth}
+  \begin{center}
+  \includegraphics[width=\linewidth]{figures/reference_triangle_small.pdf}
+  \end{center}
+\end{minipage}\\
+Recall:
+\begin{itemize}
+\item $\nu_{\text{vertex}}$ nodes per vertex
+\item $\nu_{\text{facet}}$ nodes per facet 
+\item $\nu_{\text{interior}}$ nodes in interior $K^0$
+\end{itemize}
+Total number of nodes (dofs)
 $$
 \nu = 3( \nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}.
 $$
-Let $\lambda_j^{(E_\rho)}$ be the $j$-th node associated with topological entity $E_\rho\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$. Then we arrange the degrees of freedom $\{\lambda_0,\dots,\lambda_{\nu-1}\}$ in the order
+\end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Ordering of degrees of freedom}
+Arrange degrees of freedom $\{\lambda_0,\dots,\lambda_{\nu-1}\}$ in the order
 $$
 \underbrace{v_0 \rightarrow v_1 \rightarrow v_2}_{\text{(vertices)}}
 \rightarrow \underbrace{F_0 \rightarrow F_1 \rightarrow F_2}_{\text{(facets)}}
 \rightarrow \underbrace{K^0}_{\text{(interior)}}
 $$
-
-i.e.
-
-$\{\lambda_0^{(v_0)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_0)},
+$\lambda_j^{(E_\rho)}$ = $j$-th node associated with $E_\rho\in \{v_0,v_1,v_2,F_0,F_1,F_2,K^0\}$
+\begin{center}
+\includegraphics[width=0.8\linewidth]{figures/lagrange_nodes.pdf}
+\end{center}
+$$
+\begin{aligned}
+& \{\lambda_0^{(v_0)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_0)},
 \lambda_0^{(v_1)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_1)},
-\lambda_0^{(v_2)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_2)},
-\lambda_0^{(F_0)},\dots,\lambda_{\nu_{\text{facet}}-1}^{(F_0)},
+\lambda_0^{(v_2)},\dots,\lambda_{\nu_{\text{vertex}}-1}^{(v_2)},\\
+& \lambda_0^{(F_0)},\dots,\lambda_{\nu_{\text{facet}}-1}^{(F_0)},
 \lambda_0^{(F_1)},\dots,\lambda_{\nu_{\text{facet}}-1}^{(F_1)},
-\lambda_0^{(F_2)},\dots,\lambda_{\nu_{\text{facet}}-1}^{(F_2)},
-\lambda_0^{(K^0)},\dots,\lambda_{\nu_{\text{interior}}-1}^{(K^0)}
-\}$
+\lambda_0^{(F_2)},\dots,\lambda_{\nu_{\text{facet}}-1}^{(F_2)},\\
+& \lambda_0^{(K^0)},\dots,\lambda_{\nu_{\text{interior}}-1}^{(K^0)}
+\}
+\end{aligned}
+$$
+\end{frame}
 
-In other words, we define the indirection map $\mu_{\text{dof}}$ such that $\lambda_{\ell=\mu_{\text{dof}}(E,\rho,j)} = \lambda_j^{(E_\rho)}$ with
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+\frametitle{Ordering of degrees of freedom}
+\textbf{Indirection map} $\mu_{\text{dof}}$: $\lambda_{\ell=\mu_{\text{dof}}(E,\rho,j)} = \lambda_j^{(E_\rho)}$
 $$
 \mu_{\text{dof}}(E,\rho,j) = \begin{cases}
 \rho\cdot \nu_{\text{vertex}} + j & \text{if $E_\rho$ is the $\rho$-th vertex}\\
@@ -1078,15 +1122,8 @@ $$
 3(\nu_{\text{vertex}} + \nu_{\text{facet}}) + j & \text{if $E$ is the interior}
 \end{cases}
 $$
-
-The inputs of the indirection map $\mu_{\text{dof}}$ are
-
-* The entity type $E$ (vertex, facet or interior)
-* The index $\rho$ of the particular entity; this is ignored if $E$ is the interior
-* The index $j$ of the unknown on the entity
-
-This is illustrated for the polynomial Lagrange element in @fig:lagrange_nodes. For example, for the quartic Lagrange element ($p=4$) we have that
-
+Example: \textbf{quartic Lagrange element} ($p=4$)\\[2ex]
+\begin{minipage}{0.3\linewidth}
 $$
 \begin{aligned}
 \mu_{\text{dof}}(v,1,0) &= 1\\
@@ -1094,100 +1131,173 @@ $$
 \mu_{\text{dof}}(K^0,0,2) &= 14
 \end{aligned}
 $$
+\end{minipage}
+\hfill
+\begin{minipage}{0.3\linewidth}
+  \begin{center}
+  \includegraphics[width=\linewidth]{figures/lagrange_nodes_quintic.pdf}
+  \end{center}
+\end{minipage}
+\hfill
+\begin{minipage}{0.3\linewidth}
+  \begin{center}
+  \includegraphics[width=\linewidth]{figures/reference_triangle_small.pdf}
+  \end{center}
+\end{minipage}
+\end{frame}
 
-## Vandermonde matrix
-Having picked the nodes, how can we construct the nodal basis functions $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$ for a given set of nodes $\{\lambda_\ell\}_{\ell=0}^{\nu-1}$? Here we follow the same procedure as in [[CH24]](https://finite-element.github.io/2_finite_elements.html#solving-for-basis-functions), using slightly different notation. For this, assume that we know some set of basis functions $\{\theta_m(x)\}_{m=0}^{\nu-1}$ of $\widehat{\mathcal{V}}$. For the Lagrange elements, these could for example be the monomials $1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots$. Since $\{\theta_m(x)\}_{m=0}^{\nu-1}$ is a basis of $\widehat{\mathcal{V}}$, we can write for each $k=0,1,\dots,\nu-1$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Vandermonde matrix}
+\textbf{Nodal basis functions} $\{\phi_\ell(x)\}_{\ell=0}^{\nu-1}$\\
+Start with basis of $\widehat{\mathcal{V}}$:
+$$
+\{\theta_m(x)\}_{m=0}^{\nu-1}=\{1,x_0,x_1,x_0^2,x_0x_1,x_1^2,\dots\}
+$$
+and expand
+$$
+\phi_k(x) = \sum_{m=0}^{\nu-1} c_m^{(k)} \theta_m(x)\qquad\text{for coefficients $c_m^{(k)}$}
+$$
+Definition of nodal basis
+$$
+\delta_{\ell k} = \lambda_\ell(\phi_k) = \sum_{m=0}^{\nu-1} \underbrace{c_m^{(k)}}_{C_{mk}} \underbrace{\lambda_\ell(\theta_m)}_{V_{\ell m}}
+$$
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{}
+
+Define $\nu\times\nu$ matrices $V$, $C$ with $V_{\ell m} := \lambda_\ell(\theta_m)$ and $C_{mk}:=c_m^{(k)}$
 
 $$
-\phi_k(x) = \sum_{m=0}^{\nu-1} c_m^{(k)} \theta_m(x)
-$$
-
-for some coefficients $c_m^{(k)}$. Further, since per definition $\{\phi_\ell\}_{\ell=0}^{\nu-1}$ is a *nodal* basis of $\widehat{\mathcal{V}}$ and $\lambda_\ell$ are linear functionals we know that
-
-$$
-\delta_{\ell k} = \lambda_\ell(\phi_k) = \sum_{m=0}^{\nu-1} \underbrace{c_m^{(k)}}_{C_{mk}} \underbrace{\lambda_\ell(\theta_m)}_{V_{\ell m}}.\qquad:eqn:nodal_property
-$$
-
-If we define the $\nu\times\nu$ matrices $V$, $C$ with $V_{\ell m} := \lambda_\ell(\theta_m)$ and $C_{mk}:=c_m^{(k)}$, then equation @eqn:nodal_property can be written in matrix form as
-$$
+\delta_{\ell k} =  \sum_{m=0}^{\nu-1} c_m^{(k)} \lambda_\ell(\theta_m)
+\quad \Leftrightarrow \quad
 VC = \mathbb{I}\quad \Leftrightarrow \quad C = V^{-1}
 $$
-with $\mathbb{I}$ the $\nu\times\nu$ identity matrix. In other words, we can obtain the coefficients $c_m^{(k)}$ by inverting the matrix $V$. For the Lagrange element, where $\lambda_\ell(w) = w(\xi^{(\ell)})$ are nodal evaluations and thus $V_{\ell m} = \lambda_{\ell}(\theta_m) = \theta_m(\xi^{(\ell)})$, the matrix $V$ is the [Vandermonde matrix](https://mathworld.wolfram.com/VandermondeMatrix.html):
+Lagrange element $\lambda_\ell(w) = w(\xi^{(\ell)})$ $\Rightarrow$ $V_{\ell m} = \lambda_{\ell}(\theta_m) = \theta_m(\xi^{(\ell)})$\\[1ex]
+\textbf{Vandermonde matrix}
 $$
+\setlength\arraycolsep{2pt}
+{\footnotesize%
 V = V(\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}) = \begin{pmatrix}
 1 & \xi^{(0)}_0 & \xi^{(0)}_1  & (\xi^{(0)}_0)^2 & \xi^{(0)}_0 \xi^{(0)}_1 & (\xi^{(0)}_1)^2 & \dots \\[1ex]
 1 & \xi^{(1)}_0 & \xi^{(1)}_1 & (\xi^{(1)}_0)^2 & \xi^{(1)}_0 \xi^{(1)}_1 & (\xi^{(1)}_1)^2 & \dots \\[1ex]
 1 & \xi^{(2)}_0 & \xi^{(2)}_1 & (\xi^{(2)}_0)^2 & \xi^{(2)}_0 \xi^{(2)}_1 & (\xi^{(2)}_1)^2 & \dots \\[1ex]
 \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots\\
 1 & \xi^{(\nu-1)}_0 & \xi^{(\nu-1)}_1 & (\xi^{(\nu-1)}_0)^2 & \xi^{(\nu-1)}_0 \xi^{(\nu-1)}_1 & (\xi^{(\nu-1)}_1)^2 & \dots
-\end{pmatrix}.\qquad:eqn:vandermonde_matrix
+\end{pmatrix}}
 $$
-In fact, for *any* given set of $n$ points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, which do not have to coincide with the nodal points $\{\xi^{(\ell)}\}_{\ell=0}^{\nu-1}$, we can construct the $n\times\nu$ matrix $V(\boldsymbol{\zeta})$ with $V_{rm}(\boldsymbol{\zeta}) = \theta_m(\zeta^{(r)})$ in the same way. We further define the rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ with
+\textbf{Nodal basis functions}
+$$
+\phi_k(x) = \sum_{m=0}^{\nu-1} C_{mk} \theta_m(x)\qquad\text{with $C_{mk} = (V^{-1})_{mk}$}
+$$
+\end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Evaluation of basis functions}
+Consider any $n$ points
+$$
+\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}\qquad\text{with $\zeta^{(r)}\in\widehat{K}$}
+$$
+Define
+\begin{itemize}
+\item $n\times\nu$ matrix $V(\boldsymbol{\zeta})$
+$$
+V_{rm}(\boldsymbol{\zeta}) := \theta_m(\zeta^{(r)})
+$$
+\item Rank 3 tensor $V^{\partial}(\boldsymbol{\zeta})$ of shape $[n,\nu,2]$
 $$
 V^{\partial}_{rma}(\boldsymbol{\zeta}):=\frac{\partial \theta_m}{\partial x_a}(\zeta^{(r)}).
 $$
+\end{itemize}
+\end{frame}
 
-It should be stressed that $V$ and $V^{\partial}$ can be constructed for arbitrary finite elements, not just for Lagrange elements.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Tabulation of basis functions
-As we will see below, assembly of the matrix $A^{(h)}$ and right hand side vector $\boldsymbol{b}^{(h)}$ will require the evaluation (or **tabulation**) of the basis functions and their derivatives at a given set of points. The results from the previous section allow us to *tabulate* the basis functions: for a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, we have that
-
+\begin{frame}
+\frametitle{Tabulation of basis functions}
+\textbf{Evaluation of nodal basis functions}: $n\times \nu$ matrix $T(\vec{\zeta})$
 $$
-T_{r\ell}(\boldsymbol{\zeta}) := \phi_\ell(\zeta^{(r)}) = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \theta_m(\zeta^{(r)}) = \sum_{m=0}^{\nu-1}V_{rm}(\boldsymbol{\zeta})C_{m\ell}\qquad:eqn:tabulation_basis 
+T_{r\ell}(\boldsymbol{\zeta}) := \phi_\ell(\zeta^{(r)}) = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \theta_m(\zeta^{(r)}) = \sum_{m=0}^{\nu-1}V_{rm}(\boldsymbol{\zeta})C_{m\ell}
 $$
-
-or, more compactly:
-
 $$
-T(\boldsymbol{\zeta}) = V(\boldsymbol{\zeta}) C
+T(\boldsymbol{\zeta}) = V(\boldsymbol{\zeta}) C\qquad\text{with $C=V^{-1}$}
 $$
-
-where $C=V^{-1}$ is obtained by inverting the matrix $V$ in @eqn:vandermonde_matrix.
-
-Furthermore, we have for the derivatives
-
+\textbf{Evaluation of derivatives}: rank 3 tensor $T^\partial(\vec{\zeta})$ of shape $[n,\nu,2]$
 $$
 \begin{aligned}
 T^\partial_{r\ell a}(\boldsymbol{\zeta}) &:= \frac{\partial \phi_\ell}{\partial x_a}(\zeta^{(r)}) 
  = \sum_{m=0}^{\nu-1} c_m^{(\ell)} \frac{\partial \theta_m}{\partial x_a}(\zeta^{(r)}) \\
- &= \sum_{m=0}^{\nu-1} V^\partial_{rma}(\boldsymbol{\zeta})C_{m\ell}.
- \end{aligned}\qquad:eqn:tabulation_basis_gradients
+ &= \sum_{m=0}^{\nu-1} V^\partial_{rma}(\boldsymbol{\zeta})C_{m\ell}
+ \end{aligned}
 $$
+\end{frame}
 
-## Implementation
 
-### Abstract base class
-Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class `FiniteElement` in in [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py), which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. Furthermore, any code that later uses a concrete finite element implementation will "know" which functionality it is allowed to use.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-More specifically, each finite element should provide the following functionality:
+\begin{frame}
+\frametitle{Implementation}
+Ciarlet's definition of finite element\\[1ex]
+$\Rightarrow$
+\textbf{Abstract base class} \lstinline{FiniteElement}
+\begin{itemize}
+\item \# nodes associated with each topological entity
+\begin{itemize}
+  \item abstract properties \lstinline{ndof_per_vertex}, \lstinline{ndof_per_facet}, \lstinline{ndof_per_interior} for $\nu_{\text{vertex}}$, $\nu_{\text{facet}}$ and $\nu_{\text{interior}}$. 
+  \item property \lstinline{ndof}: $\nu =3(\nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}$
+\end{itemize}
+\item Tabulate evaluation of dofs for given $\hat{f}$ $\Rightarrow$ abstract method \lstinline{tabulate_dofs(fhat)} returns $(\lambda_0(\hat{f}),\lambda_1(\hat{f}),\dots,\lambda_{\nu-1}(\hat{f}))^\top$
+\item Tabulate basis functions for $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$ $\Rightarrow$ abstract method \lstinline{tabulate(zeta)} returns $n\times\nu$ matrix $T$ with $T_{r\ell}=\phi_\ell(\zeta^{(r)})$ 
+\item Tabulate gradients of basis functions for $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$ $\Rightarrow$ abstract method \lstinline{tabulate_gradient(zeta)} returns rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{r\ell a}=\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(r)})$. 
+\item dof-map $\mu_{\text{dof}}(E,\rho,j)$ and its inverse\\$\Rightarrow$ \lstinline{dofmap(entity_type,rho,j)}, \lstinline{inverse_dofmap(ell)}
+\end{itemize}
+\end{frame}
 
-* Return the number of nodes associated with each topological entity. For this, we define abstract properties `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior` for $\nu_{\text{vertex}}$, $\nu_{\text{facet}}$ and $\nu_{\text{interior}}$ respectively. The base class also contains a property `ndof` which returns $\nu =3(\nu_{\text{vertex}}+\nu_{\text{facet}})+\nu_{\text{interior}}$.
-* Tabulate the evaluation of all dofs for a given function $\hat{f}$, i.e. compute the vector $(\lambda_0(\hat{f}),\lambda_1(\hat{f}),\dots,\lambda_{\nu-1}(\hat{f}))^\top\in\mathbb{R}^\nu$. This is done with the abstract method `tabulate_dofs(fhat)` which gets passed a Python function `fhat`.
-* Tabulate the basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$ which are stored as a $n\times 2$ array. This computes the $n\times\nu$ matrix $T$ with $T_{r\ell}=\phi_\ell(\zeta^{(r)})$ with the abstract method `tabulate(zeta)`. If only a single point $\zeta\in\mathbb{R}^2$ is passed to the subroutine it should return a vector of length $\nu$.
-* Tabulate the gradients of all basis functions for a given set of points $\boldsymbol{\zeta}=\{\zeta^{(r)}\}_{r=0}^{n-1}$  which are stored as a $n\times 2$ array. This computes the rank 3 tensor $T^\partial$ of shape $n\times\nu\times 2$ with $T^\partial_{r\ell a}=\frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(r)})$. This is done with the abstract method `tabulate_gradient(zeta)`. If only a single point $\zeta\in\mathbb{R}^2$ is passed to the subroutine it should return a matrix of shape $\nu\times 2$.
-* Implement the element dof-map $\mu_{\text{dof}}(E,\rho,j)$ and its inverse. This is done with the method `dofmap(entity_type,rho,j)` and its inverse `inverse_dofmap(ell)`. Since these methods will be called frequently with the same arguments, a [`@functools.cache`](https://docs.python.org/3/library/functools.html#functools.cache) decorator is added to automatically remember  previously computed values.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-It is crucial to observe that we carefully avoided including specific functionality (such as assuming that the basis functions are Lagrange polynomials and the degrees of freedom are point-evaluations): the base class is consistent with Ciarlet's abstract definition of the finite element and the code mirrors the mathematical structure.
+\begin{frame}
+\frametitle{Concrete implementations}
+\textbf{Subclassing} the \lstinline{FiniteElement} base class\\
+$\Rightarrow$ Provide concrete implementations of:
+\begin{itemize}
+\item \# dofs associated with topological entities:\\\lstinline{ndof_per_vertex}, \lstinline{ndof_per_facet} and \lstinline{ndof_per_interior}
+\item Evalute dofs for given function $\widehat{f}$: \lstinline{tabulate_dofs(fhat)} 
+\item Tabulate basis functions: \lstinline{tabulate(zeta)}
+\item Tabulate gradients of basis functions: \lstinline{tabulate_gradient(zeta)}
+\end{itemize}
+\end{frame}
 
-### Concrete implementations
-Any concrete implementations of finite elements are obtained by subclassing the `FiniteElement` base class. These classes have to provide concrete implementations of the following methods/properties:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-* `ndof_per_vertex`, `ndof_per_facet` and `ndof_per_interior`
-* `tabulate_dofs(fhat)` to evaluate the degrees of freedom for a given function
-* `tabulate(zeta)` to tabulate the values of the basis functions at a given set of points
-* `tabulate_gradient(zeta)` to tabulate the gradients of the basis functions for a given set of points
-
-The [`finiteelements`](https://github.com/eikehmueller/finiteelements) library provides the following implementations:
-
-* The bi-linear element is implemented as the class `LinearElement` in [`fem/linearelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py)
-* The general polynomial element is implemented as the class `PolynomialElement` in [`fem/polynomialelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/polynomialelement.py) (this class will be made available later in the semester)
-
-If the [`finiteelements`](https://github.com/eikehmueller/finiteelements) library has been installed, these elements can be imported as follows:
-```python
+\begin{frame}[fragile]
+\frametitle{Concrete implementations}
+Available finite elements
+\begin{itemize}
+\item Bi-linear element $(p=1)$: \lstinline{LinearElement}
+\item Cubic linear element $(p=3)$: \lstinline{CubicElement} (= exercise)
+\item General polynomial element: \lstinline{PolynomialElement} (will be made available later)
+\end{itemize}
+\vspace{2ex}
+Import as
+\begin{lstlisting}
 from fem.linearelement import LinearElement
 from fem.polynomialelement import PolynomialElement
-```
+\end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{}
+\end{frame}
+
+\end{document}
   
 # Numerical quadrature
 The weak form of the PDE is defined via suitable integrals such as $\int_\Omega v(x)f(x)\;dx$. In general, it is not possible to evaluate these integrals exactly. Furthermore, since the finite element discretisation (replacing $\mathcal{V}\mapsto \mathcal{V}_h$ and solving the associated linear algebra problem) already introduces an error, exact integration is not necessary, provided we can find an approximate integration method with errors that are of the same order of magnitude as the discretisation.

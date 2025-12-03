@@ -961,7 +961,7 @@ To numerically integrate functions over the reference triangle $\widehat{K}$ we 
 
 $$
 \begin{aligned}
-\tau(\widetilde{x}) = \left(\frac{1}{2}(1+\widetilde{x}_0),\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\right)^\top \in \widehat{K}\qquad:eqn:duffy_transform
+\tau(\widetilde{x}) = \begin{pmatrix}\frac{1}{2}(1+\widetilde{x}_0)\\[1ex]\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\end{pmatrix} \in \widehat{K}\qquad:eqn:duffy_transform
 \end{aligned}
 $$
 
@@ -981,7 +981,7 @@ Using the Duffy transform in @eqn:duffy_transform, the quadrature rule $\mathcal
 
 $$
 \begin{aligned}
-\zeta^{(q)} &= \tau(\widetilde{\zeta}^{(q)}) = \left(\frac{1}{2}(1+\widetilde{\zeta}^{(q_0)}_0),\frac{1}{4}(1-\widetilde{\zeta}^{(q_0)}_0)(1+\widetilde{\zeta}^{(q_1)}_1)\right)^\top,\\
+\zeta^{(q)} &= \tau(\widetilde{\zeta}^{(q)}) = \begin{pmatrix}\frac{1}{2}(1+\widetilde{\zeta}^{(q_0)}_0)\\[1ex]\frac{1}{4}(1-\widetilde{\zeta}^{(q_0)}_0)(1+\widetilde{\zeta}^{(q_1)}_1)\end{pmatrix},\\
 w_q &= \widetilde{w}_q \left|\det\left(\frac{\partial \tau}{\partial \widetilde{x}}\right)\right|_{\widetilde{x}=\widetilde{\zeta}^{(q)}} = \frac{1}{8}\widetilde{w}_{0,q_0}\widetilde{w}_{1,q_1}(1-\widetilde{\zeta}^{(q_0)}_0)
  \qquad \text{where $q=n_qq_0+q_1$.}
 \end{aligned}

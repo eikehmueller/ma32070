@@ -1391,22 +1391,18 @@ $$
 \begin{frame}[fragile]
 \frametitle{Two-dimensional quadrature for the reference triangle}
 Duffy transform $\tau$: $S=[-1,+1]\times [-1,+1]\mapsto \widehat{K} = \tau(S)$
-
 $$
 \begin{aligned}
 \tau(\widetilde{x}) = \begin{pmatrix}\frac{1}{2}(1+\widetilde{x}_0)\\[1ex]\frac{1}{4}(1-\widetilde{x}_0)(1+\widetilde{x}_1)\end{pmatrix} \in \widehat{K}\qquad\text{for $\widetilde{x}=(\widetilde{x}_0,\widetilde{x}_1)\in S$}
 \end{aligned}
 $$
-
 \begin{center}
 \includegraphics[width=0.5\linewidth]{figures/quadrature.pdf}
 \end{center}
-
 \textbf{Quadrature on} $\boldsymbol{S}=[-1,+1]\times[-1,+1]$ $\Rightarrow$ product of 1d rules\\$\mathcal{Q}_{n_q+1}^{(\text{GL})} = \{(\widetilde{\zeta}^{(q_0)}_0,\widetilde{w}_{0,q_1})\}_{q_0=0}^{n_q}$, $\mathcal{Q}_{n_q}^{(\text{GL})} =\{(\widetilde{\zeta}^{(q_1)}_1,\widetilde{w}_{1,q_1})\}_{q_1=0}^{n_q-1}$\\[1ex]
 2d quadrature rule $\mathcal{Q}_{n_q}^{(\text{GL},S)}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{N_q-1}$, $N_q = n_q(n_q+1)$
-
 $$
-\widetilde{\zeta}^{(q)} = \left(\widetilde{\zeta}^{(q_0)}_0,\widetilde{\zeta}^{(q_1)}_1\right)^\top\in\mathbb{R}^2,\quad \widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1} \qquad \text{$q=n_q q_0+q_1$}.
+\widetilde{\zeta}^{(q)} = \begin{pmatrix}\widetilde{\zeta}^{(q_0)}_0\\[1ex]\widetilde{\zeta}^{(q_1)}_1\end{pmatrix}\in\mathbb{R}^2,\quad \widetilde{w}_i = \widetilde{w}_{0,q_0}\cdot \widetilde{w}_{1,q_1} \qquad \text{$q=n_q q_0+q_1$}.
 $$
 \end{frame}
 
@@ -1456,9 +1452,19 @@ Concrete implementations in \textbf{subclasses}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Local assembly}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \end{document}
 
-# Local assembly
+# 
 We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle. For this we need to be able to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$.
 
 ### Stiffness matrix

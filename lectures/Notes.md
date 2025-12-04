@@ -1620,7 +1620,7 @@ $$
 Again, convince yourself that these matrices are consistent with the conditions we imposed on the numbering.
 
 ### Implementation
-The abstract class `Mesh` in [fem/mesh.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/mesh.py) encodes the mesh topology. It has the following members:
+The class `Mesh` in [fem/mesh.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/mesh.py) encodes the mesh topology. It has the following members:
 
 * properties `ncells`, `nfacets` and `nvertices` which give the total number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$) and vertices ($=n_{\text{vertex}}$) respectively
 * `cell2facet`: a nested list such that `cell2facet[alpha][beta]` $= I^{K\rightarrow F}_{\alpha\beta}$
@@ -1630,7 +1630,7 @@ The abstract class `Mesh` in [fem/mesh.py](https://github.com/eikehmueller/finit
 
 The class also contains a method `refine(nref)` which can be used to construct a refined mesh from a given mesh by sub-dividing each triangle into four smaller triangles.
 
-In [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py) two concrete classes are derived from this abstract base class:
+In [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py) two factory classes are defined which returns specific meshes:
 
 * `rectangle_mesh(Lx=1.0, Ly=1.0, nref=0)` is a triangulation of the domain $[0,L_x]\times[0,L_y]$ with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}+1}$
 * `triangle_mesh(corners=None, nref=0)` is a triangulation of the domain triangle defined by the array `corners` (if this is `None`, the reference triangle us used) with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}}$

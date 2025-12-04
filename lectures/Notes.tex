@@ -2169,87 +2169,140 @@ Typical problem in Scientific Computing
   \tableofcontents[currentsection]
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Unstructured meshes}
+  $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ (this unit: $D=d=2$)\\
+  \textbf{Mesh}
+  $$
+  \Omega \approx \Omega_h = \left\{\text{topological entities}\right\}
+  $$
+\begin{minipage}{0.6\linewidth}
+ \begin{center}
+  \includegraphics[width=\linewidth]{figures/simple_mesh.pdf}
+ \end{center}
+\end{minipage}
+\hfill
+\begin{minipage}{0.25\linewidth} 
+  label = (c,id)  
+ \end{minipage}
+\begin{center}
+  \begin{tabular}{ccc}
+   \hline 
+ topological entity & dim $d'$ & co-dim $c=d-d'$\\
+\hline\hline
+ cell (triangle) $K$ & $2$ & $0$\\
+ facet (edge) $F$    & $1$ & $1$\\
+ vertex (point) $v$  & $0$ & $2$\\
+  \end{tabular}
+\end{center}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
+\begin{frame}
+  \frametitle{Topology}
+  \textbf{Topology}
+  \begin{center}
+  \includegraphics[width=0.6\linewidth]{figures/simple_mesh.pdf}
+ \end{center}
+  \begin{itemize}
+\item Cell $(0,1)$ has facets $(1,3), (1,2), (1,5)$
+\item Facet $(1,2)$ has the endpoints $(2,1), (2,2)$
+  \end{itemize}
+\end{frame}
 
-# Unstructured meshes
-So far, we have only solved our model PDE on a very simple domain, consisting of a single reference triangle. We now discuss how to extend the finite element approach to more general domains, using the concepts introduced in [[CH24]](https://finite-element.github.io/3_meshes.html#mesh-entities). Assume that we want to solve the PDE on a $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ that is embedded in $D$ dimensional space. For example, we might want to solve it in a rectangular domain or on the surface of a sphere. The manifold is then approximated by a *mesh*, which can be described as a collection of topological entities. For example, if $d=2$, the mesh will consist of zero-dimensional vertices, one-dimensional edges and two-dimensional triangular cells (although it is also possible to use more general polygonal cells we do not consider this here). In general, the co-dimension $c$ of a $d'$-dimensional mesh entity is given by $c=d-d'$. In the following we will only consider the case $d=D=2$, but the central ideas that are developed in the following also apply to more complicated setups. For $d=D=2$ we have:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-| topological entity  | dimension $d'$ | co-dimension $c$ |
-| ------------------- | -------------- | ---------------- |
-| cell (triangle) $K$ | $2$            | $0$              |
-| facet (edge) $F$    | $1$            | $1$              |
-| vertex (point) $v$  | $0$            | $2$              |
-
- @fig:triangular_mesh shows a two-dimensional mesh with $n_{\text{vertex}}=6$ vertices, $n_{\text{facet}}=10$ facets and $n_{\text{cell}}=5$ cells in which all topological entities are labelled by their co-dimension and a unique number that can later be used to identify the entity.
-
-![:fig:triangular_mesh: simple triangular mesh](figures/simple_mesh.svg)
-
-## Topology
-The mesh topology describes which entities are connected to which other entities. For example, each cell has exactly three facets and each facet is defined by exactly two vertices, and the topology tells us which specific facets/vertices these are: in the example above, cell $(0,1)$ has the facets $(1,3), (1,2), (1,5)$ and facet $(1,2)$ has the endpoints $(2,1), (2,2)$.
-
-More generally, this information can be encoded in two matrices: An $n_{\text{cell}}\times 3$ matrix $I^{K\rightarrow F}$ which describes which facets bound each cell
-
+\begin{frame}
+  \frametitle{Connectivity matrices}
+  \textbf{Topology}\\
+  Encode topology in two matrices  
+ \begin{itemize}
+\item $n_{\text{cell}}\times 3$ matrix $I^{K\rightarrow F}$
 $$
 I^{K\rightarrow F}_{\alpha\beta} = \text{index of $\beta$-th facet of cell $\alpha$}
 $$
-
-and an $n_{\text{facet}}\times 2$ matrix $I^{F\rightarrow v}$ which describes what the endpoints of each facet are
-
+\item $n_{\text{facet}}\times 2$ matrix $I^{F\rightarrow v}$
 $$
 I^{F\rightarrow v}_{\beta\gamma} = \text{index of $\gamma$-th vertex of facet $\beta$}.
 $$
+ \end{itemize}  
+  \begin{minipage}{0.475\linewidth}    
+\textbf{Ordering conventions}
+\begin{itemize}
+\item $I^{K\rightarrow F}_{\alpha0}$, $I^{K\rightarrow F}_{\alpha1}$ and $I^{K\rightarrow F}_{\alpha2}$ arranged counter-clockwise
+\item $I^{F\rightarrow v}_{\beta0} < I^{F\rightarrow v}_{\beta1}$
+\end{itemize}
+\end{minipage}
+  \hfill
+  \begin{minipage}{0.475\linewidth}
+    \begin{center}
+  \includegraphics[width=\linewidth]{figures/simple_mesh.pdf}
+ \end{center}
+  \end{minipage}
+\end{frame}
 
-Note that there is some freedom as to how we number the facets associated each cell; the numbering we adopt here is one in which for each cell $\alpha$ the facets with indices $I^{K\rightarrow F}_{\alpha0}$, $I^{K\rightarrow F}_{\alpha1}$ and $I^{K\rightarrow F}_{\alpha2}$ are arranged in a counter-clockwise fashion (note that there are three possible orderings that satisfy this condition, so we have to pick one). Similarly, we adapt an ordering of the vertices associated with each facet such that for each facet $\beta$ we have that $I^{F\rightarrow v}_{\beta0} < I^{F\rightarrow v}_{\beta1}$; in @fig:triangular_mesh this is indicated by the arrows on the edges.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-For convenience, we can also use $I^{K\rightarrow F}$ and $I^{F\rightarrow v}$ to construct the $n_{\text{cell}}\times 3$ matrix $I^{K\rightarrow v}$ which describes the vertices of a given cell
-
+\begin{frame}
+  \frametitle{Connectivity matrices}
+  Derived $n_{\text{cell}}\times 3$ matrix $I^{K\rightarrow v}$ 
 $$
 I^{K\rightarrow v}_{\alpha\gamma} = \text{index of $\gamma$-th vertex of cell $\alpha$}.
 $$
 
-In each cell $\alpha$, we number the vertices in a counter-clockwise fashion such that the $\gamma$-th vertex lies opposite the $\gamma$-the facet of the cell. Mathematically, this can be expressed as
-
+Number vertices counter-clockwise such that the $\gamma$-th vertex lies opposite the $\gamma$-the facet
 $$
 \begin{aligned}
 I^{K\rightarrow v}_{\alpha\gamma} \not\in \{I^{F\rightarrow v}_{\beta0},I^{F\rightarrow v}_{\beta1}\}\quad\text{for $\beta =I^{K\rightarrow F}_{\alpha\gamma}$}
 \end{aligned}.
 $$
+Consistent with the numbering of unknowns on $\widehat{K}$
+  \begin{center}
+  \includegraphics[width=0.4\linewidth]{figures/reference_triangle_small.pdf}
+  \end{center}
 
-Note that the counter-clockwise numbering of the facets and vertices in each cell is consistent with the numbering of unknowns on the reference triangle in @fig:reference_triangle.
+\end{frame}
 
-For example, the matrices $I^{K\rightarrow F}$, $I^{F\rightarrow v}$ and $I^{K\rightarrow v}$ for the simple mesh shown above are given by
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+  \frametitle{Example mesh I}
+  \begin{center}
+  \includegraphics[width=0.7\linewidth]{figures/simple_mesh.pdf}
+ \end{center}
 $$
 \begin{aligned}
 I^{K\rightarrow F} &= \begin{pmatrix}
 0 & 3 & 1 & 0 & 3 \\
 1 & 2 & 2 & 9 & 6 \\
 8 & 5 & 7 & 5 & 4
-\end{pmatrix}^{\top}\\
-I^{F\rightarrow v} &= \begin{pmatrix}
-0 & 1 & 1 & 2 & 2 & 1 & 3 & 2 & 0 & 0 \\
-1 & 4 & 2 & 5 & 3 & 5 & 5 & 4 & 4 & 5
-\end{pmatrix}^{\top}\\
-I^{K\rightarrow v} &= \begin{pmatrix}
+\end{pmatrix}^{\top}\qquad I^{K\rightarrow v} = \begin{pmatrix}
 4 & 1 & 2 & 5 & 3 \\
 0 & 5 & 4 & 1 & 2 \\
 1 & 2 & 1 & 0 & 5
 \end{pmatrix}^{\top}
+\\
+I^{F\rightarrow v} &= \begin{pmatrix}
+0 & 1 & 1 & 2 & 2 & 1 & 3 & 2 & 0 & 0 \\
+1 & 4 & 2 & 5 & 3 & 5 & 5 & 4 & 4 & 5
+\end{pmatrix}^{\top}
 \end{aligned}
 $$
+\end{frame}
 
-You should convince yourself that these matrices satisfy the conditions outlined above.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- @fig:rectangle_mesh shows another example (created with `rectangle_mesh(Lx=1.0, Ly=1.0, nref=1)`, see below). The global indices of vertices, facets and cells are plotted separatedly. The figure in the lower right corner illustrates how the global indices are related to the local indices of the reference cell.
-
-![:fig:rectangle_mesh: Numbering of topological entities on a rectangle mesh](figures/rectangle_mesh.svg)
-
-Referring to the local numbering of facets and vertices in the lower right plot we read off:
-
+\begin{frame}[fragile]
+  \frametitle{Example mesh II}
+\begin{center}
+  \includegraphics[width=1\linewidth]{figures/rectangle_mesh_wide.pdf}\\
+  Generated with \lstinline{rectangle_mesh(Lx=1.0, Ly=1.0, nref=1)}
+ \end{center}
 $$
+\setcounter{MaxMatrixCols}{20}
 \begin{aligned}
 I^{K\rightarrow F} &= \begin{pmatrix}
 5 & 1 & 2 & 10 & 8 & 0 & 7 & 13\\
@@ -2270,7 +2323,12 @@ I^{K\rightarrow v} &= \begin{pmatrix}
 \end{aligned}
 $$
 
-Again, convince yourself that these matrices are consistent with the conditions we imposed on the numbering.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
 
 ### Implementation
 The abstract class `Mesh` in [fem/mesh.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/mesh.py) encodes the mesh topology. It has the following members:

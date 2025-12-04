@@ -1,5 +1,5 @@
 FIGURES=$(patsubst %.svg,%.pdf,$(wildcard figures/*.svg))
-SVG_RESOLUTION=-density 600
+SVG_RESOLUTION=-density 300
 
 all: Notes
 

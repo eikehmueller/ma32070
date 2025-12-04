@@ -740,7 +740,7 @@ $\Rightarrow$ $\|u\|_{\mathcal{V}},\|u_h\|_{\mathcal{V}}\le C:=C_+/C_-$
 \frametitle{Finite element solutions}
 \textbf{Accuracy} of finite element approximation
 \begin{itemize}
-\item Exact solution $u\in \mathcal{V}$ solves $a(u,v)=b(v)\; \forall v\in\mathcal{V}$ 
+\item Exact solution $u\in \mathcal{V}$ solves PDE $-\nabla\cdot (\kappa \nabla u) + \omega u = f$
 \item FE solution $u_h\in \mathcal{V}_h$ solves $a(u_h,v_h)=b(v_h)\; \forall v_h\in\mathcal{V}_h$
 \end{itemize}
 \textbf{Cea's Lemma}
@@ -1437,7 +1437,7 @@ $$
 \item Weights $\{w_q\}_{q=0}^{n_q-1}$ $\Rightarrow$ array \lstinline{weights} of length $n_q$
 \item degree of precision $\Rightarrow$ property \lstinline{degree_of_precision}
 \end{itemize}
-\\[2ex]
+\vspace{2ex}
 Concrete implementations in \textbf{subclasses}
 \begin{itemize}
   \item Quadrature rule $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}$ over line segment $\mathcal{C}$: \lstinline{GaussLegendreQuadratureLineSegment(v_a, v_b, npoints)}
@@ -1462,16 +1462,36 @@ Concrete implementations in \textbf{subclasses}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
-
-# 
-We can now implement a simple finite element method on the domain $\Omega=\widehat{K}$ defined by the reference triangle. For this we need to be able to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$.
-
-### Stiffness matrix
-To assemble the stiffness matrix $A^{(h)}$, observe that the entries of this matrix are given by:
+\begin{frame}
+\frametitle{Finite element method on triangle}
+Putting it all together\\[2ex]
+\textbf{Solve}
 $$
 \begin{aligned}
-A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) &= \int_{\widehat{K}} \Big(\kappa \nabla \phi_k(x) \cdot\nabla\phi_\ell(x) + \omega\; \phi_k(x) \phi_\ell(x)\Big)\;dx\\
+-\nabla\cdot(\kappa \cdot u) + \omega u &= f\qquad\text{in $\Omega=\widehat{K}$}\\
+\kappa\; n\cdot \nabla u&=g \qquad\text{on $\partial\Omega$}
+\end{aligned}
+$$
+\begin{itemize}
+\item assemble stiffness matrix $A^{(h)}$
+$$
+A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) = \int_{\widehat{K}} \Big(\kappa \nabla \phi_k(x) \cdot\nabla\phi_\ell(x) + \omega\; \phi_k(x) \phi_\ell(x)\Big)\;dx
+$$
+\item assemble right-hand side vector $\boldsymbol{b}^{(h)}$
+$$
+b^{(h)}_\ell = b(\phi_\ell) = \int_{\widehat{K}} f(x)\phi_\ell(x)\;dx + \int_{\partial \widehat{K}} g(x)\phi_\ell(x)\;dx
+$$
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Stiffness matrix}
+\textbf{Entries of stiffness matrix $\boldsymbol{A^{(h)}}$} (in $d=2$ dimensions)
+$$
+\begin{aligned}
+A^{(h)}_{\ell k}  &= \int_{\widehat{K}} \Big(\kappa \nabla \phi_k(x) \cdot\nabla\phi_\ell(x) + \omega\; \phi_k(x) \phi_\ell(x)\Big)\;dx\\
 &= \int_{\widehat{K}} \left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(x) \frac{\partial\phi_\ell}{\partial x_a}(x) + \omega\; \phi_k(x) \phi_\ell(x)\right)\;dx\\
 &\approx 
 \sum_{q=0}^{N_q-1} w_q\left(\kappa \sum_{a=0}^{d-1}\frac{\partial\phi_k}{\partial x_a}(\zeta^{(q)}) \frac{\partial\phi_\ell}{\partial x_a}(\zeta^{(q)}) + \omega\; \phi_k(\zeta^{(q)}) \phi_\ell(\zeta^{(q)})\right)\\
@@ -1479,167 +1499,281 @@ A^{(h)}_{\ell k} = a(\phi_k,\phi_\ell) &= \int_{\widehat{K}} \Big(\kappa \nabla 
 +\omega \sum_{q=0}^{N_q-1} w_qT_{qk}(\boldsymbol{\zeta})T_{q\ell}(\boldsymbol{\zeta})
 \end{aligned}
 $$
-Here $d=2$ is the dimension of the domain and $\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$. We used the tabulation matrix $T$ of the basis function given in @eqn:tabulation_basis and the corresponding matrix $T^\partial$ given in @eqn:tabulation_basis_gradients for the partial derivatives.
+\begin{itemize}
+  \item Lagrange element of degree $p$, basis functions $\{\phi_\ell\}_{\ell=0}^{\nu-1}$
+  \item Quadrature $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ with $\text{dop}=2p+1$
+  \item Tabulation matrices $T$, $T^\partial$ of $\phi$, $\nabla\phi$
+\end{itemize}
+\end{frame}
 
-If we use a Lagrange finite element of polynomial degree $p$, then we need that make sure that the degree of precision of the quadrature rule is at least $2p$ to ensure that the product $\phi_i(x)\phi_j(x)$ is integrated exactly. Hence, we should use the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$ with $\text{dop}(\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})})=2p+1$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Right hand side vector
-The entries of the right-hand side vector $\boldsymbol{b}^{(h)}$ are computed like this:
+\begin{frame}
+\frametitle{Right-hand side vector}
+\textbf{Entries of right-hand side vector $\boldsymbol{b^{(h)}}$}
 $$
 \begin{aligned}
-b^{(h)}_\ell = b(\phi_\ell) &= \int_{\widehat{K}} f(x)\phi_\ell(x)\;dx + \int_{\partial \widehat{K}} g(x)\phi_\ell(x)\;dx\\
+b^{(h)}_\ell  &= \int_{\widehat{K}} f(x)\phi_\ell(x)\;dx + \int_{\partial \widehat{K}} g(x)\phi_\ell(x)\;dx\\
 &\approx \sum_{q=0}^{N_q-1} w_q f(\zeta^{(q)}) \phi_\ell(\zeta^{(q)}) + \sum_{\text{facets}\;F_\rho} \sum_{q=0}^{n_q-1 }w_{F_\rho,q} g(\zeta_{F_\rho}^{(q)})\phi_\ell(\zeta_{F_\rho}^{(q)}) \\
 &= \sum_{q=0}^{N_q-1} w_q f_q(\boldsymbol{\zeta}) T_{q\ell}(\boldsymbol{\zeta}) + \sum_{\text{facets}\;F_\rho} \sum_{q=0}^{n_q-1 }w_{F_\rho,q} g_{q}(\boldsymbol{\zeta}_{F_\rho})T_{q\ell}(\boldsymbol{\zeta}_{F_\rho})
 \end{aligned}
 $$
-with $f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$ and $g_{q}(\boldsymbol{\zeta}_{F_\rho}) := g(\zeta_{F_\rho}^{(q)})$. As for the stiffness matrix, we choose the quadrature rule $\mathcal{Q}_{p+1}^{(\text{GL},\widehat{K})}$ for the interior. The rule $\mathcal{Q}_{p+1}^{(\text{GL},F_\rho)} = \{w_{F_\rho,q},\zeta^{(q)}_{F_\rho}\}_{q=0}^{n_q-1}$ with $n_q=p+1$ is used on each of the facets $F_\rho$.
+\begin{itemize}
+  \item Function evaluation at quadrature points:\\$f_q(\boldsymbol{\zeta}):=f(\zeta^{(q)})$, $g_{q}(\boldsymbol{\zeta}_{F_\rho}) := g(\zeta_{F_\rho}^{(q)})$
+  \item Quadrature rule on facet $F_\rho$: $\mathcal{Q}_{p+1}^{(\text{GL},F_\rho)} = \{w_{F_\rho,q},\zeta^{(q)}_{F_\rho}\}_{q=0}^{p}$
+\end{itemize}
+\end{frame}
 
-### Error
-The error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact and numerical solution. Expanding $u_h$ in terms of the basis functions $\phi_\ell$, can write $e_h$ as
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+\frametitle{Error}
+ \textbf{Difference between exact and numerical solution}
 $$
-e_h(x) = u_{\text{exact}}(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\qquad\text{for all $x\in\widehat{K}$}.
+e_h(x) = u(x)-u_h(x) = u(x) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\qquad\text{for all $x\in\widehat{K}$}
 $$
-
-The square of the $L_2$ norm of the error is given by
-
+Square of the \textbf{$\boldsymbol{L_2}$ error norm}
 $$
 \begin{aligned}
-\|e_h\|_{L_2(\widehat{K})}^2 &= \int_{\widehat{K}} \left(u_{\text{exact}}(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\right)^2\;dx\\
+\|e_h\|_{L_2(\widehat{K})}^2 &= \int_{\widehat{K}} \Big(u(x) - \sum_{j=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(x)\Big)^2\;dx\\
 &\approx 
-\sum_{q=0} ^{N_q-1} w_q \left(u_{\text{exact}}(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(\zeta^{(q)})\right)^2 \\
-&= \sum_{q=0} ^{N_q-1} w_q e_q^2\quad\text{with}\;\; e_q := u^{(\text{exact})}_q - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell T_{q\ell},\;u^{(\text{exact})}_q := u_{\text{exact}}(\zeta^{(q)}).
-\end{aligned}\qquad:eqn:error_norm
+\sum_{q=0} ^{N_q-1} w_q \Big(u(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell \phi_\ell(\zeta^{(q)})\Big)^2 = \sum_{q=0} ^{N_q-1} w_q e_q^2
+\end{aligned}
 $$
+\begin{itemize}
+\item Quadrature rule $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$
+\item Error at quadrature points $e_q = u(\zeta^{(q)}) - \sum_{\ell=0}^{\nu-1} u^{(h)}_\ell T_{q\ell}$
+\end{itemize}
+\end{frame}
 
-where $\mathcal{Q}_{n_q}^{(\widehat{K})}=\{w_q,\zeta^{(q)}\}_{q=0}^{N_q-1}$ is a suitable quadrature rule on $\widehat{K}$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Numerical experiment
-To test this procedure, we use the method of manufactured solutions. For this, we pick a right-hand side $f$ and boundary condition $g$ such that the exact solution of $-\kappa \Delta u(x) + \omega u(x) = f(x)$ is given by
-
+\begin{frame}
+\frametitle{Numerical experiment}
+\textbf{Method of manufactured solutions}\\
+Assume that exact solution is
 $$
-u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]\qquad:eqn:u_exact_manufactured
+u(x) = u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]
 $$
-
-A straightforward calculation (which you might want to verify) shows that
+$\Rightarrow$ pick $f$, $g$ to satisfy  $-\nabla\cdot(\kappa \cdot u) + \omega u = f$, $\kappa\; n\cdot \nabla u=g$
 
 $$
 \begin{aligned}
 f(x) &= \left(\left(2\frac{\kappa}{\sigma^2}+\omega\right)-\frac{\kappa}{\sigma^4}(x-x_0)^2\right) u_{\text{exact}}(x)
 \\
 g(x) &= -\frac{\kappa}{\sigma^2}n\cdot(x-x_0)u_{\text{exact}}(x)
-\end{aligned}\qquad:eqn:fg_manufactured
-$$
-In the expression for $g$ the normal vector $n$ is given as follows on each of the three facets $F_0$, $F_1$ and $F_2$:
-$$
-n = \begin{cases}
-\frac{1}{\sqrt{2}}\begin{pmatrix}1 \\ 1\end{pmatrix} & \text{for $x\in F_0$, i.e. $0\le x_0\le 1$, $x_0+x_1=1$}\\[3ex]
-\begin{pmatrix}0 \\ -1\end{pmatrix} & \text{for $x\in F_1$, i.e. $0\le x_0\le 1$, $x_1=0$}\\[3ex]
-\begin{pmatrix}-1 \\ 0\end{pmatrix} & \text{for $x\in F_2$, i.e. $x_0=0$, $0\le x_1\le 1$}
-\end{cases}
-$$
-
-After assembling $A^{(h)}$ and $\boldsymbol{b}^{(h)}$ based on the $f$, $g$ in @eqn:fg_manufactured above, we solve $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$. In the next section we will look at how the $L_2$ norm of the error depends on the polynomial degree $p$.
-
-# Error analysis
-
-## Sources of error
-Recall that when solving a problem in Scientific Computing, there are several sources of error:
-
-#### Modelling error
-To model a particular physical phenomenon, we need to pick a set of equations. For example, we might want to use the Navier-Stokes equations to model fluid flow in the atmosphere. However these equations will break down at the top of the atmosphere where the density is very low and they might be based on an approximate equation of state. Since most equations are an approximation of the real physics, this will inevitably introduce modelling errors.
-
-#### Discretisation error
-To solve the chosen system of equations they need to be discretised so that they can be solved on a computer. The finite element discretisation will introduce errors that are typically of the form $Ch^\mu$ for some positive constants $C$, $\mu$ where $h$ is the grid spacing. This error can be reduced by refining the compututational grid or by choosing a better discretisation (higher polynomial degree) which might lead to smaller $C$ and larger $\mu$.
-
-#### Computational (or rounding) error
-Since a computer can only perform inexact arithmetic for real numbers, the results will only be accurate up to rounding errors.
-
-Obviously, it is crucial to minimise the total error, which is made up of the three components above. Modelling errors are discussed elsewhere and beyond the scope of this course, in which we will concentrate on the PDE $-\kappa \Delta u + \omega u = f$. A detailled theoretical analysis of finite element discretisation errors is presented in MA32066. In this section we will investigate how the error depends on the polynomial degree $p$ of our finite element base. As we will see, we need to take rounding errors into account and we will use this opportunity to discuss the implementation of floating point arithmetic in more detail here.
-
-## Results from numerical experiment
-As a motivation, consider the solution of our model equation $-\kappa \Delta u + \omega u = f$ on the reference triangle for $\kappa = 0.9$, $\omega = 0.4$. The boundary conditions and right-hand side were chosen such that the exact solution is chosen to be $u_{\text{exact}}(x) = \exp[-\frac{1}{2\sigma^2}(x-x_0)^2]$ as in @eqn:u_exact_manufactured with $\sigma = 0.5$, $x_0 = (0.6, 0.25)$. The following figure shows the squared error $\|u_{\text{exact}}-u\|^2_{L_2(\widehat{K})}$ as a function of the polynomial degree $p$:
-
-![:fig:relative_error: Relative error](figures/error_reference_triangle.png)
-
-Results are shown both for single precision and double precision arithmetic. We would expect that the error decreases for higher values of $p$ since the solution can be approximated better by higher degree polynomials. Although initially this is indeed the case, it appears that the error can not be reduced below a certain value and it in fact increases for larger values of $p$. To understand this behaviour, we need to discuss how (real) numbers are represented on a computer.
-
-## Floating point numbers
-A general **floating point number system** $\mathbb{F}$ is specified by four integer numbers:
-
-* a base $1<\beta\in\mathbb{N}$
-* a precision $0<p\in\mathbb{N}$
-* a range of exponents defined by $L,U\in\mathbb{Z}$ with $L<0\le U$
-
-The set $\mathbb{F}$ consists of all numbers $x$ of the form
-
-$$
-x = \pm \underbrace{\left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} + \dots+d_{p-1}\beta^{1-p}\right)}_{\text{mantissa}}\cdot\beta^E\qquad:eqn:floating_point_representation
-$$
-
-where the coefficients $d_i\in \{0,1,2,\dots,\beta-1\}$ and the **exponent** $E$ with $L\le E\le U$ are natural numbers. The expression in brackets is called the **mantissa**. Note that although $\beta,p,L,U$ as well as $E,d_i$ are integers, they represent real numbers through @eqn:floating_point_representation.
-  
-The floating point number system $\mathbb{F}$ is called *normalised* if $d_0>0$; this makes each number in $\mathbb{F}$ unique.
-
-#### Example
-The number $234.7$ is
-$$
-\left(2+3\cdot 10^{-1}+4\cdot 10^{-2} +7\cdot 10^{-3}\right)\cdot 10^2
-$$
-
-in precision 4, base 10 arithmetic. It cannot be represented exactly in precision 3, base 10 arithmetic (and would have to be approximated as $\left(2+3\cdot 10^{-1}+5\cdot 10^{-2}\right)\cdot 10^2 = 235$ in this case).
-
-The smallest positive normalised number of the from @eqn:floating_point_representation is obtained by setting $d_0=1$, $d_i=0$ for $i>0$ and $E=L$. This results in $1\cdot \beta^L$ which is also is called the **underflow threshold**.
-
-The largest positive normalised number in $\mathbb{F}$ is obtained by setting $d_i=\beta-1$, for $i\le 0$ and $E=U$. This results in
-
-$$
-\begin{aligned}
-(\beta-1)\left(1+\beta^{-1}+\beta^{-2}+\dots+\beta^{1-p}\right)\cdot \beta^U &=
-(\beta-1) \beta^U \sum_{j=0}^{p-1} \beta^{-p}\\
-&= (1-\beta^{-p})\beta^{U+1},
 \end{aligned}
 $$
+\begin{minipage}{0.7\linewidth}
+\textbf{Solution procedure}
+\begin{itemize}
+\item Assemble $A^{(h)}$ and $\boldsymbol{b}^{(h)}$
+\item Solve linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$
+\item Compute $L_2$ error norm $\|e_h\|_{L_2(\widehat{K})}$
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.25\linewidth}
+  \begin{center}
+    \includegraphics[width=\linewidth]{figures/reference_triangle_normals.pdf}
+  \end{center}
+\end{minipage}\\
+\end{frame}
 
-which is also called the **overflow threshold**.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Obviously, the floating point number system $\mathbb{F}$ is not closed under standard arithmetic operations: for example, $x,y\in\mathbb{F}$ does not necessarily imply that $x+y\in\mathbb{F}$. If a computation with two numbers $x,y\in\mathbb{F}$ results in a number $z\not\in\mathbb{F}$ we need to somehow represent $z$ by some nearby element $\tilde{z} := \mathcal{R}_{\mathbb{F}}(z)\in\mathbb{F}$ such that $|z-\widetilde{z}|$ is small. A common choice is to employ some sort of rounding.
+\begin{frame}
+\frametitle{Numerical experiment {\footnotesize$\kappa = 0.9$, $\omega = 0.4$, $\sigma = 0.5$, $x_0 = (0.6, 0.25)$}}
+\begin{center}
+  \begin{minipage}{0.8\linewidth}
+    \includegraphics[width=\linewidth]{figures/triangle_solution_01.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.15\linewidth}
+  $p=1$
+  \end{minipage}\\
+  \begin{minipage}{0.8\linewidth}
+    \includegraphics[width=\linewidth]{figures/triangle_solution_03.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.15\linewidth}
+  $p=3$
+  \end{minipage}
+\end{center}
+\end{frame}
 
-### IEEE 754 (Normalised) Arithmetic
-The most commonly used floating point systems on modern computers are single- and double-precision, which are implemented according to the [IEEE 754 standard](https://standards.ieee.org/ieee/754/6210/). In both cases, $\beta=2$ and it is implicitly assumed that $d_0=1$, so this number does not have to be stored.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#### Single precision
-`np.float32`: One binary digit (=bit) is used to store the sign, 8 for the exponent and 23 for the mantissa $\Rightarrow$ 32 bits (4 bytes) in total.
+\section{Error analysis}
 
-![:fig:bit_single_precision: Usage of bits in single precision arithmetic](figures/bits_single_precision.svg)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-For single precision numbers in the [IEEE 754 standard](https://standards.ieee.org/ieee/754/6210/) we have that
-
-* $p=24$
-* $L=-126$
-* $U=127$
-
-which results in
-
-* Underfloat threshold = $2^{-126} \approx 10^{-38}$
-* Overflow threshold = $2^{128} \approx 10^{38}$
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
 
 
-#### Double precision
-`np.float64`: One binary digit is used to store the sign, 11 for the exponent and 52 for the mantissa $\Rightarrow$ 64 bits (8 bytes) in total.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-![:fig:bit_double_precision: Usage of bits in double precision arithmetic](figures/bits_double_precision.svg)
+\begin{frame}
+\frametitle{Error analysis}
 
-For double precision numbers in the [IEEE 754 standard](https://standards.ieee.org/ieee/754/6210/) we have that
+\textbf{Sources of error}
 
-* $p=53$
-* $L=-1022$
-* $U=1023$
+\begin{itemize}
+\item \textcolor{blue}{Modelling error:} equations provide approximate description of physical phenomenon
+\item \textcolor{blue}{Discretisation error:} for finite elements
+  $$\|e_h\|_{L_2(\Omega)} \le Ch^\mu$$
+  \begin{itemize}
+    \item increase degree $p$
+    \item decrease grid spacing $h$
+  \end{itemize}
+\item \textcolor{blue}{Rounding error:} approximate arithmetic on $\mathbb{R}$
+\end{itemize}
+\end{frame}
 
-which results in
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-* Underfloat threshold = $2^{-1022} \approx 10^{-308}$
-* Overflow threshold = $2^{1024} \approx 10^{308}$
+\begin{frame}
+\frametitle{Error analysis}
+\textbf{Results from numerical experiment}\\
+{\footnotesize$\kappa = 0.9$, $\omega = 0.4$, $\sigma = 0.5$, $x_0 = (0.6, 0.25)$}
+\begin{center}
+\includegraphics[width=0.8\linewidth]{figures/error_reference_triangle.png}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Floating point numbers}
+Representation of real numbers on a computer\\
+\textbf{Floating point number system}
+\begin{itemize}
+\item base $1<\beta\in\mathbb{N}$
+\item precision $0<p\in\mathbb{N}$
+\item range of exponents defined by $L,U\in\mathbb{Z}$ with $L<0\le U$
+\end{itemize}
+$\mathbb{F}$ = all numbers $x$ of form
+$$
+x = \pm \underbrace{\left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} + \dots+d_{p-1}\beta^{1-p}\right)}_{\text{mantissa}}\cdot\beta^E
+$$
+with $d_i\in \{0,1,2,\dots,\beta-1\}$, exponent $E$ with $L\le E\le U$\\[1ex]
+
+$\mathbb{F}$ normalised $\Leftrightarrow$ $d_0>0$ $\Rightarrow$ numbers in $\mathbb{F}$ unique.
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Floating point numbers}
+\textbf{Example}
+$$
+234.7 = \left(2+3\cdot 10^{-1}+4\cdot 10^{-2} +7\cdot 10^{-3}\right)\cdot 10^2
+$$
+in precision 4, base 10 arithmetic\\[2ex]
+Approximation
+$$
+234.7 \approx \left(2+3\cdot 10^{-1}+5\cdot 10^{-2}\right)\cdot 10^2 = 235
+$$
+in precision 3, base 10 arithmetic
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Range of representable numbers}
+Floating point system $\mathbb{F}$
+$$
+x = \pm \left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} + \dots+d_{p-1}\beta^{1-p}\right)\cdot\beta^E
+$$
+\textbf{Underflow threshold:}\\
+Smallest positive normalised number {\footnotesize($d_0=1$, $d_i=0$ for $i>0$, $E=L$)}
+$$
+1\cdot \beta^L
+$$
+\textbf{Overflow threshold:}\\
+Largest positive normalised number {\footnotesize ($d_i=\beta-1$ for $i\ge 0$, $E=U$)}
+$$
+\begin{aligned}
+(\beta-1)\left(1+\beta^{-1}+\beta^{-2}+\dots+\beta^{1-p}\right)\cdot \beta^U &= (1-\beta^{-p})\beta^{U+1}
+\end{aligned}
+$$
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Rounding}
+$\mathbb{F}$ \textbf{not closed} under arithmetic operations:
+$$
+x,y\in\mathbb{F}\nRightarrow x+y\in\mathbb{F}
+$$
+Approximate (e.g. rounding)
+$$
+x+y = z \in\mathbb{R} \mapsto \tilde{z} := \mathcal{R}_{\mathbb{F}}(z)\in\mathbb{F}
+$$
+such that (hopefully!) $|z-\widetilde{z}|\ll |z|$ 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Floating point standard}
+\textbf{IEEE 754 (Normalised) Arithmetic}\\
+$\beta=2$ (binary), $d_0=1$ (not stored)\\[2ex]
+\begin{itemize}
+\item \textit{Single precision} (32 bits = 4 bytes) \lstinline{np.float32}
+\begin{center}
+\includegraphics[width=1\linewidth]{figures/bits_single_precision.pdf}
+\end{center}
+$p=24$, $L=-126$, $U=127$
+\begin{itemize}
+\item Underfloat threshold = $2^{-126} \approx 10^{-38}$
+\item Overflow threshold = $2^{128} \approx 10^{38}$
+\end{itemize}
+
+\item \textit{Double precision} (64 bits = 8 bytes) \lstinline{np.float64}
+\begin{center}
+\includegraphics[width=1\linewidth]{figures/bits_double_precision.pdf}
+\end{center}
+$p=53$, $L=-1022$, $U=1023$
+\begin{itemize}
+\item Underfloat threshold = $2^{-1022} \approx 10^{-308}$
+\item Overflow threshold = $2^{1024} \approx 10^{308}$
+\end{itemize} 
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+
+
+
+
+
 
 ### Representation of special values
 Since $d_0=1$ it appears that we can not store the number zero. To represent this number and some other special cases, several dedicated bit patterns are reserved:

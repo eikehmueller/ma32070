@@ -1141,7 +1141,7 @@ in precision 4, base 10 arithmetic. It cannot be represented exactly in precisio
 
 The smallest positive normalised number of the from @eqn:floating_point_representation is obtained by setting $d_0=1$, $d_i=0$ for $i>0$ and $E=L$. This results in $1\cdot \beta^L$ which is also is called the **underflow threshold**.
 
-The largest positive normalised number in $\mathbb{F}$ is obtained by setting $d_i=\beta-1$, for $i\le 0$ and $E=U$. This results in
+The largest positive normalised number in $\mathbb{F}$ is obtained by setting $d_i=\beta-1$ for $i\ge 0$ and $E=U$. This results in
 
 $$
 \begin{aligned}

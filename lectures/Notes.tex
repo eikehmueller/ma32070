@@ -2388,30 +2388,59 @@ $n_{\text{ref}}$ refinements $\Rightarrow$ $n_{\text{cells}} = 2^{n_{\text{ref}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
-# Function spaces
-## Grid cells and reference elements
-We now construct a function space $\mathcal{V}_h\subset H^1(\Omega_h)$ on the domain $\Omega_h$ defined by the mesh as follows. First, we assume that each cell $K$ of the mesh is the image of the reference cell $\widehat{K}$ under a bijective map $X_K:\widehat{K}\rightarrow K\subset \Omega\subset \mathbb{R}^2$: for each $\widehat{x}\in\widehat{K}$ there is exactly one point $x=X_K(\widehat{x})\in K$ and vice versa. For an arbitrary real-valued function $f:K\rightarrow \mathbb{R}$ we define the *pullback* $\widehat{f}:\widehat{K}\rightarrow \mathbb{R}$ under $X_K$ as
+\section{Function spaces}
 
-$$
-\widehat{f} = f\circ X_K
-$$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-i.e.
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Pullback to $\widehat{K}$}
+  \textbf{Images of reference cell}\\[1ex]
+Cell $K$ = image of $\widehat{K}$ under bijective map
 $$
+X_K:\widehat{K}\rightarrow K\subset \Omega\subset \mathbb{R}^2
+$$
+\begin{center}
+  \includegraphics[width=0.6\linewidth]{figures/reference_mapping.pdf}
+\end{center}
+\textbf{Pullback} $\widehat{f}:\widehat{K}\rightarrow \mathbb{R}$ of $f:K\rightarrow \mathbb{R}$ under $X_K$
+$$
+\widehat{f} = f\circ X_K\quad\Leftrightarrow\quad
 \widehat{f}(\widehat{x}) = f(X_K(\widehat{x}))\qquad\text{for all $\widehat{x}\in\widehat{K}$}.
 $$
+\end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Next, assume that in each grid cell $K$ the pullback of the function $u|_K$ under the map $X_K$ is a polynomial. More specifically we define
+\begin{frame}
+  \frametitle{Pullback to $\widehat{K}$}
+  \textbf{Function space $\mathcal{V}_h\subset H^1(\Omega_h)$ on mesh $\Omega_h$}\\
+  Pullback of the function $u|_K$ is a polynomial:
 $$
-\mathcal{V}_h := \{u\in H^1(\Omega_h): u|_K(x) = \widehat{u}_K(\widehat{x})\quad \text{for some $\widehat{u}_K\in\mathcal{P}_p(\widehat{K})$ with $x=X_K(\widehat{x})$ for all cells $K\in\Omega_h$}\}.
+\mathcal{V}_h := \{u\in H^1(\Omega_h): u|_K(x) = \widehat{u}_K(\widehat{x}),\;\;x=X_K(\widehat{x}),\;\;\widehat{u}_K\in\mathcal{P}_p(\widehat{K})\}
 $$
+Can use basis $\mathcal{P}_p(\widehat{K})$ to represent the functions $\widehat{u}_K$\\
+\textbf{Continuity across facets}\\
+$$
+u_h(x) = \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
+$$
+\begin{itemize}
+\item Global basis functions $\Phi^{(h)}_{\ell_{\text{global}}}$
+\item Global dof-vector $u^{(h)}_{\ell_{\text{global}}}$
+\end{itemize}
+Need to associate the indices $\ell_{\text{global}}$ with the correct mesh entities.
+\end{frame}
 
-![:fig:pullback: pullback to reference element](figures/reference_mapping.svg)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We can now use the basis of $\mathcal{P}_p(\widehat{K})$ that we constructed in one of the previous lectures to represent the functions $\widehat{u}_K$. However, care has to be taken to ensure that the function $u\in\mathcal{V}_h$ defined on the entire domain is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
+\end{document}
+
+ However, care has to be taken to ensure that the function $u\in\mathcal{V}_h$ defined on the entire domain is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
 
 For this, recall that any function $u_h$ in the function space $\mathcal{V}_h$ can be written as
 

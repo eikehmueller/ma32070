@@ -2327,28 +2327,68 @@ $$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}[fragile]
+  \frametitle{Implementation}
+Class \lstinline{Mesh} encodes mesh topology
+\begin{itemize}
+\item number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$), vertices ($=n_{\text{vertex}}$):\\
+properties \lstinline{ncells}, \lstinline{nfacets}, \lstinline{nvertices} 
+\item $I^{K\rightarrow F}$: \lstinline{cell2facet}, $I^{K\rightarrow F}_{\alpha\beta} =$ \lstinline{cell2facet[alpha][beta]} 
+\item $I^{F\rightarrow v}$: \lstinline{facet2vertex}, $I^{F\rightarrow v}_{\beta\gamma} =$ \lstinline{facet2vertex[beta][gamma]}
+\item $I^{K\rightarrow v}$: \lstinline{cell2vertex}, $I^{K\rightarrow v}_{\alpha\gamma} =$ \lstinline{cell2vertex[alpha][gamma]}\\
+{}\quad{\footnotesize (implemented as a \lstinline{@functools.cached_property})}
+\item Coordinates of mesh vertices: $n_{\text{vertex}}\times 2$ array \lstinline{vertices}
+\end{itemize}
+\vspace{2ex}
+Initialise with
+\begin{lstlisting}
+mesh = Mesh(vertices, cell2facet, facet2vertex)
+\end{lstlisting}
+\begin{minipage}{0.35\linewidth}
+then refine cells with
+\begin{lstlisting}
+mesh.refine(nref)
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.6\linewidth}
+\begin{center}
+\includegraphics[width=0.9\linewidth]{figures/mesh_refinement.pdf}
+\end{center}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Implementation}
+\textbf{Factory methods}
+\begin{itemize}
+\item \textit{Rectangle mesh}: triangulation of $[0,L_x]\times[0,L_y]$\\
+\lstinline{rectangle_mesh(Lx=1.0, Ly=1.0, nref=0)}\\
+$n_{\text{ref}}$ refinements $\Rightarrow$ $n_{\text{cells}} = 2^{n_{\text{ref}}+1}$
+\item \textit{Triangle mesh}: triangulation of triangle defined by \lstinline{corners}\\
+\lstinline{triangle_mesh(corners=None, nref=0)}\\
+$n_{\text{ref}}$ refinements $\Rightarrow$ $n_{\text{cells}} = 2^{n_{\text{ref}}}$
+\end{itemize}
+\vspace{2ex}
+\textbf{Examples} ($n_{\text{ref}}=2$)\\[1ex]
+\begin{minipage}{0.45\linewidth}
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figures/rectangle_mesh_schematic.pdf}
+  \end{center}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\linewidth}
+  \begin{center}
+    \includegraphics[width=0.7\linewidth]{figures/triangle_mesh_schematic.pdf}
+  \end{center}
+\end{minipage}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \end{document}
-
-
-### Implementation
-The abstract class `Mesh` in [fem/mesh.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/mesh.py) encodes the mesh topology. It has the following members:
-
-* properties `ncells`, `nfacets` and `nvertices` which give the total number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$) and vertices ($=n_{\text{vertex}}$) respectively
-* `cell2facet`: a nested list such that `cell2facet[alpha][beta]` $= I^{K\rightarrow F}_{\alpha\beta}$
-* `facet2vertex`: a nested list such that `facet2vertex[beta][gamma]` $= I^{F\rightarrow v}_{\beta\gamma}$
-* `cell2vertex`: a nested list such that `cell2vertex[alpha][gamma]` $= I^{K\rightarrow v}_{\alpha\gamma}$. Since $I^{K\rightarrow v}_{ik}$ can be derived from $I^{K\rightarrow F}_{\alpha\beta}$ and $I^{F\rightarrow v}_{\beta\gamma}$, `cell2vertex` is implemented as a [`@functools.cached_property`](https://docs.python.org/3/library/functools.html#functools.cached_property).
-* an array `coordinates` of shape $(n_{\text{vertex}},2)$ whose columns contain the two-dimensional coordinates of the mesh vertices
-
-The class also contains a method `refine(nref)` which can be used to construct a refined mesh from a given mesh by sub-dividing each triangle into four smaller triangles.
-
-In [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py) two concrete classes are derived from this abstract base class:
-
-* `rectangle_mesh(Lx=1.0, Ly=1.0, nref=0)` is a triangulation of the domain $[0,L_x]\times[0,L_y]$ with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}+1}$
-* `triangle_mesh(corners=None, nref=0)` is a triangulation of the domain triangle defined by the array `corners` (if this is `None`, the reference triangle us used) with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}}$
-
-## Geometry
-Observe that so far we have only discussed the **topology** of the mesh and we have not said anything about its **geometry**, i.e. where exactly the topological entities are located in space. To do this, we first discuss how we can associate data with the mesh and then use this to encode its geometry.
-
 # Function spaces
 ## Grid cells and reference elements
 We now construct a function space $\mathcal{V}_h\subset H^1(\Omega_h)$ on the domain $\Omega_h$ defined by the mesh as follows. First, we assume that each cell $K$ of the mesh is the image of the reference cell $\widehat{K}$ under a bijective map $X_K:\widehat{K}\rightarrow K\subset \Omega\subset \mathbb{R}^2$: for each $\widehat{x}\in\widehat{K}$ there is exactly one point $x=X_K(\widehat{x})\in K$ and vice versa. For an arbitrary real-valued function $f:K\rightarrow \mathbb{R}$ we define the *pullback* $\widehat{f}:\widehat{K}\rightarrow \mathbb{R}$ under $X_K$ as

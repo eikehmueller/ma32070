@@ -12,31 +12,36 @@ from fem.utilitymeshes import rectangle_mesh
 from fem.quadrature import GaussLegendreQuadratureReferenceTriangle
 
 
-def visualise_mesh(mesh, filename):
+def visualise_mesh(mesh, filename, layout="square"):
     """Plot connectivity information for a mesh
 
     :arg mesh: mesh object
     :arg filename: name of file to save output to
     """
     plt.clf()
-    _, axs = plt.subplots(2, 2)
-    plt.subplots_adjust(top=0.99, bottom=0.01, hspace=0.25, wspace=0.4)
-    for j in range(2):
-        for k in range(2):
-            axs[j, k].set_aspect("equal")
+    if layout == "square":
+        _, ((ax_0, ax_1), (ax_2, ax_3)) = plt.subplots(2, 2)
+        plt.subplots_adjust(top=0.99, bottom=0.01, hspace=0.25, wspace=0.4)
+    elif layout == "wide":
+        _, (ax_0, ax_1, ax_2, ax_3) = plt.subplots(1, 4, figsize=(10, 5))
+        plt.subplots_adjust(top=0.99, bottom=0.01, hspace=0.25, wspace=0.4)
+    else:
+        raise NotImplementedError(f"Unknown layout: {layout}")
+    for ax in (ax_0, ax_1, ax_2, ax_3):
+        ax.set_aspect("equal")
     # vertices
     for cell in range(mesh.ncells):
         p = np.zeros((4, 3))
         for j in range(3):
             p[j, :2] = np.asarray(mesh.vertices[mesh.cell2vertex[cell][j]])
         p[-1, :] = p[0, :]
-        axs[0, 0].plot(
+        ax_0.plot(
             p[:, 0],
             p[:, 1],
             linewidth=2,
             color="lightgray",
         )
-    axs[0, 0].plot(
+    ax_0.plot(
         mesh.vertices[:, 0],
         mesh.vertices[:, 1],
         linewidth=0,
@@ -45,37 +50,35 @@ def visualise_mesh(mesh, filename):
         color="blue",
     )
     for vertex in range(mesh.nvertices):
-        axs[0, 0].annotate(
+        ax_0.annotate(
             f"{vertex:3d}",
             (mesh.vertices[vertex, :]),
             fontsize=6,
         )
-        axs[0, 0].set_title("global vertex index")
+        ax_0.set_title("global vertex index")
     # facets
     for facet in range(mesh.nfacets):
         p = np.asarray([mesh.vertices[vertex] for vertex in mesh.facet2vertex[facet]])
         m = np.mean(p, axis=0)
         rho = 0.8
         p = rho * p + (1 - rho) * np.expand_dims(m, axis=0)
-        axs[0, 1].plot(
-            p[:, 0], p[:, 1], linewidth=2, marker="o", markersize=4, color="blue"
-        )
-        axs[0, 1].annotate(
+        ax_1.plot(p[:, 0], p[:, 1], linewidth=2, marker="o", markersize=4, color="blue")
+        ax_1.annotate(
             f"{facet:3d}",
             (m[0], m[1]),
             fontsize=6,
         )
-        axs[0, 1].arrow(
+        ax_1.arrow(
             p[0, 0],
             p[0, 1],
             m[0] - p[0, 0],
             m[1] - p[0, 1],
             width=0,
             linewidth=0,
-            head_width=0.05,
+            head_width=0.05 if layout == "square" else 0.075,
             color="blue",
         )
-    axs[0, 1].set_title("global facet index")
+    ax_1.set_title("global facet index")
     # cells
     for cell in range(mesh.ncells):
         p = np.zeros((4, 3))
@@ -85,15 +88,15 @@ def visualise_mesh(mesh, filename):
         m = np.mean(p[:-1, :], axis=0)
         rho = 0.8
         p = rho * p + (1 - rho) * np.expand_dims(m, axis=0)
-        axs[1, 0].plot(p[:, 0], p[:, 1], linewidth=2, color="blue")
-        axs[1, 0].annotate(
+        ax_2.plot(p[:, 0], p[:, 1], linewidth=2, color="blue")
+        ax_2.annotate(
             f"{cell:3d}",
             (m[0], m[1]),
             verticalalignment="center",
             horizontalalignment="center",
             fontsize=6,
         )
-    axs[1, 0].set_title("global cell index")
+    ax_2.set_title("global cell index")
     # local indices
     for cell in range(mesh.ncells):
         p = np.zeros((4, 3))
@@ -108,7 +111,7 @@ def visualise_mesh(mesh, filename):
         m = np.mean(p[:-1, :], axis=0)
         rho = 0.85
         p_cell = rho * p + (1 - rho) * np.expand_dims(m, axis=0)
-        axs[1, 1].plot(
+        ax_3.plot(
             p_cell[:, 0],
             p_cell[:, 1],
             linewidth=2,
@@ -117,7 +120,7 @@ def visualise_mesh(mesh, filename):
             marker="o",
             markerfacecolor="red",
         )
-        axs[1, 1].annotate(
+        ax_3.annotate(
             f"{cell:3d}",
             (m[0], m[1]),
             verticalalignment="center",
@@ -128,7 +131,7 @@ def visualise_mesh(mesh, filename):
         p_vertex = omega * p + (1 - omega) * np.expand_dims(m, axis=0)
         p_facet = omega * p_facet + (1 - omega) * np.expand_dims(m[:2], axis=0)
         for j in range(3):
-            axs[1, 1].annotate(
+            ax_3.annotate(
                 f"{j:d}",
                 (p_vertex[j, 0], p_vertex[j, 1]),
                 verticalalignment="center",
@@ -136,7 +139,7 @@ def visualise_mesh(mesh, filename):
                 color="red",
                 fontsize=6,
             )
-            axs[1, 1].annotate(
+            ax_3.annotate(
                 f"{j:d}",
                 p_facet[j, :],
                 verticalalignment="center",
@@ -144,17 +147,17 @@ def visualise_mesh(mesh, filename):
                 color="blue",
                 fontsize=6,
             )
-            axs[1, 1].arrow(
+            ax_3.arrow(
                 p_cell[j, 0],
                 p_cell[j, 1],
                 0.5 * (p_cell[(j + 1) % 3, 0] - p_cell[j, 0]),
                 0.5 * (p_cell[(j + 1) % 3, 1] - p_cell[j, 1]),
                 width=0,
                 linewidth=1,
-                head_width=0.025,
+                head_width=0.025 if layout == "square" else 0.04,
                 color="black",
             )
-    axs[1, 1].set_title("local vertex- and facet-index")
+    ax_3.set_title("local vertex- and facet-index")
     plt.savefig(filename, bbox_inches="tight")
 
 
@@ -319,7 +322,8 @@ print("cell2vertex:")
 print(to_latex(np.asarray(mesh.cell2vertex).T))
 print()
 
-visualise_mesh(mesh, "mesh.svg")
+visualise_mesh(mesh, "mesh.svg", layout="square")
+visualise_mesh(mesh, "mesh_wide.svg", layout="wide")
 
 
 element = PolynomialElement(2)

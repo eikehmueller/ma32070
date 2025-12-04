@@ -1212,7 +1212,7 @@ $$
 \end{cases}
 $$
 
-This quantity is also known as the **machine** epsilon $\varepsilon_{\text{mach}}$. It is the smallest positive number $\mathbb{x}\in \mathbb{F}$ that can be added to $1$ such that (after rounding to $\mathbb{F}$) the result is different from $1$:
+This quantity is also known as the **machine** epsilon $\varepsilon_{\text{mach}}$. It is the smallest positive number $x\in \mathbb{F}$ that can be added to $1$ such that (after rounding to $\mathbb{F}$) the result is different from $1$:
 
 $$
 \varepsilon_{\text{mach}} := \min_{x\in\mathbb{F},x>0}\{x: \mathcal{R}_{\mathbb{F}}(1+x)\neq 1\} \qquad:eqn:machine_epsilon
@@ -1228,7 +1228,7 @@ $$
 As the following examples show, rounding errors can have serious consequences
 
 ### Example 1 (harmless)
-Consider the two numbers $x=4.7\cdot 10^{-16}$ and $x=2.9\cdot 10^{-16}$. Both can be represented exactly as floating point numbers. The same is true for their difference $z=x-y=1.8\cdot 10^{-16}$, i.e. $\widetilde{z}=\mathcal{G}_{\mathbb{F}}(z)=z$ and as a consequence the rounding error of this operation is zero:
+Consider the two numbers $x=4.7\cdot 10^{-16}$ and $y=2.9\cdot 10^{-16}$. Both can be represented exactly as floating point numbers. The same is true for their difference $z=x-y=1.8\cdot 10^{-16}$, i.e. $\widetilde{z}=\mathcal{R}_{\mathbb{F}}(z)=z$ and as a consequence the rounding error of this operation is zero:
 
 $$
 \frac{\mathcal{R}_{\mathbb{F}}(z)-z}{z} = \frac{\mathcal{R}_{\mathbb{F}}(x)-\mathcal{R}_{\mathbb{F}}(y)-z}{z} = \frac{(4.7 -2.9 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} = 0.

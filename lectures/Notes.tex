@@ -1722,7 +1722,7 @@ such that (hopefully!) $|z-\widetilde{z}|\ll |z|$
 
 \begin{frame}
 \frametitle{Floating point standard}
-\textbf{IEEE 754 (Normalised) Arithmetic}\\
+\textbf{IEEE 754 (Normalised) Arithmetic Standard}\\
 $\beta=2$ (binary), $d_0=1$ (not stored)\\[2ex]
 \begin{itemize}
 \item \textit{Single precision} (32 bits = 4 bytes) \lstinline{np.float32}
@@ -1750,85 +1750,120 @@ $p=53$, $L=-1022$, $U=1023$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
-\frametitle{}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}
-\frametitle{}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}
-\frametitle{}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\end{document}
-
-
-
-
-
-
-
-### Representation of special values
-Since $d_0=1$ it appears that we can not store the number zero. To represent this number and some other special cases, several dedicated bit patterns are reserved:
-
-* The number zero is stored as `s000 0000 0000 0000 0000 0000 0000 0000` where $s$ is the sign bit. Note that there is both $+0$ ($s=1$) and $-0$ ($s=0$).
-* `NaN` ("not a number") is stored as `s111 1111 1xxx xxxx xxxx xxxx xxxx xxxx` where the sequence denoted with $x$ stands for any non-zero number and the sign $s$ is usually ignored. The result of mathematically invalid operations (such as taking the square root of a negative number) is stored as a `NaN`
-* Infinity ($\pm\infty$) is stored as `s111 1111 1000 0000 0000 0000 0000 0000` where again $s$ denotes the sign. This result can arise from division by zero.
-
-### Machine epsilon
-From @eqn:floating_point_representation it can be seen that gaps between numbers in $\mathbb{F}$ increase for larger numbers. For each exponent $E$ the interval $[2^E,2^{E+1}]$ is discretised into $2^{p-1}$ equal pieces of size $2^{1-p}\cdot 2^E$, as shown in the following figure:
-
-![:fig:floating_point_spacing: floating point number spacing](figures/floating_point_spacing.svg)
-
-Setting $E=0$, we see that the size of gap of numbers in $\mathbb{F}$ around $1$ is
-
+\frametitle{Special values}
+\textbf{Representation in IEEE 754 Standard}
+\begin{itemize}
+\item The number zero
 $$
-2^{1-p} = \begin{cases}
+\texttt{s000 0000 0000 0000 0000 0000 0000 0000}
+$$
+$s$ = sign bit $\Rightarrow$ $+0$ ($s=1$) and $-0$ ($s=0$).
+\item \texttt{NaN} (``not a number'') = result of invalid operations
+$$
+\texttt{s111 1111 1xxx xxxx xxxx xxxx xxxx xxxx}
+$$ 
+$x$ = any non-zero number, sign $s$ usually ignored
+\item Infinity ($\pm\infty$)
+$$
+\texttt{s111 1111 1000 0000 0000 0000 0000 0000}
+$$
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Machine epsilon}
+\textbf{Gaps between numbers in $\mathbb{F}$}
+$$
+x = \pm \left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} + \dots+d_{p-1}\beta^{1-p}\right)\cdot\beta^E
+$$
+\begin{center}
+\includegraphics[width=\linewidth]{figures/floating_point_spacing.pdf}
+\end{center}
+$E$ $\Rightarrow$ $[2^E,2^{E+1}]$ discretised into $2^{p-1}$ pieces of size $2^{1-p}\cdot 2^E$\\[2ex]
+\textbf{Machine epsilon} $E=0$ $\Rightarrow$ gap of numbers around $1$
+$$
+\varepsilon_{\text{mach}} := 2^{1-p} = \begin{cases}
 2^{-23} \approx 10^{-7} & \text{in single precision}\\
 2^{-52} \approx 2\cdot 10^{-16} & \text{in double precision}
 \end{cases}
 $$
+\end{frame}
 
-This quantity is also known as the **machine** epsilon $\varepsilon_{\text{mach}}$. It is the smallest positive number $\mathbb{x}\in \mathbb{F}$ that can be added to $1$ such that (after rounding to $\mathbb{F}$) the result is different from $1$:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+\frametitle{Machine epsilon}
+\textbf{Alternative definitions}
+\begin{itemize}
+\item \textit{``Gap of numbers around $1$''}
 $$
-\varepsilon_{\text{mach}} := \min_{x\in\mathbb{F},x>0}\{x: \mathcal{R}_{\mathbb{F}}(1+x)\neq 1\} \qquad:eqn:machine_epsilon
+\varepsilon_{\text{mach}} = 2^{1-p}
 $$
-
-Put differently, the machine epsilon is the relative size of rounding errors or the relative accuracy of floating point operations. If $z$ is the result of some arithmetic operation involving numbers from $\mathbb{F}$ then
-
+\item \textit{``Smallest positive number $x\in \mathbb{F}$ that can be added to $1$ such that (after rounding to $\mathbb{F}$) the result differs from $1$''}
+$$
+\varepsilon_{\text{mach}} := \min_{x\in\mathbb{F},x>0}\{x: \mathcal{R}_{\mathbb{F}}(1+x)\neq 1\}
+$$
+\item \textit{``Relative size of rounding errors or the relative accuracy of floating point operations.''}
 $$
 \frac{|\mathcal{R}_{\mathbb{F}}(z)-z|}{|z|} \sim \varepsilon_{\text{mach}}.
 $$
+\end{itemize}
+{\footnotesize NB: sometimes $\varepsilon_{\text{mach}}$ is defined with an additional factor $2$ in the literature.}
+\end{frame}
 
-## Rounding errors
-As the following examples show, rounding errors can have serious consequences
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Example 1 (harmless)
-Consider the two numbers $x=4.7\cdot 10^{-16}$ and $x=2.9\cdot 10^{-16}$. Both can be represented exactly as floating point numbers. The same is true for their difference $z=x-y=1.8\cdot 10^{-16}$, i.e. $\widetilde{z}=\mathcal{G}_{\mathbb{F}}(z)=z$ and as a consequence the rounding error of this operation is zero:
-
+\begin{frame}
+\frametitle{Rounding errors}
+\textbf{Example 1} (harmless)
+\begin{xalignat*}{2}
+x&=4.7\cdot 10^{-16}\in\mathbb{F},& y&=2.9\cdot 10^{-16}\in\mathbb{F}
+\end{xalignat*}
 $$
-\frac{\mathcal{R}_{\mathbb{F}}(z)-z}{z} = \frac{\mathcal{R}_{\mathbb{F}}(x)-\mathcal{R}_{\mathbb{F}}(y)-z}{z} = \frac{(4.7 -2.9 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} = 0.
+z=x-y=1.8\cdot 10^{-16} = \mathcal{R}_{\mathbb{F}}(z) \in\mathbb{F}
 $$
-In general, adding or subtracting numbers leads to small relative errors provided both the numbers and the result of the computation are of **comparable size**. As the following example shows, the final point is crucial.
-
-### Example 2 (subtracting two numbers that are very close)
-Now assume that we compute the difference of the two numbers $x=4.7\cdot 10^{-16}$, $x=2.9\cdot 10^{-16}$ by first adding $x$ and $y$ to one and then subtract the resulting numbers:
-$x'=1+x$, $y'=1+y$, $z'=x'-y'$. Although in exact arithmetic $z'$ will be identical to $x-y$, this is not true in floating point arithmetic. First observe that in double precision arithmetic $x'$ will be rounded to $\mathcal{R}_{\mathbb{F}}(x')=1.00000000000000044$ and $y'$ will be rounded to $\mathcal{R}_{\mathbb{F}}(y')=1.00000000000000022$. The relative error of $z'$ is:
-
 $$
-\frac{\mathcal{R}_{\mathbb{F}}(z')-z}{z} = \frac{\mathcal{R}_{\mathbb{F}}(x')-\mathcal{R}_{\mathbb{F}}(y')-z}{z} = \frac{(4.4 - 2.2 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} = \frac{0.4}{1.8} \approx 23\%
+\frac{\mathcal{R}_{\mathbb{F}}(z)-z}{z} = \frac{x-y-z}{z} = \frac{(4.7 -2.9 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} = 0.
 $$
+$\Rightarrow$ small (zero) relative error if $x\sim y \sim x-y$
+\end{frame}
 
-### Example 3 (adding two numbers of very different size)
-Consider the linear system
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Rounding errors}
+\textbf{Example 2} (subtracting two numbers that are very close)
+\begin{xalignat*}{2}
+x&=4.7\cdot 10^{-16}\in\mathbb{F},& y&=2.9\cdot 10^{-16}\in\mathbb{F}
+\end{xalignat*}
+\begin{xalignat*}{3}
+x'&=1+x,& y'&=1+y,& z'&=x'-y'
+\end{xalignat*}
+In exact arithmetic: $z'=x'-y'=x-y$, but
+$$
+\begin{aligned}
+\mathcal{R}_{\mathbb{F}}(x')&=1.00000000000000044\\
+\mathcal{R}_{\mathbb{F}}(y')&=1.00000000000000022
+\end{aligned}
+$$
+The \textbf{relative error} of $z'$
+$$
+\begin{aligned}
+\frac{\mathcal{R}_{\mathbb{F}}(z')-z}{z} &= \frac{\mathcal{R}_{\mathbb{F}}(x')-\mathcal{R}_{\mathbb{F}}(y')-z}{z}\\
+&= \frac{(4.4 - 2.2 - 1.8)\cdot10^{-16}}{1.8\cdot 10^{-16}} = \frac{0.4}{1.8} \approx 23\%
+\end{aligned}
+$$
+Observe: $z'\ll x'\sim y'$ in contrast to $z\ll x\sim y$ (Example 1)
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Rounding errors}
+\textbf{Example 3} (adding two numbers of very different size)\\[1ex]
+Linear system
 $$
 \begin{pmatrix}
 0 & 1 \\ 1 & 1 
@@ -1839,9 +1874,10 @@ x_0 \\ x_1
 =
 \begin{pmatrix}
 1 \\ 0
-\end{pmatrix}.
+\end{pmatrix}
+\qquad\text{$\Rightarrow$ solution: $x_0=-1$, $x_1=1$}
 $$
-The solution is $x_0=-1$, $x_1=+1$. Now consider a small perturbation of this problem, namely
+perturbed problem
 $$
 \begin{pmatrix}
 -10^{-20} & 1 \\ 1 & 1 
@@ -1852,73 +1888,103 @@ x_0 \\ x_1
 =
 \begin{pmatrix}
 1 \\ 0
-\end{pmatrix}\qquad:eqn:perturbed_system
+\end{pmatrix}
 $$
-It is easy to see that the solution of the perturbed problem is $x_0=-\frac{1}{1+10^{-20}}$, $x_1=+\frac{1}{1+10^{-20}}$, which is very close to the solution of the unperturbed system.
+Solution
+\begin{xalignat*}{2}
+  x_0&=-\frac{1}{1+10^{-20}}\approx -1,&
+  x_1&=\frac{1}{1+10^{-20}}\approx 1
+\end{xalignat*}
+\end{frame}
 
-Let us solve the perturbed system in @eqn:perturbed_system numerically. For this, we write it as
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+\frametitle{Rounding errors}
+\textbf{Solution of perturbed problem}
+$$
+\begin{aligned}
+-10^{-20} x_0 + x_1 &= 1\quad (\dagger)\\
+x_0 + x_1 &= 0\quad (\star)
+\end{aligned}
+$$
+$10^{20}\cdot (\dagger ) + (\star)$
 $$
 \begin{aligned}
 -10^{-20} x_0 + x_1 &= 1\\
-x_0 + x_1 &= 0
+\underbrace{(1+10^{20})}_{\approx 10^{20}} x_1 &= 10^{20}
 \end{aligned}
 $$
-To eliminate $x_0$ from the second equation, we multiply the first equation with $10^{20}$ and add it to the second equation to obtain
-$$
-\begin{aligned}
--10^{-20} x_0 + x_1 &= 1\\
-(1+10^{20}) x_1 &= 10^{20}
-\end{aligned}
-$$
-Now, since $10^{20}\gg 1$, we can replace $1+10^{20}$ by $10^{20}$ (and this is what will happen in double precision arithmetic) to obtain
+$\Rightarrow$ in double precision arithmetic
 $$
 \begin{aligned}
 -10^{-20} x_0 + x_1 &= 1\\
 10^{20} x_1 &= 10^{20},
 \end{aligned}
 $$
-which immediately implies $x_1 = 1$. Inserting this into the first equation gives
+$$
+\Rightarrow \quad x_1 = 1 \quad \Rightarrow\quad  x_1 = 1 -10^{-20} x_0 + 1 = 1 \quad \Rightarrow \quad x_0 = 0
+$$
+Not close to solution $x_0=-1$, $x_1=1$ of unperturbed system!
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Rounding errors}
+\textbf{Fix}
 $$
 \begin{aligned}
--10^{-20} x_0 + 1 &= 1
+-10^{-20} x_0 + x_1 &= 1\quad (\dagger)\\
+x_0 + x_1 &= 0\quad (\star)
 \end{aligned}
 $$
-and therefore $x_0=0$. Altogether we find $x_0=0$, $x_1=1$. This is very different from the exact solution $x_0=-\frac{1}{1+10^{-20}}$, $x_1=+\frac{1}{1+10^{-20}}$! Hence, although the rounding we performed in the numerical solution procedure appears to be innocent, we get a completely wrong solution. In this case, this problem can be fixed by using a slightly different solution procedure: subtract the first equation from the second equation to obtain $(1+10^{-20}) x_0 = -1$, which can be safely approximated by $x_0=-1$. Then use this in the second equation $x_0+x_1=0$ to conclude $x_1=+1$. Now this is very close to the exact solution of the perturbed system. It turns out that solving the perturbed linear system with [`np.linalg.solve()`](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.solve.html) will also give a good approximation. Unfortunately, this is not always the case, as the following example demonstrates.
+$(\star ) - (\dagger)$
+$$
+\begin{aligned}
+\underbrace{(1+10^{-20})}_{\approx 1} x_0 &= -1\\
+x_0 + x_1 &= 0
+\end{aligned}
+$$
+\begin{xalignat*}{2}
+\Rightarrow \quad x_0 &= -1, & x_1 &= 1
+\end{xalignat*}
+This is what \lstinline{numpy.linalg.solve()} will do
+\end{frame}
 
-### Example 4 (ill-conditioned matrix)
-For a given positive $\epsilon>0$ consider the following $2\times 2$ symmetric matrix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+\frametitle{Rounding errors}
+\textbf{Example 4} (ill-conditioned matrix)\\[1ex]
+Solve $A\boldsymbol{u}=\boldsymbol{b}$
 $$
 \begin{aligned}
 A &= \begin{pmatrix}
 1+\frac{1}{\sqrt{2}} + \frac{2+\sqrt{2}}{4}\epsilon & \frac{1}{\sqrt{2}}-\frac{\sqrt{2}}{4}\epsilon\\[1ex]
 \frac{1}{\sqrt{2}}-\frac{\sqrt{2}}{4}\epsilon & 1-\frac{1}{\sqrt{2}}+\frac{2-\sqrt{2}}{4}\epsilon
-\end{pmatrix}
+\end{pmatrix}\qquad\text{$\epsilon>0$}
 \\
 &\approx
+{\tiny%
 \begin{pmatrix}
 1.7071067811865475 + 0.8535533905932737 \cdot\epsilon & 0.7071067811865475 - 0.3535533905932738 \cdot\epsilon \\
 0.7071067811865475 - 0.3535533905932738 \cdot\epsilon & 0.2928932188134525 + 0.1464466094067262\cdot\epsilon
-\end{pmatrix}
-\end{aligned}\qquad:eqn:contructed_A
+\end{pmatrix}}
+\end{aligned}
 $$
-
-and vector
-
 $$
 \boldsymbol{b} = \begin{pmatrix}
 \frac{\sqrt{2+\sqrt{2}}+\sqrt{2-\sqrt{2}}}{2}\\[1ex]
 \frac{\sqrt{2+\sqrt{2}}-\sqrt{2-\sqrt{2}}}{2}
 \end{pmatrix}
 \approx
+{\footnotesize%
 \begin{pmatrix}
 1.3065629648763766\\0.5411961001461970
-\end{pmatrix}\qquad:eqn:contructed_b
+\end{pmatrix}}
 $$
-
-It can be shown that independent of $\epsilon$ the exact solution of the linear system $A\boldsymbol{u}=\boldsymbol{b}$ with $A$ in @eqn:constructed_A and $\boldsymbol{b}$ in @eqn:contructed_b is given by
-
+xact solution, independent of $\epsilon$
 $$
 \boldsymbol{u}_{\text{exact}} = 
 \begin{pmatrix}
@@ -1926,184 +1992,179 @@ $$
 \frac{\sqrt{2 + \sqrt{2}}}{2}
 \end{pmatrix}
 \approx 
+{\footnotesize%
 \begin{pmatrix}
 0.3826834323650897\\0.9238795325112867
-\end{pmatrix}
+\end{pmatrix}}
 $$
+\end{frame}
 
-Hence, we would expect that if we solve the linear system with a numerical method, we would get a solution that is at least close to the exact solution. The following table shows the solution $\boldsymbol{u}$ of $A\boldsymbol{u}=\boldsymbol{b}$ that is obtained with
-```
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{Rounding errors}
+
+\begin{minipage}{0.45\linewidth}
+\begin{lstlisting}
 u = np.linalg.solve(A,b)
-```
-for different values of $\epsilon$. The pen-ultimate column shows the relative error $\|\boldsymbol{u}-\boldsymbol{u}_{\text{exact}}\|_2|/\|\boldsymbol{u}_{\text{exact}}\|_2$ and the final column shows the condition number $\kappa = \text{cond}(A) = \lambda_+/\lambda_-$, which is the ratio of the largest and smallest eigenvalue of $A$.
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\linewidth}
+$\boldsymbol{u}_{\text{exact}} 
+\approx 
+{\footnotesize%
+\begin{pmatrix}
+0.3826834323650897\\0.9238795325112867
+\end{pmatrix}}$
+\end{minipage}\\
+ \begin{center}
+  \renewcommand{\arraystretch}{1.5}
+\begin{tabular}{cccc}  
+  \hline
+$\epsilon$ & solution $\boldsymbol{u}$ & $\frac{\|\boldsymbol{u}-\boldsymbol{u}_{\text{exact}}\|_2}{\|\boldsymbol{u}_{\text{exact}}\|_2}$ & $\text{cond}(A)$\\
+\hline\hline
+  $10^{-3}$ & ${\tiny\begin{pmatrix}0.3826834323650560 \\ 0.9238795325113685\end{pmatrix}}$ &  $8.8408\cdot 10^{-14}$  & $4\cdot 10^3$ \\
+  $10^{-6}$ & ${\tiny\begin{pmatrix}0.3826834323171860 \\0.9238795326269368\end{pmatrix}}$ & $1.2518\cdot 10^{-10}$ & $4\cdot 10^6$ \\
+  $10^{-9}$ & ${\tiny\begin{pmatrix}0.3826834290672392 \\0.9238795404730024\end{pmatrix}}$ & $8.6177\cdot 10^{-9}$ & $4\cdot 10^9$ \\
+  $10^{-12}$ & ${\tiny\begin{pmatrix}0.3826776593455781 \\ 0.9238934698132879\end{pmatrix}}$ & $1.5086\cdot10^{-5}$ & $4\cdot 10^{12}$ \\
+  $10^{-15}$ & ${\tiny\begin{pmatrix}0.3888090807546386 \\0.9090909090909092\end{pmatrix}}$ & $1.6007\cdot10^{-2}$ & $4\cdot 10^{15}$ \\
+  $8\cdot 10^{-16}$ & ${\tiny\begin{pmatrix} 0.2919799363037854 \\1.1428571428571428\end{pmatrix}}$ & $2.3702\cdot 10^{-1}$ & $5\cdot 10^{15}$ \\
+  $4\cdot 10^{-16}$ & ${\tiny\begin{pmatrix} -0.0630602600160104 \\ 2.0000000000000000\end{pmatrix}}$ & $1.1648$ & $10^{16}$ \\
+  \hline
+\end{tabular}
+\end{center}
+condition number $\text{cond}(A) = \lambda_+/\lambda_-\approx 4/\epsilon$
+\end{frame}
 
-| $\epsilon$        | solution $\boldsymbol{u}$                                                | relative error $\|\|\boldsymbol{u}-\boldsymbol{u}_{\text{exact}}\|\|_2/\|\|\boldsymbol{u}_{\text{exact}}\|\|_2$ | condition number $\kappa$ |
-| ----------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| $10^{-3}$         | $\begin{pmatrix}0.3826834323650560 \\ 0.9238795325113685\end{pmatrix}$   | $8.8408\cdot 10^{-14}$                                                                                          | $4\cdot 10^3$             |
-| $10^{-6}$         | $\begin{pmatrix}0.3826834323171860 \\0.9238795326269368\end{pmatrix}$    | $1.2518\cdot 10^{-10}$                                                                                          | $4\cdot 10^6$             |
-| $10^{-9}$         | $\begin{pmatrix}0.3826834290672392 \\0.9238795404730024\end{pmatrix}$    | $8.6177\cdot 10^{-9}$                                                                                           | $4\cdot 10^9$             |
-| $10^{-12}$        | $\begin{pmatrix}0.3826776593455781 \\ 0.9238934698132879\end{pmatrix}$   | $1.5086\cdot10^{-5}$                                                                                            | $4\cdot 10^{12}$          |  |
-| $10^{-15}$        | $\begin{pmatrix}0.3888090807546386 \\0.9090909090909092\end{pmatrix}$    | $1.6007\cdot10^{-2}$                                                                                            | $4\cdot 10^{15}$          |
-| $8\cdot 10^{-16}$ | $\begin{pmatrix} 0.2919799363037854 \\1.1428571428571428\end{pmatrix}$   | $2.3702\cdot 10^{-1}$                                                                                           | $5\cdot 10^{15}$          |
-| $4\cdot 10^{-16}$ | $\begin{pmatrix} -0.0630602600160104 \\ 2.0000000000000000\end{pmatrix}$ | $1.1648$                                                                                                        | $10^{16}$                 |
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Clearly, the errors increase for smaller values of $\epsilon$. This is related to the growth of condition number of the matrix. The two eigenvalues of $A$ are
-
-$$
-\lambda_{\pm} = 1+\frac{\epsilon}{2}\pm\sqrt{1-\frac{\epsilon^2}{4}} \approx \{2,\frac{\epsilon}{2}\} \qquad\text{for $\epsilon\ll 1$}
-$$
-
-and hence the condition number is
-
-$$
-\kappa = \frac{\lambda_+}{\lambda_-} = \frac{1+\frac{\epsilon}{2}+\sqrt{1-\frac{\epsilon^2}{4}}}{1+\frac{\epsilon}{2}-\sqrt{1-\frac{\epsilon^2}{4}}} \approx \frac{4}{\epsilon}
-$$
-
-It appears that matrices with large condition numbers cause problems.
-
-## Backward error analysis
-In general, when solving linear systems with $n$ equations we are interested in quantifying the error on the solution.
-
-In exact arithmetic the solution $\boldsymbol{u}\in\mathbb{R}^n$ satisfies
-
+\begin{frame}
+\frametitle{Backward error analysis}
+Solution $\boldsymbol{u}\in\mathbb{R}^n$ in exact arithmetic satisfies
 $$
 A\boldsymbol{u} = \boldsymbol{b}
 $$
-
-where $A$ is a $n\times n$ matrix. However, due to rounding errors, the solution $\boldsymbol{u}'=\boldsymbol{u}+\delta\boldsymbol{u}$ that we actually compute corresponds to the solution of the perturbed system
-
+Rounding errors $\Rightarrow$ computed solution $\boldsymbol{u}'=\boldsymbol{u}+\delta\boldsymbol{u}$ solves
 $$
 (A+\delta A)(\boldsymbol{u}+\delta\boldsymbol{u}) = \boldsymbol{b} + \delta\boldsymbol{b}
+\qquad\text{\footnotesize(assume $\delta\boldsymbol{b}=0$ for simplicity)}
 $$
+Goal: derive \textbf{bound} on $\delta\boldsymbol{u}$ \\[1ex]
+\end{frame}
 
-If we set $\delta\boldsymbol{b}=0$ for the moment, we can derive a bound on $\delta\boldsymbol{u}$ for the case where Gaussian elimination is used to solve the linear system. For this we use the following norm on vectors and matrices:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+\frametitle{Backward error analysis}
+\textbf{Norms}
 $$
 \begin{aligned}
 \|\boldsymbol{w}\|_\infty &:= \max_{i=0,\dots,n-1} |w_i|,\\
 \|A\|_\infty &:= \max_{\boldsymbol{w}\in\mathbb{R}^n,\boldsymbol{w}\neq \boldsymbol{0}} \frac{\|A\boldsymbol{w}\|_\infty}{\|\boldsymbol{w}\|_\infty} = \max_{0\le i < n} \sum_{j=0}^{n-1} |A_{ij}|
 \end{aligned}
 $$
+$\Rightarrow$ $\|A\boldsymbol{w}\|_\infty\le \|A\|_\infty\|\boldsymbol{w}\|_\infty$ and $\|AB\|_\infty\le\|A\|_\infty\|B\|_\infty$.
+\end{frame}
 
-Using the definition, it is easy to see that $\|A\boldsymbol{w}\|_\infty\le \|A\|_\infty\|\boldsymbol{w}\|_\infty$ and $\|AB\|_\infty\le\|A\|_\infty\|B\|_\infty$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The condition number of a matrix $A$ is given by
-
+\begin{frame}
+\frametitle{Backward error analysis}
+Condition number of matrix $A$
 $$
 \text{cond}(A) := \|A^{-1}\|_\infty\|A\|_\infty.
 $$
-
-(For a real-valued symmetric positive matrix this is identical to the ratio of the largest and smallest eigenvalue).
-
-We now have the following
-
-### Theorem 1
-If the $n\times n$ matrix $A$ is non-singular and $\delta A$ is sufficiently small, namely
-
+($=\lambda_{\text{max}}/\lambda_{\text{min}}$ for real-valued SPD matrix)\\[2ex]
+\textbf{Theorem 1}\\
+If the $n\times n$ matrix $A$ is non-singular and $\delta A$ is sufficiently small
 $$
 \|\delta A\|_{\infty} \|A^{-1}\|_\infty \le \frac{1}{2}
 $$
-
 then $A+\delta A$ is non-singular and
-
 $$
-\frac{\|\delta\boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} \le 2\text{cond}(A) \frac{\|\delta A\|_\infty}{\|A\|_\infty}.
-\qquad:eqn:relative_error_bound
+\frac{\|\delta\boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} \le 2\;\text{cond}(A) \frac{\|\delta A\|_\infty}{\|A\|_\infty}
 $$
+Proof (not examinable): see lecture notes
+\end{frame}
 
-The bound in @eqn:relative_error_bound is derived below. Furthermore, it can be shown that if Gaussian elimination is used to solve the linear system (and this is the method used by [numpy.linalg.solve](https://numpy.org/doc/2.2/reference/generated/numpy.linalg.solve.html)), then the effect of roundoff errors is
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+\frametitle{Backward error analysis}
+Gaussian elimination
 $$
-\frac{\|\delta A\|_\infty}{\|A\|_\infty} \le n \varepsilon_{\text{mach}} G(A),
+\frac{\|\delta A\|_\infty}{\|A\|_\infty} \le n\cdot \varepsilon_{\text{mach}}\cdot G(A),
 $$
+$G(A)$ = "well-behaved" number\\[2ex]
 
-where $G(A)$ is a "well-behaved" number that depends on the matrix $A$ and $\varepsilon_{\text{mach}}$ is the machine epsilon defined in @eqn:machine_epsilon. Although it is possible to construct pathological examples for which $G(A)$ is large, it is reasonable to assume that for the matrices that we consider here $G(A)$ is small and only depends weakly on $A$. Putting everything together, we find that
-
-### Theorem 2
+\textbf{Theorem 2}\\
 Under the conditions of Theorem 1 and if Gaussian elimination is used to solve the linear system, the error $\delta \boldsymbol{u}$ can be bounded
 
 $$
-\frac{\|\delta\boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} \le 2G(A)\cdot n\cdot \text{cond}(A)\cdot \varepsilon_{\text{mach}}.
+\frac{\|\delta\boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} \le 2\cdot G(A)\cdot n\cdot \text{cond}(A)\cdot \varepsilon_{\text{mach}}
 $$
+proportional to
+\begin{itemize}
+\item  machine epsilon $\varepsilon_{\text{mach}}$
+\item problem size $n$
+\item condition number $\text{cond}(A)$
+\end{itemize}
+\end{frame}
 
-### Summary
-Although this is only an upper bound which does not necessarily have to be tight, this result implies that the (relative) error $\|\delta\boldsymbol{u}\|_\infty/\|\boldsymbol{u}\|_\infty$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-* is proportional to the machine epsilon $\varepsilon_{\text{mach}}$ defined in @eqn:machine_epsilon,
-* increases with problem size $n$,
-* and grows with the condition number $\text{cond}(A)$ of the matrix.
-
-These observations explain the behaviour seen in @fig:relative_error: the size of the matrix and its condition number increase for higher polynomial degrees, as shown in @fig:condition_number_localassembly. The error can be reduced by using double precision ($\varepsilon_{\text{mach}}\sim 10^{-16}$) instead of single precision ($\varepsilon_{\text{mach}}\sim 10^{-7}$). It is also possible to reduce the condition number by using a better placement of the points $\xi^{(\ell)}$ which define the basis functions, but we will not pursue this here since we are typically only interested in relatively low polynomial degrees $p$ where this is not an issue.
-
-![:fig:condition_number_localassembly: Product of problem size $n_{\text{dof}}$ and condition number $\text{cond}(A^{(h)})$](figures/conditioning_reference_triangle.png)
-
-Unfortunately, the problems that are generally encountered in Scientific Computing are usually large ($n\gg 1$) and characterised by ill-conditioned matrices. Observe further that while in the examples above we were able to quantify the error by comparing the numerical solution to the exact solution, this is usually not possible: in most cases we do not even know how large the error is!
-
-### Estimating the error
-In general it is not possible to compute the error $\delta\boldsymbol{u}$. However, since $\boldsymbol{b}-A\boldsymbol{u}=0$, it is natural to consider the residual $\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'$ which measures to which degree the numerical solution $\boldsymbol{u}'=\boldsymbol{u}+\delta\boldsymbol{u}$ fails to satisfy the linear system. Unfortunately, if $\|\boldsymbol{r}\|_\infty$ is small this does not necessarily imply the smallness of the error $\|\delta\boldsymbol{u}\|_\infty$. To see this, first observe that $\boldsymbol{r}=A\delta\boldsymbol{u}$. Then note that since
-$\|\boldsymbol{b}\|_\infty \le \|A\|_\infty \|\boldsymbol{u}\|_\infty$ and $\|\delta\boldsymbol{u}\|_\infty \le \|A^{-1}\|_\infty \|\boldsymbol{r}\|_\infty$
-
+\begin{frame}
+\frametitle{Estimating the error}
+Generally impossible to compute the error $\delta\boldsymbol{u}=\boldsymbol{u}'-\boldsymbol{u}$\\[1ex]
+\textbf{Residual}
 $$
-\frac{\|\delta \boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} 
-\le \|A^{-1}\|_\infty\| \boldsymbol{r}\|_\infty \frac{\|A\|_\infty}{\|\boldsymbol{b}\|_\infty}\\
-= \text{cond}(A)\frac{\|\boldsymbol{r}\|_\infty}{\|\boldsymbol{b}\|_\infty}
+\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'=A\delta\boldsymbol{u} \qquad\text{($= 0$ if $\delta\boldsymbol{u}=0$)}
 $$
-
-Hence, the smallness of $\|\boldsymbol{r}\|_\infty/\|\boldsymbol{b}\|_\infty$ only implies the smallness of the relative error $\|\delta \boldsymbol{u}\|_\infty/\|\boldsymbol{u}\|_\infty$ if the condition number of $A$ is small. Nevertheless, in the absence of any other information on the error, the residual $\|\boldsymbol{r}\|_\infty$ is a very useful quantity to measure.
-
-### Proof of Theorem 1 (not examinable)
-Observe first that if $X$ is any $n\times n$ real-valued matrix with $\|X\|_\infty<1$ then $\|X^n\|_\infty\le \|X\|_\infty^n\rightarrow 0$ as $n\rightarrow\infty$. Thus
-
+Unfortunately
 $$
-(I-X)(1+X+X^2+\dots+X^n) = 1-X^{n+1} \rightarrow I\quad\text{as $n\rightarrow\infty$}.
+\|\boldsymbol{r}\|_\infty\ll 1 \quad\nRightarrow\quad \|\delta\boldsymbol{u}\|_\infty\ll 1
 $$
-
-This implies that
-
+Properties of $\|\cdot\|_\infty$
+\begin{xalignat*}{2}
+\|\boldsymbol{b}\|_\infty &\le \|A\|_\infty \|\boldsymbol{u}\|_\infty, & \|\delta\boldsymbol{u}\|_\infty &\le \|A^{-1}\|_\infty \|\boldsymbol{r}\|_\infty
+\end{xalignat*}
 $$
-(I-X)^{-1}=\sum_{j=0}^{\infty} X^j
+\Rightarrow\quad\frac{\|\delta \boldsymbol{u}\|_\infty}{\|\boldsymbol{u}\|_\infty} 
+\le \|A^{-1}\|_\infty\| \boldsymbol{r}\|_\infty \frac{\|A\|_\infty}{\|\boldsymbol{b}\|_\infty} = \text{cond}(A)\frac{\|\boldsymbol{r}\|_\infty}{\|\boldsymbol{b}\|_\infty}
 $$
+In the absence of any other information $\|\boldsymbol{r}\|_\infty$ is a useful quantity to measure.
+\end{frame}
 
-and
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-$$
-\|(I-X)^{-1}\|_\infty \le \sum_{j=0}^{\infty} \|X^j\|_\infty \le \sum_{j=0}^{\infty} \|X\|_\infty^j = (1-\|X\|_\infty)^{-1} \qquad:eqn:X_bound
-$$
+\begin{frame}
+\frametitle{Error for finite element problem}
+Recall: $A^{(h)}\vec{u}^{(h)}=\vec{b}^{(h)}$ on $\widehat{K}$\\[2ex]
+\begin{minipage}{0.475\linewidth}
+\begin{center}
+\includegraphics[width=\linewidth]{figures/error_reference_triangle.png}\\\textcolor{white}{X}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}{0.475\linewidth}
+\begin{center}
+\includegraphics[width=\linewidth]{figures/conditioning_reference_triangle.png}\\
+$n_{\text{dof}}\cdot \text{cond}(A^{(h)})$
+\end{center}
+\end{minipage}\\
+Typical problem in Scientific Computing
+\begin{itemize}
+\item Large $n_{\text{dof}} \gg 1$
+\item Ill-conditioned $\text{cond}(A^{(h)})$
+\end{itemize}
+\end{frame}
 
-Now write
 
-$$
-A + \delta A = (I+\delta A\;A^{-1})A
-$$
 
-and set $X=-\delta A\;A$. By the assumption $\|X\|_\infty\le \frac{1}{2}<1$ and we can apply @eqn:X_bound to show that $I+\delta A\;A^{-1}$ is non-singular and that
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-$$
-\|(I+\delta A\;A)^{-1}\|_\infty\le (1-\|\delta A\;A^{-1}\|_\infty)^{-1} \le 2.
-$$
-
-As a consequence, $A+\delta A$ is non-singular and
-
-$$
-\|(A+\delta A)^{-1}\|_\infty = \|A^{-1}(I+\delta A\;A^{-1})^{-1}\|_\infty \le 2\|A^{-1}\|_\infty
-$$
-
-Finally, subtract the two equations $(A+\delta A)(\boldsymbol{u}+\delta\boldsymbol{u})=\boldsymbol{b}$ and $A\boldsymbol{u}=\boldsymbol{b}$ to obtain $(A+\delta A)\delta\boldsymbol{u} = -\delta A \boldsymbol{u}$. After multiplication by the inverse of $A+\delta A$ this becomes
-
-$$
-\delta\boldsymbol{u} = (A+\delta A)^{-1}\delta A\boldsymbol{u}.
-$$
-
-Taking the norm leads to
-
-$$
-\begin{aligned}
-\|\delta \boldsymbol{u}\|_\infty &\le \|(A+\delta A)^{-1}\|_\infty \|\delta A\|_\infty \|\boldsymbol{u}\|_\infty\\
-&\le 2 \underbrace{\|A^{-1}\|_\infty\|A\|_\infty}_{=\text{cond}(A)} \frac{\|\delta A\|_\infty}{\|A\|_\infty}\|\boldsymbol{u}\|_\infty
-\end{aligned}
-$$
-
-To finish the proof, divide both sides of this inequality by $\|\boldsymbol{u}\|_\infty$ to obtain @eqn:relative_error_bound.
+\end{document}
 
 # Unstructured meshes
 So far, we have only solved our model PDE on a very simple domain, consisting of a single reference triangle. We now discuss how to extend the finite element approach to more general domains, using the concepts introduced in [[CH24]](https://finite-element.github.io/3_meshes.html#mesh-entities). Assume that we want to solve the PDE on a $d$-dimensional manifold $\Omega\subset \mathbb{R}^D$ that is embedded in $D$ dimensional space. For example, we might want to solve it in a rectangular domain or on the surface of a sphere. The manifold is then approximated by a *mesh*, which can be described as a collection of topological entities. For example, if $d=2$, the mesh will consist of zero-dimensional vertices, one-dimensional edges and two-dimensional triangular cells (although it is also possible to use more general polygonal cells we do not consider this here). In general, the co-dimension $c$ of a $d'$-dimensional mesh entity is given by $c=d-d'$. In the following we will only consider the case $d=D=2$, but the central ideas that are developed in the following also apply to more complicated setups. For $d=D=2$ we have:

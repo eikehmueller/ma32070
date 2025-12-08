@@ -9,6 +9,7 @@ figures/%.pdf: figures/%.svg
 
 Slides: Slides.tex $(FIGURES)
 	pdflatex Slides
+	pdflatex Slides
 
 .phony: clean
 clean:

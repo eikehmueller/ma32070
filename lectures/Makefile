@@ -1,14 +1,14 @@
 FIGURES=$(patsubst %.svg,%.pdf,$(wildcard figures/*.svg))
 SVG_RESOLUTION=-density 300
 
-all: Notes
+all: Slides
 
 figures/%.pdf: figures/%.svg
 	convert $(SVG_RESOLUTION) $< $@
 
 
-Notes: Notes.tex $(FIGURES)
-	pdflatex Notes
+Slides: Slides.tex $(FIGURES)
+	pdflatex Slides
 
 .phony: clean
 clean:

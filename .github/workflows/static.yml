@@ -195,6 +195,10 @@ jobs:
                   --resource-path solutions/exercise_petsc
                   --metadata-file metadata.yml
                   solutions/exercise_petsc/Solution.md
+            - name: Build slides
+              run: |
+                   cd lectures
+                   make
             - name: Copy to deployment folder
               run: |
                     mkdir docs
@@ -203,6 +207,7 @@ jobs:
                     mv prerequisites.html docs
                     mv notes.html docs
                     mv exercises.html docs
+                    cp lectures/Notes.pdf docs/Slides.pdf
                     cp -r lectures/figures docs
                     # EXERCISE 1
                     DIR=model_solution_exercise_python

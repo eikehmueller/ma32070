@@ -18,7 +18,10 @@ jobs:
         steps:
             - name: Install latex, imagemagick and inkscape
               run: |
-                sudo apt install texlive-full
+                sudo apt install texlive-latex-base
+                sudo apt install texlive-latex-extra
+                sudo apt install texlive-latex-recommended
+                sudo apt install texlive-maths
                 sudo apt install inkscape
                 sudo apt install imagemagick 
             - name: Check out pandoc templates

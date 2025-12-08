@@ -16,6 +16,9 @@ jobs:
           url: ${{ steps.deployment.outputs.page_url }}
         runs-on: ubuntu-latest
         steps:
+            - name: Install imagemagick
+              run: |
+                sudo apt install imagemagick 
             - name: Check out pandoc templates
               uses: actions/checkout@v4
               with:

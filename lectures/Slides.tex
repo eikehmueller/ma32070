@@ -2664,13 +2664,16 @@ Global dof-index $\ell^\times_{\text{global}}(\alpha,\ell^\times)$ in cell with 
 
 \begin{frame}[fragile]
   \frametitle{Implementation in Python}
-Class \lstinline{VectorElement(finiteelement)}
+Subclass abstract \lstinline{FiniteElement} class\\[1ex]
+$\Rightarrow$ Class \lstinline{VectorElement(finiteelement)}
 \begin{itemize}
-\item method \lstinline{tabulate_dofs(fhat)}: passed a vector-valued function $\widehat{f}$, and returns vector $\left(\lambda_0(\widehat{f}),\lambda_1(\widehat{f}),\dots,\lambda_{\nu-1}(\widehat{f})\right)^\top\in \mathbb{R}^{\nu}$
-\item \lstinline{tabulate(zeta)} is passed an array \lstinline{zeta} of shape $n\times 2$ of points $\{\zeta^{(r)}\}_{r=0}^{n-1}$ and returns an array $T^\times$ of shape $n\times \nu\times 2$ with the basis function evaluations at these points; if only a single point is passed, it returns an array of shape $\nu\times 2$
-\item \lstinline{tabulate_gradient(zeta)} is passed an array \lstinline{zeta} of shape $n\times 2$ of points $\{\zeta^{(r)}\}_{r=0}^{n-1}$ and returns an array $T^{\times\partial}$ of shape $n\times \nu\times 2\times 2$ with the basis function gradient evaluations at these points; if only a single point is passed, it returns an array of shape $\nu\times 2\times 2$ 
+\item method \lstinline{tabulate_dofs(fhat)}: tabulate $\left(\lambda_0(\widehat{f}),\lambda_1(\widehat{f}),\dots,\lambda_{\nu-1}(\widehat{f})\right)^\top\in \mathbb{R}^{\nu}$
+for vector-valued $\widehat{f}$
+\item method \lstinline{tabulate(zeta)}: tabulate\\$T^\times$ for points $\{\zeta^{(r)}\}_{r=0}^{n-1}$  (= array \lstinline{zeta} of shape $n\times 2$)
+\item method \lstinline{tabulate_gradient(zeta)} tabulate\\$T^{\times\partial}$ for points $\{\zeta^{(r)}\}_{r=0}^{n-1}$
 \end{itemize}
-Class \lstinline{Mesh} has a property \lstinline{mesh.coordinates} \lstinline{Function} on \lstinline{FunctionSpace} over \lstinline{VectorElements}
+\textbf{Mesh geometry}\\[1ex]
+Class \lstinline{Mesh} has property \lstinline{coordinates} = \lstinline{Function} on \lstinline{FunctionSpace} over \lstinline{VectorElements}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

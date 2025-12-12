@@ -2418,7 +2418,7 @@ $$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
-  \frametitle{Pullback to $\widehat{K}$}
+  \frametitle{Arrangement of unknowns}
   \textbf{Function space $\mathcal{V}_h\subset H^1(\Omega_h)$ on mesh $\Omega_h$}\\
   Pullback of the function $u|_K$ is a polynomial:
 $$
@@ -2438,55 +2438,109 @@ Need to associate the indices $\ell_{\text{global}}$ with the correct mesh entit
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+  \frametitle{Gluing together basis functions}
+  \textbf{Global basis functions = $\boldsymbol{\sum}$ local basis function}
+  \begin{center}
+  \includegraphics[width=0.6\linewidth]{figures/continuity_vertex.pdf}\\
+  {\footnotesize $\Phi^{(h)}_{\ell_{\text{global}}}$ associated with vertex}
+  \end{center}
+  \begin{center}
+  \includegraphics[width=0.6\linewidth]{figures/continuity_facet.pdf}\\
+  {\footnotesize $\Phi^{(h)}_{\ell_{\text{global}}}$ associated with facet}
+  \end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Arrangement of unknowns}
+  \textbf{Mesh} with $n_{\text{vertex}}$ vertices, $n_{\text{facet}}$ facets and $n_{\text{cell}}$ cells\\[1ex]
+  \textbf{Finite element}
+  \begin{center}
+    \renewcommand{\arraystretch}{1.2}
+    
+  \begin{tabular}{ccc}
+    \hline
+    entity & local unknowns & total unknowns \\
+    \hline\hline
+    vertex & $\nu_{\text{vertex}}$ & $N_{\text{vertex}} = n_{\text{vertex}}\cdot \nu_{\text{vertex}}$ \\ 
+    facet & $\nu_{\text{facet}}$ & $N_{\text{facet}} = n_{\text{facet}}\cdot \nu_{\text{facet}}$ \\
+    cell (interior) & $\nu_{\text{interior}}$  & $N_{\text{interior}} = n_{\text{cell}}\cdot \nu_{\text{interior}}$\\
+    \hline 
+    & total & $N_{\text{vertex}}+N_{\text{facet}}+N_{\text{interior}}$\\
+    \hline
+  \end{tabular}
+  \end{center}
+  
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Arrangement of unknowns}
+  \textbf{Ordering of unknowns}
+  {\footnotesize
+  \begin{itemize}
+    \item vertex $\gamma$:\\
+      $\ell_{\text{global}}\in\{\gamma\cdot \nu_{\text{vertex}},\dots,(\gamma+1)\cdot \nu_{\text{vertex}}-1\}$
+    \item facet $\beta$ (following orientation):\\
+      $\ell_{\text{global}}\in\{N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}},\dots,N_{\text{vertex}}+(\beta+1)\cdot \nu_{\text{facet}}-1\}$
+    \item cell $\alpha$:\\
+      $\ell_{\text{global}}\in\{N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}},\dots,N_{\text{vertex}}+N_{\text{facet}}+(\alpha+1)\cdot \nu_{\text{interior}}-1\}$ 
+  \end{itemize}
+  }
+\begin{center}
+  \includegraphics[width=0.6\linewidth]{figures/simple_mesh_with_dof_numbers.pdf}
+  \end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Local-to-global map}
+  \begin{center}
+    \begin{minipage}{0.4\linewidth}
+      \textbf{Local-to-global map}
+  $$(\alpha,\ell) \mapsto \ell_{\text{global}}$$
+    \end{minipage}\hfill
+    \begin{minipage}{0.55\linewidth}
+      \begin{center}
+        \includegraphics[width=0.9\linewidth]{figures/continuity_facet_oriented.pdf}
+      \end{center}
+    \end{minipage}
+  \end{center}
+\begin{enumerate}
+\item For given $\ell$ invert FE dof-map $\ell = \mu_{\text{dof}}(E,\rho,j)$:
+\begin{itemize}
+  \item entity type $E$ (cell, facet or vertex) 
+  \item index $\rho$ of entity on $\widehat{K}$ 
+  \item index $j$ of dof on $E_\rho$.
+\end{itemize}
+\item Map $(E,\rho,j), \alpha \mapsto \ell_{\text{global}}$
+\begin{itemize}
+   \item If $E=\text{vertex}$: $\ell_{\text{global}} = \gamma\cdot \nu_{\text{vertex}}+j$ where $\gamma=I^{K\rightarrow v}_{\alpha\rho}$
+   \item If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}}+\widetilde{j}$ where $\beta=I^{K\rightarrow F}_{\alpha\rho}$\\
+   $\widetilde{j}\in\{j,\nu_{\text{facet}}-1-j\}$ depending on orientation 
+  \item If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+j$
+\end{itemize}
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Implementation in Python}
+  Class \lstinline{FunctionSpace(mesh,finiteelement)}
+  \begin{itemize}
+  \item property \lstinline{ndof}: total number of unknowns $N_{\text{vertex}}+N_{\text{facet}}+N_{\text{interior}}$
+  \item method \lstinline{local2global(self, alpha, ell)}: map $(\alpha,\ell)\mapsto\ell_{\text{global}}$.
+  \end{itemize}
+  $\ell$ can be integer or list of integers
+\end{frame}
 \end{document}
 
- However, care has to be taken to ensure that the function $u\in\mathcal{V}_h$ defined on the entire domain is continuous across facets and at the vertices. To guarantee this, we need to think carefully about the arrangement of unknowns on the mesh.
-
-For this, recall that any function $u_h$ in the function space $\mathcal{V}_h$ can be written as
-
-$$
-u_h(x) = \sum_{\ell_{\text{global}}=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
-$$
-
-where the $\Phi^{(h)}_{\ell_{\text{global}}}$ are the *global* basis functions and $u^{(h)}_{\ell_{\text{global}}}$ are entries of the *global* dof-vector $\boldsymbol{u}^{(h)}$. To ensure continuity of $u_h$ we need to associate the indices $\ell_{\text{global}}$ with the correct mesh entities.
-
-### Arrangement of unknowns
-Assume that we have a finite element with $\nu_{\text{vertex}}$ unknowns per vertex, $\nu_{\text{facet}}$ unknowns per facet and $\nu_{\text{interior}}$ unknowns per cell. 
-Let $N_{\text{vertex}} = n_{\text{vertex}}\cdot \nu_{\text{vertex}}$, $N_{\text{facet}} = n_{\text{facet}}\cdot \nu_{\text{facet}}$ and $N_{\text{interior}} = n_{\text{cell}}\cdot \nu_{\text{interior}}$ be the total number of unknowns associated with vertices, facets and cell interiors respectively.
-
-We number the unknowns by using the first $N_{\text{vertex}}$ indices for unknowns associated with vertices, the next $N_{\text{facet}}$ indices for unknowns associated with facets and the remaining $N_{\text{interior}}$ indices for unknowns associated with cell interiors. More specifically:
-
-* unknowns with indices $\ell_{\text{global}}\in\{\gamma\cdot \nu_{\text{vertex}},\dots,(\gamma+1)\cdot \nu_{\text{vertex}}-1\}$ are associated with the $\gamma$-th vertex
-* unknowns with indices $\ell_{\text{global}}\in\{N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}},\dots,N_{\text{vertex}}+(\beta+1)\cdot \nu_{\text{facet}}-1\}$ are associated with the $\beta$-th facet
-* unknowns with indices $\ell_{\text{global}}\in\{N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}},\dots,N_{\text{vertex}}+N_{\text{facet}}+(\alpha+1)\cdot \nu_{\text{interior}}-1\}$ are associated with the $\alpha$-th cell
-
-The facet-unknowns are ordered along the orientation of each edge.
-
-@fig:triangular_mesh_with_unknowns shows an example for the $p=3$ Lagrange element. For this mesh there are $N_{\text{vertex}}=6$ unknowns associated with the vertices, $N_{\text{facet}}=10\cdot 2=20$ unknowns associated with the facets and $N_{\text{interior}} = 5$ unknowns associated with the cell interiors.
-
-![:fig:triangular_mesh_with_unknowns: simple triangular mesh with unknowns](figures/simple_mesh_with_dof_numbers.svg)
-
-### Local-to-global map
-When we introduced the concept of a finite element, we only considered *local* basis functions $\phi_\ell$. Since the functions in $\mathcal{V}_h$ are continuous, the global basis functions $\Phi^{(h)}_{\ell_{\text{global}}}$ are a combination of local basis functions: for example, global functions associated with a vertex are a combination of local basis functions on the cells that touch this vertex. Hence, in general the dof-index $\ell_{\text{global}}$ is related to several pairs $(\alpha,\ell)$ of cell indices $\alpha$ and local dof-indices $\ell$.
-
-Conversely, on each cell with index $\alpha$ we need to map the $\ell$-th local dof-index to the global dof-index $\ell_{\text{global}}$. Note that this map is surjective but not injective since the unknowns associated with the facets and vertices are shared.
-
-The map $(\alpha,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
-
-1. For the given $\ell$, we first work out the entity-type $E$ (cell, facet or vertex) it is associated with, as well as the index $\rho$ of this entity on the reference triangle and the index $j$ of the dof on that reference entity. Recall that for the finite element we have the dof-map $\mu_{\text{dof}}$ that $\ell = \mu_{\text{dof}}(E,\rho,j)$, so we can obtain $E$, $\rho$ and $j$ from the inverse of this map, which is implemented as the `inverse_dofmap()` method in the `FiniteElement` base class in [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py).
-2. Next, we map the tuple $(E,\rho,j)$ to the global dof index $\ell_{\text{global}}$ taking into account the arrangement of unknowns described above:
-   1. If $E=\text{vertex}$: $\ell_{\text{global}} = \gamma\cdot \nu_{\text{vertex}}+j$ where $\gamma=I^{K\rightarrow v}_{\alpha\rho}$ is the global index of the vertex with local index $\rho$.
-   2. If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}}+\widetilde{j}$ where $\beta=I^{K\rightarrow F}_{\alpha\rho}$ is the global index of the facet with local index $\rho$. Note that the orientation of the facet does not necessarily match the orientation on the reference element $\widehat{K}$. To take this into account, set $\widetilde{j}=j$ if the orientations agree and set $\widetilde{j} = \nu_{\text{facet}}-1-j$ otherwise.
-   3. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+j$ ($\rho$ is ignored in this case)
-
-## Implementation in Python
-
-### Function spaces
-
-The necessary functionality is implemented in the `FunctionSpace` class in [`fem/functionspace.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/functionspace.py). The initialiser is passed a `mesh` and a `finiteelement` and the class provides the following functionality:
-
-* The property `ndof` contains the total number of unknowns in the function space
-* The method `local2global(self, alpha, ell)` implements the map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ described above. If the parameter `ell` is a single integer index in the range $0,1,\dots,\nu-1$, the method returns a single number $\ell_{\text{global}}$. If `ell` is an [iterable](https://docs.python.org/3/glossary.html#term-iterable) (such as a list `[0,3,4]` or `range(1,6,2)`) the global index will be computed for each local index and the method returns a list.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ### Functions
 To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a numpy array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h \in \mathcal{V}_h$ given by

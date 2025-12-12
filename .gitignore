@@ -9,6 +9,8 @@ src/plotting/*png
 *.log
 *.nav
 *.out
+*.bbl
+lectures/Slides.pdf
 lectures/Notes.pdf
 *.snm
 *.synctex.gz

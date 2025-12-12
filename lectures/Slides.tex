@@ -2531,35 +2531,41 @@ Need to associate the indices $\ell_{\text{global}}$ with the correct mesh entit
 
 \begin{frame}[fragile]
   \frametitle{Implementation in Python}
+  \textbf{Function spaces}\\
   Class \lstinline{FunctionSpace(mesh,finiteelement)}
   \begin{itemize}
   \item property \lstinline{ndof}: total number of unknowns $N_{\text{vertex}}+N_{\text{facet}}+N_{\text{interior}}$
-  \item method \lstinline{local2global(self, alpha, ell)}: map $(\alpha,\ell)\mapsto\ell_{\text{global}}$.
+  \item method \lstinline{local2global(self, alpha, ell)}: map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ {\footnotesize($\ell$ = integer or list of integers)}
   \end{itemize}
-  $\ell$ can be integer or list of integers
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Implementation in Python}
+  \textbf{Functions} $u_h\in\mathcal{V}_h$\\[1ex]
+  Class \lstinline{Function(functionspace)}
+  \begin{itemize}
+    \item property \lstinline{functionspace}
+    \item property \lstinline{data} = dof-vector $\boldsymbol{u}^{(h)}$
+  \end{itemize}
+$$
+u_h(x) = \sum_{\ell_{\text{global}}=0}^{N-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
+$$
+\vfill
+\textbf{Co-functions} $b(\cdot)\in\mathcal{V}_h^*$, e.g. $b(v) = \int_\Omega v(x) f(x)\;dx$\\[1ex]
+  Class \lstinline{CoFunction(functionspace)}
+  \begin{itemize}
+    \item property \lstinline{functionspace}
+    \item property \lstinline{data} = dof-vector $\boldsymbol{b}^{(h)}$
+  \end{itemize}
+$$
+b^{(h)}_{\ell_{\text{global}}} = b\left(\Phi^{(h)}_{\ell_{\text{global}}}\right).
+$$
 \end{frame}
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-### Functions
-To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a numpy array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h \in \mathcal{V}_h$ given by
-
-$$
-u_h(x) = \sum_{\ell_{\text{global}}=0}^{N-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
-$$
-
-To store *co-functions* such as $b(\cdot)\in\mathcal{V}_h^*$ with (for example)
-
-$$
-b(v) = \int_\Omega v(x) f(x)\;dx
-$$
-
-a `CoFunction` class is provided in the same file. This class is also constructed by passing it a `FunctionSpace` object, but now the `cofunction.data` array contains the vector $\boldsymbol{b}^{(h)}$ whose elements are given by
-
-$$
-b^{(h)}_{\ell_{\text{global}}} = b\left(\Phi^{(h)}_{\ell_{\text{global}}}\right).
-$$
 
 ## Encoding geometry information
 The geometry of the mesh is encoded in the functions $X_K$ which describe the mapping from the reference element $\widehat{K}$ to a particular cell $K$. We can combine the $X_K$ in each cell into a global function $X$ which is defined on the entire mesh. The crucial observation is now that each component of $X_K$ can be represented by a function in a finite element space $\mathcal{W}_h$ which is defined in the same way as $\mathcal{V}_h$ (but possibly with a different polynomial degree). Hence, we can define a coordinate function 

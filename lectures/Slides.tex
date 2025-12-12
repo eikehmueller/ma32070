@@ -2563,81 +2563,121 @@ $$
 b^{(h)}_{\ell_{\text{global}}} = b\left(\Phi^{(h)}_{\ell_{\text{global}}}\right).
 $$
 \end{frame}
-\end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Encoding geometry information
-The geometry of the mesh is encoded in the functions $X_K$ which describe the mapping from the reference element $\widehat{K}$ to a particular cell $K$. We can combine the $X_K$ in each cell into a global function $X$ which is defined on the entire mesh. The crucial observation is now that each component of $X_K$ can be represented by a function in a finite element space $\mathcal{W}_h$ which is defined in the same way as $\mathcal{V}_h$ (but possibly with a different polynomial degree). Hence, we can define a coordinate function 
-
+\begin{frame}
+  \frametitle{Encoding geometry information}
+  \begin{minipage}{0.45\linewidth}
+    \textbf{Mesh geometry}
+    $$
+X_K:\widehat{K}\rightarrow K\subset \Omega\subset \mathbb{R}^2
 $$
-X \in \mathcal{W}_h^{\times} = \mathcal{W}_h \times \mathcal{W}_h
+Combine into global function
 $$
-which encodes the mesh geometry. This idea is used in successful finite element libraries such as [Firedrake](https://www.firedrakeproject.org/).
+X:\bigcup_{\widehat{K}}\rightarrow \mathbb{R}^2
+$$
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\linewidth}
+    \begin{center}
+  \includegraphics[width=1\linewidth]{figures/reference_mapping.pdf}
+\end{center}
+  \end{minipage}\\
+Each component = (scalar-valued) finite-element function
+$$
+X \in \mathcal{W}_h^{\times} = \mathcal{W}_h \times \mathcal{W}_h \quad \text{vector function space}
+$$
+\end{frame}
 
-The space $\mathcal{W}_h^{\times}$ is a vector function space. Let $w=(w_0,w_1):\widehat{K}\rightarrow \mathbb{R}^2$ be a vector-valued function. Then the degrees of freedom $\lambda^\times$ of $\mathcal{W}^\times_h$ are given by:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+  \frametitle{Vector function spaces}
+\textbf{Local degrees of freedom and basis functions of $\mathcal{W}^\times_h$}\\[1ex]
+Vector-valued function $w=(w_0,w_1):\widehat{K}\rightarrow \mathbb{R}^2$\\
+$\Rightarrow$ degrees of freedom $\lambda_{\ell^\times}^\times$ 
 $$
 \lambda^\times_{\ell^\times}(w) = \begin{cases} 
-\lambda_{\ell^\times/2}(w_0) & \text{for $\ell^\times$ even}\\
-\lambda_{(\ell^\times-1)/2}(w_1) & \text{for $\ell^\times$ odd}\\
+\lambda_{\frac{\ell^\times}{2}}(w_0) & \text{for $\ell^\times$ even}\\
+\lambda_{\frac{\ell^\times-1}{2}}(w_1) & \text{for $\ell^\times$ odd}\\
 \end{cases}
 $$
-
-The corresponding vector-valued nodal basis functions $\phi^\times_\ell$ which satisfy $\lambda^{\times}_{\ell^\times}(\phi^\times_{k^\times})=\delta_{\ell^\times k^\times}$ (recall @eqn:nodal_basis_definition) are
+Vector-valued nodal basis functions 
 $$
 \phi^\times_{\ell^\times}(x) = 
 \begin{cases}
-\begin{pmatrix}\phi_{\ell^\times/2}(x)\\0\end{pmatrix} & \text{for $\ell^\times$ even}\\[2ex]
-\begin{pmatrix}0 \\\phi_{(\ell^\times-1)/2}(x)\end{pmatrix} & \text{for $\ell^\times$ odd}
+\begin{pmatrix}\phi_{\frac{\ell^\times}{2}}(x)\\0\end{pmatrix} & \text{for $\ell^\times$ even}\\[4ex]
+\begin{pmatrix}0 \\\phi_{\frac{\ell^\times-1}{2}}(x)\end{pmatrix} & \text{for $\ell^\times$ odd}
 \end{cases}
 $$
+$\Rightarrow$ $\lambda^{\times}_{\ell^\times}(\phi^\times_{k^\times})=\delta_{\ell^\times k^\times}$
+\end{frame}
 
-### Tabulation of basis functions
-As for scalar-valued function spaces we can *tabulate* the basis functions. For a given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$, we obtain the $n \times \nu^\times \times 2$ matrix $T^\times$ with
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Tabulation of basis functions}
+Given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$ $\Rightarrow$ $n \times \nu^\times \times 2$ matrix $T^\times$
 
 $$
+{\footnotesize
 T^\times_{r\ell^\times a}(\boldsymbol{\zeta}) := (\phi^\times_{\ell^\times}(\zeta^{(r)}))_a = 
 \begin{cases}
-\phi_{\ell^\times/2}(\zeta^{(r)}) = T_{r,\ell^\times/2}& \text{if $\ell^\times$ even and $a=0$} \\
-\phi_{(\ell^\times-1)/2}(\zeta^{(r)}) = T_{r,(\ell^\times-1)/2} & \text{if $\ell^\times$ odd and $a=1$} \\
+\phi_{\frac{\ell^\times}{2}}(\zeta^{(r)}) = T_{r,\frac{\ell^\times}{2}}& \text{if $\ell^\times$ even and $a=0$} \\
+\phi_{\frac{\ell^\times-1}{2}}(\zeta^{(r)}) = T_{r,\frac{\ell^\times-1}{2}} & \text{if $\ell^\times$ odd and $a=1$} \\
 0 & \text{otherwise}
-\end{cases}
+\end{cases}}
 $$
 
-Furthermore, the derivatives are collected in the $n \times \nu^\times \times 2\times 2$ matrix $T^{\times\partial}$ matrix with
+Derivatives $\Rightarrow$ $n \times \nu^\times \times 2\times 2$ matrix $T^{\times\partial}$ matrix
 
 $$
+{\footnotesize
 T^{\times\partial}_{r\ell^\times ab}(\boldsymbol{\zeta}) := \frac{(\partial \phi^\times_{\ell^\times})_a}{\partial x_b}(\zeta^{(r)})  = \begin{cases}
-\frac{\phi_{\ell^\times/2}}{\partial x_b}(\zeta^{(r)}) = T_{r,\ell^\times/2,b}& \text{if $\ell^\times$ even and $a=0$} \\[2ex]
-\frac{\partial\phi_{(\ell^\times-1)/2}}{\partial x_b}(\zeta^{(r)}) = T_{r,(\ell^\times-1)/2,b} & \text{if $\ell^\times$ odd and $a=1$} \\[2ex]
+\frac{\phi_{\frac{\ell^\times}{2}}}{\partial x_b}(\zeta^{(r)}) = T_{r,\frac{\ell^\times}{2},b}& \text{if $\ell^\times$ even, $a=0$} \\[2ex]
+\frac{\partial\phi_{\frac{\ell^\times-1}{2}}}{\partial x_b}(\zeta^{(r)}) = T_{r,\frac{\ell^\times-1}{2},b} & \text{if $\ell^\times$ odd, $a=1$} \\[2ex]
 0 & \text{otherwise}
-\end{cases}
+\end{cases}}
 $$
+\end{frame}
 
-### Construction of global coordinates
-We can now evaluate the value of $X_K(\zeta^{(r)})$, i.e. the global coordinate for some point $\zeta^{(r)}$ inside the reference cell when mapped to the cell $K$. For this, assume that the coordinate field $X\in\mathcal{W}_h^\times$ is represented by the global dof-vector $\boldsymbol{X}$. Then 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+  \frametitle{Construction of global coordinates}
+Evaluate global coordinate $X_K(\zeta^{(r)})$ at $\zeta^{(r)}\in\widehat{K}$
 $$
 (X_K(\zeta^{(r)}))_a = \sum_{\ell^\times} \overline{X}_{\ell^\times} \left(\phi_{\ell^\times}^\times(\zeta^{(r)})\right)_a = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^\times_{r\ell^\times a} 
 $$
-
-where $\overline{\boldsymbol{X}}$ is the local coordinate vector with
-
+\begin{itemize}
+  \item global coordinate dof-vector $\vec{X}$
+  \item local coordinate dof-vector $\overline{\boldsymbol{X}}$
+\end{itemize}
 $$
 \overline{X}_{\ell^\times} = X_{\ell^\times_{\text{global}}(\alpha,\ell^\times)}.
 $$
+Global dof-index $\ell^\times_{\text{global}}(\alpha,\ell^\times)$ in cell with index $\alpha$
+\end{frame}
 
-In this expression $\ell^\times_{\text{global}}(\alpha,\ell^\times)$ is the global dof-index that corresponds to the local dof-index $\ell^\times$ in the cell with index $\alpha$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Implementation in Python
-Vector-valued finite elements are implemented in the class `VectorElement` in [`fem/vectorelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/vectorelement.py). This is a subclass of the abstract base class `FiniteElement` (recall [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py)). In its constructor it gets passed a `FiniteElement` which is used to represent each of its components. The class `VectorElement` then uses the underlying scalar-valued finite element to implement the appropriate methods for tabulating the degrees of freedom and (gradients of) the basis functions:
+\begin{frame}[fragile]
+  \frametitle{Implementation in Python}
+Class \lstinline{VectorElement(finiteelement)}
+\begin{itemize}
+\item method \lstinline{tabulate_dofs(fhat)}: passed a vector-valued function $\widehat{f}$, and returns vector $\left(\lambda_0(\widehat{f}),\lambda_1(\widehat{f}),\dots,\lambda_{\nu-1}(\widehat{f})\right)^\top\in \mathbb{R}^{\nu}$
+\item \lstinline{tabulate(zeta)} is passed an array \lstinline{zeta} of shape $n\times 2$ of points $\{\zeta^{(r)}\}_{r=0}^{n-1}$ and returns an array $T^\times$ of shape $n\times \nu\times 2$ with the basis function evaluations at these points; if only a single point is passed, it returns an array of shape $\nu\times 2$
+\item \lstinline{tabulate_gradient(zeta)} is passed an array \lstinline{zeta} of shape $n\times 2$ of points $\{\zeta^{(r)}\}_{r=0}^{n-1}$ and returns an array $T^{\times\partial}$ of shape $n\times \nu\times 2\times 2$ with the basis function gradient evaluations at these points; if only a single point is passed, it returns an array of shape $\nu\times 2\times 2$ 
+\end{itemize}
+Class \lstinline{Mesh} has a property \lstinline{mesh.coordinates} \lstinline{Function} on \lstinline{FunctionSpace} over \lstinline{VectorElements}
+\end{frame}
 
-* `tabulate_dofs(fhat)` is passed a vector-valued function $\widehat{f}$, and returns the vector $\left(\lambda_0(\widehat{f}),\lambda_1(\widehat{f}),\lambda_2(\widehat{f}),\dots,\lambda_{\nu-1}(\widehat{f})\right)^\top\in \mathbb{R}^{\nu}$.
-* `tabulate()` is passed an array of shape $n\times 2$ of points $\{\zeta^{(r)}\}_{r=0}^{n-1}$ and returns an array $T^\times$ of shape $n\times \nu\times 2$ with the basis function evaluations at these points; if only a single point is passed, it returns an array of shape $\nu\times 2$
-* `tabulate_gradient()` is passed an array of shape $n\times 2$ of points $\{\zeta^{(r)}\}_{r=0}^{n-1}$ and returns an array $T^{\times\partial}$ of shape $n\times \nu\times 2\times 2$ with the basis function gradient evaluations at these points; if only a single point is passed, it returns an array of shape $\nu\times 2\times 2$ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Looking back at the `Mesh` class in [`fem/mesh.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/mesh.py), observe that it has a property `mesh.coordinates`, which is a `Function` on a `FunctionSpace` over `VectorElements`. This will allow us to extract the mesh geometry.
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Global assembly
 We are now ready to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$ which define the linear system

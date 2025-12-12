@@ -2678,27 +2678,32 @@ Class \lstinline{Mesh} has property \lstinline{coordinates} = \lstinline{Functio
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Global assembly
-We are now ready to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$ which define the linear system
+\begin{frame}
+  \frametitle{Global assembly}
+  Recall: need to solve
+  $$
+A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}
 $$
-A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}.
-$$
-With knowledge of the dof-vector $\boldsymbol{u}^{(h)}$ we can reconstruct the finite element solution
-$$
-u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x).
-$$
-Recall that the entries of the right hand side vector and stiffness matrix are given by
-$$
-b^{(h)}_{\ell_{\text{global}}}:=b(\Phi^{(h)}_{\ell_{\text{global}}})
-$$
-and
+with stiffness matrix
 $$
 A^{(h)}_{{\ell_{\text{global}}}{k_{\text{global}}}}:= a\left(\Phi^{(h)}_{k_{\text{global}}},\Phi^{(h)}_{\ell_{\text{global}}}\right).
 $$
+right-hand-side
+$$
+b^{(h)}_{\ell_{\text{global}}}:=b(\Phi^{(h)}_{\ell_{\text{global}}})
+$$
+$\Rightarrow$ dof-vector $\boldsymbol{u}^{(h)}$ $\Rightarrow$ finite element solution
+$$
+u_h(x) = \sum_{\ell=0}^{n-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
+$$
+$\Rightarrow$ \textbf{global assembly} of $\vec{b}^{(h)}$ and $A^{(h)}$
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We now discuss the assembly of these two quantities.
 
 ## Assembly of RHS vector

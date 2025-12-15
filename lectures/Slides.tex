@@ -2684,11 +2684,11 @@ Class \lstinline{Mesh} has property \lstinline{coordinates} = \lstinline{Functio
   $$
 A^{(h)} \boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}
 $$
-with stiffness matrix
+with \textbf{stiffness matrix} $A^{(h)}$
 $$
 A^{(h)}_{{\ell_{\text{global}}}{k_{\text{global}}}}:= a\left(\Phi^{(h)}_{k_{\text{global}}},\Phi^{(h)}_{\ell_{\text{global}}}\right).
 $$
-right-hand-side
+\textbf{right-hand-side vector} $\vec{b}^{(h)}$
 $$
 b^{(h)}_{\ell_{\text{global}}}:=b(\Phi^{(h)}_{\ell_{\text{global}}})
 $$
@@ -2701,85 +2701,129 @@ $\Rightarrow$ \textbf{global assembly} of $\vec{b}^{(h)}$ and $A^{(h)}$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-We now discuss the assembly of these two quantities.
-
-## Assembly of RHS vector
-Since $b(v) = \int_\Omega f(x)v(x)\;dx$ we compute the entries of the vector $b^{(h)}$ by splitting the integral over the domain $\Omega$ into the sum of integrals over the cells $K$:
-$$
+\begin{frame}
+  \frametitle{Assembly of right-hand-side}
+  Recall $b(v) = \int_\Omega f(x)v(x)\;dx$ 
+  $$
 \begin{aligned}
-b^{(h)}_{\ell_{\text{global}}} &= \int_\Omega f(x) \Phi_{\ell_{\text{global}}}(x)\;dx\\
-&= \sum_{K\in \Omega_h} \int_K f(x) \Phi_{\ell_{\text{global}}}(x) \; dx\\
+\Rightarrow \quad b^{(h)}_{\ell_{\text{global}}} &= \int_\Omega f(x) \Phi_{\ell_{\text{global}}}(x)\;dx = \sum_{K\in \Omega_h} \int_K f(x) \Phi_{\ell_{\text{global}}}(x) \; dx\\
 \end{aligned}
 $$
-If $\alpha$ is the index of cell $K$, we can identify the *global* index $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ with the corresponding cell-*local* index $\ell$, transform variables to integrate over the reference cell $\widehat{K}$ and write 
+global index $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$
+\begin{itemize}
+  \item index of cell $K$: $\alpha$
+  \item local dof-index: $\ell$
+\end{itemize}
+{\footnotesize There can be $\alpha'\neq \alpha$, $\ell'\neq\ell$ such that $\ell_{\text{global}}(\alpha',\ell')=\ell_{\text{global}}(\alpha,\ell)$}\\[1ex]
+\textbf{Transform variables $\int_{K}\;dx\rightarrow\int_{\widehat{K}}\;d\widehat{x}$:} 
 $$
 \begin{aligned}
 b^{(h)}_{\ell_{\text{global}}} &= \sum_{K\in \Omega_h}\int_{\widehat{K}} \widehat{f}_K(\widehat{x}) \phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}
 \end{aligned}
 $$
-where $\widehat{f}_K = f\circ X_K$ is the pullback of $f$ to the cell $K$, i.e. $\widehat{f}_K(\widehat{x}) :=  f(x) = f(X_K(\widehat{x}))$ for all $\widehat{x}\in\widehat{K}$. Note that for degrees of freedom which are shared between neighbouring cells, there can be contributions from different cells since several $(\alpha,\ell)$ can correspond to the same $\ell_{\text{global}}$.
+\textbf{Pullback} of $f$ to the cell $K$: $\widehat{f}_K = f\circ X_K$:
+$$
+\widehat{f}_K(\widehat{x}) :=  f(x) = f(X_K(\widehat{x}))
+\quad \text{for all $\widehat{x}\in\widehat{K}$}
+$$
+\end{frame}
 
-Next, replace the integration by numerical quadrature and use the tabulated basis functions $T_{q\ell}=\phi_\ell(\xi^{(q)})$ to obtain
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Assembly of right-hand-side}
+  \textbf{Numerical quadrature} and \textbf{tabulation}
 $$
 \begin{aligned}
-b^{(h)}_{\ell_{\text{global}}} &\approx \sum_{K\in \Omega_h} \sum_q w_q \widehat{f}_K(\xi^{(q)}) \phi_\ell(\xi^{(q)})\;|\det{J}(\xi^{(q)})|\\
+b^{(h)}_{\ell_{\text{global}}} &\sum_{K\in \Omega_h}\int_{\widehat{K}} \widehat{f}_K(\widehat{x}) \phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}\\
+&\approx \sum_{K\in \Omega_h} \sum_q w_q \widehat{f}_K(\xi^{(q)}) \phi_\ell(\xi^{(q)})\;|\det{J}(\xi^{(q)})|\\
 &= \sum_{K\in \Omega_h} \sum_q w_q \widehat{f}_K(\xi^{(q)}) T_{q\ell}\;|\det{J}(\xi^{(q)})|.
 \end{aligned}
 $$
-To evaluate the cell-local function $\widehat{f}_K$ at the quadrature point $\xi^{(q)}$ we need to work out the global coordinate $x_K^{(q)}=X_K(\xi^{(q)})$ which corresponds to this point and use
+Evaluation of cell-local $\widehat{f}_K$ at quadrature points $\xi^{(q)}$\\
+$\Rightarrow$ global coordinate $x_K^{(q)}=X_K(\xi^{(q)})$
 $$
 \widehat{f}_K(\xi^{(q)}) = f(x_K^{(q)}).
 $$
-In each cell $x_K$ can be expanded in terms of vector-valued basis functions as
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Assembly of right-hand-side}
+  Expand $x_K$ in terms of vector-valued basis functions
 $$
 (x_K^{(q)})_a = (X_K(\xi^{(q)}))_a = \sum_{\ell^\times} (\phi^\times_{\ell^\times}(\xi^{(q)}))_a X_{\ell^\times_{\text{global}}} = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}
 $$
-where $\ell^\times_{\text{global}}=\ell_{\text{global}}^\times(\alpha,\ell^\times)$ is the global dof-index of the coordinate field which corresponds to the cell index $i$ and the local dof-index $\ell^\times$. As before, $\overline{\boldsymbol{X}}$ is the cell-local dof-vector with $\overline{X}_{\ell^\times} = X_{\ell_{\text{global}}^\times}$.
-
-The Jacobian is given by
+global dof-index of coordinate field: $\ell^\times_{\text{global}}=\ell_{\text{global}}^\times(\alpha,\ell^\times)$\\
+cell-local coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell_{\text{global}}^\times}$\\[2ex]
+\textbf{Jacobian}
 $$
-J_{ab}(\xi^{(q)}) = \frac{\partial (x_K^{(q)})_a }{\partial x_b} = \frac{\partial (X_K)_a }{\partial x_b}(\xi^{(q)})
-= \sum_{\ell^\times} X_{\ell^\times_{\text{global}}} \frac{\partial (\phi^\times_{\ell^\times})_a }{\partial x_b}(\xi^{(q)})
-= \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}
+\begin{aligned}
+J_{ab}(\xi^{(q)}) &= \frac{\partial (x_K^{(q)})_a }{\partial x_b} = \frac{\partial (X_K)_a }{\partial x_b}(\xi^{(q)})\\
+&= \sum_{\ell^\times} X_{\ell^\times_{\text{global}}} \frac{\partial (\phi^\times_{\ell^\times})_a }{\partial x_b}(\xi^{(q)})\\
+&= \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}
+\end{aligned}
 $$
-Putting everything together, we arrive at the following procedure:
 
-**Algorithm: assembly of right-hand-side vector $\boldsymbol{b}^{(h)}$**
-1. Initialise $\boldsymbol{b}^{(h)} \gets 0$
-2. **For** all cells $K$ **do**:
-3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,{\ell^\times})}$ where $\alpha$ is the index of cell $K$
-4. $~~~~$ **For** all quadrature points $q$ **do**:
-5. $~~~~~~~~$ Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ with $J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$
-6. $~~~~~~~~$ Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$ and evaluate $F_q = \widehat{f}_K(\xi^{(q)})=f(x_K^{(q)})$
-7. $~~~~$ **end do**
-8. $~~~~$ Construct the local dof-vector $\boldsymbol{b}^{(h),\text{local}}$ with
-$$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$$
-1. $~~~~$ **For** all local dof-indices $\ell$ **do**:
-2. $~~~~~~~~$ Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$
-3. $~~~~$ **end do**
-4. **end do**
+\end{frame}
 
-#### Illustration
-@fig:global_assembly_rhs visualises the assembly of the global vector $\boldsymbol{b}^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global vector entry $b^{(h)}_8$.
-![:fig:global_assembly_rhs: Global assembly of right hand side vector](figures/global_assembly_rhs.svg)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#### Implementation
-The summation $\sum_q w_q F_q T_{q\ell} D_q$ of the local vector entries can be realised with numpy's [`einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) method.
+\begin{frame}
+  \frametitle{Assembly of right-hand-side}
+  \begin{algorithmic}[1]    
+\State{Initialise $\boldsymbol{b}^{(h)} \gets 0$}
+\ForAll{cells $K$} 
+  \State {Extract local coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}}$}
+  \ForAll{quadrature points $q$}
+    \State{Compute the determinant $D_q$ of the Jacobian $J(\xi^{(q)})$ $$J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^\times ab}$$}
+    \State{Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$, $F_q =f(x_K^{(q)})$}
+  \EndFor
+  \State{Construct local $\boldsymbol{b}^{(h),\text{local}}$:
+$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$}
+\ForAll{local dof-indices $\ell$}
+  \State{Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$}
+\EndFor
+\EndFor
+  \end{algorithmic}
+\end{frame}
 
-To insert the entries of the local vector $\boldsymbol{b}^{(h),\text{local}}$ into the global vector $\boldsymbol{b}^{(h)}$ we can use slicing notation, i.e. write
-```
-b_h[ell_global] += b_h_local[:]
-```
-where `ell_global` is the list of global dof-indices that correspond to the local dof-indices in the cell. In the code, this list can be constructed as
-```
-ell_global = fs.local2global(alpha,range(ndof))
-```
-In this expression `fs` is a `FunctionSpace` object and `ndof` is the number $\nu$ of local unknowns in each cell.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Global assembly of the right hand side vector $\boldsymbol{b}^{(h)}$ is implemented in the function `assemble_rhs(f, r, quad)` in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). This method gets passed a Python function $f$, a `CoFunction` object `r` to hold the result and a quadrature rule `quad`.
+\begin{frame}
+  \frametitle{Assembly of right-hand-side}
+  \textbf{Illustration}
+  \begin{center}
+  \includegraphics[width=\linewidth]{figures/global_assembly_rhs.pdf}
+  \end{center}
+  Global indices: $\ell_{\text{global}}=[2,4,8]$ (cell 1), $\ell_{\text{global}}=[8,11,16]$ (cell 2)\\
+  $\Rightarrow$ Both cells contribute to the global vector entry $b^{(h)}_8$
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Assembly of right-hand-side}
+  \textbf{Implementation}\\[1ex]
+  Summation $\sum_q w_q F_q T_{q\ell} D_q$ $\Rightarrow$ \lstinline{einsum()}\\
+  \begin{lstlisting}
+  np.einsum("q,ql,q,q->l", w_q, T, f_q, det_J)
+  \end{lstlisting}
+  Insertion of local vector $\boldsymbol{b}^{(h),\text{local}}$ into global vector $\boldsymbol{b}^{(h)}$\\
+  $\Rightarrow$ \textbf{Slicing} notation {\footnotesize (avoid explicit looping)}
+  \begin{lstlisting}
+    ell_global = fs.local2global(alpha,range(ndof))
+    b_h[ell_global] += b_h_local[:]
+  \end{lstlisting}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Assembly of LHS matrix
 To assemble the stiffness matrix, we again split the integral into a sum of integrals over grid cells $K$:

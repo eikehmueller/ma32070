@@ -2715,7 +2715,7 @@ global index $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$
   \item local dof-index: $\ell$
 \end{itemize}
 {\footnotesize There can be $\alpha'\neq \alpha$, $\ell'\neq\ell$ such that $\ell_{\text{global}}(\alpha',\ell')=\ell_{\text{global}}(\alpha,\ell)$}\\[1ex]
-\textbf{Transform variables $\int_{K}\;dx\rightarrow\int_{\widehat{K}}\;d\widehat{x}$:} 
+\textbf{Change of variables $\int_{K}\;dx\rightarrow\int_{\widehat{K}}\;d\widehat{x}$:} 
 $$
 \begin{aligned}
 b^{(h)}_{\ell_{\text{global}}} &= \sum_{K\in \Omega_h}\int_{\widehat{K}} \widehat{f}_K(\widehat{x}) \phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}
@@ -2818,81 +2818,134 @@ $b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$}
   \end{lstlisting}
 \end{frame}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-## Assembly of LHS matrix
-To assemble the stiffness matrix, we again split the integral into a sum of integrals over grid cells $K$:
-$$
+\begin{frame}
+  \frametitle{Assembly of stiffness matrix}
+  $$
+  {\footnotesize
 \begin{aligned}
 A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \int_\Omega \left(\kappa \nabla \Phi^{(h)}_{k_{\text{global}}}(x) \cdot\nabla\Phi^{(h)}_{\ell_{\text{global}}}(x)+\omega \Phi^{(h)}_{k_{\text{global}}}(x)\Phi^{(h)}_{\ell_{\text{global}}}(x)\right)dx\\
 &= \sum_{K\in\Omega_h}\int_K \left(\kappa \nabla \Phi^{(h)}_{k_{\text{global}}}(x) \cdot\nabla\Phi^{(h)}_{\ell_{\text{global}}}(x)+\omega \Phi^{(h)}_{k_{\text{global}}}(x)\Phi^{(h)}_{\ell_{\text{global}}}(x)\right)dx
-\end{aligned}
+\end{aligned}}
 $$
-Next, we change variables in each cell to convert the integrals into integrals over the reference cell $K$. For this, note that the global basis functions and their derivatives transform as follows:
+\textbf{Change of variables $\int_{K}\;dx\rightarrow\int_{\widehat{K}}\;d\widehat{x}$:} 
 $$
 \begin{aligned}
 \Phi^{(h)}_{\ell_{\text{global}}}(x) &= \phi_\ell(\widehat{x})\\
 \nabla \Phi^{(h)}_{\ell_{\text{global}}}(x) &= J^{-\top}(\widehat{x}) \widehat{\nabla}\phi_\ell(\widehat{x})
 \end{aligned}
 $$
-Here $\ell_{\text{global}}=\ell_{\text{global}}(\alpha,\ell)$ is again the global dof-index that is associated with the local dof-index $\ell$ in the cell with index $\alpha$. The second identity can be easily verified by using the chain rule since $x=X_K(\widehat{x})$. With this we find
 $$
+{\footnotesize
 \begin{aligned}
-A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \sum_{K\in \Omega_h}\int_K \left(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla} \phi_k (\widehat{x})\cdot J^{-\top}(\widehat{x})\widehat{\nabla}\phi_\ell(\widehat{x}) + \omega\phi_k(\widehat{x})\phi_\ell(\widehat{x})\right)|\det{J}(\widehat{x})|d\widehat{x}.
-\end{aligned}
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \sum_{K\in \Omega_h}\int_K \Big(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla} \phi_k (\widehat{x})\cdot J^{-\top}(\widehat{x})\widehat{\nabla}\phi_\ell(\widehat{x})+ \omega\phi_k(\widehat{x})\phi_\ell(\widehat{x})\Big)\cdot\\[-2ex]
+&\hspace{7cm}\cdot|\det{J}(\widehat{x})|d\widehat{x}
+\end{aligned}}
 $$
-Next, approximate the integrals by numerical quadrature and use the tabulated basis functions $T_{q\ell} = \phi_\ell(\xi^{(q)})$, $T^\partial_{q\ell a} = \frac{\partial\phi_\ell}{\partial \widehat{x}_a}(\xi^{(q)})$ to obtain
-$$
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Assembly of stiffness matrix}
+  \textbf{Numerical quadrature} and \textbf{tabulation}
+  $$
+  {\footnotesize
 \begin{aligned}
-A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &\approx \sum_{K\in \Omega_h}\int_K  w_q \left(\kappa \widehat{\nabla} \phi_k(\xi^{(q)})(J^{\top}(\xi^{(q)}) J(\xi^{(q)}))^{-1}\phi_\ell(\xi^{(q)}) + \omega\phi_k(\xi^{(q)})\phi_\ell(\xi^{(q)})\right)|\det{J}(\xi^{(q)})| \\
+A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \sum_{K\in \Omega_h}\int_K \Big(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla} \phi_k (\widehat{x})\cdot J^{-\top}(\widehat{x})\widehat{\nabla}\phi_\ell(\widehat{x})+ \omega\phi_k(\widehat{x})\phi_\ell(\widehat{x})\Big)\cdot\\[-2ex]
+&\hspace{7cm}\cdot|\det{J}(\widehat{x})|d\widehat{x}
+\\
+&\approx \sum_{K\in \Omega_h}\int_K  w_q \left(\kappa \widehat{\nabla} \phi_k(\xi^{(q)})(J^{\top}(\xi^{(q)}) J(\xi^{(q)}))^{-1}\phi_\ell(\xi^{(q)}) + \omega\phi_k(\xi^{(q)})\phi_\ell(\xi^{(q)})\right)|\det{J}(\xi^{(q)})| \\
 &= \sum_{K\in \Omega_h} \sum_q w_q  \left(\kappa T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} +\omega T_{qk}T_{q\ell}\right)|\det{J}(\xi^{(q)})|
-\end{aligned}
+\end{aligned}}
 $$
-with the $2\times 2$ matrix
+with $2\times 2$ matrix
 $$
-J^{(-2)}_{q} =  \left(J^{\top}(\xi^{(q)}) J(\xi^{(q)})\right)^{-1} =: \left(J^{(2)}\right)^{-1}.
+J^{(-2)}_{q} =  \left(J^{\top}(\xi^{(q)}) J(\xi^{(q)})\right)^{-1}
 $$
-The value $J(\xi^{(q)})$ of the Jacobian at the quadrature points can be computed as above.
+\end{frame}
 
-Putting everything together we arrive at the following procedure:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-**Algorithm: assembly of stiffness matrix $A^{(h)}$**
+\begin{frame}
+  \frametitle{Assembly of stiffness matrix}
+  {\footnotesize
+  \begin{algorithmic}[1]
+  \State{Initialise $A^{(h)} \gets 0$}
+  \ForAll{all cells $K$}
+    \State{Extract coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,\ell^\times)}$}
+    \ForAll{all quadrature points $q$}
+      \State{Compute Jacobian $J(\xi^{(q)})$: $J_{qab} = J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^{\times}ab}$}
+      \State{Compute determinant $D_q$ of $J(\xi^{(q)})$}
+      \State{Compute matrix $J^{(2)}_q = J^{\top}(\xi^{(q)}) J(\xi^{(q)})$ with $J^{(2)}_{qab} = \sum_{c} J_{qca}J_{qcb}$}
+      \State{Invert $J^{(2)}_q$ to obtain $J^{(-2)}_{q} = \left(J^{(2)}_q\right)^{-1}$}
+    \EndFor
+    \State{Construct the local stiffness matrix $A^{(h),\text{local}}$ with
+$$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} D_q + \omega \sum_{q} w_q  T_{qk}T_{q\ell} D_q$$}
+    \ForAll{local dof-indices $\ell$}
+      \ForAll{local dof-indices $k$}
+        \State{Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$}
+      \EndFor
+    \EndFor
+    \EndFor
+  \end{algorithmic}}
+\end{frame}
 
-1. Initialise $A^{(h)} \gets 0$
-2. **For** all cells $K$ **do**:
-3. $~~~~$ Extract the coordinate dof-vector $\overline{\boldsymbol{X}}$ with $\overline{X}_{\ell^\times} = X_{\ell^\times_\text{global}(\alpha,\ell^\times)}$ with $\alpha$ the index of cell $K$
-4. $~~~~$ **For** all quadrature points $q$ **do**:
-5. $~~~~~~~~$ Compute the Jacobian $J(\xi^{(q)})$ with $J_{qab} = J_{ab}(\xi^{(q)}) = \sum_{\ell^\times} \overline{X}_{\ell^\times} T^{\times\partial}_{q\ell^{\times}ab}$
-6. $~~~~~~~~$ Compute the determinant $D_q$ of $J(\xi^{(q)})$
-7. $~~~~~~~~$ Compute the matrix $J^{(2)}_q = J^{\top}(\xi^{(q)}) J(\xi^{(q)})$ with $J^{(2)}_{qab} = \sum_{c} J_{qca}J_{qcb}$ and invert it to obtain $J^{(-2)}_{q} = \left(J^{(2)}_q\right)^{-1}$
-8. $~~~~$ **end do**
-9. $~~~~$ Construct the local stiffness matrix $A^{(h),\text{local}}$ with
-$$A^{(h),\text{local}}_{\ell k} = \kappa \sum_{qab}w_q  T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} D_q + \omega \sum_{q} w_q  T_{qk}T_{q\ell} D_q$$
-10. $~~~~$ **For** all local dof-indices $\ell$ **do**:
-11.  $~~~~~~~~$ **For** all local dof-indices $k$ **do**:
-12.  $~~~~~~~~~~~~$ Increment $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}}\gets A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} + A^{(h),\text{local}}_{\ell k}$ with $\ell_{\text{global}} = \ell_{\text{global}}(\alpha,\ell)$ and $k_{\text{global}} = k_{\text{global}}(\alpha,k)$ the global dof-indices corresponding to the local dof-indices $\ell$, $k$ in the cell with index $\alpha$
-13.  $~~~~~~~~$ **end do**
-14.  $~~~~$ **end do**
-15.  **end do**
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#### Illustration
-@fig:global_assembly_stiffness visualises the assembly of the stiffness matrix $A^{(h)}$. The two cells have global indices $\ell_{\text{global}}=[2,4,8]$ and $\ell_{\text{global}}=[8,11,16]$ respectively. Note that both cells contribute to the global matrix entry $A^{(h)}_{8,8}$.
-![:fig:global_assembly_stiffness: Global assembly of stiffness matrix](figures/global_assembly_stiffness_matrix.svg)
+\begin{frame}
+  \frametitle{Assembly of stiffness matrix}
+  \textbf{Illustration}
+  \begin{center}
+  \includegraphics[width=\linewidth]{figures/global_assembly_stiffness_matrix.pdf}
+  \end{center}
+Global indices $\ell_{\text{global}}=[2,4,8]$ (cell 1), $\ell_{\text{global}}=[8,11,16]$ (cell 2)\\
+$\Rightarrow$ both cells contribute to global matrix entry $A^{(h)}_{8,8}$
+\end{frame}
 
-#### Implementation
-Again, the summation $\sum_{c} J_{qca}J_{qcb}$ to compute the matrix entries of $J^{(2)}_q$ and the sums $\sum_{qab}w_q  T^\partial_{q\ell a}(J^{(2)}_q)_{ab} T^\partial_{qkb} D_q$, $\sum_{q}w_q  T_{q\ell}T_{qk} D_q$ required for the construction of the local matrix entries can be realised with numpy's [`einsum()`](https://numpy.org/doc/stable/reference/generated/numpy.einsum.html) method.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-To insert the entries of the local stiffness matrix $A^{(h),\text{local}}$ into the global stiffness matrix $A^{(h)}$ we can again use slicing notation. Naively, one would expect to be able to do this with `A_h[ell_global, ell_global] += A_h_local[:,:]` where `ell_global = fs.local2global(i,range(ndof))` as above. however this does not work since we first need to construct the "product" $\ell_{\text{global}}\times \ell_{\text{global}}$ before we can use this to slice a matrix. As pointed out in [[CH24]](https://finite-element.github.io/6_finite_element_problems.html#a-note-on-matrix-insertion) this can be done with the numpy [`ix_()`](https://numpy.org/doc/2.2/reference/generated/numpy.ix_.html) method, i.e. we can write
-```
+\begin{frame}[fragile]
+  \frametitle{Assembly of stiffness matrix}
+  \textbf{Implementation}\\[1ex]
+  Summation
+  \begin{itemize}
+  \item $\sum_{c} J_{qca}J_{qcb}$
+  \item $\sum_{qab}w_q  T^\partial_{q\ell a}(J^{(2)}_q)_{ab} T^\partial_{qkb} D_q$
+  \item $\sum_{q}w_q  T_{q\ell}T_{qk} D_q$
+  \end{itemize}
+  $\Rightarrow$ \lstinline{einsum()}
+  \begin{lstlisting}
+np.einsum("qca,qcb->qab", J, J)
+np.einsum("q,qka,qab,qlb,q->lk",
+          w_q,T_grad,JT_J_inv,T_grad,D_q)
+np.einsum("q,qk,ql,q->lk",w_q,T,T,D_q)
+  \end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Assembly of stiffness matrix}
+Insert entries of local $A^{(h),\text{local}}$ into global $A^{(h)}$:\\[1ex]
+\textbf{Naive attempt}
+\begin{lstlisting}
+ell_global = fs.local2global(i,range(ndof))
+A_h[ell_global, ell_global] += A_h_local[:,:]
+\end{lstlisting}
+\textbf{Correct implementation}\\
+$\ell_{\text{global}}\times \ell_{\text{global}}$ = \lstinline{np.ix_(ell_global, ell_global)}
+\begin{lstlisting}
 A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
-```
+\end{lstlisting}
+\end{frame}
 
-Global assembly of the stiffness matrix $A^{(h)}$ is implemented in the function `assemble_lhs(fs, quad, kappa, omega)` in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function gets passed a function space `fs`, quadrature rule `quad` and values of the constants $\kappa$ and $\omega$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Numerical experiments
 Let us now use the code we have written for far to solve @eqn:pde_continuum with the finite element method. We consider the following manufactured solution

@@ -41,32 +41,9 @@ It is strongly recommended that you carry out all work related to this course in
 ## Option 1: Noteable
 Access Noteable through the link on moodle and choose the "Standard Python 3 with VS-Code editor" notebook.
 
-When you log in for the very first time, open a terminal window and create a new conda environment by typing the following commands (press enter at the end of each line):
+That's it.
 
-```
-conda init
-conda create -y --prefix ${HOME}/petsc_sandbox -c conda-forge petsc petsc4py pytest mpi4py
-echo "conda activate ${HOME}/petsc_sandbox" >> ${HOME}/.bashrc
-```
-
-Once you have done this, close the terminal and reopen it for the changes to take effect.
-
-Then, type
-
-```
-conda list petsc4py
-```
-
-If everything is set up correctly you should see the following output:
-
-```
-(/home/jovyan/petsc_sandbox) jovyan@noteable:~$ conda list petsc4py
-# packages in environment at /home/jovyan/petsc_sandbox:
-#
-# Name                     Version          Build               Channel
-petsc4py                   3.23.4           np2py313hde6fa77_0  conda-forge
-```
-
+You can now edit files with the VS-Code editor and run them either in the VS-Code terminal or by launchung a separate terminal session.
 
 ## Option 2: Using your own computer
 Please note that the following instructions are rough guidelines, and they will likely have to be adapted to your particular computer. Setting up the Python programming environment is more straightforward on Linux and Mac computer which provide access to a command line environment with an up-to-date Python version. On Windows computers, you will first have to install the WSL, see below. 

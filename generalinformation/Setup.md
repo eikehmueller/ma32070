@@ -43,7 +43,7 @@ Access Noteable through the link on moodle and choose the "Standard Python 3 wit
 
 That's it.
 
-You can now edit files with the VS-Code editor and run them either in the VS-Code terminal or by launchung a separate terminal session.
+You can now edit files with the VS-Code editor and run them either in the VS-Code terminal or by launching a separate terminal session.
 
 ## Option 2: Using your own computer
 Please note that the following instructions are rough guidelines, and they will likely have to be adapted to your particular computer. Setting up the Python programming environment is more straightforward on Linux and Mac computer which provide access to a command line environment with an up-to-date Python version. On Windows computers, you will first have to install the WSL, see below. 

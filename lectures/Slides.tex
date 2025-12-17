@@ -2459,7 +2459,6 @@ Need to associate the indices $\ell_{\text{global}}$ with the correct mesh entit
   \textbf{Finite element}
   \begin{center}
     \renewcommand{\arraystretch}{1.2}
-    
   \begin{tabular}{ccc}
     \hline
     entity & local unknowns & total unknowns \\
@@ -2964,7 +2963,7 @@ Numerical parameters
 \item $\kappa = 0.9$
 \item $\omega = 0.4$
 \item $s_0=2$, $s_1=4$
-\end{itemize}$
+\end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3052,34 +3051,71 @@ plt.contourf(X, Y, Z-Z_exact)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
+\begin{frame}[fragile]
+  \frametitle{Performance analysis}
+  Increased resolution $\Rightarrow$
+  \begin{itemize}
+  \item Improved accuracy
+  \item Longer runtime
+  \end{itemize}
+  Measure time spent in
+  \begin{itemize}
+  \item Assembly of $\boldsymbol{b}^{(h)}$ with \lstinline{assemble_rhs()}
+  \item Assembly of $A^{(h)}$ with \lstinline{assemble_lhs()}
+  \item Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ with \lstinline{np.linalg.solve()}
+  \end{itemize}
+Use \textbf{decorator}
+\begin{lstlisting}
+from fem.utilities import measure_time
+with measure_time("assemble stiffness matrix"):
+    A_h = assemble_lhs(fs, quad, kappa, omega)
+\end{lstlisting}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Performance
-To obtain a more accurate solution we need to increase the resolution, which will make the computation more expensive. To expore this, let us now have a closer look at how the runtime of the code changes with the problem size. Usually, most of the time is spent executing a small number of lines.
+\begin{frame}[fragile]
+  \frametitle{Performance analysis}
+  \begin{center}
+  \includegraphics[width=\linewidth]{figures/runtime_dense.pdf}
+  \end{center}
+\begin{itemize}
+\item $L_2$ error decreases $\|u_h-u_{\text{exact}}\|_{L_2(\Omega)}\propto h^2\propto n_{\text{dof}}^{-1}$
+\item Assembly of $A^{(h)}$, $\vec{b}^{(h)}$: $T_{\text{assembly}}\propto n_{\text{dof}}\propto n_{\text{cell}}$
+\item Solution of $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$: $T_{\text{solve}}\propto n_{\text{dof}}^3$
+\end{itemize}
+\end{frame}
 
-To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-```Python
-with measure_time("some_code"):
-    # Code to measure
-```
-Have a look at [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py) where the time spent in the following components is measured:
+\begin{frame}[fragile]
+  \frametitle{Performance analysis}
+  \textbf{Solve time}\\[1ex]
+  $$
+  T_{\text{solve}}\propto n_{\text{dof}}^3
+  $$
+  Extrapolating
+  \begin{center}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{ccc}
+      \hline
+      $n_{\text{dof}}$ & $\|u_h-u_{\text{exact}}\|_{L_2(\Omega)}$ & $T_{\text{solve}}$\\\hline\hline
+      $16641$ & $7.8\cdot 10^{-4}$ & $48\text{s}$\\
+      $1.3\cdot 10^6$ & $10^{-5}$ & $264\text{days}$\\
+      \hline
+    \end{tabular}
+  \end{center}
+  \begin{itemize}
+  \item Why is this so expensive?
+  \item How can we improve this?
+  \end{itemize}
+\end{frame}
 
-* Assembly of right hand side $\boldsymbol{b}^{(h)}$ with `assemble_rhs()`
-* Assembly of stiffness matrix $A^{(h)}$ with `assemble_lhs()`
-* Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ with `np.linalg.solve()`
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-@fig:runtime_and_error (left) shows the time spent in these parts of the code for increasing problem size. To confirm that the increase in resolution results in a more accurate solution, we also show the decrease of the $L_2$ error in @fig:runtime_and_error (right). In both plots the horizontal axis shows the total number of unknowns $n_{\text{dof}}$, which is proportional to $h^{-2}$, the square of the inverse grid spacing.
+\end{document}
 
-![:fig:runtime_and_error: Runtime (left) and $L_2$ error (right)](figures/runtime_dense.svg)
-
-The right plot confirms that the $L_2$ error decreases in proportion to $h^2\propto n_{\text{dof}}^{-1}$. As can be seen from the left plot, for larger problems, the time spent in the assembly of the stiffness matrix and right hand side increases in direct proportion to the problem size $n_{\text{dof}}$. This is not very surprising since (for fixed polynomial degree) the amount of work required in each grid cell remains approximately constant while the number of grid cells is directly proportional to the number of unknowns $n_{\text{dof}}$.
-
-In contrast, the time spent in the solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ grows much more rapidly with $\propto n_{\text{dof}}^3$: solving a problem with $16641$ unknowns takes around $48$ seconds. If we want to reduce the $L_2$ error to $10^{-5}$ we would need to solve a problem with $1.3\cdot 10^6$ (=1.3 million) unknowns. Extrapolating the measured time, solving a problem of this size would take $264$ days!
-
-In the next section we will discuss methods for overcoming this difficulty. For this, we will need to go back to the sparse matrix storage format in PETSc. But before doing this, let us try to understand why the solve time increases with the third power of the problem size.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Complexity analysis
 Let us assume that we want to solve a linear system $A\boldsymbol{u}=\boldsymbol{b}$ where $\boldsymbol{u}, \boldsymbol{b}\in\mathbb{R}^n$ and $A$ is a $n\times n$ matrix. The [`numpy.linalg.solve()`](https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html) method uses Gaussian elimination for this (in fact, it uses a slightly different method called $LU$ factorisation, but the central idea is the same). To illustrate this method, consider the following $5\times 5$ system (the rationale behind the colouring will become evident below):

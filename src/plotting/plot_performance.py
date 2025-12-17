@@ -44,7 +44,7 @@ def plot_runtime_error_dense(timing, ndof, error, extension=".pdf"):
     ax_error.set_xscale("log")
     ax_error.set_yscale("log")
     ax_error.set_xlabel(r"problem size $n_{\text{dof}}$")
-    ax_error.set_ylabel(r"$L_2$ error $\|u^{(h)}-u_{\text{exact}}\|_{L_2(\Omega)}$")
+    ax_error.set_ylabel(r"$L_2$ error $\|u_h-u_{\text{exact}}\|_{L_2(\Omega)}$")
     ax_error.plot(
         [2e2, 5e3],
         [1e-1, 1 / 25 * 1e-1],

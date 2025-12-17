@@ -2995,12 +2995,59 @@ u_h = Function(fs)
 
 \begin{frame}[fragile]
   \frametitle{Numerical experiments}
+  \textbf{Visualisation of solution and error}
+  \begin{lstlisting}
+X, Y, Z = grid_function(u_h,nx=100,ny=100)
+  \end{lstlisting}
+   Evaluate function $u_h$ at points of structured grid
+$$
+x_{i,j} = \begin{pmatrix}
+x^{(0)}_0+H_x i \\ x^{(0)}_1 + H_y j
+\end{pmatrix}\in\mathbb{R}^2
+\qquad\text{{\footnotesize$i=0,1,\dots,n_x$, $j=0,1,\dots,n_y$}}
+$$
+\begin{itemize}
+\item $x$- coordinates of grid vertices: $X_{i,j} = x^{(0)}_0+H_x i$
+\item $y$- coordiantes of grid vertices: $Y_{i,j} = x^{(0)}_1+H_y j$
+\item values of function $u_h$ at vertices: $Z_{i,j} = u_h(x_{i,j})$
+\end{itemize}
+Plot with \lstinline{contourf()}
+\begin{lstlisting}
+from matplotlib import pyplot as plt
+X, Y, Z = grid_function(u_h)
+plt.contourf(X, Y, Z)
+\end{lstlisting}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
   \frametitle{Numerical experiments}
+Compare numerical solution $u_h(x)$ to exact solution
+
+$$
+u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)
+$$
+\begin{lstlisting}
+Z_exact = np.cos(2*np.pi*X)*np.cos(4*np.pi*Y)
+plt.contourf(X, Y, Z-Z_exact)
+\end{lstlisting}
+
+\begin{center}
+\includegraphics[width=\linewidth]{figures/solution_linear.png}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Numerical experiments}
+\begin{center}
+{\tiny piecewise linear elements ($p=1$)}\\
+\includegraphics[width=0.75\linewidth]{figures/solution_linear.png}\\
+{\tiny piecewise cubic elements ($p=3$)}\\
+\includegraphics[width=0.75\linewidth]{figures/solution_cubic.png}
+\end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3008,44 +3055,6 @@ u_h = Function(fs)
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-## Visualisation of solution and error
-To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u_h$, i.e. an instance `u_h` of the `Function` class, which is evaluated at the points of a structured rectangular grid which covers the domain (this grid is only used for visualisation, it has nothing to do with the underlying mesh that defines the finite element space). The $(n_x+1)(n_y+1)$ vertices of this grid are given by
-
-$$
-x_{i,j} = \begin{pmatrix}
-x^{(0)}_0+H_x i \\ x^{(0)}_1 + H_y j
-\end{pmatrix}\in\mathbb{R}^2
-\qquad\text{for $i=0,1,2,\dots,n_x$, $j=0,1,2,\dots,n_y$}
-$$
-where $x^{(0)}\in\mathbb{R}^2$ is some suitable offset and $H_x,H_y$ are the grid spacings. The method `grid_function()` returns three arrays $X$, $Y$, $Z$ of shape $(n_x+1,n_y+1)$:
-
-* The $x$- coordinates of the grid vertices, i.e. $X_{i,j} = x^{(0)}_0+H_x i$
-* The $y$- coordiantes of the grid vertices, i.e. $Y_{i,j} = x^{(0)}_1+H_y j$
-* The values of the function $u_h$ evaluated at the grid vertices, i.e. $Z_{i,j} = u_h(x_{i,j})$
-
-This then allows plotting the function for example with [matplotlib's `contourf()`](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.contourf.html):
-
-```Python
-from matplotlib import pyplot as plt
-X, Y, Z = grid_function(u_h)
-plt.contourf(X, Y, Z)
-```
-
-With this, it is also easy to compare the numerical solution $u_h(x)$ to the exact solution $u_{\text{exact}}(x) = \cos(2\pi x_0)\cos(4\pi x_1)$:
-
-```Python
-Z_exact = np.cos(2*np.pi*X)*np.cos(4*np.pi*Y)
-plt.contourf(X, Y, Z-Z_exact)
-```
-
-@fig:solution_and_error_linear visualises the numerical solution $u_h$ (left), the exact solution $u_{\text{exact}}$ (right) and their difference $u_h - u_{\text{exact}}$ (centre) for a rectangle mesh with $n_{\text{ref}}=4$ refinements and piecewise linear finite elements.
-
-![:fig:solution_and_error_linear: Visualisation of finite element solution and error for piecewise linear finite elements](figures/solution_linear.png)
-
-As @fig:solution_and_error_cubic demonstrates, using cubic elements on the same mesh improves the solution.
-![:fig:solution_and_error_cubic: Visualisation of finite element solution and error for piecewise cubic  finite elements](figures/solution_cubic.png)
-
 
 ## Performance
 To obtain a more accurate solution we need to increase the resolution, which will make the computation more expensive. To expore this, let us now have a closer look at how the runtime of the code changes with the problem size. Usually, most of the time is spent executing a small number of lines.

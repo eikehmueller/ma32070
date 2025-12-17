@@ -2943,24 +2943,71 @@ A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
+\begin{frame}[fragile]
+  \frametitle{Numerical experiments}
+Diffusion-reaction equation
+  $$
+\begin{aligned}
+  -\nabla \cdot (\kappa \nabla  u(x)) + \omega\; u(x) &= f(x) \qquad \text{for $x\in \Omega=[0,1]\times[0,1]$}\\
+  \kappa\; n\cdot \nabla u(x)&=0 \qquad\quad \text{for $x\in\partial \Omega$}
+\end{aligned}
+$$
+\textbf{Manufactured solution}
+$$
+\begin{aligned}
+u(x) &= \cos(\pi s_0 x_0) \cos(\pi s_1 x_1)\\
+f(x) &= \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)
+\end{aligned}
+$$
+Numerical parameters
+\begin{itemize}
+\item $\kappa = 0.9$
+\item $\omega = 0.4$
+\item $s_0=2$, $s_1=4$
+\end{itemize}$
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Numerical experiments
-Let us now use the code we have written for far to solve @eqn:pde_continuum with the finite element method. We consider the following manufactured solution
+\begin{frame}[fragile]
+  \frametitle{Implementation}
+  Piecewise linear function space on $[0,1]\times[0,1]$
+  \begin{lstlisting}
+element = LinearElement()
+mesh = rectangle_mesh(Lx=1.0, Ly=1.0, nref=nref)
+fs = FunctionSpace(mesh, element)
+  \end{lstlisting}
+  \textbf{Assemble vector} $\boldsymbol{b}^{(h)}$ and \textbf{stiffness matrix} $A^{(h)}$:
+  \begin{lstlisting}
+quad = GaussLegendreQuadratureReferenceTriangle(2)
+b_h = CoFunction(fs)
+assemble_rhs(f, b_h, quad)
+A_h = assemble_lhs(fs, quad, kappa, omega)
+  \end{lstlisting}
+  \textbf{Solve linear system}
+  \begin{lstlisting}
+u_h.data[:] = np.linalg.solve(A_h, b_h.data)
+u_h = Function(fs)
+  \end{lstlisting}
+\end{frame}
 
-$$
-u(x) = \cos(\pi s_0 x_0) \cos(\pi s_1 x_1) \qquad\text{for $s_0, s_1\in \mathbb{N}$}
-$$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation in @eqn:pde_continuum if the right hand side is chosen to be $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$ and $s_0=2$, $s_1=4$.
+\begin{frame}[fragile]
+  \frametitle{Numerical experiments}
+\end{frame}
 
-For the numerical experiments we choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `rectangle_mesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$; as pointed out above, both functions are defined in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain the dof-vector $\boldsymbol{u}^{(h)}$ which defines the numerical solution $u_h\in \mathcal{V}_h$ according to @eqn:linear_algebra_problem.
+\begin{frame}[fragile]
+  \frametitle{Numerical experiments}
+\end{frame}
 
-The full code can be found in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Visualisation of solution and error
 To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u_h$, i.e. an instance `u_h` of the `Function` class, which is evaluated at the points of a structured rectangular grid which covers the domain (this grid is only used for visualisation, it has nothing to do with the underlying mesh that defines the finite element space). The $(n_x+1)(n_y+1)$ vertices of this grid are given by

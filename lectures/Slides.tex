@@ -3468,35 +3468,49 @@ as measured
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-## Cost of floating point operations
-Based on the discussion in the previous section and the data in @fig:runtime_and_error (left), we can also work out the time  $t_{\text{flop}}$ it takes to carry out a single floating point operation (FLOP). This is a useful exercise, since knowing this number will allow us to construct a simple performance model for predicting the runtime of any other given algorithm: if the algorithm requires $n_{\text{flop}}$ FLOPs, then the predicted runtime is
-
+\begin{frame}[fragile]
+  \frametitle{Performance model}
+  $t_{\text{flop}} =$ time to carry out \textbf{single floating point operation (FLOP)}\\[1ex]
+  $\Rightarrow$ Simple \textbf{performance model}
 $$
 T = n_{\text{flop}}\cdot t_{\text{flop}}.
 $$
 
-In particular, the total time can be separated into the product of two factors:
+Runtime = product of two factors:
+\begin{itemize}
+\item Number of FLOPs $n_{\text{flop}}$
+\begin{itemize}
+\item depends on the algorithm
+\item independent of the computer the code is run on
+\end{itemize}
+\item the machine dependent time $t_{\text{flop}}$
+\end{itemize}
+\end{frame}
 
-* the number of FLOPs $n_{\text{flop}}$ which depends on the algorithm, but is independent of the computer the code is run on and
-* the machine dependent time $t_{\text{flop}}$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Looking at the measured data, we observe that we measured $T_{\text{solve}}= 48.4\text{s}$ for $n=166411$. Since $n\gg 1$ we can ignore the $\mathcal{O}(n^2)$ terms in the expression for the number of flops and therefore:
-
+\begin{frame}[fragile]
+  \frametitle{Cost of floating point operations}
+  Measurements
+  \begin{itemize}
+    \item $n=166411\gg 1$
+  \item $T_{\text{solve}}= 48.4\text{s}$
+  \end{itemize}
 $$
-t_{\text{flop}} = \frac{T_{\text{solve}}}{n_{\text{solve}}} \approx \frac{48.4\text{s}}{\frac{2}{3}\cdot 16641^3} \approx 1.6\cdot 10^{-11}\text{s}
+\Rightarrow \qquad t_{\text{flop}} = \frac{T_{\text{solve}}}{n_{\text{solve}}} \approx \frac{48.4\text{s}}{\frac{2}{3}\cdot 16641^3} \approx 1.6\cdot 10^{-11}\text{s}
 $$
-
-In other words, on the specific machine we can carry out
-
+Floating point \textbf{performance} (FLOP rate)
 $$
-R = t_{\text{flop}}^{-1} = 6.3\cdot 10^{10}
+R = t_{\text{flop}}^{-1} = 6.3\cdot 10^{10} \;\text{FLOPs/s}
 $$
+(on this specific machine)
+\end{frame}
 
-floating point operations per second. Obviously, this number will be machine dependent, but on modern computers it is usually in the same ballpark.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Solving sparse linear systems
 To reduce the cost spent in solving the linear system $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ we will devise more efficient algorithms which are tailored to the particular structure of the problem. In particular, we will exploit the fact that the stiffness matrix $A^{(h)}$ of our finite element discretisation contains a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid (plots like this can be generated with [matplotlib's `spy()` function](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.spy.html)):

@@ -2162,7 +2162,7 @@ A &=  \begin{pmatrix}
 $$
 
 ### Total computational cost
-The number of operations to carry out this procedure is obtained by summing the number of iterations for all $n-1$ steps:
+The number of operations to carry out this procedure is obtained by summing the number of operations for all $n-1$ steps:
 
 $$
 \begin{aligned}

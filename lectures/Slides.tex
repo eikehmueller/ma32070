@@ -261,7 +261,7 @@ Other Examples: \url{https://sparse.tamu.edu/} (SuiteSparse)
   \begin{itemize}
   \item (Non-zero) values: array $V$ of length $n_{\text{nz}}$
   \item Column indices: array $J$ of length $n_{\text{nz}}$
-  \item Row indices: array $I$  of length $n$
+  \item Row indices: array $I$  of length $n_{\text{nz}}$
   \end{itemize}
   \vspace{2ex}
   \textbf{Algorithm}: Reconstruction of $A$ from $V$, $J$ and $I$
@@ -3478,7 +3478,7 @@ $$
 
 Runtime = product of two factors:
 \begin{itemize}
-\item Number of FLOPs $n_{\text{flop}}$
+\item Number of FLOPs $n_{\text{flop}}$ ($=E(n)$)
 \begin{itemize}
 \item depends on the algorithm
 \item independent of the computer the code is run on
@@ -3491,10 +3491,11 @@ Runtime = product of two factors:
 
 \begin{frame}[fragile]
   \frametitle{Cost of floating point operations}
-  Measurements
+  \textbf{Measurements}
   \begin{itemize}
     \item $n=166411\gg 1$
-  \item $T_{\text{solve}}= 48.4\text{s}$
+    \item $n_{\text{solve}}=E_{\text{solve}}(n)=\frac{2}{3}n^3+\mathcal{O}(n^2)$
+    \item $T_{\text{solve}}= 48.4\text{s}$
   \end{itemize}
 $$
 \Rightarrow \qquad t_{\text{flop}} = \frac{T_{\text{solve}}}{n_{\text{solve}}} \approx \frac{48.4\text{s}}{\frac{2}{3}\cdot 16641^3} \approx 1.6\cdot 10^{-11}\text{s}
@@ -3508,101 +3509,208 @@ $$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
+\begin{frame}
+  \frametitle{Solving sparse linear systems}
+  $\Rightarrow$ devise \textbf{more efficient algorithms} tailored to structure of problem\\[1ex]
+  Recall: stiffness matrix $A^{(h)}$ is \textbf{sparse}
+  \begin{center}
+    \includegraphics[width=0.3\linewidth]{figures/stiffness_matrix.png}
+  \end{center}
+  \begin{itemize}
+  \item Linear elements, $n_{\text{ref}}=3$
+  \item $81\times 81 = 6561$ matrix entries
+  \item $n_{\text{nz}}=497$ non-zero entries (= $7.6\%$)
+  \item average $\overline{n}_{\text{nz}} = 6.14$ nonzeros per row\\
+    ($\approx$ independent of $n$ for finite element problems)
+  \end{itemize}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Solving sparse linear systems
-To reduce the cost spent in solving the linear system $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$ we will devise more efficient algorithms which are tailored to the particular structure of the problem. In particular, we will exploit the fact that the stiffness matrix $A^{(h)}$ of our finite element discretisation contains a lot of zero entries. Consider, for example, the $81\times 81$ matrix that is obtained for a piecewise linear discretisation on a $8\times 8$ grid (plots like this can be generated with [matplotlib's `spy()` function](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.spy.html)):
-
-![:fig:stiffness_matrix: Spy plot of the stiffness matrix $A^{(h)}$](figures/stiffness_matrix.png)
-
-Of the $81\times 81 = 6561$ entries of this matrix, only $n_{\text{nz}}=497$ or $7.6\%$ are nonzero, which corresponds to an average number of around $\overline{n}_{\text{nz}} = 6.14$ nonzeros per row. For large $n$, the number of non-zeros per row will remain roughly the same, leading to an even poorer fill-ratio.
-
-Clearly, it is very inefficient to store all these zero entries if only $\mathcal{O}(n)$ entries are in fact required to encode the data stored in the matrix. It is much more efficient to use the compressed sparse row (CSR) storage format introduced at the beginning of this course. For a matrix of size $n\times n$ with $n_{\text{nz}}$ nonzero entries this only requires the storage of $2n_{\text{nz}}+(n+1)$ numbers. If the number $n_{\text{nz}}/n\le C$ of non-zeros per row is bounded by some constant $C$ (as it is for the finite element stiffness matrices), then the total storage required is
+\begin{frame}
+  \frametitle{Solving sparse linear systems}
+  $\Rightarrow$ Compressed sparse row (CSR) storage format\\[1ex]
+  For $n\times n$ matrix, $n_{\text{nz}}$ nonzero entries:
+  \begin{itemize}
+    \item Values $V$ $\Rightarrow$ $n_{\text{nz}}$ numbers
+    \item Column indices $J$ $\Rightarrow$ $n_{\text{nz}}$ numbers
+    \item Row-pointers $I$ $\Rightarrow$ $n+1$ numbers
+  \end{itemize}
+  Total storage requirement
+  $$
+    2n_{\text{nz}}+(n+1)\;\;\text{numbers}
+  $$
+  If $\overline{n}_{\text{nz}}=n_{\text{nz}}/n\le C$ (finite element problems)
 $$
 2n_{\text{nz}}+(n+1) = \left(2\frac{n_{\text{nz}}}{n}+1+\frac{1}{n}\right)\cdot n \le 2(C+1)\cdot n = \mathcal{O}(n)
 $$
-However, in addition to changing the matrix storage format we also need to adapt our solver.
+\end{frame}
 
-## Solving linear systems
-The big advantage of using PETSc matrices and arrays is that this will give us access to a huge library of efficient solvers for sparse linear systems of the form $A\boldsymbol{u}=\boldsymbol{b}$. Let us just look at a simple example:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Consider the following $5\times 5$ matrix
+\begin{frame}[fragile]
+  \frametitle{PETSc solvers}
+  PETSc $\Rightarrow$ huge library of efficient solvers for sparse linear systems\\[1ex]
+\textbf{Example}
 $$
-A=\begin{pmatrix}
+\underbrace{\begin{pmatrix}
 10.2 & 0.8 & \textcolor{lightgray}{0}  &  -2.1 &  \textcolor{lightgray}{0}\\
 0.8 & 6.7 & \textcolor{lightgray}{0} &  \textcolor{lightgray}{0} &  \textcolor{lightgray}{0} \\
 \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 6.4 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} \\
 -2.1 & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 7.2 & \textcolor{lightgray}{0} \\
 \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & \textcolor{lightgray}{0} & 9.8
- \end{pmatrix}
+ \end{pmatrix}}_{A}
+ \underbrace{\begin{pmatrix}
+  u_0\\u_1\\u_2\\u_3\\u_4
+ \end{pmatrix}}_{\boldsymbol{u}}
+ =
+ \underbrace{\begin{pmatrix}
+  8.1\\0\\9.3\\-4.3\\5.2
+  \end{pmatrix}
+  }_{\boldsymbol{b}}
 $$
-which, in CSR format, corresponds to 
-
-* row pointers $R = [0, 3, 5, 6, 8, 9]$
-* column indices $J = [0, 1, 3, 0, 1, 2, 0, 3, 4]$
-* values $V = [10.2, 0.8, -2.1, 0.8, 6.7, 6.4, -2.1, 7.2, 9.8]$
-
-To create this matrix, we can proceed as follows:
-```python
+PETSc CSR format
+\begin{lstlisting}
 row_start = [0, 3, 5, 6, 8, 9]
 col_indices = [0, 1, 3, 0, 1, 2, 0, 3, 4]
 values = [10.2, 0.8, -2.1, 0.8, 6.7, 6.4, -2.1, 7.2, 9.8]
-
 A = PETSc.Mat().createAIJWithArrays(
-    (5, 5),
-    (
-        row_start,
-        col_indices,
-        values,
-    ),
+    (5, 5), (row_start,col_indices,values)
 )
 A.assemble()
-```
+\end{lstlisting}
+\end{frame}
 
-Observe that we created the matrix in one go by using `createAIJWithArrays()`, which gets passed the number of rows and columns and a tuple $(R,J,V)$. We can then solve the linear system $A\boldsymbol{u}=\boldsymbol{b}$ for given $\boldsymbol{b} = (8.1, 0, 9.3, -4.3, 5.2)^\top$ as follows by creating a `KSP` object, associating the matrix `A` with it and then calling the `KSP`'s solve method.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-```python
+\begin{frame}[fragile]
+  \frametitle{Solving linear systems with PETSc}
+ Solve 
+ $$A\boldsymbol{u}=\boldsymbol{b}$$
+\begin{lstlisting}
 b = PETSc.Vec().createWithArray([8.1, 0, 9.3, -4.3, 5.2])
 u = PETSc.Vec().createSeq(b.size)
 
 ksp = PETSc.KSP().create()
 ksp.setOperators(A)
 ksp.solve(b, u)
-```
-Next, let us look in more detail at what the `ksp.solve()` method actually does.
+\end{lstlisting}
+In general
+ \begin{enumerate}
+ \item Create \lstinline{KSP} object
+ \item Associate matrix \lstinline{A} with it 
+ \item Call the \lstinline{KSP}'s solve method for the given RHS $\boldsymbol{b}$
+ \end{enumerate}
+\lstinline{KSP} can be configured in detail
+\end{frame}
 
-# Solvers and Preconditioners
-Although PETSc also supports direct solvers such as Gaussian elimination (which we used above), the design philosophy of the library assumes that all solvers are *iterative methods*. This means that to solve problems of the form $A\boldsymbol{u}=\boldsymbol{b}$ we start from some initial guess, $\boldsymbol{u}^{(0)}$. Based on this, the solution is updated iteratively as $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$ such that (hopefully) $\boldsymbol{u}^{(k)}$ converges to the true solution $\boldsymbol{u}$. Direct solvers can be considered as a special case in which this iteration converges in a single step.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-At this point it is worth remembering that (in addition to possible modelling errors) the finite element method has introduced a discretisation error. This implies that there is little point in solving the equation $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ exactly, it is usally sufficient to iterate until we have a good approximate solution which differs from the exact solution by no more than the discretisation error. This can lead to significant savings in runtime.
+\begin{frame}
+  \frametitle{PETSc solver design philosophy}
+  \textbf{Iterative solvers} for $A\boldsymbol{u}=\boldsymbol{b}$
+  \begin{itemize}
+    \item Start from some initial guess $\boldsymbol{u}^{(0)}$ (e.g. $\boldsymbol{u}^{(0)}=0$)
+    \item Update solution iteratively
+    $$
+    \boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}
+    \quad\text{for $k=0,1,2,\dots$}
+    $$
+  \end{itemize} 
+  \textbf{Converging} method\footnote{Direct solver = special case $\boldsymbol{u}^{(1)}=\boldsymbol{u}$}
+  $$
+  \boldsymbol{u}^{(k)} \rightarrow \boldsymbol{u} \quad\text{as $k\rightarrow \infty$}
+  $$
+  \textbf{Efficient} method
+  $$
+  \|\boldsymbol{e}^{(n)}\| = \|\boldsymbol{u}^{(n)}-\boldsymbol{u}\|\ll \|\boldsymbol{u}\| \quad\text{for $n$ not too large}
+  $$
+  $\boldsymbol{u}$ contains additional errors
+  \begin{itemize}
+  \item Modelling error $\sim \epsilon_{\text{model}}$
+  \item Discretisation error $\sim \epsilon_{\text{disc}}$
+  \end{itemize}
+  $\Rightarrow$ there is no point in reducing $\|\boldsymbol{e}^{(n)}\|$ below $\epsilon_{\text{model}},\epsilon_{\text{disc}}$
+\end{frame}
 
-## PETSc solver architecture
-PETSc solvers are separated into two components:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-1. an *iterative solver* or [`KSP` object](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.KSP.html) which describes how to perform the update $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$
-2. a *preconditioner* or [`PC` object](https://petsc.org/release/petsc4py/reference/petsc4py.PETSc.PC.html) which accelerates the iteration
-
-To motivate this architecture and explain what a preconditioner is, let us consider a very simple iterative method. For this, we multiply the linear equation $A\boldsymbol{u}=\boldsymbol{b}$ by a matrix $P^{-1}$ to obtain the equivalent system
-
+\begin{frame}[fragile]
+  \frametitle{PETSc solver architecture}
+PETSc solvers: separated into 2 components
+\begin{enumerate}
+\item \textbf{Iterative solver} (\lstinline{KSP} object) $\Rightarrow$ update $\boldsymbol{u}^{(k)}\mapsto \boldsymbol{u}^{(k+1)}$
+\item \textbf{Preconditioner} (\lstinline{PC} object) $\Rightarrow$ accelerate the iteration
+\end{enumerate}
+\vspace{2ex}
+\textbf{Motivation}\\
+Multiply $A\boldsymbol{u}=\boldsymbol{b}$ by matrix $P^{-1}$ 
 $$
-P^{-1} A \boldsymbol{u} = P^{-1} \boldsymbol{b}
+\Rightarrow \underbrace{P^{-1} A}_{\widetilde{A}} \boldsymbol{u} = \underbrace{P^{-1} \boldsymbol{b}}_{\widetilde{\boldsymbol{b}}}
 $$
+such that the equivalent system
+$$
+\widetilde{A} \boldsymbol{u} = \widetilde{\boldsymbol{b}}
+$$
+easier to solve\\[2ex]
+$P$ (full rank and invertible) = preconditioner\\[1ex]
+Possible (poor) choices: $P=\mathbb{I}$ or $P=A$\\
+\end{frame}
 
-The matrix $P$, which we assume to be full rank and invertible, is the preconditioner. More precisely, in PETSc a `PC` object provides a way of inverting $P$, i.e. solving $P\boldsymbol{z}=\boldsymbol{r}$ for a given vector $\boldsymbol{r}$. In principle, we could choose any matrix such as $P=\mathbb{I}$ (the identity matrix) or $P=D$ (the diagonal of $A$). A good preconditioner has two properties:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-1. It should be "close" to $A$, i.e. $P\approx A$ (in some sense which can be made mathematically rigorous)
-2. Multiplication by $P^{-1}$ should be inexpensive, i.e. solving the linear system $P\boldsymbol{z}=\boldsymbol{r}$ for a given vector $\boldsymbol{r}$ should be cheap.
+\begin{frame}[fragile]
+  \frametitle{PETSc solver architecture}
+  \textbf{Preconditioners}\\
+More precisely: \lstinline{PC} object $\Rightarrow$ solve $P\boldsymbol{z}=\boldsymbol{r}$ for given $\boldsymbol{r}$\\[2ex]
+Requirements on \textbf{good preconditioners}
+\begin{itemize}
+\item Should be ``close'' to $A$, i.e. $P\approx A$\\
+$\Rightarrow$ reduce number of iterations since $\widetilde{A}=P^{-1}A\approx\mathbb{I}$
+\item Solving linear system $P\boldsymbol{z}=\boldsymbol{r}$ should be cheap\\
+$\Rightarrow$ minimise cost per iteration
+\end{itemize}
+Construction of an efficient preconditioner is
+\begin{itemize}
+\item an art
+\item active area of research
+\item usually problem-dependent
+\end{itemize}
+\end{frame}
 
-Naturally, these requirements often contradict each other and a compromise has to be found. The construction of a good preconditioner is an art in itself and the topic of active research.
 
-## Richardson iteration with Jacobi preconditioner
-As an example, we now construct a very simple iterative procedure. Assume that we know the approximate solution $\boldsymbol{u}^{(k)}$. If we knew the error $\boldsymbol{e}^{(k)} := \boldsymbol{u}-\boldsymbol{u}^{(k)}$ (where $\boldsymbol{u}$ is the exact solution of $A\boldsymbol{u}=\boldsymbol{b}$), it would be possible to compute the solution by simply adding $\boldsymbol{e}^{(k)}$ to $\boldsymbol{u}^{(k)}$ since $\boldsymbol{u}^{(k)} + \boldsymbol{e}^{(k)} = \boldsymbol{u}$. Unfortunately, this is not possible since knowledge of $\boldsymbol{e}^{(k)}$ would require knowledge of the exact solution which we are trying to find in the first place! Instead, let us try to construct an approximation $\boldsymbol{z}^{(k)}$ to the true error, namely
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Richardson iteration}
+  \textbf{Example} for very simple iterative procedure\\[1ex]
+  Assume that we know
+  \begin{itemize}
+  \item approximate solution $\boldsymbol{u}^{(k)}$
+  \item error $\boldsymbol{e}^{(k)} := \boldsymbol{u}-\boldsymbol{u}^{(k)}$\\
+  {\footnotesize($\boldsymbol{u}$ = exact solution of $A\boldsymbol{u}=\boldsymbol{b}$)}
+  \end{itemize}
+  Update rule:
+  $$
+  \boldsymbol{u}^{(k)} \mapsto \boldsymbol{u}^{(k+1)} = \boldsymbol{u}^{(k)} + \boldsymbol{e}^{(k)} = \boldsymbol{u}
+  $$
+  But: knowledge of $\boldsymbol{e}^{(k)}$ $\Leftarrow$ knowledge of $\boldsymbol{u}$\\[2ex]
+  Solution: Construct an \textbf{approximation} $\boldsymbol{z}^{(k)} \approx \boldsymbol{e}^{(k)}$ and update
+  $$
+  \boldsymbol{u}^{(k)} \mapsto \boldsymbol{u}^{(k+1)} = \boldsymbol{u}^{(k)} + \boldsymbol{z}^{(k)}
+  $$
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Richardson iteration}
+  Approximate error 
 $$
 \boldsymbol{z}^{(k)} = P^{-1} A \boldsymbol{e}^{(k)}
 $$
-If $P\approx A$, this will be a good approximation. Interestingly we can compute $\boldsymbol{z}^{(k)}$ without knowledge of $\boldsymbol{u}$ since
+$P\approx A\;\Rightarrow\;\boldsymbol{z}^{(k)} \approx \boldsymbol{e}^{(k)}$
+Can compute $\boldsymbol{z}^{(k)}$ without knowledge of $\boldsymbol{u}$:
 $$
 \begin{aligned}
 \boldsymbol{z}^{(k)} &= P^{-1} A (\boldsymbol{u}-\boldsymbol{u}^{(k)})\\
@@ -3610,72 +3718,130 @@ $$
 &= P^{-1}(\boldsymbol{b}-A\boldsymbol{u}^{(k)})
 \end{aligned}
 $$
-The quantity $\boldsymbol{z}^{(k)}$ is also known as the *preconditioned residual*, since the *residual* $\boldsymbol{b}-A\boldsymbol{u}^{(k)}$ itself measures by how much the approximate solution violates the equation $A\boldsymbol{u}=\boldsymbol{b}$.
+Some terminology
+\begin{itemize}
+  \item \textbf{Residual} $\boldsymbol{r}^{(k)}=\boldsymbol{b}-A\boldsymbol{u}^{(k)}$\\
+  {\footnotesize measures by how much $\boldsymbol{u}^{(k)}$ violates $A\boldsymbol{u}=\boldsymbol{b}$}
+  \item \textbf{Preconditioned residual} $\boldsymbol{z}^{(k)}=P^{-1}\boldsymbol{r}^{(k)}$
+\end{itemize}
+\end{frame}
 
-This leads to the so-called preconditioned Richardson iteration: starting from some initial guess $\boldsymbol{u}^{(0)}$ (which could for example be chosen to be $\boldsymbol{u}^{(0)}=0$) update the approximate solution $\boldsymbol{u}^{(k)}\rightarrow \mapsto{u}^{(k+1)}$ accroding to the rule
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Preconditioned Richardson iteration}
+  Update rule
 $$ 
 \begin{aligned}
-\boldsymbol{u}^{(k+1)} &= \boldsymbol{u}^{(k)} + \boldsymbol{z}^{(k)}\\
+\boldsymbol{u}^{(k)} \mapsto \boldsymbol{u}^{(k+1)} &= \boldsymbol{u}^{(k)} + \boldsymbol{z}^{(k)}\\
 &= \boldsymbol{u}^{(k)} + P^{-1}(\boldsymbol{b}-A\boldsymbol{u}^{(k)})
 \end{aligned}
 $$
-This can be written as follows:
-
-**Algorithm: preconditioned Richardson iteration**
-
-1. Pick some initial guess $\boldsymbol{u}^{(0)}$
-2. **for** $k=0,1,\dots,k_{\text{max}}-1$ **do**
-3. $~~~~$ Compute the residual $\boldsymbol{r}^{(k)} = \boldsymbol{b} - A\boldsymbol{u}^{(k)}$
-4. $~~~~$ Solve $P\boldsymbol{z}^{(k)} = \boldsymbol{r}^{(k)}$ for the preconditioned residual $\boldsymbol{z}^{(k)}$
-5. $~~~~$ Test for convergence, for example by checking whether $\|\boldsymbol{z}^{(k)}\|\le \epsilon$ for some tolerance $\epsilon$
-6. $~~~~$ Update $\boldsymbol{u}^{(k+1)} = \boldsymbol{u}^{(k)} + \boldsymbol{z}^{(k)}$
-7. **end for**
-
-It can be shown that
+Theory\\
+Iteration matrix
 $$
 \boldsymbol{e}^{(k+1)} = \left(\mathbb{I} - P^{-1} A\right)\boldsymbol{e}^{(k)}.
 $$
-Hence, if the spectral radius of $\mathbb{I} - P^{-1} A$ is smaller than $1$, the iteration will converge to the true solution.
+spectral radius
+$$
+\varrho(\mathbb{I} - P^{-1} A)<1\quad
+\Rightarrow\quad \boldsymbol{u^{(k)}}\rightarrow \boldsymbol{u}\quad\text{as $k\rightarrow\infty$}
+$$
+special case:\\[1ex]
+$P=A$ $\Rightarrow$ convergence in a single step
+\end{frame}
 
-Note in particular that if we set $P=A$, the iteration converges in a single step.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-One possible preconditioner is the diagonal $D$ of $A$, i.e.
+\begin{frame}[fragile]
+  \frametitle{Preconditioned Richardson iteration}
+  \textbf{Algorithm}
+  \begin{algorithmic}[1]
+   \State {Pick initial guess $\boldsymbol{u}^{(0)}$ {\footnotesize(typically $\boldsymbol{u}^{(0)}=0$)}}
+  \For{$k=0,1,\dots,k_{\text{max}}-1$}
+\State{Compute residual $\boldsymbol{r}^{(k)} = \boldsymbol{b} - A\boldsymbol{u}^{(k)}$}
+\State{Solve $P\boldsymbol{z}^{(k)} = \boldsymbol{r}^{(k)}$ for preconditioned residual $\boldsymbol{z}^{(k)}$}
+\State{Test for convergence, for example check whether $\|\boldsymbol{z}^{(k)}\|\le \epsilon$}
+\State{Update $\boldsymbol{u}^{(k+1)} = \boldsymbol{u}^{(k)} + \boldsymbol{z}^{(k)}$}
+\EndFor
+  \end{algorithmic}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Jacobi preconditioner}
+  Jacobi predonditioner $P=D$ (diagonal of $A$)
 $$
 D_{ij} = \begin{cases}
 A_{ii} & \text{if $i=j$}\\
 0 & \text{otherwise}
 \end{cases}
 $$
-This matrix is very simple to invert: to solve $P\boldsymbol{z}=\boldsymbol{r}$ we can compute $z_i = r_i/A_{ii}$ for all $i=0,1,2,\dots,n-1$. The choice $P=D$ is also known as the *Jacobi* preconditioner.
+Preconditioner application: solve $P\boldsymbol{z}=\boldsymbol{r}$
+$$\text{set}\quad z_i = r_i/A_{ii} \quad\text{for all $i=0,1,2,\dots,n-1$}$$
+\end{frame}
 
-### PETSc options
-To use a particular solver/preconditioner combination in PETSc, we can specify solver options via the command line. For this, we need to add the following at the beginning of our Python script:
-```python
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{PETSc options}
+  Specify solver/preconditioner options via command line
+  \begin{lstlisting}
 import sys
 import petsc4py
 
-petsc4py.init(sys.argv)
-```
-This will ensure than any options passed to the script are parsed by PETSc. Then, when setting up the `KSP` object, we instruct PETSc to use the command line options with 
+petsc4py.init(sys.argv)    
 
-```python
+# [...] Construct matrix, vector and KSP object
+
 ksp.setFromOptions()
-```
-For example, to use the Richardson iteration with Jacobi preconditioner, we would call our script like this:
-
-```bash
+  \end{lstlisting}
+Example: Richardson iteration with Jacobi preconditioner
+\begin{verbatim}
 python script.py -ksp_type richardson -pc_type jacobi
-```
-To monitor convergence, we can add the option `-ksp_monitor`, which will print out the norm $\|\boldsymbol{z}^{(k)}\|$ of the (preconditioned) residual at each iteration. The iteration will stop once the residual norm has been reduced by a factor of at least $\epsilon$, i.e. $\|\boldsymbol{z}^{(k)}\|/\|\boldsymbol{z}^{(0)}\|<\epsilon$. This tolerance can be controlled by `-ksp_rtol epsilon`. It is also possible to set an absolute convergence criterion $\|\boldsymbol{z}^{(k)}\|<\epsilon_{\text{abs}}$ with `-ksp_atol epsilon_abs`; in fact the iteration will stop once $\|\boldsymbol{z}^{(k)}\|<\operatorname{max}\{\epsilon\cdot \|\boldsymbol{z}^{(0)}\|,\epsilon_{\operatorname{abs}}\}$. The default values are $\epsilon=10^{-5}$, $\epsilon_{\text{abs}}=10^{-50}$.
+  \end{verbatim}
+\end{frame}
 
-Furthermore, we can tell PETSc to print information on the solver to some file `ksp_view.txt` with `-ksp_view :ksp_view.txt`. So, in summary to solve to a relative tolerance of $\epsilon=10^{-9}$ with the Jacobi-preconditioned Richardson iteration we would call:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-```bash
-python script.py -ksp_type richardson -pc_type jacobi -ksp_monitor -ksp_rtol 1.0E-9 -ksp_view :ksp_view.txt
-```
+\begin{frame}[fragile]
+  \frametitle{Monitoring convergence}
+  Option \lstinline{-ksp_monitor} $\Rightarrow$ print norm $\|\boldsymbol{z}^{(k)}\|$ of (preconditioned) residual at each iteration\\
+  \textbf{Convergence criterion} relative residual reduction \lstinline{-ksp_rtol epsilon}
+  $$
+  \text{stop if}\quad\|\boldsymbol{z}^{(k)}\|/\|\boldsymbol{z}^{(0)}\|<\epsilon
+  $$
+  Absolute residual reduction \lstinline{-ksp_atol epsilon_abs}
+  $$
+  \text{stop if}\quad \|\boldsymbol{z}^{(k)}\|<\epsilon_{\text{abs}}
+  $$ 
+  $\Rightarrow$ combined convergence criterion
+  $$
+  \text{stop if}\quad 
+  \|\boldsymbol{z}^{(k)}\|<\operatorname{max}\{\epsilon\cdot \|\boldsymbol{z}^{(0)}\|,\epsilon_{\operatorname{abs}}\}$$
+  default values
+  \begin{itemize}
+    \item $\epsilon=10^{-5}$
+    \item $\epsilon_{\text{abs}}=10^{-50}$.
+  \end{itemize}
 
-The output looks like this:
-```
+Save information on solver to file \lstinline{-ksp_view :ksp_view.txt}. 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Monitoring convergence}
+  \textbf{Example}: solve to relative tolerance of $\epsilon=10^{-9}$ with Jacobi-preconditioned Richardson iteration
+  \begin{verbatim}
+python script.py -ksp_type richardson -pc_type jacobi \
+                 -ksp_monitor -ksp_rtol 1.0E-9 \
+                 -ksp_view :ksp_view.txt    
+  \end{verbatim}
+Resulting output
+{\tiny
+\begin{verbatim}
   0 KSP Residual norm 1.838591537060e+00
   1 KSP Residual norm 2.788478455780e-01
   2 KSP Residual norm 6.738101826929e-02
@@ -3693,13 +3859,16 @@ The output looks like this:
  14 KSP Residual norm 7.537346563530e-09
  15 KSP Residual norm 2.165184982094e-09
  16 KSP Residual norm 5.231969233880e-10
-```
+\end{verbatim}}
+\end{frame}
 
-and we can inspect the file `ksp_view.txt` to double check that the solver options have been set correctly:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-At the beginning, the file `ksp_view.txt` lists details on the `KSP Object`, which describes the iterative solver, including the used tolerances $\epsilon$, $\epsilon_{\text{abs}}$:
-
-```
+\begin{frame}[fragile]
+  \frametitle{Checking solver options}
+  Contents of \lstinline{ksp_view.txt}
+{\footnotesize
+\begin{verbatim}  
 KSP Object: 1 MPI process
   type: richardson
     damping factor=1.
@@ -3707,10 +3876,7 @@ KSP Object: 1 MPI process
   tolerances: relative=1e-09, absolute=1e-50, divergence=10000.
   left preconditioning
   using PRECONDITIONED norm type for convergence test
-```
 
-This is followed by details on the `PC Object`, which describes the preconditioner:
-```
 PC Object: 1 MPI process
   type: jacobi
     type DIAGONAL
@@ -3720,64 +3886,119 @@ PC Object: 1 MPI process
     rows=5, cols=5
     total: nonzeros=25, allocated nonzeros=25
     total number of mallocs used during MatSetValues calls=0
-```
-It is a good idea to double check the `log_view` output since it is very easy to inadvertedly use incorrect solver settings. The PETSc documentation contains further details on the available  [solvers](https://petsc.org/main/manual/ksp/) and [preconditioners](https://petsc.org/main/manualpages/PC/). For example, the Richardson iteration is described under [KSPRICHARDSON](https://petsc.org/main/manualpages/KSP/KSPRICHARDSON/) and the Jacobi preconditioner is described under [PCJACOBI](https://petsc.org/main/manualpages/PC/PCJACOBI/). Can you work out how to use the additional damping factor `scale`? Does choosing a value for this parameter which differs from the default of $1.0$ improve convergence? 
+\end{verbatim}}
+Good practice: \textbf{always inspect this file}
+\end{frame}
 
-### Direct solvers
-PETSc also supports direct solvers, which are implemented as preconditioners. For example, to use Gaussian elimination, we would set `-pc_type lu`. In this case, PETSc computes the factorisation $P=A=LU$, where $L$ and $U$ and lower- and upper-triangular matrices. Knowing $L$ and $U$ we can solve $A\boldsymbol{z}=LU\boldsymbol{z}=\boldsymbol{r}$ by solving $L\boldsymbol{z}'=\boldsymbol{r}$ and then $U\boldsymbol{z}=\boldsymbol{z}'$. In this case, the iterative solver will converge in a single iteration:
-```
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Direct solvers}
+  Direct solvers implemented as preconditioners\\
+  \textbf{Example} Gaussian elimination \lstinline{-pc_type lu}
+  \begin{itemize}
+    \item PETSc computes factorisation $P=A=LU$\\
+    {\footnotesize(lower- and upper-triangular matrices $L$ and $U$)}
+    \item Preconditioner application: solve $P\boldsymbol{z}=LU\boldsymbol{z}=\boldsymbol{r}$
+    \begin{enumerate}
+      \item Solve $L\boldsymbol{z}'=\boldsymbol{r}$ for $\boldsymbol{z}'$
+      \item Solve $U\boldsymbol{z}=\boldsymbol{z}'$ for $\boldsymbol{z}$
+    \end{enumerate}
+  \end{itemize}  
+    iterative solver converges in single iteration
+\begin{verbatim}
+python script.py -ksp_type richardson -pc_type lu \
+                 -ksp_monitor
+
   0 KSP Residual norm 1.752245775437e+00
   1 KSP Residual norm 9.063045098981e-17
-```
-We can request that PETSc only applies the preconditioner, i.e. computes $\boldsymbol{u}^{(1)} = P^{-1}\boldsymbol{b}$ directly, which is sensible if the preconditioner is a direct solver. For this we set `-ksp_type preonly`. Be careful with using this option: if the preconditioner is not a direct solver, the iteration will simply stop after one iteration and return an incorrect result. For example, `-ksp_type preonly -pc_type richardson` will print out
-```
+\end{verbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Direct solvers}
+Only apply the preconditioner: $\boldsymbol{u}^{(1)} = P^{-1}\boldsymbol{b}$
+\begin{verbatim}
+python script.py -ksp_type preonly -pc_type lu \
+                 -ksp_monitor
+\end{verbatim}
+\textbf{Careful}: solution incorrect unless PC is direct solver
+\begin{verbatim}
+python script.py -ksp_type preonly -pc_type jacobi \
+                 -ksp_monitor
+
   0 KSP Residual norm 1.405809375413e+01
   1 KSP Residual norm 2.181187602316e+00
-```
-and it is up to the user to recognise that the computed solution does in fact not solve $A\boldsymbol{u}=\boldsymbol{b}$.
+\end{verbatim}
+\end{frame}
 
-## Conjugate Gradient method
-The (preconditioned) Richardson iteration is not very efficient. A better alternative for symmetric positive definite (SPD) $A$ is the Conjugate Gradient algorithm, which is given as follows:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-**Algorithm: Conjugate Gradient method**
-1. Set $\boldsymbol{r}^{(0)}\gets \boldsymbol{b} - A\boldsymbol{u}^{(0)}$
-2. Solve $P\boldsymbol{z}^{(0)} = \boldsymbol{r}^{(0)}$
-3. Set $\boldsymbol{p}^{(0)}\gets \boldsymbol{z}^{(0)}$
-4. **for** $k=1,2,\dots,k_{\text{max}}$ **do**
-5. $~~~~$ Compute $\alpha_{k-1} = \boldsymbol{z}^{(k-1)\top} \boldsymbol{r}^{(k-1)}/\boldsymbol{p}^{(k-1)\top} A\boldsymbol{p}^{(k-1)}$
-6. $~~~~$ Set $\boldsymbol{u}^{(k)} \gets \boldsymbol{u}^{(k-1)} + \alpha_{k-1} \boldsymbol{p}^{(k-1)}$
-7. $~~~~$ Set $\boldsymbol{r}^{(k)} \gets \boldsymbol{r}^{(k-1)} - \alpha_k A \boldsymbol{p}^{(k-1)}$
-8. $~~~~$ Check convergence
-9. $~~~~$ Solve $P\boldsymbol{z}^{(k)}=\boldsymbol{r}^{(k)}$ for $\boldsymbol{z}^{(k)}$
-10. $~~~~$ Compute $\beta_k = \boldsymbol{z}^{(k)\top}\boldsymbol{r}^{(k)}/\boldsymbol{z}^{(k-1)\top}\boldsymbol{r}^{(k-1)}$
-11. $~~~~$ Set $\boldsymbol{p}^{(k)} \gets \boldsymbol{z}^{(k)} + \beta_k \boldsymbol{p}^{(k-1)}$
-12. **end do**
-    
-Crucially, the fundamental operations that are required are very similar to those in the Richardson iteration
+\begin{frame}[fragile]
+  \frametitle{Conjugate Gradient method}
+Alternative to Richardson iteration for symmetric positive definite (SPD) matrices $A$\\[2ex]
+\textbf{Algorithm: Conjugate Gradient method}
+\begin{algorithmic}[1]
+\State{Set $\boldsymbol{r}^{(0)}\gets \boldsymbol{b} - A\boldsymbol{u}^{(0)}$}
+\State{Solve $P\boldsymbol{z}^{(0)} = \boldsymbol{r}^{(0)}$}
+\State{Set $\boldsymbol{p}^{(0)}\gets \boldsymbol{z}^{(0)}$}
+\For{$k=1,2,\dots,k_{\text{max}}$}
+\State{Compute $\alpha_{k-1} = \boldsymbol{z}^{(k-1)\top} \boldsymbol{r}^{(k-1)}/\boldsymbol{p}^{(k-1)\top} A\boldsymbol{p}^{(k-1)}$}
+\State{Set $\boldsymbol{u}^{(k)} \gets \boldsymbol{u}^{(k-1)} + \alpha_{k-1} \boldsymbol{p}^{(k-1)}$}
+\State{Set $\boldsymbol{r}^{(k)} \gets \boldsymbol{r}^{(k-1)} - \alpha_k A \boldsymbol{p}^{(k-1)}$}
+\State{Check convergence}
+\State{Solve $P\boldsymbol{z}^{(k)}=\boldsymbol{r}^{(k)}$ for $\boldsymbol{z}^{(k)}$}
+\State{Compute $\beta_k = \boldsymbol{z}^{(k)\top}\boldsymbol{r}^{(k)}/\boldsymbol{z}^{(k-1)\top}\boldsymbol{r}^{(k-1)}$}
+\State{Set $\boldsymbol{p}^{(k)} \gets \boldsymbol{z}^{(k)} + \beta_k \boldsymbol{p}^{(k-1)}$}
+\EndFor
+\end{algorithmic}
+\end{frame}
 
-* multiplication of a vector $\boldsymbol{x}$ with the matrix $A$ to compute $\boldsymbol{y}=A\boldsymbol{x}$
-* addition and scaling of vectors: $\boldsymbol{z} = \alpha \boldsymbol{x}+\beta \boldsymbol{y}$ for $\alpha,\beta\in\mathbb{R}$
-* dot-products of vectors: $\boldsymbol{x}^\top\boldsymbol{y}=\sum_{i=0}^{n-1} x_i y_i$
-* Preconditioner applications: solve $P\boldsymbol{z}=\boldsymbol{r}$ for $\boldsymbol{z}$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In PETSc, the Conjugate Gradient method can be invoked with `-ksp_type cg`. If we repeat the numerical experiment above with
+\begin{frame}[fragile]
+  \frametitle{Conjugate Gradient method}
+Fundamental operations
+\begin{itemize}
+  \item Matrix-vector products: $\boldsymbol{y}=A\boldsymbol{x}$
+  \item Add and scale vectors: $\boldsymbol{z} = \alpha \boldsymbol{x}+\beta \boldsymbol{y}$ for $\alpha,\beta\in\mathbb{R}$
+  \item Dot-products of vectors: $\boldsymbol{x}^\top\boldsymbol{y}=\sum_{i=0}^{n-1} x_i y_i$
+  \item Apply preconditioner: solve $P\boldsymbol{z}=\boldsymbol{r}$ for $\boldsymbol{z}$
+\end{itemize}
+Very similar to operations in Richardson iteration
+\end{frame}
 
-```bash
-python script.py -ksp_type cg -pc_type jacobi -ksp_monitor -ksp_rtol 1.0E-9 -ksp_view :ksp_view.txt
-```
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-we get the following output:
+\begin{frame}[fragile]
+  \frametitle{Conjugate Gradient method}
+  Invoke Conjugate Gradient iteration with \lstinline{-ksp_type cg}:
+  \begin{verbatim}
+python script.py -ksp_type cg -pc_type jacobi \
+                 -ksp_monitor -ksp_rtol 1.0E-9 
 
-```
   0 KSP Residual norm 1.838591537060e+00
   1 KSP Residual norm 2.299841486091e-01
   2 KSP Residual norm 2.631059255681e-02
   3 KSP Residual norm 2.056954907970e-17
-```
-i.e. the solver converges in substantially fewer iterations than the Richardson iteration. We will compare different solver and preconditioner settings for the finite element stiffness matrix below.
+  \end{verbatim}
+  $\Rightarrow$ fewer iterations than Richardson\\[2ex]
+  Other \textbf{Krylov subspace methods}\\
+  GMRES (works also if $A$ is not SPD)
+  \begin{verbatim}
+python script.py -ksp_type gmres -pc_type jacobi \
+                 -ksp_monitor -ksp_rtol 1.0E-9 
 
-## Other Krylov subspace methods
-The Conjugate Gradient (CG) algorithm is an example of a so-called *Krylov subspace method*. While the CG iteration only works for SPD matrices, there are other Krylov subspace methods that can be used for more general matrices. The most important one is the [Generalised Minimal Residual (GMRES) method](https://mathworld.wolfram.com/GeneralizedMinimalResidualMethod.html), which can be invoked with `-ksp_type gmres`. The details are not relevant for this course, but it should be pointed out that GMRES only requires the same fundamental linear algebra operations as CG and the Richardson iteration.
+  \end{verbatim}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Having introduced PETSc solvers, let us now go back to the solution of the linear problem $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ that arises in the finite element discretisation.
 

@@ -3996,71 +3996,124 @@ python script.py -ksp_type gmres -pc_type jacobi \
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
+\begin{frame}[fragile]
+  \frametitle{Sparse assembly}
+  stiffness matrix $A^{(h)}$ sparse $\Rightarrow$ \textbf{assemble in (PETSc) CSR format}\\[1ex]
+  sparsity structure encoded in
+  \begin{itemize}
+    \item row-pointers $R$
+    \item column indices $J$
+  \end{itemize} 
+  For row $\ell_{\text{global}}$ of $A^{(h)}$ construct set
+  $$
+  \mathcal{J}_{\ell_{\text{global}}} = \{k_{\text{global}}: A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0\}
+  $$
+  Global indices of unknowns associated with cell $K$ with index $\alpha$
+  $$
+  \mathcal{L}^{(K)} := \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}
+  $$
+  Unknowns in cell $K$ couple to each other:
+  $$
+  A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0\quad\text{for all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)}$}
+  $$
+  \vspace{-2ex}
+  \begin{itemize}
+    \item Visit all cells $K$
+    \item For all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)}\times \mathcal{L}^{(K)}$ add $k_{\text{global}}$ to $\mathcal{J}_{\ell_{\text{global}}}$
+  \end{itemize}  
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Having introduced PETSc solvers, let us now go back to the solution of the linear problem $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ that arises in the finite element discretisation.
+\begin{frame}[fragile]
+  \frametitle{Sparse assembly}
+  Construct CSR arrays $J$, $R$ from
+  $$
+  \mathcal{J}_{\ell_{\text{global}}} = \{k_{\text{global}}: A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0\}
+  $$
+  \begin{itemize}
+    \item Column indices
+  $$
+  J = [\mathcal{J}_0,\mathcal{J}_1,\mathcal{J}_2,\dots]
+  $$
+    \item Row pointers
+  $$
+  R = [0,|\mathcal{J}_0|,|\mathcal{J}_0+\mathcal{J}_1|,|\mathcal{J}_0+\mathcal{J}_1+\mathcal{J}_2|,\dots]
+  $$
+  \end{itemize}
+\end{frame}
 
-# Assembly of sparse stiffness matrix
-To assemble the stiffness matrix $A^{(h)}$ in CSR format, we first need to work out the sparsity structure, i.e. build the lists containing the column indices $J$ and row-pointers $R$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Sparsity structure
-For this observe that for the row of $A^{(h)}$ with index $\ell_{\text{global}}$ we need to find the set of indices $\mathcal{J}_{\ell_{\text{global}}}$ such that $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $k_{\text{global}}\in \mathcal{J}_{\ell_{\text{global}}}$. To construct this set, observe that all unknowns associated with a given cell with index $\alpha$ couple to each other, i.e. $A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} \neq 0$ for all $\ell_{\text{global}},k_{\text{global}}\in \mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$ the set of global indices of unknowns associated with cell $K$. We can therefore construct the sets $\mathcal{J}_{\ell_{\text{global}}}$ by visiting all cells of the mesh and inserting the correct indices. Once we have done this, we use the information in $\mathcal{J}_{\ell_{\text{global}}}$ to construct the column index array $J$ and the row-pointer array $R$ as shown in the following procedure:
+\begin{frame}[fragile]
+  \frametitle{Sparse assembly}
+  \textbf{Algorithm: create sparsity structure in CSR format}
+  \begin{algorithmic}[1]
+\State{Set $\mathcal{J}_{\ell_{\text{global}}} = \emptyset$ for all $\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$}
+\ForAll{cells $K$ with index $\alpha$}
+\State{Set $\mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$}
+\ForAll{$\ell_{\text{global}}\in \mathcal{L}^{(K)}$}
+\State{Update $\mathcal{J}_{\ell_{\text{global}}} \gets \mathcal{J}_{\ell_{\text{global}}} \cup \mathcal{L}^{(K)}$}
+\EndFor
+\EndFor
+\State{Initialise row pointer array $R = [0,0,\dots,0]\in \mathbb{R}^{n+1}$}
+\State{Initialise column index array $J = []$}
+\For{$\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$}
+\State{Append $\mathcal{J}_{\ell_{\text{global}}}$ to $J$}
+\State{Set $R_{\ell_{\text{global}}+1} = R_{\ell_{\text{global}}} +\left|\mathcal{J}_{\ell_{\text{global}}}\right|$ }
+\EndFor
+  \end{algorithmic}  
+\end{frame}
 
-**Algorithm: create sparsity structure**
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-1. Set $\mathcal{J}_{\ell_{\text{global}}} = \emptyset$ for all $\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$
-2. **for all** cells $K$ with index $\alpha$
-3. $~~~~$ Set $\mathcal{L}^{(K)} = \{\ell_{\text{global}}(\alpha,\ell)\;\text{for}\;\ell=0,1,\dots,\nu-1\}$, the set of global indices of dofs associated with cell $K$
-4. $~~~~$ **for all** $\ell_{\text{global}}\in \mathcal{L}^{(K)}$ **do** 
-5. $~~~~~~~~$ Update $\mathcal{J}_{\ell_{\text{global}}} \gets \mathcal{J}_{\ell_{\text{global}}} \cup \mathcal{L}^{(K)}$
-6. $~~~~$ **end do** 
-7. **end do** 
-8. Initialise row pointer array $R = [0,0,\dots,0]\in \mathbb{R}^{n+1}$
-9. Initialise column index array $J = []$
-10. **for** $\ell_{\text{global}}=0,1,\dots,n_{\text{dof}}-1$ **do**
-11. $~~~~$ Append $\mathcal{J}_{\ell_{\text{global}}}$ to $J$
-12. $~~~~$ Set $R_{\ell_{\text{global}}+1} = R_{\ell_{\text{global}}} +\left|\mathcal{J}_{\ell_{\text{global}}}\right|$ 
-13. **end do**
-
-In [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py) this is implemented as the function `sparsity_lhs(fs)` which gets passed an instance `fs` of the `FunctionSpace` class and returns the arrays $J$ and $R$.
-
-## CSR matrix assembly in PETSc
-When using PETSc, the stiffness matrix $A^{(h)}$ can be assembled as follows. First, before iterating over the mesh, we need to work out the sparsity structure and construct the row-pointers `row_start` and column indices `col_indices` with the above algorithm. Assuming that the function space object is `fs`, this can be done with the method `sparsity_lhs(fs)`. We also need to construct the `stiffness_matrix` as a `PETSc.Mat()` object in CSR format which is initialised with the `row_start` and `col_indices` arrays returned by `sparsity_lhs(fs)`:
-```python
+\begin{frame}[fragile]
+  \frametitle{Sparse assembly}
+  \textbf{Assemble sparse stiffness matrix in PETSc}\\[1ex]
+  Step 1: Construct sparsity structure (arrays $J$, $R$)
+\begin{lstlisting}
 row_start, col_indices = sparsity_lhs(fs)
+\end{lstlisting}
+  Step 2: Create (empty) CSR matrix
+\begin{lstlisting}
 stiffness_matrix = PETSc.Mat()
-stiffness_matrix.createAIJ((fs.ndof, fs.ndof), csr=(row_start, col_indices))    
-```
+stiffness_matrix.createAIJ((fs.ndof, fs.ndof),
+                           csr=(row_start, col_indices))     
+\end{lstlisting}
+Step 3: Insert matrix entries in each cell ($\mathcal{J}_{\ell_{\text{global}}}=$ \lstinline{j_g})
+\begin{lstlisting}
+stiffness_matrix[np.ix_(j_g, j_g)] += local_matrix  
+\end{lstlisting}
+{}\qquad\qquad$\Downarrow$
+\begin{lstlisting}
+stiffness_matrix.setValues(j_g, j_g, local_matrix,
+                           addv=True)
+\end{lstlisting}
+Step 4: Assemble matrix after mesh iteration
+\begin{lstlisting}
+stiffness_matrix.assemble()  
+\end{lstlisting}
+{\footnotesize
+\begin{verbatim}
+python driver_sparse.py -ksp_type richardson -pc_type jacobi \
+                        -ksp_rtol 1.0E-6 -ksp_monitor
+\end{verbatim}}
+\end{frame}
 
-Recall that previously we inserted the cell-local matrix `local_matrix` into the correct position in the global `stiffness_matrix` with
-```python
-stiffness_matrix[np.ix_(j_g, j_g)] += local_matrix
-```
-where `stiffness_matrix` is a dense numpy array and `j_g` is the list of global dof-indices associated with a particular cell $K$. When using PETSc this needs to be replaced by 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-```python
-stiffness_matrix.setValues(j_g, j_g, local_matrix, addv=True)
-```
+\section{Performance analysis}
 
-where the `addv=True` parameter ensures that the matrix elements are incremented (compare to the `+=` in the native assembly).
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
 
-Finally, after iterating over the mesh, we need to instruct PETSc to assemble the matrix with
 
-```python
-stiffness_matrix.assemble()
-```
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The code for assembly of the stiffness matrix can be found in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function `assemble_lhs_sparse(fs, quad, kappa, omega)` gets passed an instance `fs` of the `FunctionSpace` class, a quadrature rule and the constants $\kappa$, $\omega$ that define the PDE. It returns the assembled stiffness matrix $A^{(h)}$ as a PETSc CSR matrix.
+\end{document}
 
-The full code for solving the finite element problem with PETSc matrices and solvers can be found in [driver_sparse.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver_sparse.py), which should be compared to the non-PETSc version in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
-
-To run the code for a specific solver and preconditioner we again pass PETSc solver options via the command line, for example:
-
-```
-python driver_sparse.py -ksp_type richardson -pc_type jacobi -ksp_rtol 1.0E-6 -ksp_monitor -ksp_view :ksp_view.txt
-```
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Performance analysis
 Let us try to understand the performance of the iterative solver algorithm. We start with the simplest version, namely the Richardson iteration with Jacobi preconditioner. Recall that this requires the following operations:

@@ -2677,6 +2677,17 @@ Class \lstinline{Mesh} has property \lstinline{coordinates} = \lstinline{Functio
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Global assembly}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 \begin{frame}
   \frametitle{Global assembly}
   Recall: need to solve
@@ -2938,6 +2949,16 @@ $\ell_{\text{global}}\times \ell_{\text{global}}$ = \lstinline{np.ix_(ell_global
 \begin{lstlisting}
 A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 \end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Numerical experiments}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \tableofcontents[currentsection]
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3509,6 +3530,16 @@ $$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Solving sparse linear systems}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}
   \frametitle{Solving sparse linear systems}
   $\Rightarrow$ devise \textbf{more efficient algorithms} tailored to structure of problem\\[1ex]
@@ -3996,6 +4027,16 @@ python script.py -ksp_type gmres -pc_type jacobi \
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Assembly of sparse stiffness matrix}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}[fragile]
   \frametitle{Sparse assembly}
   stiffness matrix $A^{(h)}$ sparse $\Rightarrow$ \textbf{assemble in (PETSc) CSR format}\\[1ex]
@@ -4108,180 +4149,319 @@ python driver_sparse.py -ksp_type richardson -pc_type jacobi \
   \tableofcontents[currentsection]
 \end{frame}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-# Performance analysis
-Let us try to understand the performance of the iterative solver algorithm. We start with the simplest version, namely the Richardson iteration with Jacobi preconditioner. Recall that this requires the following operations:
-
-1. Computation of the residual $\boldsymbol{r} = \boldsymbol{b} - A\boldsymbol{u}$
-2. Application of the diagonal preconditioner $\boldsymbol{z} = D^{-1} \boldsymbol{r}$
-3. Update of the solution vector $\boldsymbol{u}\mapsto \boldsymbol{u} + \boldsymbol{z}$
-
-We count the number of operations as follows: firstly, when computing the residual $\boldsymbol{r} = \boldsymbol{b} - A\boldsymbol{u}$ we need to apply one subtraction and one multiplication for each non-zero matrix element $A_{ij}$ when computing $r_i \mapsto r_i - A_{ij} u_j$ (applying the matrix, i.e. computing $\boldsymbol{v} = A\boldsymbol{u}$ requires the same number of operations). The application of the preconditioner $\boldsymbol{z} = D^{-1} \boldsymbol{r}$ requires one division per vector element and finally the update $\boldsymbol{u}\mapsto \boldsymbol{u} + \boldsymbol{z}$ of the solution requires one addition for each vector element. Hence, the total number of floating point operations for a single Richardson update with Jacobi preconditioner requires
-
+\begin{frame}
+  \frametitle{Performance of iterative solver}
+  \textbf{Richardson iteration with Jacobi preconditioner}
+  \begin{enumerate}
+  \item Computation of residual\footnote{= number of operations for matrix application $\boldsymbol{v} = A\boldsymbol{u}$} $\vec{r} = \vec{b} - A\vec{u}$
+  \begin{itemize}
+  \item $r_i \mapsto r_i - A_{ij} u_j$
+  \item 1 subtraction + 1 multiplication per non-zero matrix element 
+  \item $\Rightarrow\;2n_{\text{nz}}$ FLOPs
+  \end{itemize}
+  \item Application of diagonal preconditioner $\boldsymbol{z} = D^{-1} \boldsymbol{r}$
+  \begin{itemize}
+  \item 1 division per vector entry
+  \item $\Rightarrow\;n$ FLOPs
+  \end{itemize}
+  \item Update of solution vector $\boldsymbol{u}\mapsto \boldsymbol{u} + \boldsymbol{z}$
+  \begin{itemize}
+  \item 1 addition per vector entry
+  \item $\Rightarrow\;n$ FLOPs
+  \end{itemize}
+  \end{enumerate}
+\textbf{Total number of FLOPs} per iteration
 $$
 N_{\text{Ric+Jac}} = 2n_{\text{nz}} + 2n
 $$
+\end{frame}
 
-floating point operations (FLOPs). Assume, for example, that $n=16641$ and $n_{\text{nz}}=115457$ (piecewise linear elements, rectange mesh with `nref=7`), then $N_{\text{Ric+Jac}} = 264196$. Recall that $t_{\text{flop}} = 1.6\cdot 10^{-11}\text{s}$, so we would expect that a single Richardson+Jacobi iteration takes around
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}[fragile]
+  \frametitle{Richardson + Jacobi}
+  \textbf{Example}: piecewise linear elements, rectangle mesh \lstinline{nref=7}
+  \begin{itemize}
+  \item $n=16641$
+  \item $n_{\text{nz}}=115457$
+  \end{itemize}
+  FLOPs per iteration
+  $$N_{\text{Ric+Jac}} = 2n_{\text{nz}} + 2n = 264196$$
+  
+  Recall time per FLOP
+  $$t_{\text{flop}} = 1.6\cdot 10^{-11}\text{s}$$
+  $\Rightarrow$ predicted time
 $$
 \begin{aligned}
-T_{\text{Ric+Jac}} &= (2n_{\text{nz}} + 2n)t_{\text{flop}}\\
+T_{\text{Ric+Jac}}^{(\text{pred})} &= (2n_{\text{nz}} + 2n)t_{\text{flop}}\\
 &= 264196 \cdot 1.6\cdot 10^{-11}\text{s}\\
 &= 4.2\mu\text{s}
 \end{aligned}
 $$
+measured time
+$$T_{\text{Ric+Jac}}^{(\text{meas})} = 85.6\mu\text{s}\approx 20\times T_{\text{Ric+Jac}}^{(\text{pred})}$$
+\end{frame}
 
-However, in fact we measure $T_{\text{Ric+Jac}} = 85.6\mu\text{s}$, i.e. a number which is more than an order of magnitude larger than expected!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Instead of using the `measure_time` decorator, we could also pass the option `-log_view` to PETSc to get more information on the performance of individual components of the code. For this, we run the code with 
-
-```
-python driver_sparse.py -ksp_type richardson -pc_type jacobi -ksp_rtol 1.0E-6 -ksp_monitor -ksp_view :ksp_view.txt -log_view :log_view.txt
-```
-and inspect the generated file `log_view.txt`. The matrix-vector product `MatMult` is executed $37049$ times, and in total $2.734\text{s}$ are spent in this part of the code. This implies $73.7\mu\text{s}$ per matrix-vector product, compared to the theoretical prediction $T_{\text{MatMult}} = 2n_{\text{nz}}t_{\text{flop}}=2\cdot 115457\cdot 1.6\cdot 10^{-11}\text{s} = 3.7\mu\text{s}$. Again, our performance model is off by more than order of magnitude!
-
-### Memory references
-The reason for the mismatch between the model and the measurements is that reading data from memory and writing it back is not free: To compute the matrix-vector product $\boldsymbol{v} = A\boldsymbol{u}$ we need to read the vector $\boldsymbol{u}$, write back the vector $\boldsymbol{v}$ and read the arrays $I$, $R$ and $V$ which represent the matrix $A$ in CSR format. The total amount of data transferred between the CPU and main memory is:
-
-* Read $\boldsymbol{u}$: $n$ double precision (64 bit) floating point numbers
-* Write $\boldsymbol{v}$: $n$ double precision floating point numbers
-* Read value array $V$: $n_{\text{nz}}$ double precision numbers
-* Read row pointer array $I$: $n+1$ integer numbers (32 bit each)
-* Read column index array $J$: $n_{\text{nz}}$ integer numbers (32 bit each)
-
-The total amount of transferred memory is therefore
-
+\begin{frame}
+  \frametitle{Memory references}
+\textbf{Read/write from memory is not free}\\
+Matrix-vector product $\boldsymbol{v} = A\boldsymbol{u}$
+\begin{itemize}
+  \item read the vector $\boldsymbol{u}$\\
+    $n$ double precision (64 bit) floating point numbers
+  \item write back the vector $\boldsymbol{v}$\\
+    $n$ doubles
+  \item read CSR representation of $A$
+  \begin{itemize}
+    \item value array $V$: $n_{\text{nz}}$ doubles
+    \item row pointer array $I$: $n+1$ integer numbers (32 bit each)
+    \item column index array $J$: $n_{\text{nz}}$ integers
+  \end{itemize}
+\end{itemize} 
+The total amount of transferred memory 
 $$
-M_{\text{MatMult}} = \frac{3}{2} n_{\text{nz} + }\frac{5}{2} n + \frac{1}{2}
+M_{\text{MatMult}} = \frac{3}{2} n_{\text{nz} + }\frac{5}{2} n + \frac{1}{2}\;\text{doubles}
 $$
+\end{frame}
 
-double precision numbers. Assuming that it takes $t_{\text{mem}}$ to transfer a single double precision number, this implies that the total time to execute the matrix-vector product is:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+  \frametitle{Memory references}
+  $t_{\text{mem}} = $ time to transfer single double precision number\\[1ex]  
+  Total time for mat-vec $\vec{v}=A\vec{u}$  
 $$
 \begin{aligned}
 T_{\text{MatMult}} &= M_{\text{MatMult}} t_{\text{mem}} + N_{\text{MatMult}} t_{\text{flop}}\\
 &= \left(\frac{3}{2} n_{\text{nz} + }\frac{5}{2} n + \frac{1}{2}\right) t_{\text{mem}} + 2(n_{\text{nz}}+n)t_{\text{flop}}
 \end{aligned}
 $$
-
-Plugging in the measured value of $T_{\text{MatMult}}=73.7\mu\text{s}$ and solving for the unknown $t_{\text{mem}}$ we find
-
+Example
+\begin{itemize}
+  \item $n=16641$, $n_{\text{nz}}=115457$
+  \item measured $T_{\text{MatMult}}=73.7\mu\text{s}$ (PETSc)
+\end{itemize}
+Solve
 $$
 t_{\text{mem}} = 3.2\cdot 10^{-10} \text{s}= 20\times t_{\text{flop}}.
 $$
-
-From this we conclude that it is about an order of magnitude more expensive to transfer a double precision variable from memory than doing the actual computation!
-
-We can also define the **memory bandwidth**, i.e. the number of double precision numbers of bytes that can be transferred per second as
-
+$$
+\text{Cost(memory transfer)} \approx 20\times \text{Cost(FLOP)}
+$$
+\textbf{Memory bandwidth} (data transferred per second)
 $$
 BW = t_{\text{mem}}^{-1} = 3.12 \cdot 10^9 \text{double}/\text{s} = 2.5\cdot 10^{10} \text{byte}/\text{s}
 $$
+\end{frame}
 
-Why did this not matter for the Gaussian elimination solver? The reason is that the number of floating point operations is much larger than the number of memory references in this case: recall the that number of operations to solve a system with Gaussian elimination is $\frac{2}{3}n^3 + \mathcal{O}(n^2)$, where we can neglect the $\mathcal{O}(n^2)$ correction for $n\gg 1$. In addition we need to read the matrix ($n^2$ double precision numbers), read the vector $\boldsymbol{u}$ ($n$ double precision numbers) and write $\boldsymbol{v}$ (also $n$ double precision numbers). Including the cost of memory transfers we find:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+  \frametitle{Gaussian elimination}
+Number of FLOPs 
+$$\frac{2}{3}n^3 + \mathcal{O}(n^2)$$
+\textbf{Memory transfer}
+\begin{itemize}
+\item read matrix ($n^2$ double precision numbers)
+\item read vector $\boldsymbol{u}$ ($n$ double precision numbers)
+\item write $\boldsymbol{v}$ ($n$ double precision numbers)
+\end{itemize}
+Total time
 $$
 \begin{aligned}
-T_{\text{Gauss}} &= \left(n^2 + 2n\right)t_{\text{mem}} + \frac{2}{3}n^3 t_{\text{flop}}\\
-&= \frac{2}{3}n^3 t_{\text{flop}}\left(1 + \frac{n^2 + 2n}{\frac{2}{3}n^3}\frac{t_{\text{mem}}}{t_{\text{flop}}} \right)\\
+T_{\text{Gauss}} &= \left(n^2 + 2n\right)t_{\text{mem}} + \frac{2}{3}n^3 t_{\text{flop}}= \frac{2}{3}n^3 t_{\text{flop}}\left(1 + \frac{n^2 + 2n}{\frac{2}{3}n^3}\frac{t_{\text{mem}}}{t_{\text{flop}}} \right)\\
 &\approx \frac{2}{3}n^3 t_{\text{flop}}\left(1 + \frac{2}{3n}\frac{t_{\text{mem}}}{t_{\text{flop}}} \right)
+\approx \frac{2}{3}n^3 t_{\text{flop}} \quad\text{for $n\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}\approx 20$}
 \end{aligned}
 $$
+\begin{itemize}
+\item Gaussian elemination: \textbf{FLOP-bound}
+\item CSR matrix-vector product (iterative solve): \textbf{memory bandwidth-bound}
+\end{itemize}
+\end{frame}
 
-For $n\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}\approx 20$ we can safely ignore the second term in the bracket and recover the previously used performance model.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We also say that Gaussian elemination if *FLOP-bound* whereas the CSR matrix-vector product and hence the iterative solve with the Richardson+Jacobi iteration is *memory bandwidth-bound*.
-
-### Roofline model
-More generally, consider an algorithm with $N$ FLOPs and $M$ (double precision) memory references and define the **arithmetic intensity**
-
+\begin{frame}
+  \frametitle{Roofline model}
+General algorithm
+\begin{itemize}
+\item $N$ FLOPs
+\item $M$ (double precision) memory references
+\end{itemize}
+\textbf{Arithmetic intensity}
 $$
 q := \frac{N}{M},
 $$
-
-i.e. the number of floating point operations carried out for each double precision number read from memory. Then the runtime is
-
+Runtime
 $$
 \begin{aligned}
-T &= N\cdot t_{\text{flop}} + M\cdot t_{\text{mem}} \\
-&= N\cdot t_{\text{flop}} \left(1 + \frac{1}{q} \frac{t_{\text{mem}}}{t_{\text{flop}}}\right)
+T &= N\cdot t_{\text{flop}} + M\cdot t_{\text{mem}} = N\cdot t_{\text{flop}} \left(1 + \frac{1}{q} \frac{t_{\text{mem}}}{t_{\text{flop}}}\right)
 \end{aligned}
 $$
-
-We can also define the *effective performance*, i.e. the number of floating point operations carried out per second as
-
+Effective performance = FLOPs/s
 $$
 R = \frac{N}{T} = R_{\text{flop}} \frac{1}{1 + \frac{1}{q} \frac{t_{\text{mem}}}{t_{\text{flop}}}} \approx \begin{cases}
 R_{\text{flop}} & \text{for $q\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (compute-bound)}\\
 q\cdot BW & \text{for $q\ll \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (bandwidth-bound)}
-\end{cases}\qquad:eqn:roofline_model
+\end{cases}
 $$
+\end{frame}
 
-This shows that for compute-bound algorithms with high algorithmic intensity $q\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}$ the performance is simply given by the floating point performance $R_{\text{flop}}$. However, for algorithms with low algorithm intensity $q\ll \frac{t_{\text{mem}}}{t_{\text{flop}}}$ the effective performance is limited by the memory bandwith and given by $q\cdot BW$. This is visualised in the following plot (note the logarithmic scale on both axes):
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-![:fig:roofline_model: Roofline model](figures/roofline.svg)
+\begin{frame}
+  \frametitle{Roofline model}
+{\footnotesize
+$$
+R = \frac{N}{T} = R_{\text{flop}} \frac{1}{1 + \frac{1}{q} \frac{t_{\text{mem}}}{t_{\text{flop}}}} \approx \begin{cases}
+R_{\text{flop}} & \text{for $q\gg \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (compute-bound)}\\
+q\cdot BW & \text{for $q\ll \frac{t_{\text{mem}}}{t_{\text{flop}}}$ (bandwidth-bound)}
+\end{cases}
+$$}
+\begin{center}
+\includegraphics[width=0.6\linewidth]{figures/roofline.pdf}
+\end{center}
+\vspace{-2ex}
+Real performance limited by
+\begin{itemize}
+\item cache hierarchy (additional memory references)
+\item additional instructions
+\end{itemize}
+\end{frame}
 
-Since the curve looks like the roof of a building, @fig:roofline_model is also called a *"roofline plot"*.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In reality, the true number of memory references will be larger than what we get from a naive count. This is because only limited amount of data can be held in small hard "caches" close to the compute unit. When operating on larger objects, data needs to be moved back and forth between these caches and the main memory. In addition, our code will contain other instructions on top of the floating point operations. Because of this, the measured performance will in fact lie below the roofline curve defined by @eqn:roofline_model, as indicated by the coloured points in @fig:roofline_model. Good, efficient code (show in green) will be close to the roofline whereas poor, inefficient code (shown in red) will be well below the roofline. 
+\begin{frame}
+  \frametitle{Optimising solver performance}
+  Requirements for fast solver
+  \begin{itemize}    
+    \item Efficient implementation (close to roofline)
+    \item Optimal algorithm
+    \begin{itemize}
+      \item number of iterations
+      \item small cost per iteration
+    \end{itemize} 
+  \end{itemize}
+  Examples
+  \begin{itemize}
+  \item Gaussian elemination
+  \begin{itemize}
+    \item Convergences in single iteration
+    \item Cost per iteration $\mathcal{O}(n^3)$
+  \end{itemize}
+  \item Richardson + Jacobi
+  \begin{itemize}
+  \item Requires multiple iterations
+  \item Cost per iteration $\mathcal{O}(n)$
+  \end{itemize}
+  \item Conjugate gradient method, other preconditioner
+  \begin{itemize}
+  \item Reduce \# iterations
+  \item Higher cost per iteration
+  \end{itemize}
+  \end{itemize}
+\end{frame}
 
-The roofline model is an important graphical tool to assess the optimisation potential of a given piece of computer code.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Comparison of different solvers
-In addition to optimising the code, i.e. getting as close as possible to the roofline in @fig:roofline_model:, it is equally important to pick the most efficient algorithm. From the discussion in the previous section we conclude that the cost of one iteration of the Richardson+Jacobi solver is $\mathcal{O}(n)$, whereas a solve with Gaussian elimination is $\mathcal{O}(n^3)$. Hence, if we can ensure that the number of Richardson iterations is small, the iterative solver will be (significantly) more efficient. The number of iterations might also be reduced by using a different algorithm such as the Conjugate Gradient (CG) method or by applying a more efficient preconditioner. While in the latter case the cost for a single iteration might increase, the reduction in the total number of iterations can still lead to better performance overall.
+\begin{frame}[fragile]
+  \frametitle{Comparison of different solvers}
+  \begin{center}
+  \includegraphics[width=0.6\linewidth]{figures/runtime_sparse.pdf}
+  \end{center}
+  \vspace{-1ex}
+Solver configurations (tolerance {\footnotesize\verb`-ksp_rtol 1E-9`})
+\begin{itemize}
+ \item Gaussian elimination
+  \item Richardson + Jacobi ({\footnotesize\verb`-ksp_type richardson -pc_type jacobi`})
+  \item CG + Jacobi ({\footnotesize\verb`-ksp_type cg -pc_type jacobi`})
+  \item CG + AMG ({\footnotesize\verb`-ksp_type cg -pc_type hypre`})
+\end{itemize}
+\end{frame}
 
-In @fig:runtime_solver we compare the time spent in the linear solve for four different solver configurations:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-* **Gaussian elimination**
-* **Richardson + Jacobi** (`-ksp_type richardson -pc_type jacobi`)
-* **CG + Jacobi** (`-ksp_type cg -pc_type jacobi`)
-* **CG + AMG** (`-ksp_type cg -pc_type hypre`)
-
-For the iterative solvers the preconditioned residual was reduced by nine orders of magnitude (`-ksp_rtol 1E-9`). The final setup uses a so-called algebraic multigrid (AMG) method, which a particularly efficient preconditioner for elliptic problem such as the one in @eqn:pde_continuum. More specifically, the [BoomerAMG method](https://hypre.readthedocs.io/en/latest/solvers-boomeramg.html#boomeramg) from the [hypre library](https://computing.llnl.gov/projects/hypre-scalable-linear-solvers-multigrid-methods) is used. As @fig:runtime_solver shows, the performance differs significantly between the different setups.
-
-![:fig:runtime_solver: Runtime for solver](figures/runtime_sparse.svg)
-
-While it is extremely efficient for small problems, Gaussian elimination incurs a cost that grows in proportion to $n_{\text{dof}}^3$, so the method in not competitive for very large problems. Using the Richardson iteration or CG with the Jacobi preconditioner leads to much better performance, but the runtime increases slightly faster than linear in the problem size for both preconditioners. CG is much more efficient than the Richardson iteration. The optimal preconditioner for large problem sizes is AMG: here the cost grows in proportion to $n_{\text{dof}}$, which is typical for multigrid methods.
-
-### Number of solver iterations
-To understand the performance of the different iterative solver setups in @fig:runtime_solver, observe that the total time is given the product of the number of iterations $n_{\text{iter}}$ and the time per iteration $t_{\text{iter}}, i.e.
-
+\begin{frame}
+  \frametitle{Number of solver iterations}
+\textbf{Total time}
 $$
 T_{\text{solve}} = n_{\text{iter}}\cdot t_{\text{iter}}.
 $$
+\begin{center}
+\begin{tabular}{cccc}
+  \hline
+ $n_{\text{dof}}$ & Ric. + Jacobi & CG + Jacobi & CG + AMG\\
+ \hline\hline
+ 25 & 3101 & 11 & 3 \\
+ 81 & 7959 & 23 & 5 \\
+ 289 & 14914 & 49 & 5 \\
+ 1089 & 32137 & 97 & 6 \\
+ 4225 & 33888 & 187 & 6 \\
+ 16641 & 37030 & 232 & 6 \\
+ 66049 & 129815 & 450 & 6 \\
+ 263169 & 447667 & 876 & 6 \\
+\hline
+\end{tabular}
+\end{center}
+\textbf{Observations}
+\begin{itemize}
+  \item Richardson + Jacobi: $n_{\text{iter}}\propto n_{\text{dof}}$
+  \item CG + Jacobi: $n_{\text{iter}}\propto n_{\text{dof}}$
+  \item CG + AMG $n_{\text{iter}} = \text{constant}$
+\end{itemize}
+\end{frame}
 
-To understand the growth in runtime shown in @fig:runtime_solver, let us look at the number $n_{\text{iter}}$ of solver iterations required to reduce the (preconditioned) residual by a factor $10^{-9}$, as shown in the following table:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-| $n_{\text{dof}}$ | richardson + jacobi |cg + jacobi |cg + AMG (hypre) |
-| :----: | :----: | :----: | :----: |
-| 25 | 3101 | 11 | 3 |
-| 81 | 7959 | 23 | 5 |
-| 289 | 14914 | 49 | 5 |
-| 1089 | 32137 | 97 | 6 |
-| 4225 | 33888 | 187 | 6 |
-| 16641 | 37030 | 232 | 6 |
-| 66049 | 129815 | 450 | 6 |
-| 263169 | 447667 | 876 | 6 |
+\begin{frame}
+  \frametitle{Time per iteration}
+  \begin{minipage}{0.5\linewidth}
+\begin{center}
+  \includegraphics[width=\linewidth]{figures/time_per_iteration_sparse.pdf}\\
+  {\footnotesize time per iteration $t_{\text{iter}}$}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}{0.39\linewidth}
+\begin{center}
+  \includegraphics[width=\linewidth]{figures/runtime_sparse.pdf}\\
+  {\footnotesize total time}
+  \end{center}
+\end{minipage}\\[2ex]
+\textbf{Observations}
+\begin{itemize}
+\item $t_{\text{iter}}\propto n_{\text{dof}}$ 
+\item $t_{\text{iter}}(\text{CG+AMG}) \approx 10\times t_{\text{iter}}(\text{CG+Jacobi})$ 
+\item CG+AMG fastest due to small number of iterations
+\end{itemize}.
+\end{frame}
 
-For the Richardson method, the number of iterations grows extremely rapidly, approximately in proportion to the problem size. This growth is much weaker for the CG iteration with the same Jacobi preconditioner. For the hypre AMG preconditioner the number of iterations remains constant for larger problems.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Time per iteration
-The time per iteration $t_{\text{iter}}$ is shown in the following figure:
+\section{Parallel Computing}
 
-![:fig:time_per_iteration: Time per iteration](figures/time_per_iteration_sparse.svg)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In all cases $t_{\text{iter}}$ is proportional to the problem size. Although one iteration with the AMG preconditioner is more than one magnitude larger that for the Jacobi preconditioner, this is more than compensated by the fact that CG with the AMG preconditioner requires substantially fewer iterations to converge. This explains the superior performance of CG+AMG observed in @fig:runtime_solver.
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
 
-For the Richardson iteration and CG with Jacobi preconditioner it is also very easy to understand why $t_{\text{iter}}\propto n_{\text{dof}}$: the fundamental operations required in these algorithms are sparse matrix-vector products, scaling and addition of vectors and dot-product; the Jacobi preconditioner also requires one FLOP per vector entry. The cost of each of these operations is proportional to the problem size $n_{\text{dof}}$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The analysis of the AMG preconditioner is more complicated and beyond the scope of this course.
+\begin{frame}
+  \frametitle{}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Parallel computing
 

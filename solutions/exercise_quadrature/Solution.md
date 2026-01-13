@@ -5,7 +5,7 @@
 ----
 ## Implementation
 
-The implementation is straightforward: we construct a class `ThreePointQuadratureReferenceTriangle`, which is derived from the abstract base class `Quadrature` in [fem/quadrature.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py). In the initialisation method, we set the nodes and associated weights:
+The implementation is straightforward: we construct a class `ThreePointQuadratureReferenceTriangle`, which is derived from the abstract base class `Quadrature` in [fem/quadrature.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/quadrature.py). In the initialisation method, we set the nodes and associated weights:
 
 ```Python
 self._nodes = np.asarray([[1 / 6, 1 / 6], [2 / 3, 1 / 6], [1 / 6, 2 / 3]])

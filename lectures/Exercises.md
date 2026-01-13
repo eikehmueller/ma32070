@@ -555,7 +555,7 @@ from fem.quadrature import (
     GaussLegendreQuadratureReferenceTriangle,
 )
 ```
-* The method `plot_solution(u_numerical, u_exact, element, filename)` in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
+* The method `plot_solution(u_numerical, u_exact, element, filename)` in [fem/utilities.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/utilities.py) can be used to visualise the solution and the error; the result is written to a file. Look at the documentation of the method to understand how it is used.
 * You can use the Python implementations of the functions $u_{\text{exact}}$, $f$ and $g$ given below. Note that the argument `x` can be a vector representing a single two-dimensional point or an array of shape $2\times n$ which represents a collection of $n$ two-dimensional points.
 
 ```Python
@@ -855,7 +855,7 @@ Produce a table which shows the time spent in the following parts of the code
 * Assembly of right-hand side $\boldsymbol{b}^{(h)}$ in `assemble_rhs()`
 * Solution of the linear system $A^{(h)}\boldsymbol{u}^{(h)}=\boldsymbol{b}^{(h)}$ with `np.linalg.solve()`
   
-as a function of the number of unknowns $n_{\text{dof}}$, which can be obtained as `fs.ndof` if `fs` is an instance of `FunctionSpace`. In the above main program, the `measure_time` decorator defined in [fem.utilities](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) is used to time specific components of the code.
+as a function of the number of unknowns $n_{\text{dof}}$, which can be obtained as `fs.ndof` if `fs` is an instance of `FunctionSpace`. In the above main program, the `measure_time` decorator defined in [fem.utilities](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/utilities.py) is used to time specific components of the code.
 
 How does the time spent in different parts of the code increase as a function of $n_{\text{dof}}$?
 
@@ -1063,7 +1063,7 @@ and preconditioners
 
 There should $3\times 5=15$ different solver/preconditioner combinations in total, do all of these work as expected? 
 
-In addition to the number of iterations, also measure the time spent in the solve step by using the `meausure_time` decorator from [fem.utilities](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py):
+In addition to the number of iterations, also measure the time spent in the solve step by using the `meausure_time` decorator from [fem.utilities](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/utilities.py):
 ```Python
 from fem.utilities import measure_time
 

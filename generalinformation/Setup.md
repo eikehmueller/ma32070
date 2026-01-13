@@ -13,7 +13,7 @@ The crucial ingredients are
 * a working **Python** environment
 * several **Python packages** for numerical computations in particular the [petsc4py](https://petsc.org/release/petsc4py/) numerical linear algebra library
 * a modern code **editor** such as [VSCode](https://code.visualstudio.com/)
-* the MA32070 [**finite element library**](https://github.com/eikehmueller/finiteelements)
+* the MA32070 [**finite element library**](https://github.bath.ac.uk/em459/finiteelements)
 
 At the beginning of the course, please work through the two steps below to get set up. Once you have done this, review the section on the directory layout for the course material.
 
@@ -142,7 +142,7 @@ git version 2.43.0
 Change to the `ma32070/` directory and then run the following commands:
 
 ```
-git clone https://github.com/eikehmueller/finiteelements.git
+git clone https://github.bath.ac.uk/em459/finiteelements.git
 cd finiteelements
 python3 -m pip install --editable .
 python -m pytest -v

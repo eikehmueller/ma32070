@@ -855,7 +855,7 @@ $$
 ## Implementation
 
 ### Abstract base class
-Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class `FiniteElement` in in [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py), which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. Furthermore, any code that later uses a concrete finite element implementation will "know" which functionality it is allowed to use.
+Since all finite elements share the common functionality that is encapsulated in Ciarlet's definition, we start by writing down an abstract base class `FiniteElement` in in [`fem/finiteelement.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/finiteelement.py), which establishes an interface that all concrete implementations of a finite element need to satisfy. The advantage of this approach is that we do not have to duplicate code that can be shared between all finite element implementation. Furthermore, any code that later uses a concrete finite element implementation will "know" which functionality it is allowed to use.
 
 More specifically, each finite element should provide the following functionality:
 
@@ -875,12 +875,12 @@ Any concrete implementations of finite elements are obtained by subclassing the 
 * `tabulate(zeta)` to tabulate the values of the basis functions at a given set of points
 * `tabulate_gradient(zeta)` to tabulate the gradients of the basis functions for a given set of points
 
-The [`finiteelements`](https://github.com/eikehmueller/finiteelements) library provides the following implementations:
+The [`finiteelements`](https://github.bath.ac.uk/em459/finiteelements) library provides the following implementations:
 
-* The bi-linear element is implemented as the class `LinearElement` in [`fem/linearelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py)
-* The general polynomial element is implemented as the class `PolynomialElement` in [`fem/polynomialelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/polynomialelement.py) (this class will be made available later in the semester)
+* The bi-linear element is implemented as the class `LinearElement` in [`fem/linearelement.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/linearelement.py)
+* The general polynomial element is implemented as the class `PolynomialElement` in [`fem/polynomialelement.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/polynomialelement.py) (this class will be made available later in the semester)
 
-If the [`finiteelements`](https://github.com/eikehmueller/finiteelements) library has been installed, these elements can be imported as follows:
+If the [`finiteelements`](https://github.bath.ac.uk/em459/finiteelements) library has been installed, these elements can be imported as follows:
 ```python
 from fem.linearelement import LinearElement
 from fem.polynomialelement import PolynomialElement
@@ -999,14 +999,14 @@ $$
 ## Implementation in Python
 
 ### Abstract base class
-All quadrature rules are characterised by their weights and points. We therefore implement them as subclasses of an abstract base class `Quadrature` (in [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py)) which has the following abstract properties: 
+All quadrature rules are characterised by their weights and points. We therefore implement them as subclasses of an abstract base class `Quadrature` (in [`fem/quadrature.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/quadrature.py)) which has the following abstract properties: 
 
 * `nodes` the quadrature nodes $\{\zeta^{(q)}\}_{q=0}^{n_q-1}$, represented by an array of shape $n_q\times 2$
 * `weights` the quadrature weights $\{w_q\}_{q=0}^{n_q-1}$, represented by an array of length $n_q$
 * `degree_of_precision` degree of precision, i.e. the highest polynomial degree that can be integrated exactly
 
 ### Concrete implementations
-The file [`fem/quadrature.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/quadrature.py) also contains specific subclasses
+The file [`fem/quadrature.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/quadrature.py) also contains specific subclasses
 
 * A quadrature rule $\mathcal{Q}^{(\text{GL},\mathcal{C})}_{n_q}$ over line segments based on the Gauss-Legendre points can be implemented with `GaussLegendreQuadratureLineSegment(v_a, v_b, npoints)`. The following parameters are passed to the constructor:
     - `v_a` the start point $a$ of the line segment
@@ -1620,7 +1620,7 @@ $$
 Again, convince yourself that these matrices are consistent with the conditions we imposed on the numbering.
 
 ### Implementation
-The class `Mesh` in [fem/mesh.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/mesh.py) encodes the mesh topology. It has the following members:
+The class `Mesh` in [fem/mesh.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/mesh.py) encodes the mesh topology. It has the following members:
 
 * properties `ncells`, `nfacets` and `nvertices` which give the total number of cells ($=n_{\text{cell}}$), facets ($=n_{\text{facet}}$) and vertices ($=n_{\text{vertex}}$) respectively
 * `cell2facet`: a nested list such that `cell2facet[alpha][beta]` $= I^{K\rightarrow F}_{\alpha\beta}$
@@ -1630,7 +1630,7 @@ The class `Mesh` in [fem/mesh.py](https://github.com/eikehmueller/finiteelements
 
 The class also contains a method `refine(nref)` which can be used to construct a refined mesh from a given mesh by sub-dividing each triangle into four smaller triangles.
 
-In [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py) two factory classes are defined which returns specific meshes:
+In [fem/utilitymeshes.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/utilitymeshes.py) two factory classes are defined which returns specific meshes:
 
 * `rectangle_mesh(Lx=1.0, Ly=1.0, nref=0)` is a triangulation of the domain $[0,L_x]\times[0,L_y]$ with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}+1}$
 * `triangle_mesh(corners=None, nref=0)` is a triangulation of the domain triangle defined by the array `corners` (if this is `None`, the reference triangle us used) with a given number of refinements $n_{\text{ref}}$. The number of cells is $n_{\text{cells}} = 2^{n_{\text{ref}}}$
@@ -1693,7 +1693,7 @@ Conversely, on each cell with index $\alpha$ we need to map the $\ell$-th local 
 
 The map $(\alpha,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
 
-1. For the given $\ell$, we first work out the entity-type $E$ (cell, facet or vertex) it is associated with, as well as the index $\rho$ of this entity on the reference triangle and the index $j$ of the dof on that reference entity. Recall that for the finite element we have the dof-map $\mu_{\text{dof}}$ that $\ell = \mu_{\text{dof}}(E,\rho,j)$, so we can obtain $E$, $\rho$ and $j$ from the inverse of this map, which is implemented as the `inverse_dofmap()` method in the `FiniteElement` base class in [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py).
+1. For the given $\ell$, we first work out the entity-type $E$ (cell, facet or vertex) it is associated with, as well as the index $\rho$ of this entity on the reference triangle and the index $j$ of the dof on that reference entity. Recall that for the finite element we have the dof-map $\mu_{\text{dof}}$ that $\ell = \mu_{\text{dof}}(E,\rho,j)$, so we can obtain $E$, $\rho$ and $j$ from the inverse of this map, which is implemented as the `inverse_dofmap()` method in the `FiniteElement` base class in [`fem/finiteelement.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/finiteelement.py).
 2. Next, we map the tuple $(E,\rho,j)$ to the global dof index $\ell_{\text{global}}$ taking into account the arrangement of unknowns described above:
    1. If $E=\text{vertex}$: $\ell_{\text{global}} = \gamma\cdot \nu_{\text{vertex}}+j$ where $\gamma=I^{K\rightarrow v}_{\alpha\rho}$ is the global index of the vertex with local index $\rho$.
    2. If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}}+\widetilde{j}$ where $\beta=I^{K\rightarrow F}_{\alpha\rho}$ is the global index of the facet with local index $\rho$. Note that the orientation of the facet does not necessarily match the orientation on the reference element $\widehat{K}$. To take this into account, set $\widetilde{j}=j$ if the orientations agree and set $\widetilde{j} = \nu_{\text{facet}}-1-j$ otherwise.
@@ -1703,13 +1703,13 @@ The map $(\alpha,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
 
 ### Function spaces
 
-The necessary functionality is implemented in the `FunctionSpace` class in [`fem/functionspace.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/functionspace.py). The initialiser is passed a `mesh` and a `finiteelement` and the class provides the following functionality:
+The necessary functionality is implemented in the `FunctionSpace` class in [`fem/functionspace.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/functionspace.py). The initialiser is passed a `mesh` and a `finiteelement` and the class provides the following functionality:
 
 * The property `ndof` contains the total number of unknowns in the function space
 * The method `local2global(self, alpha, ell)` implements the map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ described above. If the parameter `ell` is a single integer index in the range $0,1,\dots,\nu-1$, the method returns a single number $\ell_{\text{global}}$. If `ell` is an [iterable](https://docs.python.org/3/glossary.html#term-iterable) (such as a list `[0,3,4]` or `range(1,6,2)`) the global index will be computed for each local index and the method returns a list.
 
 ### Functions
-To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a numpy array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h \in \mathcal{V}_h$ given by
+To store functions in a given function space, the class `Function` in [`fem/function.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/function.py) is provided. This initialiser of this class gets passed a `FunctionSpace` object, which it stores together with a numpy array `function.data` that contains the vector $\boldsymbol{u}^{(h)}$. This information then allows the reconstruction of the function $u_h \in \mathcal{V}_h$ given by
 
 $$
 u_h(x) = \sum_{\ell_{\text{global}}=0}^{N-1} u^{(h)}_{\ell_{\text{global}}} \Phi^{(h)}_{\ell_{\text{global}}}(x)
@@ -1791,13 +1791,13 @@ $$
 In this expression $\ell^\times_{\text{global}}(\alpha,\ell^\times)$ is the global dof-index that corresponds to the local dof-index $\ell^\times$ in the cell with index $\alpha$.
 
 ## Implementation in Python
-Vector-valued finite elements are implemented in the class `VectorElement` in [`fem/vectorelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/vectorelement.py). This is a subclass of the abstract base class `FiniteElement` (recall [`fem/finiteelement.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py)). In its constructor it gets passed a `FiniteElement` which is used to represent each of its components. The class `VectorElement` then uses the underlying scalar-valued finite element to implement the appropriate methods for tabulating the degrees of freedom and (gradients of) the basis functions:
+Vector-valued finite elements are implemented in the class `VectorElement` in [`fem/vectorelement.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/vectorelement.py). This is a subclass of the abstract base class `FiniteElement` (recall [`fem/finiteelement.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/finiteelement.py)). In its constructor it gets passed a `FiniteElement` which is used to represent each of its components. The class `VectorElement` then uses the underlying scalar-valued finite element to implement the appropriate methods for tabulating the degrees of freedom and (gradients of) the basis functions:
 
 * `tabulate_dofs(fhat)` is passed a vector-valued function $\widehat{f}$, and returns the vector $\left(\lambda_0(\widehat{f}),\lambda_1(\widehat{f}),\lambda_2(\widehat{f}),\dots,\lambda_{\nu-1}(\widehat{f})\right)^\top\in \mathbb{R}^{\nu}$.
 * `tabulate()` is passed an array of shape $n\times 2$ of points $\{\zeta^{(r)}\}_{r=0}^{n-1}$ and returns an array $T^\times$ of shape $n\times \nu\times 2$ with the basis function evaluations at these points; if only a single point is passed, it returns an array of shape $\nu\times 2$
 * `tabulate_gradient()` is passed an array of shape $n\times 2$ of points $\{\zeta^{(r)}\}_{r=0}^{n-1}$ and returns an array $T^{\times\partial}$ of shape $n\times \nu\times 2\times 2$ with the basis function gradient evaluations at these points; if only a single point is passed, it returns an array of shape $\nu\times 2\times 2$ 
 
-Looking back at the `Mesh` class in [`fem/mesh.py`](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/mesh.py), observe that it has a property `mesh.coordinates`, which is a `Function` on a `FunctionSpace` over `VectorElements`. This will allow us to extract the mesh geometry.
+Looking back at the `Mesh` class in [`fem/mesh.py`](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/mesh.py), observe that it has a property `mesh.coordinates`, which is a `Function` on a `FunctionSpace` over `VectorElements`. This will allow us to extract the mesh geometry.
 
 # Global assembly
 We are now ready to assemble the stiffness matrix $A^{(h)}$ and the right hand side vector $\boldsymbol{b}^{(h)}$ which define the linear system
@@ -1891,7 +1891,7 @@ ell_global = fs.local2global(alpha,range(ndof))
 ```
 In this expression `fs` is a `FunctionSpace` object and `ndof` is the number $\nu$ of local unknowns in each cell.
 
-Global assembly of the right hand side vector $\boldsymbol{b}^{(h)}$ is implemented in the function `assemble_rhs(f, r, quad)` in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). This method gets passed a Python function $f$, a `CoFunction` object `r` to hold the result and a quadrature rule `quad`.
+Global assembly of the right hand side vector $\boldsymbol{b}^{(h)}$ is implemented in the function `assemble_rhs(f, r, quad)` in [fem/assembly.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/assembly.py). This method gets passed a Python function $f$, a `CoFunction` object `r` to hold the result and a quadrature rule `quad`.
 
 ## Assembly of LHS matrix
 To assemble the stiffness matrix, we again split the integral into a sum of integrals over grid cells $K$:
@@ -1960,7 +1960,7 @@ To insert the entries of the local stiffness matrix $A^{(h),\text{local}}$ into 
 A_h[np.ix_(ell_global, ell_global)] += A_h_local[:,:]
 ```
 
-Global assembly of the stiffness matrix $A^{(h)}$ is implemented in the function `assemble_lhs(fs, quad, kappa, omega)` in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function gets passed a function space `fs`, quadrature rule `quad` and values of the constants $\kappa$ and $\omega$.
+Global assembly of the stiffness matrix $A^{(h)}$ is implemented in the function `assemble_lhs(fs, quad, kappa, omega)` in [fem/assembly.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/assembly.py). The function gets passed a function space `fs`, quadrature rule `quad` and values of the constants $\kappa$ and $\omega$.
 
 # Numerical experiments
 Let us now use the code we have written for far to solve @eqn:pde_continuum with the finite element method. We consider the following manufactured solution
@@ -1971,14 +1971,14 @@ $$
 
 in the domain $\Omega = [0,1]\times[0,1]$. It is easy to see that this satisfies the boundary condition $n\cdot \nabla u(x) = 0$ on $\partial\Omega$ and it satisfies the reaction diffusion equation in @eqn:pde_continuum if the right hand side is chosen to be $f(x) = \left((s_0^2 + s_1^2) \pi^2 \kappa + \omega\right)u(x)$; in the following we set $\kappa = 0.9$, $\omega = 0.4$ and $s_0=2$, $s_1=4$.
 
-For the numerical experiments we choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `rectangle_mesh` in [fem/utilitymeshes.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilitymeshes.py).
+For the numerical experiments we choose the piecewise linear element implemented as `LinearElement` in [fem/linearelement.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/linearelement.py) and the rectangle mesh `rectangle_mesh` in [fem/utilitymeshes.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/utilitymeshes.py).
 
-We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$; as pointed out above, both functions are defined in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain the dof-vector $\boldsymbol{u}^{(h)}$ which defines the numerical solution $u_h\in \mathcal{V}_h$ according to @eqn:linear_algebra_problem.
+We use the function `assemble_rhs()` to construct the vector $\boldsymbol{b}^{(h)}$ and `assemble_lhs()` to assemble $A^{(h)}$; as pointed out above, both functions are defined in [fem/assembly.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/assembly.py). Solving $A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}$, we obtain the dof-vector $\boldsymbol{u}^{(h)}$ which defines the numerical solution $u_h\in \mathcal{V}_h$ according to @eqn:linear_algebra_problem.
 
-The full code can be found in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
+The full code can be found in [driver.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/driver.py).
 
 ## Visualisation of solution and error
-To visualise the solution and the error, [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u_h$, i.e. an instance `u_h` of the `Function` class, which is evaluated at the points of a structured rectangular grid which covers the domain (this grid is only used for visualisation, it has nothing to do with the underlying mesh that defines the finite element space). The $(n_x+1)(n_y+1)$ vertices of this grid are given by
+To visualise the solution and the error, [fem/utilities.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/utilities.py) provides a method `grid_function(u_h,nx=100,ny=100)`. This is passed a finite element function $u_h$, i.e. an instance `u_h` of the `Function` class, which is evaluated at the points of a structured rectangular grid which covers the domain (this grid is only used for visualisation, it has nothing to do with the underlying mesh that defines the finite element space). The $(n_x+1)(n_y+1)$ vertices of this grid are given by
 
 $$
 x_{i,j} = \begin{pmatrix}
@@ -2018,13 +2018,13 @@ As @fig:solution_and_error_cubic demonstrates, using cubic elements on the same 
 ## Performance
 To obtain a more accurate solution we need to increase the resolution, which will make the computation more expensive. To expore this, let us now have a closer look at how the runtime of the code changes with the problem size. Usually, most of the time is spent executing a small number of lines.
 
-To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows
+To measure the time spent in some part of the code we use the `measure_time(label)` decorator defined in [fem/utilities.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/utilities.py). This can be used as follows
 
 ```Python
 with measure_time("some_code"):
     # Code to measure
 ```
-Have a look at [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py) where the time spent in the following components is measured:
+Have a look at [driver.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/driver.py) where the time spent in the following components is measured:
 
 * Assembly of right hand side $\boldsymbol{b}^{(h)}$ with `assemble_rhs()`
 * Assembly of stiffness matrix $A^{(h)}$ with `assemble_lhs()`
@@ -2494,7 +2494,7 @@ For this observe that for the row of $A^{(h)}$ with index $\ell_{\text{global}}$
 12. $~~~~$ Set $R_{\ell_{\text{global}}+1} = R_{\ell_{\text{global}}} +\left|\mathcal{J}_{\ell_{\text{global}}}\right|$ 
 13. **end do**
 
-In [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py) this is implemented as the function `sparsity_lhs(fs)` which gets passed an instance `fs` of the `FunctionSpace` class and returns the arrays $J$ and $R$.
+In [fem/assembly.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/assembly.py) this is implemented as the function `sparsity_lhs(fs)` which gets passed an instance `fs` of the `FunctionSpace` class and returns the arrays $J$ and $R$.
 
 ## CSR matrix assembly in PETSc
 When using PETSc, the stiffness matrix $A^{(h)}$ can be assembled as follows. First, before iterating over the mesh, we need to work out the sparsity structure and construct the row-pointers `row_start` and column indices `col_indices` with the above algorithm. Assuming that the function space object is `fs`, this can be done with the method `sparsity_lhs(fs)`. We also need to construct the `stiffness_matrix` as a `PETSc.Mat()` object in CSR format which is initialised with the `row_start` and `col_indices` arrays returned by `sparsity_lhs(fs)`:
@@ -2522,9 +2522,9 @@ Finally, after iterating over the mesh, we need to instruct PETSc to assemble th
 stiffness_matrix.assemble()
 ```
 
-The code for assembly of the stiffness matrix can be found in [fem/assembly.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/assembly.py). The function `assemble_lhs_sparse(fs, quad, kappa, omega)` gets passed an instance `fs` of the `FunctionSpace` class, a quadrature rule and the constants $\kappa$, $\omega$ that define the PDE. It returns the assembled stiffness matrix $A^{(h)}$ as a PETSc CSR matrix.
+The code for assembly of the stiffness matrix can be found in [fem/assembly.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/assembly.py). The function `assemble_lhs_sparse(fs, quad, kappa, omega)` gets passed an instance `fs` of the `FunctionSpace` class, a quadrature rule and the constants $\kappa$, $\omega$ that define the PDE. It returns the assembled stiffness matrix $A^{(h)}$ as a PETSc CSR matrix.
 
-The full code for solving the finite element problem with PETSc matrices and solvers can be found in [driver_sparse.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver_sparse.py), which should be compared to the non-PETSc version in [driver.py](https://github.com/eikehmueller/finiteelements/blob/main/src/driver.py).
+The full code for solving the finite element problem with PETSc matrices and solvers can be found in [driver_sparse.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/driver_sparse.py), which should be compared to the non-PETSc version in [driver.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/driver.py).
 
 To run the code for a specific solver and preconditioner we again pass PETSc solver options via the command line, for example:
 

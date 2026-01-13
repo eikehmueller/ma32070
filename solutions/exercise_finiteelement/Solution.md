@@ -6,7 +6,7 @@
 
 # Implementation
 
-The class `CubicElement` is a subclass of the abstract `FiniteElement` class, which needs to be imported from [fem/finiteelement.py](https://github.com/eikehmueller/finiteelements/blob/main/src/fem/finiteelement.py):
+The class `CubicElement` is a subclass of the abstract `FiniteElement` class, which needs to be imported from [fem/finiteelement.py](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/finiteelement.py):
 
 ```Python
 from fem.finiteelement import FiniteElement

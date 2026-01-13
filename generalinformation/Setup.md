@@ -148,6 +148,8 @@ python3 -m pip install --editable .
 python -m pytest -v
 ```
 
+You might have to enter your university username and password to run the `git clone` command.
+
 This will create a subdirectory `ma32070/finitelements`.
 
 If everything worked correctly, you can use functionality from this library in your own code. For example, you could write the following Python script (in any directory):

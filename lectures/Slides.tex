@@ -4463,7 +4463,7 @@ $$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Parallel computing
+# Parallel computing 
 
 ## The need for parallel computing
 To solve larger and larger problems in Scientific Computing, we need ever stronger computers. For example, the Met Office routinely solves sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$ unknowns to simulate the evolution of the state of the atmospheric. Thousands of these solves are required for a typical forecast of tomorrow's weather. Extrapolating the results in @fig:runtime_solver, a single solve with $n_{\text{dof}}=10^9$ unknowns will take about 15 minutes even if the optimal solver/preconditioner configuration is used, so the total time to generate the forecast would exceed $1000\times 15\text{min} = 10.4\text{days}$! Clearly, this is not very useful.

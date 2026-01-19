@@ -4454,54 +4454,134 @@ $$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
-  \frametitle{}
+  \frametitle{The need for parallel computing}
+  Solve larger and larger problems $\Rightarrow$ more powerful computers\\[1ex]
+  \textbf{Example} Met Office weather forecast
+  \begin{itemize}
+    \item Simulate evolution of state of the atmospheric
+    \item Solve sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$
+    \item 1000's of solves required for a typical 24h forecast 
+  \end{itemize}
+  \begin{center}
+  \includegraphics[width=0.35\linewidth]{figures/runtime_sparse.pdf}
+  \end{center}
+  \begin{itemize}
+    \item Optimal solver: $n_{\text{dof}}=0.26\cdot10^{6}$ $\Rightarrow$ $0.315 \text{s}$
+  \item $n_{\text{dof}}=10^9$ unknowns $\Rightarrow$ $\frac{10^9}{0.26\cdot10^{6}}\times 0.3125\text{s} > 15 \text{min}$ 
+  \item total time (solve only) $> 1000\times 15\text{min} = 10.4\text{days} \gg 24\text{hours}$
+  \end{itemize}
+  \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Speedup through parallelisation}
+  So far: all calculations performed by \textbf{single processor}\\[2ex]
+  \textbf{Strategy}
+  \begin{itemize}
+    \item Split the problem into smaller chunks
+    \item Solve each subproblem with a different processor \textbf{in parallel}
+  \end{itemize}
+  \begin{center}
+  \includegraphics[width=0.75\linewidth]{figures/partitioned_mesh.pdf}
+  \end{center}
+  \textbf{Anticipated speedup}
+  \begin{center}
+  $P$ processors $\Rightarrow$ $P$ times faster code
+  \end{center}
+  \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Parallel computers}
+  
+  \textbf{Modern supercomputers}
+  \begin{itemize}
+  \item Millions of compute cores
+  \item perform $>10^{18}$ floating point operations per second (\textbf{ExaFLOP} performance)
+  \item $10^6\times$ faster than our computer $R=6.3\cdot 10^{10}$ FLOPs
+  \end{itemize}
+  \href{https://top500.org/lists/top500/list/2025/06}{top500 list of supercomputers}\\[1ex]
+  \textbf{Desktop computers, mobile phones}
+  \begin{itemize} 
+    \item typically have multiple processing units
+  \end{itemize}
+  \begin{center}
+  $\Rightarrow$ need to exploit parallelism
+  \end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\end{document}
+\begin{frame}
+  \frametitle{Parallelisation}
+  \textbf{Example:} domain decomposition for weather forecasting
+  \begin{center}
+  \includegraphics[width=0.75\linewidth]{figures/partitioned_mesh.pdf}
+  \end{center}
+  \begin{itemize}
+     \item Distribute (meshed) domain between 4 processors 
+     \item Each processor: solve equations of atmospheric fluid dynamics in parallel in its own local domain.
+  \end{itemize}
+  \begin{center}
+  $\Rightarrow$ expect $4\times$ speedup
+  \end{center}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Parallel computing 
+\begin{frame}
+  \frametitle{Parallelisation}
+  \textbf{Example:} domain decomposition for weather forecasting
+  \begin{center}
+  \includegraphics[width=0.75\linewidth]{figures/partitioned_mesh.pdf}
+  \end{center}
+  \textbf{Challenges}
+  \begin{itemize}
+    \item Computations in different subdomains not independent
+    \item BCs for "red" domain depend on computations in other subdomains
+    \item Processors exchange information at regular intervals
+  \end{itemize}
+\end{frame}
 
-## The need for parallel computing
-To solve larger and larger problems in Scientific Computing, we need ever stronger computers. For example, the Met Office routinely solves sparse linear systems of equations with $n_{\text{dof}}=10^6-10^9$ unknowns to simulate the evolution of the state of the atmospheric. Thousands of these solves are required for a typical forecast of tomorrow's weather. Extrapolating the results in @fig:runtime_solver, a single solve with $n_{\text{dof}}=10^9$ unknowns will take about 15 minutes even if the optimal solver/preconditioner configuration is used, so the total time to generate the forecast would exceed $1000\times 15\text{min} = 10.4\text{days}$! Clearly, this is not very useful.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-So far, we have implicitly assumed that all calculations are performed by a single processor. We can speed up our code significantly if it is possible to somehow split the problem into smaller chunks, each of which is solved by a different processor in parallel. In theory, running the code on $P$ processors would then make it $P$ times faster. Modern supercomputers have millions of compute cores and can perform more than $10^{18}$ floating point operations per second (this is also known as one *ExaFLOP* of performance). Recall that we estimated that our computer can do $R=6.3\cdot 10^{10}$ FLOPs per second, so an exascale is several million times faster! Have a look at the [top500 list of supercomputers](https://top500.org/lists/top500/list/2025/06/), which is updated twice a year and ranks the fastest computers across the world.
+\begin{frame}
+  \frametitle{Distributed memory parallelism}
+  Conceptual approach to parallelisation
+  \begin{center}
+\includegraphics[width=0.5\linewidth]{figures/communication.pdf}
+\end{center}
+\begin{enumerate}
+\item Each processor "owns" local part of the global problem
+\begin{itemize}
+  \item store \textbf{local data}\\
+  ${}\qquad{}$ {\footnotesize $\Rightarrow$ mitigate memory constraints $\Rightarrow$ solve larger problems}
+  \item perform computations on owned data
+\end{itemize}
+\item Processors communicate by \textbf{exchanging messages}
+\end{enumerate}
+\begin{description}
+  \item[Mathematically]: \textbf{domain decomposition}
+  \item[Computationally]: \textbf{distributed memory parallelism}
+\end{description}
+Other parallelisation approaches (not covered here):\\Shared memory, Threading, Vectorisation, mixed, \dots
+\end{frame}
 
-Even desktop computers and mobile phones now typically have multiple processing units, so it is imperative to exploit this additional computing power in our implementation.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Example: domain decomposition
-To explain one possible approach to parallelising our code across multiple processor, consider a weather forecast for the UK. Assume that we have covered the computational domain with a finite element mesh, as shown schematically in @fig:partitioned_mesh (of course, the real mesh would be much finer). The mesh is distributed between four processors indicated by different colours. Each processor will solve the equations of atmospheric fluid dynamics in parallel in its own local domain. Since each of these subdomains is only about a quarter of the size of the global domain, we would expect the code to be approximately four times faster.
-
-![:fig:partitioned_mesh: Partitioned mesh of a rectangular domain covering the UK](figures/partitioned_mesh.svg)
-
-However, there is a problem: the computations in the different subdomains are not independent. For example, the boundary conditions for the "red" domain will depend on the computations in all other three subdomains and vice versa. This means that the processors will have to exchange interformation at regular intervals. For example, the "yellow", "blue" and "green" processors might send the information they have computed in the triangles that border the "red" domain, which would then allow the "red" processor to continue with its work.
-
-### Distributed memory parallelism
-Conceptually, we end up with the following approach to parallelisation:
-
-1. Each processor "owns" a local part of the global problem: it stores local data and performs computations on it
-2. The processors communicate by exchanging messages
-
-![:fig:message_passing: Message passing model](figures/communication.svg)
-
-Clearly we need to adapt the algorithms we have encountered so far to account for this. Mathematically, the technique of sub-dividing the domain into several sub-domains is also known as **domain-decomposition** and developing algorithms based on this idea is an active area of research. Computationally, the approach is known as **distributed memory parallelisation**, since the global problem is distributed between the processors, each of which stores only its local part of the problem in memory. This means that much larger problems can be solved.
-
-### Message passing interface
-To implement the exchange of messages in our code, we can use the [Message Passing Interface (MPI)](https://www.mpi-forum.org/), which is implemented as [mpi4py](https://mpi4py.readthedocs.io/en/stable/) in Python. This provides a set of routines that can be used to send and receive messages between processes.
-
-Here is a simple Python code, which shows how to send an array called `data` from processor 0 to processor 1:
-
-```Python
+\begin{frame}[fragile]
+  \frametitle{Message passing interface}
+  Exchange with the Message Passing Interface (MPI)
+  (mpi4py in Python)
+  \textbf{Example}
+\begin{lstlisting}
 import numpy as np
 from mpi4py import MPI
 
-# global communicator
-comm = MPI.COMM_WORLD
-# work out rank
-rank = comm.Get_rank()
+comm = MPI.COMM_WORLD  # global communicator
+rank = comm.Get_rank() # work out rank
 
 # initialise data
 data = np.zeros(4, dtype=int)
@@ -4516,22 +4596,53 @@ else:
     comm.Recv(data, source=0)
 
 print(f"AFTER: rank {rank} has data", data)
-```
+\end{lstlisting}
 
-It is crucial to remember that both processors will execute the same source code. However, what exactly a particular processor does do will depend on the value of the variable `rank`, which is different for each processor. In the example above, each branch of the if-statement will only be executed by exactly on processor. Each processor will also have its own, local copy of the array `data`, which is passed between processors with the [`Send`]((https://mpi4py.readthedocs.io/en/stable/reference/mpi4py.MPI.Comm.html#mpi4py.MPI.Comm.Send)) and [`Recv`](https://mpi4py.readthedocs.io/en/stable/reference/mpi4py.MPI.Comm.html#mpi4py.MPI.Comm.Send) commands. Observe further that we have to execute both the send- and the receive-command. Only sending off a message with one process without receiving it with a different process will cause our code to hang since the `Send` can only complete once a corresponding `Recv` has been executed.
+\end{frame}
 
-We can run this code with
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-```
+\begin{frame}[fragile]
+  \frametitle{Message passing interface}
+  \textbf{Crucial idea}
+  \begin{itemize}
+    \item Both processors execute the \textbf{same source code}
+    \item What exactly a particular processor does depends on value of variable \lstinline{rank}, which is different for each processor
+  \end{itemize}
+  \textbf{In the example}
+  \begin{itemize}
+  \item Each branch of the if-statement only executed by exactly on processor
+  \item Each processor has own, local copy of array \lstinline{data}
+  \item Data passed between processors with \lstinline{comm.Send()}, \lstinline{comm.Recv()}\\
+    \textbf{Must execute both}
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Message passing interface}
+Running the code
+\begin{verbatim}
 mpirun -n 2 python message_exchange.py
-```
-and it will produce the output (note that the order of lines might change)
-```
+
 BEFORE: rank 0 has data [1 1 1 1]
 BEFORE: rank 1 has data [2 2 2 2]
 AFTER: rank 0 has data [1 1 1 1]
 AFTER: rank 1 has data [1 1 1 1]
-```
+\end{verbatim}
+\begin{itemize}
+  \item Pair sends and receives
+\item \lstinline{comm.Send()} can only complete once a corresponding \lstinline{comm.Recv()} has been executed
+\item Danger of \textbf{deadlock}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 To illustrate the design of a parallel program we consider a very simple mathematical operation which arises in many applications in scientific computing: recall that the iterative solver algorithms we discussed above require the frequent evaluation of matrix-vector products $\boldsymbol{y}=A\boldsymbol{x}$, so let us look at how a slighlty more general form of this operation can be parallelised in MPI.
 

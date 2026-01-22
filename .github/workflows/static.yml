@@ -77,6 +77,20 @@ jobs:
                   --resource-path exercises
                   --metadata-file metadata.yml
                   lectures/Exercises.md
+            - name: Convert course information markdown to html with pandoc
+              uses: docker://pandoc/latex:3.7.0.2              
+              with:
+                args: >- 
+                  --standalone
+                  --mathjax
+                  --toc
+                  --to html
+                  --output information.html
+                  --metadata title="MA32070 Course information"
+                  --template uikit.html
+                  --resource-path generalinformation
+                  --metadata-file metadata.yml
+                  generalinformation/CourseInformation.md
             - name: Convert prerequisites markdown to html with pandoc
               uses: docker://pandoc/latex:3.7.0.2              
               with:

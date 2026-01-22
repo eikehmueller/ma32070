@@ -227,6 +227,7 @@ jobs:
                     mv index.html docs
                     mv setup.html docs
                     mv prerequisites.html docs
+                    mv information.html docs
                     mv notes.html docs
                     mv exercises.html docs
                     cp lectures/Slides.pdf docs/slides.pdf

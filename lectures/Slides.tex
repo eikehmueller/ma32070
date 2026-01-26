@@ -727,7 +727,7 @@ $$
 R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}
 $$
 \begin{lstlisting}
-R = np.einsum("ijk,mkln->ijmln"T,Tprime)
+R = np.einsum("ijk,mkln->ijmln",T,Tprime)
 \end{lstlisting}
 \item[Example 2]: $T$ (rank 3), $T'$ (rank 4), $T''$ (rank 2) $\Rightarrow$ $S$  (rank 1) 
 $$

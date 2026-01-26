@@ -18,7 +18,7 @@ For some exercises you might only have to write code or perform a written deriva
 Details on how to generate the files and what they should contain can be found in the following sections. You might also want to have a look at the step-by-step instructions for the example below.
 
 #### 1. Zipped version of your source code
-Keep all source files containing your solution in a single directory, usually a subdirectory of your `ma32070/` directory such as `ma32070/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/` directory and zip the `exercise/` subdirectory into a single file called `exercise.tgz` using the command
+Keep all source files containing your solution in a single directory, usually a subdirectory of your `ma32070/workspace/` directory such as `ma32070/workspace/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/workspace/` directory and zip the `exercise/` subdirectory into a single file called `exercise.tgz` using the command
 ```
 tar czvf exercise.tgz exercise
 ```
@@ -29,7 +29,7 @@ tar tzvf exercise.tgz
 It is strongly recommended to do this before uploading the file to moodle.
 
 #### 2. .pdf version of your code
-Create a single `.pdf` file called `code_exercise.pdf` which contains all your Python source code, i.e. all `.py` files you wrote. Assuming that the `finitelements` library has been installed (for example on the Notable server), you can use the `code2pdf` tool for this. For example, to generate the file `code_exercise.pdf` from all `.py` files inside the `ma32070/exercise/` directory, change to the `ma32070/` directory and run
+Create a single `.pdf` file called `code_exercise.pdf` which contains all your Python source code, i.e. all `.py` files you wrote. Assuming that the `finitelements` library has been installed (for example on the Notable server), you can use the `code2pdf` tool for this. For example, to generate the file `code_exercise.pdf` from all `.py` files inside the `ma32070/workspace/exercise/` directory, change to the `ma32070/workspace/` directory and run
 ```
 python -m code2pdf --path ./exercise/ --output code_exercise
 ```
@@ -51,7 +51,7 @@ The following step-by-step instructions illustrate how to prepare the solution o
 #### Step 1: Change to correct directory
 Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise3` to make sure everything is ready for submission and the `exercise3` directory does not contain any superfluous files:
 ```
-$ cd ma32070
+$ cd ma32070/workspace
 $ ls
 exercise3
 $ ls exercise3
@@ -366,9 +366,9 @@ Your code should pass the tests below, which verify correctness for special case
 * The method `inverse_dofmap()` which is inherited from the abstract base class, behaves as expected. 
   
 ## Practicalities
-* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise2`.
-* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`.
-* Create a single file `code_exercise2.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/workspace/exercise2`.
+* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise2.tgz exercise2`.
+* Create a single file `code_exercise2.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise2/ --output code_exercise2
 ```
@@ -618,10 +618,10 @@ f_star(x)
 
 ## Practicalities
 
-* Implement the methods `assemble_lhs()` and `assemble_rhs()`in the file `assembly.py` in the directory `ma32070/exercise3`. Implement the method `error_norm()` in a file `error.py` in the same directory.
-* Use these methods in the file `driver.py` in the directory `ma32070/exercise3`.
-* Zip the directory which contains `assembly.py`, `error.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
-* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Implement the methods `assemble_lhs()` and `assemble_rhs()`in the file `assembly.py` in the directory `ma32070/workspace/exercise3`. Implement the method `error_norm()` in a file `error.py` in the same directory.
+* Use these methods in the file `driver.py` in the directory `ma32070/workspace/exercise3`.
+* Zip the directory which contains `assembly.py`, `error.py` and `driver.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise3.tgz exercise3`
+* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise3/ --output code_exercise3
 ```
@@ -692,7 +692,7 @@ $$
 $$
 
 ## Practicalities
-* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py` in the directory `ma32070/exercise4`
+* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py` in the directory `ma32070/workspace/exercise4`
 * Implement the tests in `test_threepointquadrature.py` in the same directory
 
 # Exercise 5: Computation of global $L_2$-error
@@ -871,9 +871,9 @@ $$
 for some constant $C$, which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
-* Save your implementation of `error_norm()` in the file `error.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
-* Zip the directory which contains `error.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
-* Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation of `error_norm()` in the file `error.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/workspace/exercise5`
+* Zip the directory which contains `error.py` and `driver.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise5.tgz exercise5`
+* Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise5/ --output code_exercise5
 ```
@@ -1079,9 +1079,9 @@ Visualise the results. For this plot the following quantities as a function of t
 Comment on your results: which solver gives the best performance?
 
 ### Practicalities
-* Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/exercise7`
-* Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/` and run `tar czvf exercise7.tgz exercise7`
-* Create a single file `code_exercise7.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/workspace/exercise7`
+* Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise7.tgz exercise7`
+* Create a single file `code_exercise7.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise7/ --output code_exercise7
 ```

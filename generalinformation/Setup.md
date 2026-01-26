@@ -9,16 +9,18 @@ The purpose of this notebook is to describe the setup of the software environmen
 
 The crucial ingredients are
 
-* a **terminal** to access the command line
+* a **terminal** to access the command line (you can use the terminal in VSCode)
 * a working **Python** environment
-* several **Python packages** for numerical computations in particular the [petsc4py](https://petsc.org/release/petsc4py/) numerical linear algebra library
+* several **Python packages** for numerical computations, in particular the [petsc4py](https://petsc.org/release/petsc4py/) numerical linear algebra library
 * a modern code **editor** such as [VSCode](https://code.visualstudio.com/)
 * the MA32070 [**finite element library**](https://github.bath.ac.uk/em459/finiteelements)
 
-At the beginning of the course, please work through the two steps below to get set up. Once you have done this, review the section on the directory layout for the course material.
+Most of this is already set up correctly if you access **Notable** through the link on the moodle page.
+
+At the beginning of the course, please work through the three steps below to get set up. Once you have done this, review the section on the directory layout for the course material.
 
 ## Noteable
-The default setup is to use the **Noteable** environment, which every student on this course has access to. This provides a suitable Python installation with all required packages. You can access Noteable through the link on moodle. You should choose the "Standard Python 3 with VS-Code editor" notebook, which allows you to edit files with the built-in VScode editor.
+The default setup is to use the **Noteable** environment, which every student on this course has access to. This provides a suitable Python installation with all required packages. You can access Noteable through the link on moodle. Select the "Standard Python 3 with VS-Code editor" notebook, which allows you to edit files with the built-in VScode editor.
 
 ## Working on your own computer
 You are welcome to set up a suitable Python environment on your own computer and work with this if you prefer. This is relatively straightforward on a Linux or Mac computer, but more challenging on Windows. Below are some instructions that might help you with this. **Note that if you choose to use your own computer it is your responsibility to set it up correctly, and we can only provide limited support for this. You are also responsible for backing up any code you write. Problems with your own computer are not a valid reason for requesting a coursework extension.**
@@ -34,12 +36,17 @@ On Noteable, you can launch a terminal by choosing "File" $\rightarrow$ "New" $\
 In the VSCode environment (both on Noteable and in a standalone installation on your own computer) you can access the command line through a terminal in one of the tabs at the bottom of the window.
 
 ## Directory layout
-It is strongly recommended that you carry out all work related to this course in a dedicated directory (or folder), which will be referred to as `ma32070/` in the following. Depending on your setup, this folder will contain additional subdirectories, see below for more details on how to organise your code.
+It is strongly recommended that you carry out all work related to this course in a dedicated directory (or folder) inside your home directory, which will be referred to as `ma32070/` in the following. Depending on your setup, this folder will contain additional subdirectories, see below for more details on how to organise your code.
 
 # Step 1: Setup of the required Python environment
 
 ## Option 1: Noteable
-Access Noteable through the link on moodle and choose the "Standard Python 3 with VS-Code editor" notebook.
+Access Noteable through the link on moodle and choose the "Standard Python 3 with VS-Code editor" notebook. Open a terminal session and create the directory `ma32070/` directory as follows:
+
+```
+cd ~
+mkdir ma32070
+```
 
 That's it.
 
@@ -48,10 +55,14 @@ You can now edit files with the VS-Code editor and run them either in the VS-Cod
 ## Option 2: Using your own computer
 Please note that the following instructions are rough guidelines, and they will likely have to be adapted to your particular computer. Setting up the Python programming environment is more straightforward on Linux and Mac computer which provide access to a command line environment with an up-to-date Python version. On Windows computers, you will first have to install the WSL, see below. 
 
-
 Download and install [VSCode](https://code.visualstudio.com/) (or use your own favourite editor).
 
-To access the command line environment, launch a terminal and install the additional required Python packages, as described in the following.
+To access the command line environment, launch a terminal and install the additional required Python packages, as described in the following. For this, first create the directoy `ma32070/` with
+
+```
+cd ~
+mkdir ma32070
+```
 
 ### Python
 Most computers nowadays come with a working Python (version 3) installation. Double check that you have a recent version (anything from 3.12 upwards should be fine) by running
@@ -109,13 +120,13 @@ Use the `conda create` command to set up a dedicated environment for this course
 For example, to create a local environment called `petsc_sandbox` on a Linux machine, run the following command:
 
 ```
-conda create -y --prefix MA32070_DIR/petsc_sandbox -c conda-forge petsc petsc4py pytest mpi4py
+conda create -y --prefix ~/ma32070/petsc_sandbox -c conda-forge petsc petsc4py pytest mpi4py
 ```
 
-where `MA32070_DIR` needs to be replaced by the name of your `ma32070/` directory. You will need to look at the [documentation of `conda create`]((https://docs.conda.io/projects/conda/en/stable/commands/create.html) to work out the exact command on your computer. To use the created environment, it first needs to be activated with 
+You will need to look at the [documentation of `conda create`]((https://docs.conda.io/projects/conda/en/stable/commands/create.html) to work out the exact command on your computer. To use the created environment, it first needs to be activated with 
 
 ```
-conda activate MA32070_DIR/petsc_sandbox
+conda activate ~/ma32070/petsc_sandbox
 ```
 
 every time you work on this course (this will happen automatically if you append this line to your `${HOME}/.bashrc` file on Linux and Mac computers). You can check whether the environment has been activated successfully by looking at the command prompt: this should contain the name of the environment, i.e. `petsc_sandbox` in the above example.
@@ -139,7 +150,13 @@ eike@eike-linux:~$ git --version
 git version 2.43.0
 ```
 
-Change to the `ma32070/` directory and then run the following commands:
+Change to the `ma32070/` directory with 
+
+```
+cd ~/ma32070
+```
+
+and then run the following commands:
 
 ```
 git clone https://github.bath.ac.uk/em459/finiteelements.git
@@ -148,7 +165,7 @@ python3 -m pip install --editable .
 python -m pytest -v
 ```
 
-You might have to enter your university username and password to run the `git clone` command.
+You only have to do this **once**, not every time you `git pull` the library afterwards. You might have to enter your university username and password to run the `git clone` command.
 
 This will create a subdirectory `ma32070/finitelements`.
 
@@ -175,16 +192,33 @@ git pull
 
 Don't forget to change to the directory with your own code afterwards.
 
+## Step 3: Create a directory for your own work
+
+Create an additional directory `ma32070/workspace` for your own work. For this change to the `ma32070/` directory with
+
+```
+cd ~/ma32070
+```
+
+and then run
+
+```
+mkdir workspace
+```
+
+You might want to create additional subdirectories inside `ma32070/workspace` to organise your work, for example one for each set of exercises.
+
 # Directory layout
 If you worked through the steps above, your `ma32070/`  directory should contain the following subdirectories:
 
 * `ma32070/finiteelements` for the finite element library
-* a subdirectory with the virtual environment or Anaconda environment:
-  - `ma32070/venv` (if you installed the Python packages in a virtual environment) or 
-  - `ma32070/petsc_sandbox` (if you use Anaconda)
-
-It is suggested that you create an additional directory
 * `ma32070/workspace` for your own work
 
-In summary, the `ma32070/` folder should contain exactly three subdirectories and you should only ever edit or add code in `ma32070/workspace`.
+You should only ever edit or add code in `ma32070/workspace`, but make sure you `git pull` the finite element library at regular intervals.
+
+If you are working on your own computer, there might be an additional directory for the virtual environment or the Anaconda environment:
+
+* `ma32070/venv` (if you installed the Python packages in a virtual environment) or 
+* `ma32070/petsc_sandbox` (if you use Anaconda)
+
 

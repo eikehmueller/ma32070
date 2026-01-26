@@ -181,8 +181,8 @@ class NumericalIntegration(ABC):
 ```
 
 ### Exercises
-* Copy the above code to a file `numerical_integration.py` and complete the method `evaluate()`, which should call the `_integrate()` method for all subintervals `[x_j,x_{j+1}]` and sum up the results. Instead of writing a for-loop, can you use a [list-comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions) and the [`np.sum() method`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)?
-* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()`. In the initialise of these methods, call the initialiser of the base class with `order=2` and `order=4` respectively; you can use the [`super()` function](https://docs.python.org/3/library/functions.html#super) for this.
+* Copy the above code to a file `numerical_integration.py` and complete the method `evaluate()`, which should call the `_integrate()` method for all subintervals `[x_j,x_{j+1}]` and sum up the results. Instead of writing a for-loop, can you use a [list-comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions) and the [`np.sum()` method](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)?
+* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()`. In the initialise method of these classes, call the initialiser of the base class with `order=2` and `order=4` respectively; you can use the [`super()` function](https://docs.python.org/3/library/functions.html#super) for this.
 * Write a file `driver.py` which uses the classes `MidpointRule` and `SimpsonRule` to integrate the function $f_\alpha(x) = e^{-\alpha x}$ over the interval $[0,1]$ for fixed $\alpha=0.4$. For this, use the following definition of $f_\alpha$ and fix the parameter $\alpha$ with [`functools.partial`](https://docs.python.org/3/library/functools.html#functools.partial) when passing the function to `evaluate()`:
 ```Python
 def f(x, alpha):

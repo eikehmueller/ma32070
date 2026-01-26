@@ -9,7 +9,7 @@
 * ~~schedule lecture recordings~~
 * welcome email to students on course (check mailing list)
 * ~~moodle course metadata~~
-* unhide moodle page
+* ~~unhide moodle page~~
 
 ## References
 

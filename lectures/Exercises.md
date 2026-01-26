@@ -305,7 +305,7 @@ and print out the result of each calculation (for this, convert any sparse matri
 # Exercise 2: Cubic Lagrange element 
 
 #### Set: week 2
-#### Due: at the end of week 4
+#### Due: 24 Feb 2026
 
 ## Task
 Implement the cubic Lagrange element ($p=3$) in the class `CubicElement` by subclassing the abstract base class `FiniteElement`. The $\nu=10$ Lagrange points are in this order (see also figure below):
@@ -493,7 +493,7 @@ def test_tabulate_gradient_multiple_points():
 
 #### Set: week 3
 
-#### Due: end of week 5
+#### Due: Tue 03 Mar 2026
 The purpose of this exercise is to assemble the stiffness matrix $A^{(h)}$ and right hand side vector $\boldsymbol{b}^{(h)}$ for the linear algebra problem
 $$
 A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}
@@ -698,7 +698,7 @@ $$
 # Exercise 5: Computation of global $L_2$-error
 
 #### Set: week 6
-#### Due: end of week 7
+#### Due: Tue 17 Mar 2026
 
 ## Task
 As for the simplified case where the domain $\Omega$ is the reference triangle $\widehat{K}$ (see Exercise 3), the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution $u_{\text{exact}}(x)$ and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the (global) basis functions $\Phi_{\ell_{\text{global}}}^{(h)}(x)$, we can write the error $e_h(x)$ as
@@ -887,7 +887,7 @@ python -m code2pdf --path ./exercise5/ --output code_exercise5
 # Exercise 6: Computational cost of backsubstitution
 
 #### Set: week 7
-#### Due: end of week 8
+#### Due: Tue 24 Mar 2026
 
 ## Solution of upper triangular systems
 Consider a $n\times n$ upper triangular system, such as in the following example ($n=5$):
@@ -955,7 +955,7 @@ Justify your answers and explain your reasoning.
 # Exercise 7: PETSc sparse matrices and linear solvers
 
 #### Set: week 9
-#### Due: end of week 10
+#### Due: tue 21 Apr 2026
 
 ## PETSc solver options
 For this exercise we consider the $n\times n$ matrix $A$ which is of the following form

@@ -47,6 +47,17 @@ jobs:
                     --metadata title="MA32070"
                     --metadata-file metadata.yml
                     index.md
+            - name: Convert solutions markdown to html with pandoc
+              uses: docker://pandoc/latex:3.7.0.2
+              with:
+                args: >- 
+                    --standalone
+                    --mathjax
+                    --to html
+                    --output solutions.html
+                    --metadata title="MA32070 model solutions"
+                    --metadata-file metadata.yml
+                    solutions.md            
             - run: |
                 python3 lectures/parse_crossreferences.py lectures/Notes.md > lectures/_Notes.md
             - name: Convert lecture markdown to html with pandoc
@@ -232,52 +243,56 @@ jobs:
                     mv exercises.html docs
                     cp lectures/Slides.pdf docs/slides.pdf
                     cp -r lectures/figures docs
+                    # Model solutions
+                    SOLUTIONS=3a9b494912454b587ec60310b8ebca9ac063cacb608e9a49e9e2f73cc6178f6a
+                    mkdir docs/${SOLUTIONS}
+                    mv solutions.html docs/${SOLUTIONS}                    
                     # EXERCISE 1
                     DIR=model_solution_exercise_python
-                    mkdir docs/${DIR}
-                    mv ${DIR}.html docs/${DIR}/solution.html
-                    cp solutions/exercise_python/numerical_integration.py docs/${DIR}
-                    cp solutions/exercise_python/driver.py docs/${DIR}
-                    cp solutions/exercise_python/linear_algebra_numpy.py docs/${DIR}                    
-                    cp solutions/exercise_python/linear_algebra_petsc.py docs/${DIR}
+                    mkdir -p docs/${SOLUTIONS}/${DIR}
+                    mv ${DIR}.html docs/${SOLUTIONS}/${DIR}/solution.html
+                    cp solutions/exercise_python/numerical_integration.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_python/driver.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_python/linear_algebra_numpy.py docs/${SOLUTIONS}/${DIR}                    
+                    cp solutions/exercise_python/linear_algebra_petsc.py docs/${SOLUTIONS}/${DIR}
                     # EXERCISE 2
                     DIR=model_solution_exercise_finiteelement
-                    mkdir docs/${DIR}
-                    mv ${DIR}.html docs/${DIR}/solution.html
-                    cp solutions/exercise_finiteelement/cubicelement.py docs/${DIR}
-                    cp solutions/exercise_finiteelement/test_cubicelement.py docs/${DIR}
-                    cp solutions/exercise_finiteelement/lagrange_nodes_cubic.svg docs/${DIR}
+                    mkdir -p docs/${SOLUTIONS}/${DIR}
+                    mv ${DIR}.html docs/${SOLUTIONS}/${DIR}/solution.html
+                    cp solutions/exercise_finiteelement/cubicelement.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_finiteelement/test_cubicelement.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_finiteelement/lagrange_nodes_cubic.svg docs/${SOLUTIONS}/${DIR}
                     # EXERCISE 3
                     DIR=model_solution_exercise_localassembly
-                    mkdir docs/${DIR}
-                    mv ${DIR}.html docs/${DIR}/solution.html
-                    cp solutions/exercise_localassembly/assembly.py docs/${DIR}
-                    cp solutions/exercise_localassembly/error.py docs/${DIR}
-                    cp solutions/exercise_localassembly/driver.py docs/${DIR}
-                    cp solutions/exercise_localassembly/triangle_solution_??.png docs/${DIR}
+                    mkdir -p docs/${SOLUTIONS}/${DIR}
+                    mv ${DIR}.html docs/${SOLUTIONS}/${DIR}/solution.html
+                    cp solutions/exercise_localassembly/assembly.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_localassembly/error.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_localassembly/driver.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_localassembly/triangle_solution_??.png docs/${SOLUTIONS}/${DIR}
                     # EXERCISE 4
                     DIR=model_solution_exercise_quadrature
-                    mkdir docs/${DIR}
-                    mv ${DIR}.html docs/${DIR}/solution.html
-                    cp solutions/exercise_quadrature/threepointquadrature.py docs/${DIR}
-                    cp solutions/exercise_quadrature/test_threepointquadrature.py docs/${DIR}
+                    mkdir -p docs/${SOLUTIONS}/${DIR}
+                    mv ${DIR}.html docs/${SOLUTIONS}/${DIR}/solution.html
+                    cp solutions/exercise_quadrature/threepointquadrature.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_quadrature/test_threepointquadrature.py docs/${SOLUTIONS}/${DIR}
                     # EXERCISE 5
                     DIR=model_solution_exercise_global_error
-                    mkdir docs/${DIR}
-                    mv ${DIR}.html docs/${DIR}/solution.html
-                    cp solutions/exercise_global_error/error.py docs/${DIR}
-                    cp solutions/exercise_global_error/driver.py docs/${DIR}
-                    cp solutions/exercise_global_error/convergence.png docs/${DIR}
+                    mkdir -p docs/${SOLUTIONS}/${DIR}
+                    mv ${DIR}.html docs/${SOLUTIONS}/${DIR}/solution.html
+                    cp solutions/exercise_global_error/error.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_global_error/driver.py docs/${SOLUTIONS}/${DIR}
+                    cp solutions/exercise_global_error/convergence.png docs/${SOLUTIONS}/${DIR}
                     # EXERCISE 6
                     DIR=model_solution_exercise_complexity
-                    mkdir docs/${DIR}
-                    mv ${DIR}.html docs/${DIR}/solution.html
+                    mkdir -p docs/${SOLUTIONS}/${DIR}
+                    mv ${DIR}.html docs/${SOLUTIONS}/${DIR}/solution.html
                     # EXERCISE 7
                     DIR=model_solution_exercise_petsc
-                    mkdir docs/${DIR}
-                    mv ${DIR}.html docs/${DIR}/solution.html
-                    cp solutions/exercise_petsc/*.svg docs/${DIR}                    
-                    cp solutions/exercise_petsc/linear_solve.py docs/${DIR}
+                    mkdir -p docs/${SOLUTIONS}/${DIR}
+                    mv ${DIR}.html docs/${SOLUTIONS}/${DIR}/solution.html
+                    cp solutions/exercise_petsc/*.svg docs/${SOLUTIONS}/${DIR}                    
+                    cp solutions/exercise_petsc/linear_solve.py docs/${SOLUTIONS}/${DIR}
             - name: Upload artifacts
               uses: actions/upload-pages-artifact@v3
               with:

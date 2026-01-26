@@ -1092,3 +1092,4 @@ python -m code2pdf --path ./exercise7/ --output code_exercise7
 * Upload the following **three** files to the submission point on moodle:
   - The zip file `exercise7.tgz` with your source code
   - The file `code_exercise7.pdf` generated from your source code
+  - The file `solution_exercise7.pdf` with your written solution

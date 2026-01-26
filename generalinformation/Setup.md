@@ -68,7 +68,7 @@ mkdir ma32070
 Most computers nowadays come with a working Python (version 3) installation. Double check that you have a recent version (anything from 3.12 upwards should be fine) by running
 
 ```
-python3 --version
+python --version
 ```
 
 in the command line prompt.
@@ -79,7 +79,7 @@ To install the additional Python packages it is strongly recommended that you ei
 Using a dedicated Python [virtual environment (venv)](https://docs.python.org/3/library/venv.html) allows you to install Python packages in a controlled way, without affecting the system-wide Python installation. If you have a working Python installation, you should be able to create a virtual environment with
 
 ```
-python3 -m venv PATH
+python -m venv PATH
 ```
 
 where `PATH` is the name of the directory in which to create the venv. You probably want to use a subdirectory of your `ma32070/` directory, e.g. `ma32070/venv`. Once created, you can activate the virtual environment with
@@ -94,7 +94,7 @@ Hence, whenever you work on this course, you should activate the virtual environ
 Inside the virtual environment, the required Python packages can be installed with
 
 ```
-python3 -m pip install PACKAGE
+python -m pip install PACKAGE
 ```
 
 where `PACKAGE` is the name of the package to be installed:
@@ -161,7 +161,7 @@ and then run the following commands:
 ```
 git clone https://github.bath.ac.uk/em459/finiteelements.git
 cd finiteelements
-python3 -m pip install --editable .
+python -m pip install --editable .
 python -m pytest -v
 ```
 

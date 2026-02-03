@@ -841,9 +841,9 @@ $$
 \begin{frame}
 \frametitle{Weak solutions}
 
-Symmetric Bilinear form\footnote{
+Symmetric bilinear form\footnote{
   {\tiny
-  $a(c_1 u^{(1)} + c_2 u^{(2)},v) = c_1 a(u^{(1)},v) + c_2 a(u^{(2)},v)$, $a(u,c_1 v^{(1)} + c_2 v^{(2)}) = c_1 a(u,v^{(1)}) + c_2 a(u,v^{(2)})$\\for all $c_1,c_2\in \mathbb{R}$, $u,v^{(1)}, v^{(2)} \in \mathcal{V}$ and $a(v,u) = a(u,v)$ for all $u,v\in \mathcal{V}$}} $a(\cdot,\cdot): \mathcal{V}\times \mathcal{V} \rightarrow \mathbb{R}$
+  $a(c_1 u^{(1)} + c_2 u^{(2)},v) = c_1 a(u^{(1)},v) + c_2 a(u^{(2)},v)$, $a(u,c_1 v^{(1)} + c_2 v^{(2)}) = c_1 a(u,v^{(1)}) + c_2 a(u,v^{(2)})$\\for all $c_1,c_2\in \mathbb{R}$, $u,v,u^{(1)},u^{(2)},v^{(1)}, v^{(2)} \in \mathcal{V}$ and $a(v,u) = a(u,v)$ for all $u,v\in \mathcal{V}$}} $a(\cdot,\cdot): \mathcal{V}\times \mathcal{V} \rightarrow \mathbb{R}$
 $$
 a(u,v) := \int_\Omega \left(\kappa \nabla u \cdot \nabla  v + \omega\; u v\right)\;dx
 $$
@@ -1463,6 +1463,16 @@ Import as
 from fem.linearelement import LinearElement
 from fem.polynomialelement import PolynomialElement
 \end{lstlisting}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Numerical quadrature}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \tableofcontents[currentsection]
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

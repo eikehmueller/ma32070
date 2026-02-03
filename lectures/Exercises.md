@@ -18,7 +18,7 @@ For some exercises you might only have to write code or perform a written deriva
 Details on how to generate the files and what they should contain can be found in the following sections. You might also want to have a look at the step-by-step instructions for the example below.
 
 #### 1. Zipped version of your source code
-Keep all source files containing your solution in a single directory, usually a subdirectory of your `ma32070/` directory such as `ma32070/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/` directory and zip the `exercise/` subdirectory into a single file called `exercise.tgz` using the command
+Keep all source files containing your solution in a single directory, usually a subdirectory of your `ma32070/workspace/` directory such as `ma32070/workspace/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/workspace/` directory and zip the `exercise/` subdirectory into a single file called `exercise.tgz` using the command
 ```
 tar czvf exercise.tgz exercise
 ```
@@ -29,7 +29,7 @@ tar tzvf exercise.tgz
 It is strongly recommended to do this before uploading the file to moodle.
 
 #### 2. .pdf version of your code
-Create a single `.pdf` file called `code_exercise.pdf` which contains all your Python source code, i.e. all `.py` files you wrote. Assuming that the `finitelements` library has been installed (for example on the Notable server), you can use the `code2pdf` tool for this. For example, to generate the file `code_exercise.pdf` from all `.py` files inside the `ma32070/exercise/` directory, change to the `ma32070/` directory and run
+Create a single `.pdf` file called `code_exercise.pdf` which contains all your Python source code, i.e. all `.py` files you wrote. Assuming that the `finitelements` library has been installed (for example on the Notable server), you can use the `code2pdf` tool for this. For example, to generate the file `code_exercise.pdf` from all `.py` files inside the `ma32070/workspace/exercise/` directory, change to the `ma32070/workspace/` directory and run
 ```
 python -m code2pdf --path ./exercise/ --output code_exercise
 ```
@@ -51,7 +51,7 @@ The following step-by-step instructions illustrate how to prepare the solution o
 #### Step 1: Change to correct directory
 Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise3` to make sure everything is ready for submission and the `exercise3` directory does not contain any superfluous files:
 ```
-$ cd ma32070
+$ cd ma32070/workspace
 $ ls
 exercise3
 $ ls exercise3
@@ -181,8 +181,8 @@ class NumericalIntegration(ABC):
 ```
 
 ### Exercises
-* Copy the above code to a file `numerical_integration.py` and complete the method `evaluate()`, which should call the `_integrate()` method for all subintervals `[x_j,x_{j+1}]` and sum up the results. Instead of writing a for-loop, can you use a [list-comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions) and the [`np.sum() method`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)?
-* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()`. In the initialise of these methods, call the initialiser of the base class with `order=2` and `order=4` respectively; you can use the [`super()` function](https://docs.python.org/3/library/functions.html#super) for this.
+* Copy the above code to a file `numerical_integration.py` and complete the method `evaluate()`, which should call the `_integrate()` method for all subintervals `[x_j,x_{j+1}]` and sum up the results. Instead of writing a for-loop, can you use a [list-comprehension](https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions) and the [`np.sum()` method](https://numpy.org/doc/stable/reference/generated/numpy.sum.html)?
+* In the same file, create two sub-classes `MidpointRule` and `SimpsonRule`, which implement the abstract method `_integrate()`. In the initialise method of these classes, call the initialiser of the base class with `order=2` and `order=4` respectively; you can use the [`super()` function](https://docs.python.org/3/library/functions.html#super) for this.
 * Write a file `driver.py` which uses the classes `MidpointRule` and `SimpsonRule` to integrate the function $f_\alpha(x) = e^{-\alpha x}$ over the interval $[0,1]$ for fixed $\alpha=0.4$. For this, use the following definition of $f_\alpha$ and fix the parameter $\alpha$ with [`functools.partial`](https://docs.python.org/3/library/functools.html#functools.partial) when passing the function to `evaluate()`:
 ```Python
 def f(x, alpha):
@@ -305,7 +305,7 @@ and print out the result of each calculation (for this, convert any sparse matri
 # Exercise 2: Cubic Lagrange element 
 
 #### Set: week 2
-#### Due: at the end of week 4
+#### Due: 24 Feb 2026
 
 ## Task
 Implement the cubic Lagrange element ($p=3$) in the class `CubicElement` by subclassing the abstract base class `FiniteElement`. The $\nu=10$ Lagrange points are in this order (see also figure below):
@@ -366,9 +366,9 @@ Your code should pass the tests below, which verify correctness for special case
 * The method `inverse_dofmap()` which is inherited from the abstract base class, behaves as expected. 
   
 ## Practicalities
-* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/exercise2`.
-* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/` and run `tar czvf exercise2.tgz exercise2`.
-* Create a single file `code_exercise2.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation in the file `cubicelement.py` and the tests in `test_cubicelement.py` in the same directory `ma32070/workspace/exercise2`.
+* Zip the directory which contains `cubicelement.py` and `test_cubicelement.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise2.tgz exercise2`.
+* Create a single file `code_exercise2.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise2/ --output code_exercise2
 ```
@@ -493,7 +493,7 @@ def test_tabulate_gradient_multiple_points():
 
 #### Set: week 3
 
-#### Due: end of week 5
+#### Due: Tue 03 Mar 2026
 The purpose of this exercise is to assemble the stiffness matrix $A^{(h)}$ and right hand side vector $\boldsymbol{b}^{(h)}$ for the linear algebra problem
 $$
 A^{(h)}\boldsymbol{u}^{(h)} = \boldsymbol{b}^{(h)}
@@ -618,10 +618,10 @@ f_star(x)
 
 ## Practicalities
 
-* Implement the methods `assemble_lhs()` and `assemble_rhs()`in the file `assembly.py` in the directory `ma32070/exercise3`. Implement the method `error_norm()` in a file `error.py` in the same directory.
-* Use these methods in the file `driver.py` in the directory `ma32070/exercise3`.
-* Zip the directory which contains `assembly.py`, `error.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise3.tgz exercise3`
-* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Implement the methods `assemble_lhs()` and `assemble_rhs()`in the file `assembly.py` in the directory `ma32070/workspace/exercise3`. Implement the method `error_norm()` in a file `error.py` in the same directory.
+* Use these methods in the file `driver.py` in the directory `ma32070/workspace/exercise3`.
+* Zip the directory which contains `assembly.py`, `error.py` and `driver.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise3.tgz exercise3`
+* Create a single file `code_exercise3.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise3/ --output code_exercise3
 ```
@@ -692,13 +692,13 @@ $$
 $$
 
 ## Practicalities
-* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py` in the directory `ma32070/exercise4`
+* Implement `ThreePointQuadratureReferenceTriangle` in a file `threepointquadrature.py` in the directory `ma32070/workspace/exercise4`
 * Implement the tests in `test_threepointquadrature.py` in the same directory
 
 # Exercise 5: Computation of global $L_2$-error
 
 #### Set: week 6
-#### Due: end of week 7
+#### Due: Tue 17 Mar 2026
 
 ## Task
 As for the simplified case where the domain $\Omega$ is the reference triangle $\widehat{K}$ (see Exercise 3), the error $e_h(x)=u_{\text{exact}}(x)-u_h(x)$ is the difference between the exact solution $u_{\text{exact}}(x)$ and numerical solution $u_h(x)$. Expanding $u_h(x)$ in terms of the (global) basis functions $\Phi_{\ell_{\text{global}}}^{(h)}(x)$, we can write the error $e_h(x)$ as
@@ -871,9 +871,9 @@ $$
 for some constant $C$, which empirical rate of convergence $\alpha$ do you observe in the two cases?
 
 ## Practicalities
-* Save your implementation of `error_norm()` in the file `error.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/exercise5`
-* Zip the directory which contains `error.py` and `driver.py`. For this, change to `ma32070/` and run `tar czvf exercise5.tgz exercise5`
-* Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation of `error_norm()` in the file `error.py` and the main program (copied from above) in `driver.py` in the same directory `ma32070/workspace/exercise5`
+* Zip the directory which contains `error.py` and `driver.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise5.tgz exercise5`
+* Create a single file `code_exercise5.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise5/ --output code_exercise5
 ```
@@ -887,7 +887,7 @@ python -m code2pdf --path ./exercise5/ --output code_exercise5
 # Exercise 6: Computational cost of backsubstitution
 
 #### Set: week 7
-#### Due: end of week 8
+#### Due: Tue 24 Mar 2026
 
 ## Solution of upper triangular systems
 Consider a $n\times n$ upper triangular system, such as in the following example ($n=5$):
@@ -955,7 +955,7 @@ Justify your answers and explain your reasoning.
 # Exercise 7: PETSc sparse matrices and linear solvers
 
 #### Set: week 9
-#### Due: end of week 10
+#### Due: tue 21 Apr 2026
 
 ## PETSc solver options
 For this exercise we consider the $n\times n$ matrix $A$ which is of the following form
@@ -1079,9 +1079,9 @@ Visualise the results. For this plot the following quantities as a function of t
 Comment on your results: which solver gives the best performance?
 
 ### Practicalities
-* Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/exercise7`
-* Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/` and run `tar czvf exercise7.tgz exercise7`
-* Create a single file `code_exercise7.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/` directory:
+* Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/workspace/exercise7`
+* Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise7.tgz exercise7`
+* Create a single file `code_exercise7.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise7/ --output code_exercise7
 ```
@@ -1092,3 +1092,4 @@ python -m code2pdf --path ./exercise7/ --output code_exercise7
 * Upload the following **three** files to the submission point on moodle:
   - The zip file `exercise7.tgz` with your source code
   - The file `code_exercise7.pdf` generated from your source code
+  - The file `solution_exercise7.pdf` with your written solution

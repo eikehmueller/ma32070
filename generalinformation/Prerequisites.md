@@ -9,7 +9,7 @@ In the following we list some prior knowledge that is expected for this course t
 # Mathematical background
 
 ## Numerical analysis
-We will use several basic concepts that you have come across in your Numerical Analsys lecture, in particular:
+We will use several basic concepts that you have come across in your Numerical Analysis lecture, in particular:
 
 * Interpolation of functions with [Lagrange polynomials](https://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html)
 * Numerical quadrature with the [Gauss-Legendre method](https://mathworld.wolfram.com/Legendre-GaussQuadrature.html)

@@ -35,7 +35,167 @@
   These notes are copyright of Eike Mueller, University of Bath 2025. They are provided exclusively for educational purposes at the University and are to be downloaded or copied for your private study only. Further distribution, e.g. by upload to external repositories, is prohibited.}
 \end{frame}
 
+\section{Housekeeping}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}
+  \frametitle{Contact hours}
+\textbf{Unit convenor}\\
+  Eike Mueller, 4 West 2.17, \texttt{e.mueller@bath.ac.uk}\\
+  Office hour: Tuesday 11:15h - 12:05h\\[2ex]
+\textbf{Lectures/computer labs}
+
+\begin{itemize} 
+  \item 2 hour session every Tuesday 14:15h - 16:05h
+  \item location: EB 0.9
+  \item mixture of lectures and labs, varying throughout the semester
+  \item recorded on Panopto {\footnotesize (let me know if you have any issues with this)}
+\end{itemize}
+
+Please\dots
+\begin{itemize}
+  \item \dots attend in person
+  \item \dots ask questions at any point
+\end{itemize}
+
+\textbf{Lecture notes + slides} $\Rightarrow$ moodle\\[1ex]
+Please email me if you spot any typos
+\end{frame}
+
+\begin{frame}
+\frametitle{Intended learning outcomes}
+\textbf{What will you learn?}
+\begin{itemize}
+  \item develop the coding skills necessary for the computational solution of challenging scientific and engineering problems
+  \item learn how to use suitable software abstractions and libraries
+  \item implement code in an efficient and sustainable way
+  \item Gain an understanding of
+  \begin{itemize}
+    \item modern programming techniques and
+    \item parallel computing architectures 
+  \end{itemize}  
+  \item understand different sources of error
+  \item analyse performance of code
+\end{itemize}
+\textbf{How will you learn this?}
+\begin{center}
+  Implement Finite Element Method for elliptic problems in 2 dimensions
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Assessment \& problem sheets}
+\textbf{Summative assessment}
+\begin{itemize}
+\item 1 piece of coursework = 100\% of module mark
+\item two weeks to complete the coursework assignment
+\item mixture of implementation task and mathematical derivations
+\item due in week 11
+\end{itemize}
+\vspace{2ex}
+\textbf{Problem sheets (= formative assessment)}
+\begin{itemize}
+  \item available on moodle page
+  \item write Python code + run numerical experiments
+  \item \textbf{very important that you engage with these exercises}\\
+   $\Rightarrow$ will make the coursework much easier!
+  \item submit you solutions on moodle to get feedback\\
+  \textbf{follow detailed submission instructions}
+  \item model solutions on moodle (\textbf{but first try yourself})
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{Programming in Python}
+Default setup:
+\begin{center}
+\textbf{Notable + VSCode notebook}\\(= ``Standard Python 3 with VS-Code editor'')
+\end{center}
+
+\textbf{Using your own computer}
+\begin{itemize}
+  \item unsupported $\Rightarrow$ do this on your own risk  
+  \item will require additional setup: installation of PETSc/petsc4py
+  \begin{itemize}
+  \item Linux (+anaconda): relatively straightforward
+  \item MacOS: also not too hard
+  \item Windows: challenging (requires WSL)
+  \end{itemize}
+  \item \textbf{Problems with your own local installation will not justify coursework extensions}
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+\frametitle{Programming in Python}
+\textbf{Initial setup} (in a terminal)
+\begin{enumerate}  
+  \item Create directory \verb!ma32070!
+  {\color{blue}
+\begin{verbatim}
+  cd ~
+  mkdir ma32070
+\end{verbatim}}
+  \item git-clone finite element library into \verb!ma32070/finitelements!
+  {\color{blue}
+  \begin{verbatim}
+  cd ma32070
+  git clone \
+  https://github.bath.ac.uk/em459/finiteelements.git
+  \end{verbatim}}
+  \item inside \verb!ma32070/finitelements!, install with
+  {\color{blue}
+  \begin{verbatim}
+  cd finiteelements
+  python -m pip install --editable .
+  python -m pytest -v
+  \end{verbatim}}
+  \item Create directory \verb!ma32070/workspace! (for your own work)
+  {\color{blue}
+  \begin{verbatim}
+  cd ~/ma32070
+  mkdir workspace
+  \end{verbatim}}
+\end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\frametitle{Prerequisites}
+
+\textbf{Co-requisite: MA32066} (\textit{``Numerical solution of elliptic PDEs''})
+$\Rightarrow$ theory of Finite Element Method\\[2ex]
+\textbf{Mathematical/programming background}
+\begin{itemize}
+  \item Numerical analysis + linear algebra
+  \item See moodle page for details
+  \item Python
+  \begin{itemize}
+    \item Fundamental concepts: data types + control flow
+    \item Object oriented programming
+    \item Advanced concepts (e.g. list comprehensions)
+    \item numpy
+  \end{itemize}
+  \begin{center}
+  $\Rightarrow$ Practice on 1st set of exercises
+  \end{center}
+  \item Testing + debugging
+  \item Basic use of Linux command line (terminal)
+  \item Visual Studio code + git
+\end{itemize}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -57,7 +217,13 @@ Goal of Scientific Computing:
 \textbf{Efficiently simulate physical phenomena on a computer}
 \end{center}
 
-Crucial to obtain \underline{correct} and \underline{accurate} results in the \underline{shortest possible time}
+\begin{center}
+  \includegraphics[width=0.5\linewidth]{figures/Greenland.png}\\
+  {\tiny source: Adam R. Herrington (NCAR/CGD), https://visualizations.ucar.edu/visualizations/community-earth-system-model-cesm-greenland/}
+\url{https://visualizations.ucar.edu/}
+\end{center}
+
+Crucial to obtain {\color{red}{\textbf{correct}}} and {\color{red}\textbf{accurate}} results in the {\color{red}\textbf{shortest possible time}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -561,7 +727,7 @@ $$
 R_{ijm\ell n} = \sum_{k} T_{ijk} T'_{mk\ell n}
 $$
 \begin{lstlisting}
-R = np.einsum("ijk,mkln->ijmln"T,Tprime)
+R = np.einsum("ijk,mkln->ijmln",T,Tprime)
 \end{lstlisting}
 \item[Example 2]: $T$ (rank 3), $T'$ (rank 4), $T''$ (rank 2) $\Rightarrow$ $S$  (rank 1) 
 $$

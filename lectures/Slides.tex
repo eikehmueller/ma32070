@@ -783,7 +783,7 @@ np.einsum("ii->",A)   # or: np.trace(A)
 
 \begin{frame}
 \frametitle{Model problem}
-\textbf{Elliptic PDE} Find $u\in \mathcal{V}$ such that
+\textbf{Elliptic PDE} Find function $u$ such that
 $$
 -\nabla \cdot (\kappa \nabla  u(x)) + \omega\; u(x) = f(x) \qquad \text{for $x\in \Omega\subset \mathbb{R}^2$}
 $$
@@ -792,6 +792,7 @@ $$
 $$
 \kappa\; n\cdot \nabla u(x)=g(x) \qquad \text{for $x\in\partial \Omega$}
 $$
+\end{minipage}
 \hfill
 \begin{minipage}{0.25\linewidth}
   \begin{center}

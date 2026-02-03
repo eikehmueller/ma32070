@@ -18,7 +18,7 @@ For some exercises you might only have to write code or perform a written deriva
 Details on how to generate the files and what they should contain can be found in the following sections. You might also want to have a look at the step-by-step instructions for the example below.
 
 #### 1. Zipped version of your source code
-Keep all source files containing your solution in a single directory, usually a subdirectory of your `ma32070/workspace/` directory such as `ma32070/workspace/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/workspace/` directory and zip the `exercise/` subdirectory into a single file called `exercise.tgz` using the command
+Keep all source files containing your solution in a single directory, usually a subdirectory of your `ma32070/workspace/` directory such as `ma32070/workspace/exercise/`. The code in this directory should be complete, i.e. it should be possible to run the code it contains as it is, so please also include any necessary input files, if applicable. You can assume that the `finiteelements` library is available, so do not include this in your submission. Change to the `ma32070/workspace/` directory and zip the `exercise/` subdirectory into a single file called `exercise.tgz` using the command
 ```
 tar czvf exercise.tgz exercise
 ```
@@ -49,7 +49,7 @@ If you are working on Notable, you can download any files you created to your ow
 The following step-by-step instructions illustrate how to prepare the solution of Exercise 3 for submission (all shell-commands include the prompt `$` which needs to be removed when entering the command):
 
 #### Step 1: Change to correct directory
-Change to the `ma32070/` directory, list its contents and the contents of the subdirectory `exercise3` to make sure everything is ready for submission and the `exercise3` directory does not contain any superfluous files:
+Change to the `ma32070/workspace` directory, list its contents and the contents of the subdirectory `exercise3` to make sure everything is ready for submission and the `exercise3` directory does not contain any superfluous files:
 ```
 $ cd ma32070/workspace
 $ ls

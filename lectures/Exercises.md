@@ -308,7 +308,7 @@ and print out the result of each calculation (for this, convert any sparse matri
 #### Due: 24 Feb 2026
 
 ## Task
-Implement the cubic Lagrange element ($p=3$) in the class `CubicElement` by subclassing the abstract base class `FiniteElement`. The $\nu=10$ Lagrange points are in this order (see also figure below):
+Implement the cubic Lagrange element ($p=3$) in the class `CubicElement` by subclassing the abstract base class `FiniteElement` in [fem.finiteelement](https://github.bath.ac.uk/em459/finiteelements/blob/main/src/fem/finiteelement.py). The $\nu=10$ Lagrange points are in this order (see also figure below):
 
 $$
 \{\xi^{(j)}\}_{j=0}^{9}=

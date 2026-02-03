@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="113.64611mm"
+   height="66.658241mm"
+   viewBox="0 0 113.64611 66.658241"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3 (0e150ed, 2023-07-21)"
+   sodipodi:docname="domain.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.84096521"
+     inkscape:cx="377.54237"
+     inkscape:cy="88.588683"
+     inkscape:window-width="1312"
+     inkscape:window-height="1002"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-11.826023,-13.90972)">
+    <path
+       style="fill:#c8c8ff;fill-opacity:1;stroke:#000000;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:3.9;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ConcaveTriangle)"
+       d="m 108.22881,31.933792 11.7982,-8.337394"
+       id="path2" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.705556;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:3.9;stroke-dasharray:none;stroke-opacity:1"
+       d="m 111.84693,29.495498 2.43829,3.539458 -3.93273,2.674261 v -0.07866"
+       id="path3" />
+    <path
+       style="fill:#c8c8ff;fill-opacity:1;stroke:#ff0000;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:3.9;stroke-dasharray:none;stroke-opacity:1"
+       d="m 25.169491,25.484109 c 4.424523,-10.30002 20.568991,-10.768862 31.776483,-11.011651 16.851567,-0.365057 36.960992,2.140297 48.451266,14.472457 8.20404,8.805147 14.02912,24.900642 7.86547,35.237289 C 104.38725,79.066637 80.510652,76.930209 63.238347,78.340038 53.034411,79.172921 38.709122,83.182758 32.720338,74.879236 28.268569,68.706804 38.265782,60.106668 37.439618,52.541312 36.364552,42.696706 21.260823,34.583249 25.169491,25.484109 Z"
+       id="path1"
+       sodipodi:nodetypes="ssssssss" />
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;font-family:sans-serif03b1;-inkscape-font-specification:sans-serif03b1;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:3.9;stroke-dasharray:none;stroke-opacity:1"
+       x="108.85806"
+       y="24.540253"
+       id="text3"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         style="font-size:12.7px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.05833"
+         x="108.85806"
+         y="24.540253">n</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;font-family:sans-serif03b1;-inkscape-font-specification:sans-serif03b1;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:3.9;stroke-dasharray:none;stroke-opacity:1"
+       x="67.643013"
+       y="50.96822"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         style="font-size:12.7px;stroke-width:1.05833"
+         x="67.643013"
+         y="50.96822">Ω</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.7px;font-family:sans-serif03b1;-inkscape-font-specification:sans-serif03b1;text-align:center;text-anchor:middle;fill:#ed0000;fill-opacity:1;stroke:none;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:3.9;stroke-dasharray:none;stroke-opacity:1"
+       x="20.135593"
+       y="57.575211"
+       id="text5"><tspan
+         sodipodi:role="line"
+         id="tspan5"
+         style="font-size:12.7px;fill:#ed0000;fill-opacity:1;stroke-width:1.05833"
+         x="20.135593"
+         y="57.575211">∂Ω</tspan></text>
+  </g>
+</svg>

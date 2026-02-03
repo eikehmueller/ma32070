@@ -783,14 +783,21 @@ np.einsum("ii->",A)   # or: np.trace(A)
 
 \begin{frame}
 \frametitle{Model problem}
-\textbf{Elliptic PDE}
+\textbf{Elliptic PDE} Find $u\in \mathcal{V}$ such that
 $$
 -\nabla \cdot (\kappa \nabla  u(x)) + \omega\; u(x) = f(x) \qquad \text{for $x\in \Omega\subset \mathbb{R}^2$}
 $$
+\begin{minipage}{0.7\linewidth}
 \textbf{Boundary condition}
 $$
 \kappa\; n\cdot \nabla u(x)=g(x) \qquad \text{for $x\in\partial \Omega$}
 $$
+\hfill
+\begin{minipage}{0.25\linewidth}
+  \begin{center}
+  \includegraphics[width=\linewidth]{figures/domain.pdf}
+  \end{center}
+\end{minipage}
 \begin{itemize}
 \item Normal vector on $\partial\Omega$: $n=(n_0,n_1)^\top\in\mathbb{R}^2$, {\footnotesize$\|n\|_2 = \sqrt{n_0^2+n_1^2}=1$}
 \item Positive constants $\kappa, \omega >0$

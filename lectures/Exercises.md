@@ -121,7 +121,7 @@ The integrals $I(x_j,x_{j+1}) = \int_{x_j}^{x_{j+1}}f(x)\;dx$ on the small subin
   I(x_-,x_+) \approx I^{\text{(Simpson)}}(x_-,x_+) = \frac{x_+-x_-}{6}\left(f(x_-)+4f\left(\frac{x_-+x_+}{2}\right)+f(x_+)\right)
   $$
 
-  We say that an integration method is of order $\mu$ if the error in computing $I$ is $\mathcal{O}(h^\mu)$. For example, the midpoint rule is of order $2$ since
+We say that an integration method is of order $\mu$ if the error in computing $I$ is $\mathcal{O}(h^\mu)$. For example, the midpoint rule is of order $2$ since
 
 $$
 \left|I^{\text{(midpoint)}}(n) - I\right| = \mathcal{O}(h^2)\qquad\text{with}\quad I^{\text{(midpoint)}}(n) := \sum_{j=0}^{n-1} I^{\text{(midpoint)}}(x_{j},x_{j+1}).
@@ -190,7 +190,7 @@ def f(x, alpha):
     return np.exp(-alpha * x)
 ```
 
-* Create a Python dictionary `results` whose keys are the names of the two numerical integrators and whose values are the numerical integrals of the function above with $n=4,8,16,32$:
+* Create a Python dictionary `results` whose keys are the names of the two numerical integrators and whose values are lists which contain the numerical integrals of the function above with $n=4,8,16,32$:
   
 $$
 \begin{aligned}
@@ -211,8 +211,8 @@ for integrator, integrals in results.items():
 ```
 * Are the methods of the expected order?
 
-### Hints
-* The name of a class can be obtained with the `__name__` property, for example:
+### Hint
+The name of a class can be obtained with the `__name__` property, for example:
 ```Python
 label = MidpointRule.__name__
 # or

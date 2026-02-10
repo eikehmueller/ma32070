@@ -18,6 +18,7 @@ jobs:
         steps:
             - name: Install latex, imagemagick and inkscape
               run: |
+                sudo apt-get update
                 sudo apt install texlive-latex-base
                 sudo apt install texlive-latex-extra
                 sudo apt install texlive-latex-recommended

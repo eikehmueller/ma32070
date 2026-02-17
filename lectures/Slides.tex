@@ -1416,8 +1416,29 @@ $$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}
+\frametitle{Recap}
+\textbf{Finite Element}\\
+What do we need?
+\begin{itemize}
+\item Evaluate degrees of freedom (nodes) for arbirtrary functions $f$
+$$
+\lambda_\ell(f)\in \mathbb{R}
+$$
+\item Tabulate basis functions $\phi_\ell$ and derivatives at points $\zeta^{(r)}$
+$$
+T_{r\ell}(\boldsymbol{\zeta}) = \phi_\ell(\zeta^{(r)})\quad {\footnotesize [n\times \nu]},\qquad
+T^\partial_{r\ell a}(\boldsymbol{\zeta}) = \frac{\partial \phi_\ell}{\partial x_a}(\zeta^{(r)})\quad {\footnotesize [n\times \nu\times 2]}
+$$
+\item \# unknowns associated with vertices $\nu_{\text{vertex}}$, facets $\nu_{\text{facet}}$ and interior $\nu_{\text{interior}}$\\
+$\Rightarrow$ Indirection map $\mu_{\text{dof}}$: $\lambda_{\ell=\mu_{\text{dof}}(E,\rho,j)} = \lambda_j^{(E_\rho)}$
+\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
 \frametitle{Implementation}
-Ciarlet's definition of finite element\\[1ex]
 $\Rightarrow$
 \textbf{Abstract base class} \lstinline{FiniteElement}
 \begin{itemize}
@@ -1487,7 +1508,7 @@ $$
 $$
 \int_{-1}^{+1} f(z)\;dz \approx \sum_{q=0}^{n_q-1} \widetilde{w}_q f(\widetilde{\zeta}^{(q)})
 $$
-\textbf{Qudrature\footnote{often called ``cubature'' in more than one dimension} rule} $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$
+\textbf{Quadrature\footnote{often called ``cubature'' in more than one dimension} rule} $\mathcal{Q}=\{(\widetilde{\zeta}^{(q)},\widetilde{w}_q)\}_{q=0}^{n_q-1}$
 \begin{itemize}
 \item points $\widetilde{\zeta}^{(q)}$, $q=0,1,2,\dots,n_q-1$
 \item corresponding weights $\widetilde{w}_q$

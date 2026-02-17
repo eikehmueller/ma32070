@@ -1420,7 +1420,7 @@ $$
 \textbf{Finite Element}\\
 What do we need?
 \begin{itemize}
-\item Evaluate degrees of freedom (nodes) for arbirtrary functions $f$
+\item Evaluate degrees of freedom (nodes) for arbitrary functions $f$
 $$
 \lambda_\ell(f)\in \mathbb{R}
 $$
@@ -1461,10 +1461,10 @@ $\Rightarrow$
 \textbf{Subclassing} the \lstinline{FiniteElement} base class\\
 $\Rightarrow$ Provide concrete implementations of:
 \begin{itemize}
-\item \# dofs associated with topological entities:\\\lstinline{ndof_per_vertex}, \lstinline{ndof_per_facet} and \lstinline{ndof_per_interior}
-\item Evalute dofs for given function $\widehat{f}$: \lstinline{tabulate_dofs(fhat)} 
-\item Tabulate basis functions: \lstinline{tabulate(zeta)}
-\item Tabulate gradients of basis functions: \lstinline{tabulate_gradient(zeta)}
+\item \# dofs associated with topological entities:\\\lstinline{ndof_per_vertex} = $\nu_{\text{vertex}}$, \lstinline{ndof_per_facet} = $\nu_{\text{facet}}$ and \lstinline{ndof_per_interior} = $\nu_{\text{interior}}$
+\item Evalute all dofs for given function $\widehat{f}$: \lstinline{tabulate_dofs(fhat)} 
+\item Tabulate basis functions: $T$ \lstinline{tabulate(zeta)}
+\item Tabulate gradients of basis functions: $T^\partial$ \lstinline{tabulate_gradient(zeta)}
 \end{itemize}
 \end{frame}
 
@@ -1475,7 +1475,7 @@ $\Rightarrow$ Provide concrete implementations of:
 Available finite elements
 \begin{itemize}
 \item Bi-linear element $(p=1)$: \lstinline{LinearElement}
-\item Cubic linear element $(p=3)$: \lstinline{CubicElement} (= exercise)
+\item Cubic element $(p=3)$: \lstinline{CubicElement} (= exercise)
 \item General polynomial element: \lstinline{PolynomialElement} (will be made available later)
 \end{itemize}
 \vspace{2ex}

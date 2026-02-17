@@ -1500,7 +1500,7 @@ from fem.polynomialelement import PolynomialElement
 
 \begin{frame}
 \frametitle{Numerical quadrature}
-The weak form of PDE requires \textbf{integration} over domain $\Omega$
+Weak form of the PDE requires \textbf{integration} over domain $\Omega$
 $$
 a(u,v) = \int_\Omega \left(\kappa \nabla u \cdot \nabla  v + \omega\; u v\right)\;dx
 $$
@@ -1551,7 +1551,7 @@ $$
     \# points $n_q$ & points $\widetilde{\zeta}^{(q)}$ & weights $\widetilde{w}_q$ & $\text{dop}(\mathcal{Q}^{(\text{GL})}_{n_q})$\\
     \hline\hline
  1   & $0$ & $2$ & $1$\\
- 2   & $-\sqrt{\frac{1}{3}}, +\sqrt{\frac{1}{3}}$ & $1$ & $3$\\
+ 2   & $-\sqrt{\frac{1}{3}}, +\sqrt{\frac{1}{3}}$ & $1,1$ & $3$\\
  3   & $-\sqrt{\frac{3}{5}},0,+\sqrt{\frac{3}{5}}$ & $\frac{5}{9},\frac{8}{9},\frac{5}{9}$ & $5$\\
  \hline
   \end{tabular}

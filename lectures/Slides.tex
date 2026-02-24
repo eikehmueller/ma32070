@@ -1673,7 +1673,7 @@ Putting it all together\\[2ex]
 \textbf{Solve}
 $$
 \begin{aligned}
--\nabla\cdot(\kappa \cdot u) + \omega u &= f\qquad\text{in $\Omega=\widehat{K}$}\\
+-\nabla\cdot(\kappa \cdot \nabla u) + \omega u &= f\qquad\text{in $\Omega=\widehat{K}$}\\
 \kappa\; n\cdot \nabla u&=g \qquad\text{on $\partial\Omega$}
 \end{aligned}
 $$
@@ -1760,7 +1760,7 @@ Assume that exact solution is
 $$
 u(x) = u_{\text{exact}}(x) = \exp\left[-\frac{1}{2\sigma^2}(x-x_0)^2\right]
 $$
-$\Rightarrow$ pick $f$, $g$ to satisfy  $-\nabla\cdot(\kappa \cdot u) + \omega u = f$, $\kappa\; n\cdot \nabla u=g$
+$\Rightarrow$ pick $f$, $g$ to satisfy  $-\nabla\cdot(\kappa \cdot \nabla u) + \omega u = f$, $\kappa\; n\cdot \nabla u=g$
 
 $$
 \begin{aligned}
@@ -1891,7 +1891,7 @@ in precision 3, base 10 arithmetic
 \frametitle{Range of representable numbers}
 Floating point system $\mathbb{F}$
 $$
-x = \pm \left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} + \dots+d_{p-1}\beta^{1-p}\right)\cdot\beta^E
+x = \pm \left(d_0 + d_1\beta^{-1} + d_2\beta^{-2} + \dots+d_{p-1}\beta^{1-p}\right)\cdot\beta^E
 $$
 \textbf{Underflow threshold:}\\
 Smallest positive normalised number {\footnotesize($d_0=1$, $d_i=0$ for $i>0$, $E=L$)}

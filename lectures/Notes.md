@@ -1124,7 +1124,7 @@ A general **floating point number system** $\mathbb{F}$ is specified by four int
 The set $\mathbb{F}$ consists of all numbers $x$ of the form
 
 $$
-x = \pm \underbrace{\left(d_0 + d_1\beta^{-1} + d_2\beta^{-1} + \dots+d_{p-1}\beta^{1-p}\right)}_{\text{mantissa}}\cdot\beta^E\qquad:eqn:floating_point_representation
+x = \pm \underbrace{\left(d_0 + d_1\beta^{-1} + d_2\beta^{-2} + \dots+d_{p-1}\beta^{1-p}\right)}_{\text{mantissa}}\cdot\beta^E\qquad:eqn:floating_point_representation
 $$
 
 where the coefficients $d_i\in \{0,1,2,\dots,\beta-1\}$ and the **exponent** $E$ with $L\le E\le U$ are natural numbers. The expression in brackets is called the **mantissa**. Note that although $\beta,p,L,U$ as well as $E,d_i$ are integers, they represent real numbers through @eqn:floating_point_representation.

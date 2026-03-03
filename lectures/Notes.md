@@ -1697,7 +1697,7 @@ The map $(\alpha,\ell) \mapsto \ell_{\text{global}}$ is realised in two steps:
 2. Next, we map the tuple $(E,\rho,j)$ to the global dof index $\ell_{\text{global}}$ taking into account the arrangement of unknowns described above:
    1. If $E=\text{vertex}$: $\ell_{\text{global}} = \gamma\cdot \nu_{\text{vertex}}+j$ where $\gamma=I^{K\rightarrow v}_{\alpha\rho}$ is the global index of the vertex with local index $\rho$.
    2. If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}}+\widetilde{j}$ where $\beta=I^{K\rightarrow F}_{\alpha\rho}$ is the global index of the facet with local index $\rho$. Note that the orientation of the facet does not necessarily match the orientation on the reference element $\widehat{K}$. To take this into account, set $\widetilde{j}=j$ if the orientations agree and set $\widetilde{j} = \nu_{\text{facet}}-1-j$ otherwise.
-   3. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+j$ ($\rho$ is ignored in this case)
+   3. If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+\widetilde{j}$ ($\rho$ is ignored in this case)
 
 ## Implementation in Python
 

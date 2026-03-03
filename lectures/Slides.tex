@@ -2280,7 +2280,7 @@ $$
 \text{cond}(A) := \|A^{-1}\|_\infty\|A\|_\infty.
 $$
 ($=\lambda_{\text{max}}/\lambda_{\text{min}}$ for real-valued SPD matrix)\\[2ex]
-\textbf{Theorem 1}\\
+\textbf{Theorem 1}\quad{\footnotesize [J Demmel: \textit{``Numerical Linear Algebra''}, SIAM 1997]}\\
 If the $n\times n$ matrix $A$ is non-singular and if $\delta A$ is sufficiently small
 $$
 \|\delta A\|_{\infty} \|A^{-1}\|_\infty \le \frac{1}{2}
@@ -2296,13 +2296,13 @@ Proof (not examinable): see lecture notes
 
 \begin{frame}
 \frametitle{Backward error analysis}
-Gaussian elimination
+Gaussian elimination {\footnotesize(see [Demmel 1997])}
 $$
 \frac{\|\delta A\|_\infty}{\|A\|_\infty} \le n\cdot \varepsilon_{\text{mach}}\cdot G(A),
 $$
 $G(A)$ = "well-behaved" number\\[2ex]
 
-\textbf{Theorem 2}\\
+\textbf{Theorem 2}\quad{\footnotesize [Demmel 1997]}\\
 Under the conditions of Theorem 1 and if Gaussian elimination is used to solve the linear system, the error $\delta \boldsymbol{u}$ can be bounded
 
 $$
@@ -2323,13 +2323,13 @@ proportional to
 Generally impossible to compute the error $\delta\boldsymbol{u}=\boldsymbol{u}'-\boldsymbol{u}$\\[1ex]
 \textbf{Residual}
 $$
-\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'=A\delta\boldsymbol{u} \qquad\text{($= 0$ if $\delta\boldsymbol{u}=0$)}
+\boldsymbol{r}:=\boldsymbol{b}-A\boldsymbol{u}'=A\;\delta\boldsymbol{u} \qquad\text{($= 0$ if $\delta\boldsymbol{u}=0$)}
 $$
 Unfortunately
 $$
 \|\boldsymbol{r}\|_\infty\ll 1 \quad\nRightarrow\quad \|\delta\boldsymbol{u}\|_\infty\ll 1
 $$
-Properties of $\|\cdot\|_\infty$
+Properties of $\|\cdot\|_\infty$ applied to $\vec{b} = A\vec{u}$, $\vec{r} = A\;\delta \vec{u}$
 \begin{xalignat*}{2}
 \|\boldsymbol{b}\|_\infty &\le \|A\|_\infty \|\boldsymbol{u}\|_\infty, & \|\delta\boldsymbol{u}\|_\infty &\le \|A^{-1}\|_\infty \|\boldsymbol{r}\|_\infty
 \end{xalignat*}
@@ -2410,7 +2410,7 @@ Typical problem in Scientific Computing
   \frametitle{Topology}
   \textbf{Topology}
   \begin{center}
-  \includegraphics[width=0.6\linewidth]{figures/simple_mesh.pdf}
+  \includegraphics[width=0.7\linewidth]{figures/simple_mesh.pdf}
  \end{center}
   \begin{itemize}
 \item Cell $(0,1)$ has facets $(1,3), (1,2), (1,5)$
@@ -2726,7 +2726,7 @@ Need to associate the indices $\ell_{\text{global}}$ with the correct mesh entit
    \item If $E=\text{vertex}$: $\ell_{\text{global}} = \gamma\cdot \nu_{\text{vertex}}+j$ where $\gamma=I^{K\rightarrow v}_{\alpha\rho}$
    \item If $E=\text{facet}$: $\ell_{\text{global}} = N_{\text{vertex}}+\beta\cdot \nu_{\text{facet}}+\widetilde{j}$ where $\beta=I^{K\rightarrow F}_{\alpha\rho}$\\
    $\widetilde{j}\in\{j,\nu_{\text{facet}}-1-j\}$ depending on orientation 
-  \item If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+j$
+  \item If $E=\text{cell}$: $\ell_{\text{global}} = N_{\text{vertex}}+N_{\text{facet}}+\alpha\cdot \nu_{\text{interior}}+\widetilde{j}$
 \end{itemize}
 \end{enumerate}
 \end{frame}

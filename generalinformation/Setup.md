@@ -158,19 +158,25 @@ Change to the `ma32070/` directory with
 cd ~/ma32070
 ```
 
-and then run the following commands:
+and then run the following command:
 
 ```
 git clone https://github.bath.ac.uk/em459/finiteelements.git
+```
+This will create a subdirectory `ma32070/finitelements` and you only have to do this **once**. You might have to enter your university username and password to run the `git clone` command. 
+
+Next, change to the `ma32070/finiteelements` folder with
+```
 cd finiteelements
+```
+and install the library with
+```
 python -m pip install --editable .
+```
+You can check whether this worked correctly by running
+```
 python -m pytest -v
 ```
-
-You only have to do this **once**, not every time you `git pull` the library afterwards. You might have to enter your university username and password to run the `git clone` command.
-
-This will create a subdirectory `ma32070/finitelements`.
-
 If everything worked correctly, you can use functionality from this library in your own code. For example, you could write the following Python script (in any directory):
 
 ```Python
@@ -184,6 +190,12 @@ print (f"number of vertices = {mesh.nvertices}")
 to create a rectangle mesh and print out the number of cells and vertices.
 
 Please **never** edit any code in `ma32070/finiteelements` or add any other code to the directory. If you do this by accident, delete the directory and install the finite element library again as described above.
+
+**Unfortunately, locally installed packages are not persistent on Noteable, and you will need to run**
+```
+python -m pip install --editable .
+```
+**in the `ma32070/finiteelements` directory every time you shut down and restart Noteable.**
 
 ### Updating the finite element library
 During the semester, additional functionality and model solutions will be added to the finite element library. To access this code, you will need to change to the `ma32070/finiteelements` directory and run

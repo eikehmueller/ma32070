@@ -172,6 +172,25 @@ Default setup:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}[fragile]
+\frametitle{Noteable setup}
+Locally installed packages are \textbf{not persistent} on Noteable.\\
+$\Rightarrow$ need to run
+{\color{blue}
+\begin{verbatim}
+  python -m pip install --editable .
+\end{verbatim}}
+in \verb!ma32070/finiteelements! every time you shut down and restart Noteable.\\[2ex]
+Run 
+{\color{blue}
+\begin{verbatim}
+  git pull
+\end{verbatim}}
+at regular intervals to pull changes to the finite element library.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}
 \frametitle{Prerequisites}
 
@@ -2745,6 +2764,7 @@ Need to associate the indices $\ell_{\text{global}}$ with the correct mesh entit
   \item property \lstinline{ndof}: total number of unknowns $N_{\text{vertex}}+N_{\text{facet}}+N_{\text{interior}}$
   \item method \lstinline{local2global(self, alpha, ell)}: map $(\alpha,\ell)\mapsto\ell_{\text{global}}$ {\footnotesize($\ell$ = integer or list of integers)}
   \end{itemize}
+  {\begin{flushright} {\footnotesize [end of week 5]} \end{flushright}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

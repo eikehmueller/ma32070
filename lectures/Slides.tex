@@ -3045,7 +3045,7 @@ $b^{(h),\text{local}}_{\ell} = \sum_q w_q T_{q\ell}F_q  D_q$}
 \begin{frame}[fragile]
   \frametitle{Assembly of right-hand-side}
   \textbf{Implementation}\\[1ex]
-  Summation $\sum_q w_q F_q T_{q\ell} D_q$ $\Rightarrow$ \lstinline{einsum()}\\
+  Summation $\sum_q w_q T_{q\ell} F_q D_q$ $\Rightarrow$ \lstinline{einsum()}\\
   \begin{lstlisting}
   np.einsum("q,ql,q,q->l", w_q, T, f_q, det_J)
   \end{lstlisting}
@@ -3095,7 +3095,8 @@ $$
 A^{(h)}_{\ell_{\text{global}},k_{\text{global}}} &= \sum_{K\in \Omega_h}\int_K \Big(\kappa J^{-\top}(\widehat{x}) \widehat{\nabla} \phi_k (\widehat{x})\cdot J^{-\top}(\widehat{x})\widehat{\nabla}\phi_\ell(\widehat{x})+ \omega\phi_k(\widehat{x})\phi_\ell(\widehat{x})\Big)\cdot\\[-2ex]
 &\hspace{7cm}\cdot|\det{J}(\widehat{x})|d\widehat{x}
 \\
-&\approx \sum_{K\in \Omega_h}\int_K  w_q \left(\kappa \widehat{\nabla} \phi_k(\xi^{(q)})(J^{\top}(\xi^{(q)}) J(\xi^{(q)}))^{-1}\phi_\ell(\xi^{(q)}) + \omega\phi_k(\xi^{(q)})\phi_\ell(\xi^{(q)})\right)|\det{J}(\xi^{(q)})| \\
+&\approx \sum_{K\in \Omega_h}\sum_q  w_q \Big(\kappa \widehat{\nabla} \phi_k(\xi^{(q)})(J^{\top}(\xi^{(q)}) J(\xi^{(q)}))^{-1}\widehat{\nabla}\phi_\ell(\xi^{(q)})\\[-1.5ex]
+&\qquad\qquad\qquad+\;\; \omega\phi_k(\xi^{(q)})\phi_\ell(\xi^{(q)})\Big)|\det{J}(\xi^{(q)})| \\
 &= \sum_{K\in \Omega_h} \sum_q w_q  \left(\kappa T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} +\omega T_{qk}T_{q\ell}\right)|\det{J}(\xi^{(q)})|
 \end{aligned}}
 $$
@@ -3151,8 +3152,8 @@ $\Rightarrow$ both cells contribute to global matrix entry $A^{(h)}_{8,8}$
   Summation
   \begin{itemize}
   \item $\sum_{c} J_{qca}J_{qcb}$
-  \item $\sum_{qab}w_q  T^\partial_{q\ell a}(J^{(2)}_q)_{ab} T^\partial_{qkb} D_q$
-  \item $\sum_{q}w_q  T_{q\ell}T_{qk} D_q$
+  \item $\sum_{qab}w_q  T^\partial_{qka}(J^{(-2)}_q)_{ab} T^\partial_{q\ell b} D_q$
+  \item $\sum_{q}w_q  T_{qk} T_{q\ell} D_q$
   \end{itemize}
   $\Rightarrow$ \lstinline{einsum()}
   \begin{lstlisting}
@@ -3235,8 +3236,8 @@ A_h = assemble_lhs(fs, quad, kappa, omega)
   \end{lstlisting}
   \textbf{Solve linear system}
   \begin{lstlisting}
-u_h.data[:] = np.linalg.solve(A_h, b_h.data)
 u_h = Function(fs)
+u_h.data[:] = np.linalg.solve(A_h, b_h.data)
   \end{lstlisting}
 \end{frame}
 
@@ -3320,6 +3321,7 @@ from fem.utilities import measure_time
 with measure_time("assemble stiffness matrix"):
     A_h = assemble_lhs(fs, quad, kappa, omega)
 \end{lstlisting}
+{\begin{flushright} {\footnotesize [end of week 6]} \end{flushright}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

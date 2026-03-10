@@ -2846,7 +2846,7 @@ $\Rightarrow$ $\lambda^{\times}_{\ell^\times}(\phi^\times_{k^\times})=\delta_{\e
 
 \begin{frame}
   \frametitle{Tabulation of basis functions}
-Given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$ $\Rightarrow$ $n \times \nu^\times \times 2$ matrix $T^\times$
+Given set of points $\boldsymbol{\zeta}:=\{\zeta^{(r)}\}_{r=0}^{n-1}$ $\Rightarrow$ $n \times \nu^\times \times 2$ rank-3 tensor $T^\times$
 
 $$
 {\footnotesize
@@ -2858,7 +2858,7 @@ T^\times_{r\ell^\times a}(\boldsymbol{\zeta}) := (\phi^\times_{\ell^\times}(\zet
 \end{cases}}
 $$
 
-Derivatives $\Rightarrow$ $n \times \nu^\times \times 2\times 2$ matrix $T^{\times\partial}$ matrix
+Derivatives $\Rightarrow$ $n \times \nu^\times \times 2\times 2$ rank-4 tensor $T^{\times\partial}$ 
 
 $$
 {\footnotesize
@@ -2974,7 +2974,7 @@ $$
   \textbf{Numerical quadrature} and \textbf{tabulation}
 $$
 \begin{aligned}
-b^{(h)}_{\ell_{\text{global}}} &\sum_{K\in \Omega_h}\int_{\widehat{K}} \widehat{f}_K(\widehat{x}) \phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}\\
+b^{(h)}_{\ell_{\text{global}}} &=\sum_{K\in \Omega_h}\int_{\widehat{K}} \widehat{f}_K(\widehat{x}) \phi_\ell(\widehat{x})\;|\det{J}(\widehat{x})|\;d\widehat{x}\\
 &\approx \sum_{K\in \Omega_h} \sum_q w_q \widehat{f}_K(\xi^{(q)}) \phi_\ell(\xi^{(q)})\;|\det{J}(\xi^{(q)})|\\
 &= \sum_{K\in \Omega_h} \sum_q w_q \widehat{f}_K(\xi^{(q)}) T_{q\ell}\;|\det{J}(\xi^{(q)})|.
 \end{aligned}
@@ -3020,7 +3020,7 @@ $$
     \State{Compute $(x_K^{(q)})_a = \sum_{\ell^\times} T^\times_{q\ell^\times a} \overline{X}_{\ell^\times}$, $F_q =f(x_K^{(q)})$}
   \EndFor
   \State{Construct local $\boldsymbol{b}^{(h),\text{local}}$:
-$b^{(h),\text{local}}_{\ell} = \sum_q w_q F_q T_{q\ell} D_q$}
+$b^{(h),\text{local}}_{\ell} = \sum_q w_q T_{q\ell}F_q  D_q$}
 \ForAll{local dof-indices $\ell$}
   \State{Increment $b_{\ell_{\text{global}}}^{(h)}\gets b_{\ell_{\text{global}}}^{(h)} + b^{(h),\text{local}}_\ell$}
 \EndFor

@@ -37,7 +37,7 @@ For this, we first use the `tabulate()` method of the coordinate element and the
 zeta_q = np.asarray(quad.nodes)
 w_q = quad.weights
 T_coord = element_coord.tabulate(zeta_q)
-x_q = np.einsum("qla,l->qq", T_coord, x_dof_vector)
+x_q = np.einsum("qla,l->qa", T_coord, x_dof_vector)
 ```
 
 We can now evaluate the function $u_{\text{exact}}$ at the $n_q$ positions $x_K^{(q)}$ by passing the tensor `x_q` to the function $u_{\text{exact}}$. Since `u_exact` accepts two-dimensional vectors or rank 2 tensors of shape $(2,n)$, we need to transpose `x_q` first:

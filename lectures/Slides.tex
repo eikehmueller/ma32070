@@ -3409,7 +3409,7 @@ Eliminate all entries below the diagonal in the first row
 \begin{algorithmic}[1]
 \ForAll{matrix rows $i=1,2,\dots,n-1$}
 \ForAll {$j=1,2,\dots,n-1$}
-\State {$\textcolor{blue}{A_{ij}} \mapsto \textcolor{blue}{A_{ij}} - \textcolor{green}A_{i0}/\textcolor{red}{A_{00}}\cdot A_{0j}$}\Comment{{\footnotesize$\textcolor{blue}{\text{row}_i}\mapsto \textcolor{blue}{\text{row}_i}-\textcolor{green}{A_{i0}}/\textcolor{red}{A_{00}}\cdot\textcolor{blue}{\text{row}_0}$}}
+\State {$\textcolor{blue}{A_{ij}} \mapsto \textcolor{blue}{A_{ij}} - \textcolor{green}{A_{i0}}/\textcolor{red}{A_{00}}\cdot A_{0j}$}\Comment{{\footnotesize$\textcolor{blue}{\text{row}_i}\mapsto \textcolor{blue}{\text{row}_i}-\textcolor{green}{A_{i0}}/\textcolor{red}{A_{00}}\cdot\textcolor{blue}{\text{row}_0}$}}
 \EndFor
 \State{$b_i \mapsto b_i - \textcolor{green}{A_{i0}}/\textcolor{red}{A_{00}}\cdot b_0$} \Comment{\footnotesize Modify right-hand-side $\boldsymbol{b}$}
 \EndFor
@@ -3494,7 +3494,7 @@ NB: first row of $A$ and $b_0$ remain unchanged
 \begin{itemize}
 \item compute $\rho_i = -A_{i0}/A_{00}$\\
 {}\qquad $\Rightarrow$ $\boldsymbol{1}$ \textbf{division}
-\item scale first row by $\rho_i$, scaled first row to row $i$\\
+\item scale first row by $\rho_i$, add scaled first row to row $i$\\
 {}\qquad $\Rightarrow$  $\boldsymbol{n-1}$ \textbf{multiplications} and $\boldsymbol{n-1}$ \textbf{additions}\footnote{can ignore the first entry which will be set to zero by construction}
 \item update $b_i \gets b_i - \rho_i \cdot b_0$\\
 {}\qquad $\Rightarrow$ $\boldsymbol{1}$ \textbf{multiplication} and $\boldsymbol{1}$ \textbf{subtraction}

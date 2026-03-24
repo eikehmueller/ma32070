@@ -4316,7 +4316,7 @@ python script.py -ksp_type gmres -pc_type jacobi \
   $$
     \item Row pointers
   $$
-  R = [0,|\mathcal{J}_0|,|\mathcal{J}_0+\mathcal{J}_1|,|\mathcal{J}_0+\mathcal{J}_1+\mathcal{J}_2|,\dots]
+  R = [0,|\mathcal{J}_0|,|\mathcal{J}_0|+|\mathcal{J}_1|,|\mathcal{J}_0|+|\mathcal{J}_1|+|\mathcal{J}_2|,\dots]
   $$
   \end{itemize}
 \end{frame}
@@ -4376,6 +4376,7 @@ stiffness_matrix.assemble()
 python driver_sparse.py -ksp_type richardson -pc_type jacobi \
                         -ksp_rtol 1.0E-6 -ksp_monitor
 \end{verbatim}}
+{\begin{flushright} {\footnotesize [end of week 8]} \end{flushright}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

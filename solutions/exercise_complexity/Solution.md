@@ -20,7 +20,7 @@ The solution vector $\boldsymbol{u}$ of the system $A\boldsymbol{u}=\boldsymbol{
 At the $i$-step of the algorithm we compute
 
 $$
-u_i = \left(b_i-\sum_{j=i+1}^{n-1}\cdot A_{ij} u_j \right)/A_{ii}
+u_i = \left(b_i-\sum_{j=i+1}^{n-1} A_{ij} \cdot u_j \right)/A_{ii}
 $$
 
 This requires $n-1-i$ multiplications of the form $A_{ij}\cdot u_j$ as well as $n-1-i$ subtractions/additions (one for each term in the sum) and one division by $A_{ii}$. We need to do this for $i=n-1,n-1,\dots,0$ (i.e. each iteration of the outer loop) and hence the total number of operations is

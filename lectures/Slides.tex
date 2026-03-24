@@ -3863,7 +3863,8 @@ In general
  \item Associate matrix \lstinline{A} with it 
  \item Call the \lstinline{KSP}'s solve method for the given RHS $\boldsymbol{b}$
  \end{enumerate}
-\lstinline{KSP} can be configured in detail
+\lstinline{KSP} can be configured in detail.
+{\begin{flushright} {\footnotesize [end of week 7]} \end{flushright}}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3879,7 +3880,7 @@ In general
     \quad\text{for $k=0,1,2,\dots$}
     $$
   \end{itemize} 
-  \textbf{Converging} method\footnote{Direct solver = special case $\boldsymbol{u}^{(1)}=\boldsymbol{u}$}
+  \textbf{Converging} method\quad {\footnotesize (direct solver = special case $\boldsymbol{u}^{(1)}=\boldsymbol{u}$)}
   $$
   \boldsymbol{u}^{(k)} \rightarrow \boldsymbol{u} \quad\text{as $k\rightarrow \infty$}
   $$
@@ -3887,12 +3888,17 @@ In general
   $$
   \|\boldsymbol{e}^{(n)}\| = \|\boldsymbol{u}^{(n)}-\boldsymbol{u}\|\ll \|\boldsymbol{u}\| \quad\text{for $n$ not too large}
   $$
+  \begin{minipage}{0.5\linewidth}
   $\boldsymbol{u}$ contains additional errors
   \begin{itemize}
   \item Modelling error $\sim \epsilon_{\text{model}}$
   \item Discretisation error $\sim \epsilon_{\text{disc}}$
   \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\linewidth}
   $\Rightarrow$ there is no point in reducing $\|\boldsymbol{e}^{(n)}\|$ below $\epsilon_{\text{model}},\epsilon_{\text{disc}}$
+\end{minipage}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3914,7 +3920,7 @@ such that the equivalent system
 $$
 \widetilde{A} \boldsymbol{u} = \widetilde{\boldsymbol{b}}
 $$
-easier to solve\\[2ex]
+is easier to solve.\\[2ex]
 $P$ (full rank and invertible) = preconditioner\\[1ex]
 Possible (poor) choices: $P=\mathbb{I}$ or $P=A$\\
 \end{frame}
@@ -3932,7 +3938,7 @@ $\Rightarrow$ reduce number of iterations since $\widetilde{A}=P^{-1}A\approx\ma
 \item Solving linear system $P\boldsymbol{z}=\boldsymbol{r}$ should be cheap\\
 $\Rightarrow$ minimise cost per iteration
 \end{itemize}
-Construction of an efficient preconditioner is
+Construction of efficient preconditioners is
 \begin{itemize}
 \item an art
 \item active area of research
@@ -4007,7 +4013,7 @@ $$
 spectral radius
 $$
 \varrho(\mathbb{I} - P^{-1} A)<1\quad
-\Rightarrow\quad \boldsymbol{u^{(k)}}\rightarrow \boldsymbol{u}\quad\text{as $k\rightarrow\infty$}
+\Rightarrow\quad \boldsymbol{u}^{(k)}\rightarrow \boldsymbol{u}\quad\text{as $k\rightarrow\infty$}
 $$
 special case:\\[1ex]
 $P=A$ $\Rightarrow$ convergence in a single step

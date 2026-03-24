@@ -39,7 +39,7 @@ $$
 Consider the $n\times n$ tridiagonal matrix $A$. To remove all entries below the diagonal in the first column, we need to scale the first row by $\rho = -A_{10}/A_{00}$ and add it to the second row. We also need to replace $b_1 \mapsto b_1 - A_{10}/A_{00}\cdot b_0 = b_1+\rho\cdot b_0$. Since $A_{01}$ is the only non-zero entry in the first row which is not on the diagonal, this requires the following operations:
 
 * compute $\rho = -A_{10}/A_{00}$ $\Rightarrow$ **$\boldsymbol{1}$ division**
-* Replace $A_{11} \mapsto A_{11} + \rho\cdot A_{01}$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ addition**, since we can ignore the first entry in the second row: this entru will be set to zero by construction
+* Replace $A_{11} \mapsto A_{11} + \rho\cdot A_{01}$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ addition**, since we can ignore the first entry in the second row: this entry will be set to zero by construction
 * update $b_1 \gets b_1 + \rho\cdot b_1$ $\Rightarrow$ **$\boldsymbol{1}$ multiplication** and **$\boldsymbol{1}$ addition**
 
 Next, we apply this process to the tridiagonal $(n-1)\times (n-1)$ submatrix in the lower right corner. Continuing recursively $n-1$ times until the remaining matrix is of size $1\times 1$, we obtain an upper triangular matrix with exactly one superdiagonal. Since each of the $n-1$ steps requires 5 floating point operations, the total number of operations is therefore

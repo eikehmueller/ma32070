@@ -1079,8 +1079,8 @@ Visualise the results. For this plot the following quantities as a function of t
 Comment on your results: which solver gives the best performance?
 
 ### Practicalities
-* Save your implementation in the files `linear_algebra.py` and `linear_solve.py` in the same directory `ma32070/workspace/exercise7`
-* Zip the directory which contains `linear_algebra.py` and `linear_solve.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise7.tgz exercise7`
+* Save your implementation in the file `linear_solve.py` in the same directory `ma32070/workspace/exercise7`
+* Zip the directory which contains `linear_solve.py`. For this, change to `ma32070/workspace/` and run `tar czvf exercise7.tgz exercise7`
 * Create a single file `code_exercise7.pdf` from your source code. This can be done with the `code2pdf` tool from the `finiteelements` library by running the following command while in the `ma32070/workspace/` directory:
 ```
 python -m code2pdf --path ./exercise7/ --output code_exercise7

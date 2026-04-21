@@ -105,6 +105,7 @@ The CG solver reduces the number of iterations dramatically, but it still grows 
 ICC and GAMG perform very similarly when used with GMRES instead of CG. For this solver, SOR and ILU can be used, but only for smaller problem sizes. In both cases, the number of iterations increases with problem size. Using the Jacobi method results in a rapid increase in the number of iterations.
 
 As far as the number of iterations in concerned, the best setup appears to be a combination of CG or GMRES with either ICC or GAMG.
+
 #### Total solution time
 
 ![Total solution time](tsolve.svg)

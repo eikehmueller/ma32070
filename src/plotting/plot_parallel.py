@@ -16,7 +16,12 @@ def t_matmat(n, p):
     t_mem = 0.9241e-10
     t_lat = 1.1896e-06
     t_word = 9.9629e-10
-    return (2 * n**3 * t_flop + 3 * n**2 * t_mem) / p + n**2 * t_word + p * t_lat
+    return (
+        (2 * n**3 * t_flop + n**2 * t_mem) / p
+        + 2 * n**2 * t_mem
+        + n**2 * t_word
+        + p * t_lat
+    )
 
 
 def extract_measured_data(directory, overlap=False):
@@ -162,7 +167,7 @@ def fit_pingpong(data_filename, filename):
     print(f"t_mem = {t_mem:8.4e} s")
 
 
-extension = "svg"
+extension = "pdf"
 
 fit_pingpong("output_parallel/performance.txt", f"pingpong.{extension}")
 P = 2 ** np.arange(7)

@@ -2859,11 +2859,11 @@ Each matrix-vector product $A_{pq}B_q$ requires $2n_{\text{local}}m_{\text{local
 $$
 \begin{aligned}
 T_{\text{compute}} &= \left(2n_{\text{local}}m_{\text{local}}r\cdot t_{\text{flop}} + \left(n_{\text{local}}m_{\text{local}}+m_{\text{local}}r+n_{\text{local}}r\right)t_{\text{mem}}\right)P\\
-&=\frac{2nmr\cdot t_{\text{flop}}+(nm+mr+nr)t_{\text{mem}}}{P}
+&=\frac{2nmr\cdot t_{\text{flop}}}{P}+\left(\frac{nm}{P}+mr+nr\right)t_{\text{mem}}
 \end{aligned}
 $$
 
-Hence, compared to the sequential case, the time is reduced by a factor $P$. Unfortunately, we also need to add the cost of communicating, i.e. exchanging portions of the matrix $B$ between the processors. We send $P-1$ messages of size $m_{\text{local}}\times r$. This results in a cost of
+Hence, compared to the sequential case, most contributions to the runtime are reduced by a factor $P$. In particular, for sufficiently large problems where $n,m\gg1$ and $r\lesssim n,m$ the runtime is dominated by computations, i.e. the term proportional to $t_{\text{flop}}$. Unfortunately, we also need to add the cost of communicating, i.e. exchanging portions of the matrix $B$ between the processors. We send $P-1$ messages of size $m_{\text{local}}\times r$. This results in a cost of
 
 $$
 \begin{aligned}
@@ -2875,7 +2875,7 @@ $$
 For $n=m=r$ and $P\gg 1$ the total cost simplifies to
 
 $$
-T(P) = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{P} + n^2 t_{\text{word}} + P t_{\text{lat}}.\qquad\qquad:eqn:parallel_performance_model
+T(P) = T_{\text{compute}} + T_{\text{comm}} = \frac{2n^3 t_{\text{flop}}+n^2 t_{\text{mem}}}{P} + n^2 (2t_{\text{mem}} + t_{\text{word}}) + P t_{\text{lat}}.\qquad\qquad:eqn:parallel_performance_model
 $$
 
 While for fixed problem size $n$ the first term in the expression on the right hand side of @eqn:parallel_performance_model decreases for larger processor counts $P$, the final term will increase in proportion to $P$. The amount of speedup that can be achieved on a parallel machine with $P>1$ depends on the machine-dependent constants $t_{\text{flop}}$, $t_{\text{mem}}$, $t_{\text{word}}$ and $t_{\text{lat}}$.

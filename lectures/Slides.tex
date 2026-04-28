@@ -5018,11 +5018,11 @@ $$
 \begin{aligned}
 T_{\text{compute}} &= \Big(2n_{\text{local}}m_{\text{local}}r\cdot t_{\text{flop}}\\
 &\qquad+\;\; \left(n_{\text{local}}m_{\text{local}}+m_{\text{local}}r+n_{\text{local}}r\right)t_{\text{mem}}\Big)P\\
-&=\frac{2nmr\cdot t_{\text{flop}}+(nm+mr+nr)t_{\text{mem}}}{P}
+&=\frac{2nmr\cdot t_{\text{flop}}}{P}+\left(\frac{nm}{P}+mr+nr\right)t_{\text{mem}}
 \end{aligned}
 $$
 \begin{center}
-Runtime reduced by factor $P$ {\footnotesize(compared to sequential case)}
+Computation time (mostly) reduced by factor $P$\\{\footnotesize(compared to sequential case)}
 \end{center}
 \end{frame}
 
@@ -5053,7 +5053,10 @@ $$
   \frametitle{Performance analysis}
   \textbf{Total cost} (memory access + FLOPs + communication)\\
 $$
-T(P) = T_{\text{compute}} + T_{\text{comm}} = \underbrace{\frac{2n^3 t_{\text{flop}}+3n^2 t_{\text{mem}}}{P}}_{A} + \underbrace{n^2 t_{\text{word}} + P t_{\text{lat}}}_{B}
+\begin{aligned}
+T(P) &= T_{\text{compute}} + T_{\text{comm}}\\
+&= \underbrace{\frac{2n^3 t_{\text{flop}}+n^2 t_{\text{mem}}}{P}}_{A} + \underbrace{2n^2 t_{\text{mem}} + n^2 t_{\text{word}} + P t_{\text{lat}}}_{B}
+\end{aligned}
 $$
 for $n=m=r$ and $P\gg 1$
 \begin{itemize}

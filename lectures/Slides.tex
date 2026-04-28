@@ -4985,10 +4985,9 @@ def parallel_matmul(A, B, C):
     m_loc, _ = B.shape
 
     for q in range(nproc):
-        C[:, :] += (
-            q_ = (q + rank) % nproc
-            A[:, q_ * m_loc : (q_ + 1) * m_loc] @ B[:, :]
-        )
+        q_ = (q + rank) % nproc
+        C[:, :] += ( A[:, q_ * m_loc : (q_ + 1) * m_loc]
+                   @ B[:, :] )
         if q < nproc - 1:
             comm.Sendrecv_replace(B, (rank - 1) % nproc)
     return C

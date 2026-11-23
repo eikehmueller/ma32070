@@ -18,13 +18,10 @@ jobs:
         steps:
             - name: Install latex, imagemagick and inkscape
               run: |
+                sudo rm -f /var/lib/man-db/auto-update
                 sudo apt-get update
-                sudo apt install texlive-latex-base
-                sudo apt install texlive-latex-extra
-                sudo apt install texlive-latex-recommended
-                sudo apt install texlive-science
-                sudo apt install inkscape
-                sudo apt install imagemagick 
+                sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-pictures texlive-science
+                sudo apt-get install -y imagemagick librsvg2-bin
             - name: Check out pandoc templates
               uses: actions/checkout@v4
               with:

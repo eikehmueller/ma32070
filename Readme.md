@@ -8,7 +8,7 @@
 * prepare code: remove `PolynomialElement` and `error_norm()`
 * schedule lecture recordings
 *  welcome email to students on course (check mailing list)
-* ~~moodle course metadata~~
+* moodle course metadata
 * ~~unhide moodle page~~
 
 ## References
